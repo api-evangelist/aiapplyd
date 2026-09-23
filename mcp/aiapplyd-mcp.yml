@@ -1,0 +1,184 @@
+generated: '2026-09-23'
+method: probed
+status: published
+source:
+- https://mcp.aiapplyd.com/mcp
+- https://mcp.aiapplyd.com/
+- https://github.com/aiapplyd/aiapplyd-mcp
+- https://aiapplyd.com/mcps
+server:
+  name: AI Applyd
+  version: 1.6.0
+  protocolVersion: '2025-06-18'
+  transport: streamable-http
+  registry_name: com.aiapplyd/aiapplyd
+  capabilities:
+  - tools
+  - prompts
+  - resources
+  languages:
+  - en
+  - es
+  - de
+  - fr
+  - pt-BR
+  server_card: https://mcp.aiapplyd.com/.well-known/mcp/server-card.json
+auth:
+  type: oauth2
+  spec: OAuth 2.1 authorization code + PKCE (S256), dynamic client registration
+  authorization_server: https://mcp.aiapplyd.com/.well-known/oauth-authorization-server
+  protected_resource: https://mcp.aiapplyd.com/.well-known/oauth-protected-resource
+  note: initialize and tools/list answered anonymously (HTTP 200) on 2026-09-23; tool calls require sign-in, and
+    three tools require a paid plan per the server root document.
+tool_count: 10
+tools:
+- name: aiapplyd_score_resume
+  title: Score Resume
+  description: 'Score a resume for ATS compatibility. Returns an overall score, section scores, the keywords the
+    resume matches and the ones it is missing, and specific rewrite suggestions. Pass job_description to score against
+    a posting, or omit it for a general ATS readiness score. Requires a connected AI Applyd '
+  inputs:
+  - resume_text
+  - job_description
+  annotations:
+    readOnlyHint: true
+    destructiveHint: false
+    idempotentHint: false
+    openWorldHint: true
+  tier: authenticated
+- name: aiapplyd_analyze_job_description
+  title: Analyze Job Description
+  description: 'Extract what a job posting actually screens on: the exact ATS keywords, must-have versus nice-to-have
+    requirements, seniority signals, and red flags. Call this before tailoring a resume so the resume mirrors the
+    posting''s own language. Requires a connected AI Applyd account and uses the user''s AI cr'
+  inputs:
+  - job_description
+  annotations:
+    readOnlyHint: true
+    destructiveHint: false
+    idempotentHint: false
+    openWorldHint: true
+  tier: authenticated
+- name: aiapplyd_optimize_resume
+  title: Optimize Resume with AI
+  description: Rewrite a resume so it passes ATS screening. Returns the rewritten resume, a projected ATS score,
+    and an itemised summary of every change made. Pass job_description to tailor the rewrite to one specific posting,
+    or omit it for general ATS optimization. Requires a connected AI Applyd account.
+  inputs:
+  - resume_text
+  - job_description
+  annotations:
+    readOnlyHint: false
+    destructiveHint: false
+    idempotentHint: false
+    openWorldHint: true
+  tier: authenticated
+- name: aiapplyd_generate_interview_questions
+  title: Generate Interview Questions
+  description: 'Produce interview preparation for a specific role and company: company insights, the questions this
+    role is asked with approach guidance, STAR scenarios drawn from the posting, talking points, questions to ask
+    the interviewer, and salary negotiation prep. Requires a connected AI Applyd account.'
+  inputs:
+  - job_title
+  - company_name
+  - job_description
+  annotations:
+    readOnlyHint: true
+    destructiveHint: false
+    idempotentHint: false
+    openWorldHint: true
+  tier: authenticated
+- name: aiapplyd_translate_resume
+  title: Translate Resume
+  description: Translate the resume saved on the user's AI Applyd account into another language, ready to send to
+    employers in that market. Saves the translation as a new resume and leaves the original unchanged. Requires
+    a connected AI Applyd account.
+  inputs:
+  - target_language
+  annotations:
+    readOnlyHint: false
+    destructiveHint: false
+    idempotentHint: false
+    openWorldHint: true
+  tier: authenticated
+- name: aiapplyd_search_jobs
+  title: Search Jobs
+  description: 'Return the user''s AI-curated job matches, filtered by title, location, and remote preference. Each
+    match carries a match score, company, location, salary, extracted skills, and the application URL. Read-only:
+    it never changes which roles AI Applyd hunts for (use aiapplyd_update_job_preferences for t'
+  inputs:
+  - job_title
+  - location
+  - remote_only
+  annotations:
+    readOnlyHint: true
+    destructiveHint: false
+    idempotentHint: true
+    openWorldHint: false
+  tier: authenticated
+- name: aiapplyd_update_job_preferences
+  title: Update Job Preferences
+  description: Set the roles and locations AI Applyd hunts for on the user's behalf, and re-run discovery immediately.
+    This REPLACES the target roles / locations currently saved on the account, so pass the complete list you want,
+    not just an addition. Only call this when the user explicitly asks to change what the
+  inputs:
+  - target_roles
+  - locations
+  - remote_only
+  annotations:
+    readOnlyHint: false
+    destructiveHint: true
+    idempotentHint: true
+    openWorldHint: false
+  tier: authenticated
+- name: aiapplyd_generate_cover_letter
+  title: Generate Cover Letter
+  description: Write a cover letter for a specific job from the resume already saved on the user's AI Applyd account,
+    in their own voice and free of recruiter cliches. Returns the finished letter and saves it to the account. Requires
+    a paid plan (Hired in 30+).
+  inputs:
+  - job_description
+  - company_name
+  annotations:
+    readOnlyHint: false
+    destructiveHint: false
+    idempotentHint: false
+    openWorldHint: true
+  tier: paid
+- name: aiapplyd_auto_apply
+  title: Auto Apply to Job
+  description: 'Apply to ONE specific job posting end to end: the resume and cover letter are rewritten for that
+    role, then the form is completed and submitted on the employer''s own hiring system, not a job board. All fifteen
+    major ATS platforms land: Workday, Greenhouse, Lever, Ashby, Workable, iCIMS, Personio, Re'
+  inputs:
+  - job_url
+  annotations:
+    readOnlyHint: false
+    destructiveHint: true
+    idempotentHint: false
+    openWorldHint: true
+  tier: paid
+- name: aiapplyd_build_pdf
+  title: Build Resume
+  description: 'Build a formatted, ATS-clean resume from raw text in the user''s AI Applyd resume builder, where
+    it stays editable and downloads as a PDF. Templates: modern, classic, or minimal. Private to the account by
+    default; set make_public to true only if the user explicitly asks for a shareable public link. R'
+  inputs:
+  - resume_text
+  - template
+  - make_public
+  annotations:
+    readOnlyHint: false
+    destructiveHint: false
+    idempotentHint: false
+    openWorldHint: true
+  tier: paid
+verbatim: mcp/aiapplyd-mcp-tools-list.json
+deployment:
+  mode: both
+  endpoint: https://mcp.aiapplyd.com/mcp
+  install: npx -y github:aiapplyd/aiapplyd-mcp
+  package: https://github.com/aiapplyd/aiapplyd-mcp
+  auth: oauth
+  verified: probed
+  note: The stdio package is a thin bridge that relays JSON-RPC verbatim to the hosted endpoint (README).

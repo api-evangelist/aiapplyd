@@ -1,0 +1,9 @@
+generated: '2026-09-23'
+method: searched
+source:
+- https://aiapplyd.com/llms-full.txt
+- https://aiapplyd.com/legal/security
+signals:
+  data_subject_request:
+    url: https://aiapplyd.com/llms-full.txt
+    evidence: every user can see, export, correct and delete all of their data from account settings at any time

@@ -1,0 +1,15 @@
+generated: '2026-09-23'
+method: searched
+source:
+- https://api.aiapplyd.com/
+- https://github.com/aiapplyd/aiapplyd-mcp/releases
+versioning:
+  api: URL path major version (/api/v1); the contract info.version is a build hash (d37a53ee) reported by the API
+    root
+  mcp: semantic versions on GitHub releases (v1.3.0 2026-09-07, v1.6.0 2026-09-23)
+deprecation:
+  policy: null
+  note: No deprecation or sunset policy published; the contract marks no operations deprecated.
+status_page: null
+health: https://api.aiapplyd.com/ returns {"status":"healthy"} (HTTP 200)
+note: status.aiapplyd.com did not resolve; no public status page found.

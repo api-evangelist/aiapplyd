@@ -1,0 +1,169 @@
+name: AI Applyd
+aid: aiapplyd
+description: 'AI Applyd is a job-application automation platform for candidates: it scores a resume against a posting
+  for ATS compatibility, rewrites the resume and writes a cover letter per role, prepares interview material, matches
+  new postings to a profile, and fills and submits applications on the employer''s own hiring system across 15 ATS
+  platforms (Workday, Greenhouse, Lever, Ashby, Workable, iCIMS, SmartRecruiters and more), counting an application
+  as sent only when the employer''s system confirms it. It publishes a hosted remote MCP server at mcp.aiapplyd.com/mcp
+  (OAuth 2.1, 10 tools, listed in the official MCP Registry as com.aiapplyd/aiapplyd) with an MIT-licensed stdio
+  bridge on GitHub, and serves the OpenAPI 3.0 description of its application backend at api.aiapplyd.com/api/v1/openapi.json.'
+url: https://raw.githubusercontent.com/api-evangelist/aiapplyd/refs/heads/main/apis.yml
+x-type: company
+x-source: apis-io-submission
+x-submitted-by: 'ava@aiapplyd.com (Ava Bagherzadeh), email to info@apis.io 2026-09-23 "Listing request: AI Applyd
+  MCP server"'
+x-tier: profiled
+x-tier-reason: enrichment pass 2026-09-23 (local-v5; was apis.io/add submission worked by the support sweep 2026-09-23;
+  host probed healthy (root 200, invented path 404, llms.txt 200))
+specificationVersion: '0.23'
+created: '2026-09-23'
+modified: '2026-09-23'
+tags:
+- Job Search
+- Recruiting
+- Resumes
+- Applicant Tracking Systems
+- Career
+- Artificial Intelligence
+- MCP
+- Automation
+common:
+- type: AgenticAccess
+  url: agentic-access/aiapplyd-agentic-access.yml
+- type: RateLimits
+  url: rate-limits/aiapplyd-rate-limits.yml
+- type: Plans
+  url: plans/aiapplyd-plans-pricing.yml
+- type: Spectral
+  url: rules/aiapplyd-rules.yml
+- type: JSONLD
+  url: json-ld/aiapplyd-context.jsonld
+- type: Vocabulary
+  url: vocabulary/aiapplyd-vocabulary.yml
+- type: DataModel
+  url: data-model/aiapplyd-data-model.yml
+- type: ChangeLog
+  url: changelog/aiapplyd-changelog.yml
+- type: Idempotency
+  url: conventions/aiapplyd-conventions.yml
+- type: Conventions
+  url: conventions/aiapplyd-conventions.yml
+- type: Authentication
+  url: authentication/aiapplyd-authentication.yml
+- type: OAuthScopes
+  url: scopes/aiapplyd-scopes.yml
+- type: Lifecycle
+  url: lifecycle/aiapplyd-lifecycle.yml
+- type: ErrorCatalog
+  url: errors/aiapplyd-problem-types.yml
+- type: Conformance
+  url: conformance/aiapplyd-conformance.yml
+- type: Overlay
+  url: overlays/aiapplyd-api-overlay.yaml
+- type: LLMsTxt
+  url: llms/aiapplyd-llms.txt
+- type: ToolCrosswalk
+  url: mcp/aiapplyd-tool-crosswalk.yml
+- type: MCPServer
+  url: mcp/aiapplyd-mcp.yml
+- type: WellKnown
+  url: well-known/aiapplyd-well-known.yml
+- type: Hosts
+  url: hosts/aiapplyd-hosts.yml
+- type: Vendors
+  url: vendors/aiapplyd-vendors.yml
+- type: SDKs
+  url: packages/aiapplyd-packages.yml
+- type: Packages
+  url: packages/aiapplyd-packages.yml
+- type: VulnerabilityDisclosure
+  url: security/aiapplyd-vulnerability-disclosure.yml
+- type: DomainSecurity
+  url: security/aiapplyd-domain-security.yml
+- type: Website
+  url: https://aiapplyd.com/
+- type: Documentation
+  url: https://aiapplyd.com/mcps
+- type: APIReference
+  url: https://api.aiapplyd.com/api/v1/scalar
+- type: Pricing
+  url: https://aiapplyd.com/pricing
+- type: Support
+  url: https://aiapplyd.com/support
+- type: FAQ
+  url: https://aiapplyd.com/faq
+- type: Blog
+  url: https://aiapplyd.com/blog
+- type: GitHubOrganization
+  url: https://github.com/aiapplyd
+- type: SignUp
+  url: https://aiapplyd.com/auth/sign-in
+- type: TermsOfService
+  url: https://aiapplyd.com/legal/terms
+- type: PrivacyPolicy
+  url: https://aiapplyd.com/legal/privacy
+- type: SecurityPolicy
+  url: https://aiapplyd.com/legal/security
+image: https://aiapplyd.com/static/images/logos/icon-logo-dark-square.png
+maintainers:
+- FN: AI Applyd
+  email: support@aiapplyd.com
+apis:
+- name: AI Applyd API
+  description: 'The REST backend of the AI Applyd application (Hono + Zod), published as OpenAPI 3.0 with a Scalar
+    reference: accounts, job matches and preferences, ATS scoring and optimization, resume builder, user documents,
+    cover letters, interview prep, applications, billing and usage, plus admin, internal and inbound-webhook routes
+    the product itself uses. Session-authenticated with a Bearer token.'
+  humanURL: https://api.aiapplyd.com/api/v1/scalar
+  baseURL: https://api.aiapplyd.com/api/v1
+  tags:
+  - Job Search
+  - Resumes
+  - Applicant Tracking Systems
+  - Recruiting
+  - Automation
+  properties:
+  - type: OpenAPI
+    url: openapi/aiapplyd-openapi.yml
+  - type: OpenAPI
+    name: OpenAPI (provider-hosted)
+    url: https://api.aiapplyd.com/api/v1/openapi.json
+  - type: APIReference
+    url: https://api.aiapplyd.com/api/v1/scalar
+  - type: JSONSchema
+    url: json-schema/aiapplyd-patch-user-preferences-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-apply-heartbeat-body-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-upsert-application-profile-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-auto-setup-request-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-post-ai-data-permission-data-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-update-preferences-request-schema.json
+  aid: aiapplyd:ai-applyd-api
+- name: AI Applyd MCP Server
+  description: 'Hosted remote MCP server (streamable HTTP, OAuth 2.1 with dynamic client registration) exposing
+    10 tools: ATS resume scoring, job-description analysis, resume optimization and translation, interview questions,
+    job search and preferences, cover letters, PDF builds and auto-apply on the employer''s own ATS. Tool catalog
+    localizable via ?lang= (en, es, de, fr, pt-BR).'
+  humanURL: https://aiapplyd.com/mcps
+  baseURL: https://mcp.aiapplyd.com/mcp
+  tags:
+  - MCP
+  - Job Search
+  - Resumes
+  - Automation
+  - Artificial Intelligence
+  properties:
+  - type: Documentation
+    url: https://aiapplyd.com/mcps
+  - type: SourceCode
+    url: https://github.com/aiapplyd/aiapplyd-mcp
+  aid: aiapplyd:ai-applyd-mcp-server
+x-enrichment:
+  date: '2026-09-23'
+  status: enriched
+  artifacts_added: 38
+  pass: local-v5

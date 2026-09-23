@@ -1,0 +1,15 @@
+generated: '2026-09-23'
+method: probed
+source:
+- https://mcp.aiapplyd.com/.well-known/oauth-protected-resource
+- https://mcp.aiapplyd.com/.well-known/oauth-authorization-server
+scopes:
+- name: openid
+  api: AI Applyd MCP Server
+- name: email
+  api: AI Applyd MCP Server
+- name: profile
+  api: AI Applyd MCP Server
+- name: offline_access
+  api: AI Applyd MCP Server
+note: Only OpenID Connect identity scopes are advertised; no product-level permission scopes are published.

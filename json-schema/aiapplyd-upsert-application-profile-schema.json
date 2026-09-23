@@ -1,0 +1,395 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/aiapplyd/main/json-schema/aiapplyd-upsert-application-profile-schema.json",
+  "title": "UpsertApplicationProfile",
+  "x-generated": "2026-09-23",
+  "x-method": "derived",
+  "x-generator": "derive-json-schema.py",
+  "x-source": "openapi/aiapplyd-openapi.yml#/components/schemas/UpsertApplicationProfile",
+  "type": "object",
+  "properties": {
+    "phone": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 20,
+      "description": "Phone number"
+    },
+    "addressLine1": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 255,
+      "description": "Address line 1"
+    },
+    "addressLine2": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 255,
+      "description": "Address line 2"
+    },
+    "city": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 100,
+      "description": "City"
+    },
+    "state": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 100,
+      "description": "State or province"
+    },
+    "zipCode": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 20,
+      "description": "ZIP or postal code"
+    },
+    "country": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 100,
+      "description": "Country"
+    },
+    "linkedinUrl": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 500,
+      "format": "uri",
+      "description": "LinkedIn profile URL"
+    },
+    "portfolioUrl": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 500,
+      "format": "uri",
+      "description": "Portfolio website URL"
+    },
+    "githubUrl": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 500,
+      "format": "uri",
+      "description": "GitHub profile URL"
+    },
+    "currentEmployer": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 120,
+      "description": "Current employer / company. Helps tailor recommendations; unlocks team analytics if the company onboards."
+    },
+    "dateOfBirth": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Date of birth (ISO 8601 date string)"
+    },
+    "workAuthorization": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "us_citizen",
+        "permanent_resident",
+        "visa_holder",
+        "require_sponsorship",
+        "other",
+        null
+      ],
+      "description": "Work authorization status"
+    },
+    "willingToRelocate": {
+      "type": "boolean",
+      "description": "Willing to relocate for a job"
+    },
+    "relocationLocations": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "type": "string"
+      },
+      "description": "Preferred relocation locations as \"City, Country\" or \"Country\" (max per-entry stripping of middle admin segments on ingest)."
+    },
+    "salaryCurrency": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "usd",
+        "eur",
+        "gbp",
+        "cad",
+        "aud",
+        "inr",
+        null
+      ],
+      "description": "Salary currency"
+    },
+    "availableStartDate": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Earliest available start date (ISO 8601 date string)"
+    },
+    "noticePeriod": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "immediately",
+        "two_weeks",
+        "one_month",
+        "two_months",
+        "three_months",
+        "flexible",
+        null
+      ],
+      "description": "Notice period before starting new position"
+    },
+    "personalNarrative": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 500,
+      "description": "Free-form narrative about gaps / transitions / short stints. Drives interview-prep red-flag question generation (F8)."
+    },
+    "travelWillingness": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "none",
+        "up_to_25",
+        "up_to_50",
+        "up_to_75",
+        "up_to_100",
+        null
+      ],
+      "description": "Willingness to travel for work"
+    },
+    "securityClearance": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "none",
+        "confidential",
+        "secret",
+        "top_secret",
+        "ts_sci",
+        "prefer_not_to_say",
+        null
+      ],
+      "description": "Security clearance level"
+    },
+    "restrictiveCovenantStatus": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "yes",
+        "no",
+        "prefer_not_to_say",
+        null
+      ],
+      "description": "Currently subject to a non-compete / non-solicit / restrictive covenant with a former employer"
+    },
+    "criminalRecordStatus": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "yes",
+        "no",
+        "prefer_not_to_say",
+        null
+      ],
+      "description": "Has a criminal conviction they are legally required to disclose"
+    },
+    "backgroundCheckConsent": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "yes",
+        "no",
+        "prefer_not_to_say",
+        null
+      ],
+      "description": "Consents to a background / reference / credit check or drug screen where the role requires one"
+    },
+    "relatedToEmployeeStatus": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "yes",
+        "no",
+        "prefer_not_to_say",
+        null
+      ],
+      "description": "Has a family member or close personal relationship with an employee of a company they apply to. Global, not per-employer: only a \"no\" is committable on a form."
+    },
+    "exportControlUsPerson": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "yes",
+        "no",
+        "prefer_not_to_say",
+        null
+      ],
+      "description": "Is a U.S. person for export-control (ITAR / EAR) purposes. The only declaration whose \"yes\" is the permissive answer."
+    },
+    "highestEducation": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "high_school",
+        "associate",
+        "bachelor",
+        "master",
+        "doctorate",
+        "any",
+        null
+      ],
+      "description": "Highest education level completed"
+    },
+    "yearsOfExperience": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 50,
+      "description": "Total years of professional experience"
+    },
+    "veteranStatus": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "not_a_veteran",
+        "veteran",
+        "disabled_veteran",
+        "recently_separated_veteran",
+        "active_duty_wartime_veteran",
+        "armed_forces_service_medal_veteran",
+        "prefer_not_to_say",
+        null
+      ],
+      "description": "Veteran status for EEO forms"
+    },
+    "disabilityStatus": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "yes",
+        "no",
+        "prefer_not_to_say",
+        null
+      ],
+      "description": "Disability status for EEO forms"
+    },
+    "gender": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "male",
+        "female",
+        "non_binary",
+        "prefer_not_to_say",
+        "other",
+        null
+      ],
+      "description": "Gender for EEO forms"
+    },
+    "ethnicity": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "american_indian_or_alaska_native",
+        "asian",
+        "black_or_african_american",
+        "hispanic_or_latino",
+        "native_hawaiian_or_pacific_islander",
+        "white",
+        "two_or_more_races",
+        "prefer_not_to_say",
+        "other",
+        null
+      ],
+      "description": "Ethnicity for EEO forms"
+    },
+    "sexualOrientation": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "heterosexual",
+        "gay_or_lesbian",
+        "bisexual",
+        "prefer_not_to_say",
+        "other",
+        null
+      ],
+      "description": "Sexual orientation for EEO forms"
+    },
+    "pronouns": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 40,
+      "description": "Preferred pronouns, self-described free text"
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,61 @@
+name: AI Applyd Plans
+generated: '2026-09-23'
+method: searched
+source: https://aiapplyd.com/pricing.md
+canonical: https://aiapplyd.com/pricing
+audience: business-product
+pricing_basis: tiered-subscription
+published: true
+delivery:
+  delivery: managed
+plan_count: 3
+plans:
+- name: Free (Job Seeker)
+  price: 0
+  price_text: $0/month
+  currency: USD
+  billing_period: month
+  features:
+  - ATS scoring, AI resume builder, AI cover letters, interview prep, application tracking, job matching
+  limits:
+  - 'Free signup tokens: 10,000'
+  - 'ATS scores per month: 10'
+  - 'Resume tailors per month: 5'
+  - 'Cover letters per month: 5'
+  - 'Auto-applies per month: 0'
+- name: Hired in 30
+  price: 38.99
+  price_text: $38.99/month, billed monthly
+  currency: USD
+  billing_period: month
+  features:
+  - Everything in Free, plus ~303 auto-applies/month, unlimited ATS scoring, unlimited resume tailoring, unlimited
+    cover letters
+  limits:
+  - 'Approximate AI operations per week: ~4,000'
+  - 'Auto-applies per month: 303'
+  - 'Auto-applies per day: 15'
+  - 'ATS scores per month: unlimited (token-gated)'
+  - 'Resume tailors per month: unlimited (token-gated)'
+  - 'Cover letters per month: unlimited (token-gated)'
+  - 'Documents stored: 100'
+  alternative_price_text: $21.99/week, billed weekly
+- name: Hired Yesterday
+  price: 89.99
+  price_text: $89.99/month, billed monthly
+  currency: USD
+  billing_period: month
+  features:
+  - Everything in Hired in 30, plus ~520 auto-applies/month, unlimited interview prep
+  limits:
+  - 'Approximate AI operations per week: ~6,857'
+  - 'Auto-applies per month: 520'
+  - 'Auto-applies per day: 50'
+  - 'ATS scores per month: unlimited (token-gated)'
+  - 'Resume tailors per month: unlimited (token-gated)'
+  - 'Cover letters per month: unlimited (token-gated)'
+  - 'Interview preps per month: unlimited (token-gated)'
+  - 'Documents stored: 250'
+  alternative_price_text: $37.99/week, billed weekly
+note: Plans price the consumer job-application product; the MCP server and API come with the account. Prices exclude
+  VAT/sales tax.

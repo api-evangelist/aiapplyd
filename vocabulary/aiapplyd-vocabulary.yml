@@ -1,0 +1,419 @@
+generated: '2026-09-23'
+method: derived
+generator: derive-vocabulary.py
+source: openapi/aiapplyd-openapi.yml
+vocabulary:
+  name: AI Applyd Domain Vocabulary
+  description: 'Terms declared by AI Applyd''s own API contract: its resource groups, objects and enumerations, with the contract''s definitions.
+    Derived, not authored.'
+  version: '2026-09-23'
+  terms:
+  - term: system
+    definition: System health and diagnostics
+    tags:
+    - Resource Group
+    source: openapi/aiapplyd-openapi.yml
+  - term: auth
+    definition: Authentication and authorization
+    tags:
+    - Resource Group
+    source: openapi/aiapplyd-openapi.yml
+  - term: billing
+    definition: Subscription and billing management
+    tags:
+    - Resource Group
+    source: openapi/aiapplyd-openapi.yml
+  - term: usage
+    definition: Usage tracking and quotas
+    tags:
+    - Resource Group
+    source: openapi/aiapplyd-openapi.yml
+  - term: AccountResponse
+    definition: Successful API response
+    tags:
+    - Object
+    source: openapi/aiapplyd-openapi.yml#/components/schemas/AccountResponse
+  - term: Account
+    definition: 'Object declared by the contract with fields: id, email, name, image, phone, emailVerified, marketingEmailsOptOut, stripeCustomerId,
+      company, companySlug, locale, createdAt. (1 more)'
+    tags:
+    - Object
+    source: openapi/aiapplyd-openapi.yml#/components/schemas/Account
+  - term: ResponseMetadata
+    definition: 'Object declared by the contract with fields: duration, performance, requestId, timestamp, version.'
+    tags:
+    - Object
+    source: openapi/aiapplyd-openapi.yml#/components/schemas/ResponseMetadata
+  - term: ApiErrorResponse
+    definition: 'Object declared by the contract with fields: error, meta, success.'
+    tags:
+    - Object
+    source: openapi/aiapplyd-openapi.yml#/components/schemas/ApiErrorResponse
+  - term: AccountUpdatedResponse
+    definition: Successful API response
+    tags:
+    - Object
+    source: openapi/aiapplyd-openapi.yml#/components/schemas/AccountUpdatedResponse
+  - term: UpdateAccountRequest
+    definition: 'Object declared by the contract with fields: company, locale, marketingEmailsOptOut, name, phone.'
+    tags:
+    - Object
+    source: openapi/aiapplyd-openapi.yml#/components/schemas/UpdateAccountRequest
+  - term: AppleAuthorizationStoredResponse
+    definition: Successful API response
+    tags:
+    - Object
+    source: openapi/aiapplyd-openapi.yml#/components/schemas/AppleAuthorizationStoredResponse
+  - term: StoreAppleAuthorizationRequest
+    definition: 'Object declared by the contract with fields: appleUserId, authorizationCode.'
+    tags:
+    - Object
+    source: openapi/aiapplyd-openapi.yml#/components/schemas/StoreAppleAuthorizationRequest
+  - term: AccountDeletedResponse
+    definition: Successful API response
+    tags:
+    - Object
+    source: openapi/aiapplyd-openapi.yml#/components/schemas/AccountDeletedResponse
+  - term: OverviewResponse
+    definition: Successful API response
+    tags:
+    - Object
+    source: openapi/aiapplyd-openapi.yml#/components/schemas/OverviewResponse
+  - term: OverviewData
+    definition: 'Object declared by the contract with fields: aiHistoryCount, formsLeftData, fillsOverTime, averageTokensPerFill, totalTokensUsed,
+      successRate, periodChange, jobListingsCount, averageAtsScore, outcomes.'
+    tags:
+    - Object
+    source: openapi/aiapplyd-openapi.yml#/components/schemas/OverviewData
+  - term: FormsLeftData
+    definition: 'Object declared by the contract with fields: count, percent.'
+    tags:
+    - Object
+    source: openapi/aiapplyd-openapi.yml#/components/schemas/FormsLeftData
+  - term: TimeSeriesData
+    definition: 'Object declared by the contract with fields: date, count.'
+    tags:
+    - Object
+    source: openapi/aiapplyd-openapi.yml#/components/schemas/TimeSeriesData
+  - term: SuccessRateData
+    definition: 'Object declared by the contract with fields: successRate, successCount, failureCount, pendingCount, totalCount.'
+    tags:
+    - Object
+    source: openapi/aiapplyd-openapi.yml#/components/schemas/SuccessRateData
+  - term: OutcomeMetrics
+    definition: Real-outcome success metrics from the email + calendar pipeline (interviews booked, offers, upcoming interviews, email response
+      rate).
+    tags:
+    - Object
+    source: openapi/aiapplyd-openapi.yml#/components/schemas/OutcomeMetrics
+  - term: SuggestionsResponse
+    definition: Successful API response
+    tags:
+    - Object
+    source: openapi/aiapplyd-openapi.yml#/components/schemas/SuggestionsResponse
+  - term: SuggestionsData
+    definition: 'Object declared by the contract with fields: suggestions.'
+    tags:
+    - Object
+    source: openapi/aiapplyd-openapi.yml#/components/schemas/SuggestionsData
+  - term: Suggestion
+    definition: 'Object declared by the contract with fields: type, title, description, icon, priority, meta.'
+    tags:
+    - Object
+    source: openapi/aiapplyd-openapi.yml#/components/schemas/Suggestion
+  - term: AdminBlogPostsListResponse
+    definition: Successful API response
+    tags:
+    - Object
+    source: openapi/aiapplyd-openapi.yml#/components/schemas/AdminBlogPostsListResponse
+  - term: AdminBlogPostListItem
+    definition: 'Object declared by the contract with fields: _status, authorId, categories, createdAt, description, excerpt, featured, featuredImageId,
+      id, publishedAt, readingTime, scheduledPublishAt. (3 more)'
+    tags:
+    - Object
+    source: openapi/aiapplyd-openapi.yml#/components/schemas/AdminBlogPostListItem
+  - term: CategorySummary
+    definition: 'Object declared by the contract with fields: id, name, slug.'
+    tags:
+    - Object
+    source: openapi/aiapplyd-openapi.yml#/components/schemas/CategorySummary
+  - term: AdminBlogPostResponse
+    definition: Successful API response
+    tags:
+    - Object
+    source: openapi/aiapplyd-openapi.yml#/components/schemas/AdminBlogPostResponse
+  - term: AdminBlogPost
+    definition: 'Object declared by the contract with fields: _status, authorId, categories, content, createdAt, description, excerpt, featured,
+      featuredImageId, id, meta, publishedAt. (5 more)'
+    tags:
+    - Object
+    source: openapi/aiapplyd-openapi.yml#/components/schemas/AdminBlogPost
+  - term: LexicalContent
+    definition: Lexical document tree. Opaque in the OpenAPI surface; see Payload CMS Lexical docs for the recursive node shape.
+    tags:
+    - Object
+    source: openapi/aiapplyd-openapi.yml#/components/schemas/LexicalContent
+  - term: PostMeta
+    definition: SEO metadata for blog posts
+    tags:
+    - Object
+    source: openapi/aiapplyd-openapi.yml#/components/schemas/PostMeta
+  - term: BlogPostCreatedResponse
+    definition: Successful API response
+    tags:
+    - Object
+    source: openapi/aiapplyd-openapi.yml#/components/schemas/BlogPostCreatedResponse
+  - term: CreateBlogPostRequest
+    definition: 'Object declared by the contract with fields: _status, authorId, categoryIds, content, description, excerpt, featured, featuredImageId,
+      meta, readingTime, scheduledPublishAt, slug. (1 more)'
+    tags:
+    - Object
+    source: openapi/aiapplyd-openapi.yml#/components/schemas/CreateBlogPostRequest
+  - term: AdminSuccessResponse
+    definition: Successful API response
+    tags:
+    - Object
+    source: openapi/aiapplyd-openapi.yml#/components/schemas/AdminSuccessResponse
+  - term: UpdateBlogPostRequest
+    definition: 'Object declared by the contract with fields: _status, authorId, categoryIds, content, description, excerpt, featured, featuredImageId,
+      meta, readingTime, scheduledPublishAt, slug. (1 more)'
+    tags:
+    - Object
+    source: openapi/aiapplyd-openapi.yml#/components/schemas/UpdateBlogPostRequest
+  - term: PublishResponse
+    definition: Successful API response
+    tags:
+    - Object
+    source: openapi/aiapplyd-openapi.yml#/components/schemas/PublishResponse
+  - term: BlogAuthorsListResponse
+    definition: Successful API response
+    tags:
+    - Object
+    source: openapi/aiapplyd-openapi.yml#/components/schemas/BlogAuthorsListResponse
+  - term: BlogAuthorResponse
+    definition: 'Object declared by the contract with fields: avatarUrl, bio, id, name, slug, socialLinks, title, avatarId, createdAt, updatedAt.'
+    tags:
+    - Object
+    source: openapi/aiapplyd-openapi.yml#/components/schemas/BlogAuthorResponse
+  - term: BlogAuthorCreatedResponse
+    definition: Successful API response
+    tags:
+    - Object
+    source: openapi/aiapplyd-openapi.yml#/components/schemas/BlogAuthorCreatedResponse
+  - term: CreateBlogAuthorRequest
+    definition: 'Object declared by the contract with fields: avatarId, bio, name, socialLinks, title.'
+    tags:
+    - Object
+    source: openapi/aiapplyd-openapi.yml#/components/schemas/CreateBlogAuthorRequest
+  - term: UpdateBlogAuthorRequest
+    definition: 'Object declared by the contract with fields: avatarId, bio, name, socialLinks, title.'
+    tags:
+    - Object
+    source: openapi/aiapplyd-openapi.yml#/components/schemas/UpdateBlogAuthorRequest
+  - term: BlogCategoriesListResponse
+    definition: Successful API response
+    tags:
+    - Object
+    source: openapi/aiapplyd-openapi.yml#/components/schemas/BlogCategoriesListResponse
+  - term: BlogCategoryResponse
+    definition: 'Object declared by the contract with fields: createdAt, description, id, name, slug, updatedAt.'
+    tags:
+    - Object
+    source: openapi/aiapplyd-openapi.yml#/components/schemas/BlogCategoryResponse
+  - term: BlogCategoryCreatedResponse
+    definition: Successful API response
+    tags:
+    - Object
+    source: openapi/aiapplyd-openapi.yml#/components/schemas/BlogCategoryCreatedResponse
+  - term: CreateBlogCategoryRequest
+    definition: 'Object declared by the contract with fields: description, name, slug.'
+    tags:
+    - Object
+    source: openapi/aiapplyd-openapi.yml#/components/schemas/CreateBlogCategoryRequest
+  - term: UpdateBlogCategoryRequest
+    definition: 'Object declared by the contract with fields: description, name, slug.'
+    tags:
+    - Object
+    source: openapi/aiapplyd-openapi.yml#/components/schemas/UpdateBlogCategoryRequest
+  - term: MediaListResponse
+    definition: Successful API response
+    tags:
+    - Object
+    source: openapi/aiapplyd-openapi.yml#/components/schemas/MediaListResponse
+  - term: MediaResponse
+    definition: 'Object declared by the contract with fields: alt, caption, createdAt, filename, filesize, focalX, focalY, height, id, mimeType,
+      sizes, updatedAt. (2 more)'
+    tags:
+    - Object
+    source: openapi/aiapplyd-openapi.yml#/components/schemas/MediaResponse
+  - term: MediaSizeVariant
+    definition: Individual media size variant (thumbnail, card, hero, etc.)
+    tags:
+    - Object
+    source: openapi/aiapplyd-openapi.yml#/components/schemas/MediaSizeVariant
+  - term: MediaCreatedResponse
+    definition: Successful API response
+    tags:
+    - Object
+    source: openapi/aiapplyd-openapi.yml#/components/schemas/MediaCreatedResponse
+  - term: MediaUploadRequest
+    definition: 'Object declared by the contract with fields: alt, caption, filename, focalX, focalY, height, mimeType, url, width.'
+    tags:
+    - Object
+    source: openapi/aiapplyd-openapi.yml#/components/schemas/MediaUploadRequest
+  - term: TriggerScraperResponse
+    definition: Successful API response
+    tags:
+    - Object
+    source: openapi/aiapplyd-openapi.yml#/components/schemas/TriggerScraperResponse
+  - term: TriggerScraperData
+    definition: 'Object declared by the contract with fields: startedAt.'
+    tags:
+    - Object
+    source: openapi/aiapplyd-openapi.yml#/components/schemas/TriggerScraperData
+  - term: TriggerEnrichmentBackfillResponse
+    definition: Successful API response
+    tags:
+    - Object
+    source: openapi/aiapplyd-openapi.yml#/components/schemas/TriggerEnrichmentBackfillResponse
+  - term: TriggerEnrichmentBackfillData
+    definition: 'Object declared by the contract with fields: attempted, succeeded.'
+    tags:
+    - Object
+    source: openapi/aiapplyd-openapi.yml#/components/schemas/TriggerEnrichmentBackfillData
+  - term: TriggerEnrichmentBackfillBody
+    definition: 'Object declared by the contract with fields: limit.'
+    tags:
+    - Object
+    source: openapi/aiapplyd-openapi.yml#/components/schemas/TriggerEnrichmentBackfillBody
+  - term: TriggerBackfillEmbeddingsResponse
+    definition: Successful API response
+    tags:
+    - Object
+    source: openapi/aiapplyd-openapi.yml#/components/schemas/TriggerBackfillEmbeddingsResponse
+  - term: TriggerBackfillEmbeddingsData
+    definition: 'Object declared by the contract with fields: startedAt, queuedFrom, limit.'
+    tags:
+    - Object
+    source: openapi/aiapplyd-openapi.yml#/components/schemas/TriggerBackfillEmbeddingsData
+  - term: TriggerBackfillEmbeddingsBody
+    definition: 'Object declared by the contract with fields: limit, offset.'
+    tags:
+    - Object
+    source: openapi/aiapplyd-openapi.yml#/components/schemas/TriggerBackfillEmbeddingsBody
+  - term: PurgeStaleResponse
+    definition: Successful API response
+    tags:
+    - Object
+    source: openapi/aiapplyd-openapi.yml#/components/schemas/PurgeStaleResponse
+  - term: PurgeStaleData
+    definition: 'Object declared by the contract with fields: purged, vectorsPurged.'
+    tags:
+    - Object
+    source: openapi/aiapplyd-openapi.yml#/components/schemas/PurgeStaleData
+  - term: BackfillScrapedJobsResponse
+    definition: Successful API response
+    tags:
+    - Object
+    source: openapi/aiapplyd-openapi.yml#/components/schemas/BackfillScrapedJobsResponse
+  - term: BackfillScrapedJobsData
+    definition: 'Object declared by the contract with fields: changedCity, changedRoleFamily, dryRun, durationMs, mode, scanned, skippedNoChange,
+      updated.'
+    tags:
+    - Object
+    source: openapi/aiapplyd-openapi.yml#/components/schemas/BackfillScrapedJobsData
+  - term: BackfillScrapedJobsBody
+    definition: 'Object declared by the contract with fields: dryRun, limit, mode.'
+    tags:
+    - Object
+    source: openapi/aiapplyd-openapi.yml#/components/schemas/BackfillScrapedJobsBody
+  - term: BackfillLinkedinApplyUrlsResponse
+    definition: Successful API response
+    tags:
+    - Object
+    source: openapi/aiapplyd-openapi.yml#/components/schemas/BackfillLinkedinApplyUrlsResponse
+  - term: BackfillLinkedinApplyUrlsData
+    definition: 'Object declared by the contract with fields: dryRun, durationMs, resolved, scanned, skipped, table, updated.'
+    tags:
+    - Object
+    source: openapi/aiapplyd-openapi.yml#/components/schemas/BackfillLinkedinApplyUrlsData
+  - term: BackfillLinkedinApplyUrlsBody
+    definition: 'Object declared by the contract with fields: dryRun, limit, maxRows, table.'
+    tags:
+    - Object
+    source: openapi/aiapplyd-openapi.yml#/components/schemas/BackfillLinkedinApplyUrlsBody
+  - term: ReparseLocationResponse
+    definition: Successful API response
+    tags:
+    - Object
+    source: openapi/aiapplyd-openapi.yml#/components/schemas/ReparseLocationResponse
+  - term: ReparseLocationData
+    definition: 'Object declared by the contract with fields: batchId, durationMs, failed, processed, updated.'
+    tags:
+    - Object
+    source: openapi/aiapplyd-openapi.yml#/components/schemas/ReparseLocationData
+  - term: BackfillScrapedJobContentHashResponse
+    definition: Successful API response
+    tags:
+    - Object
+    source: openapi/aiapplyd-openapi.yml#/components/schemas/BackfillScrapedJobContentHashResponse
+  - term: BackfillScrapedJobContentHashData
+    definition: 'Object declared by the contract with fields: dryRun, durationMs, hashed, scanned, skippedEmptyInput, updated.'
+    tags:
+    - Object
+    source: openapi/aiapplyd-openapi.yml#/components/schemas/BackfillScrapedJobContentHashData
+  - term: BackfillScrapedJobContentHashBody
+    definition: 'Object declared by the contract with fields: dryRun, limit.'
+    tags:
+    - Object
+    source: openapi/aiapplyd-openapi.yml#/components/schemas/BackfillScrapedJobContentHashBody
+  - term: BackfillJobDescriptionDerivativesResponse
+    definition: Successful API response
+    tags:
+    - Object
+    source: openapi/aiapplyd-openapi.yml#/components/schemas/BackfillJobDescriptionDerivativesResponse
+  - term: BackfillJobDescriptionDerivativesData
+    definition: 'Object declared by the contract with fields: budgetExceeded, durationMs, pages, remaining, rowsWritten.'
+    tags:
+    - Object
+    source: openapi/aiapplyd-openapi.yml#/components/schemas/BackfillJobDescriptionDerivativesData
+  - term: BackfillJobDescriptionDerivativesBody
+    definition: 'Object declared by the contract with fields: maxSubrequests, runBudgetMs, skipRemainingCount.'
+    tags:
+    - Object
+    source: openapi/aiapplyd-openapi.yml#/components/schemas/BackfillJobDescriptionDerivativesBody
+  - term: BackfillCompanyIntelResponse
+    definition: Successful API response
+    tags:
+    - Object
+    source: openapi/aiapplyd-openapi.yml#/components/schemas/BackfillCompanyIntelResponse
+  - term: BackfillCompanyIntelData
+    definition: 'Object declared by the contract with fields: dryRun, durationMs, failed, logoFetched, mode, refreshed, scanned, updated.'
+    tags:
+    - Object
+    source: openapi/aiapplyd-openapi.yml#/components/schemas/BackfillCompanyIntelData
+  - term: BackfillCompanyIntelBody
+    definition: 'Object declared by the contract with fields: dryRun, limit, mode.'
+    tags:
+    - Object
+    source: openapi/aiapplyd-openapi.yml#/components/schemas/BackfillCompanyIntelBody
+  - term: BackfillCompaniesFromJobsResponse
+    definition: Successful API response
+    tags:
+    - Object
+    source: openapi/aiapplyd-openapi.yml#/components/schemas/BackfillCompaniesFromJobsResponse
+  - term: BackfillCompaniesFromJobsData
+    definition: 'Object declared by the contract with fields: dryRun, durationMs, inserted, scanned, skippedEmptyName, updated.'
+    tags:
+    - Object
+    source: openapi/aiapplyd-openapi.yml#/components/schemas/BackfillCompaniesFromJobsData
+  - term: BackfillCompaniesFromJobsBody
+    definition: 'Object declared by the contract with fields: dryRun, limit, offset.'
+    tags:
+    - Object
+    source: openapi/aiapplyd-openapi.yml#/components/schemas/BackfillCompaniesFromJobsBody
+  - term: CanonicalizePreferencesResponse
+    definition: Successful API response
+    tags:
+    - Object
+    source: openapi/aiapplyd-openapi.yml#/components/schemas/CanonicalizePreferencesResponse

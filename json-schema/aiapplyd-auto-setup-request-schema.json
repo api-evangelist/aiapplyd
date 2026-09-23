@@ -1,0 +1,202 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/aiapplyd/main/json-schema/aiapplyd-auto-setup-request-schema.json",
+  "title": "AutoSetupRequest",
+  "x-generated": "2026-09-23",
+  "x-method": "derived",
+  "x-generator": "derive-json-schema.py",
+  "x-source": "openapi/aiapplyd-openapi.yml#/components/schemas/AutoSetupRequest",
+  "type": "object",
+  "properties": {
+    "city": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "City from parsed resume"
+    },
+    "country": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Country from parsed resume"
+    },
+    "documentId": {
+      "type": "integer",
+      "minimum": 0,
+      "exclusiveMinimum": true,
+      "description": "ID of the parsed resume document (optional for manual entry)"
+    },
+    "email": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Email from parsed resume"
+    },
+    "experienceLevel": {
+      "type": "string",
+      "enum": [
+        "entry",
+        "mid",
+        "senior",
+        "lead",
+        "executive"
+      ],
+      "description": "Inferred experience level (DEPRECATED scalar  -  prefer `experienceLevels`). When `experienceLevels` is present it wins; the scalar is mirrored from its first element."
+    },
+    "experienceLevels": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "entry",
+          "mid",
+          "senior",
+          "lead",
+          "executive"
+        ],
+        "description": "Professional experience level"
+      },
+      "description": "Inferred experience levels (multi-select). The résumé parser pre-selects ONE as primary; the user can add more. Empty/omitted = no seniority constraint."
+    },
+    "remoteGlobal": {
+      "type": "boolean",
+      "description": "Accept worldwide \"Remote  -  Anywhere (Global)\" jobs from any region. Set via the location picker's Remote-Anywhere option. Independent of workStyles \"remote\" (region-restricted)."
+    },
+    "fullName": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Full name from parsed resume"
+    },
+    "phone": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Phone number from parsed resume"
+    },
+    "benefits": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Must-have job benefits"
+    },
+    "companySize": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Preferred company sizes"
+    },
+    "educationLevel": {
+      "type": "string",
+      "description": "Minimum education level filter"
+    },
+    "industries": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Industries inferred from work experience"
+    },
+    "jobTypes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Preferred job types"
+    },
+    "salaryCurrency": {
+      "type": "string",
+      "enum": [
+        "usd",
+        "eur",
+        "gbp",
+        "cad",
+        "aud",
+        "inr"
+      ],
+      "description": "Currency for the salary band (converted to USD for matching). Defaults to usd."
+    },
+    "salaryMax": {
+      "type": "integer",
+      "minimum": 0,
+      "exclusiveMinimum": true,
+      "description": "Maximum desired salary (in salaryCurrency)"
+    },
+    "salaryMin": {
+      "type": "integer",
+      "minimum": 0,
+      "exclusiveMinimum": true,
+      "description": "Minimum desired salary (in salaryCurrency)"
+    },
+    "visaSponsorship": {
+      "type": "string",
+      "description": "Visa sponsorship preference"
+    },
+    "skills": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Skills extracted from resume"
+    },
+    "state": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "State/province from resume"
+    },
+    "suggestedJobTitles": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "maxItems": 5,
+      "description": "Suggested job titles based on resume (max 5). Empty arrays and placeholder values (\"anywhere\", \"any\", ...) are rejected: a specific title is required to scope the job search."
+    },
+    "suggestedLocations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "maxItems": 5,
+      "description": "Suggested job search locations as \"City, Country\" or \"Country\" (max 5). Middle admin segments (state/province) are stripped on ingest. Empty arrays and placeholder values (\"anywhere\", \"any\", ...) are rejected: a specific location is required to scope the job search."
+    },
+    "workStyles": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "onsite",
+          "hybrid",
+          "remote"
+        ],
+        "description": "User's preferred work style, physical mode only, no geo scoping"
+      },
+      "minItems": 1,
+      "description": "Preferred work styles (onsite/hybrid/remote), multi-select, at least 1 required"
+    }
+  },
+  "required": [
+    "city",
+    "country",
+    "email",
+    "fullName",
+    "phone",
+    "skills",
+    "state",
+    "suggestedJobTitles",
+    "suggestedLocations",
+    "workStyles"
+  ],
+  "additionalProperties": false
+}

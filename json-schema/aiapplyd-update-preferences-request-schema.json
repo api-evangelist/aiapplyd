@@ -1,0 +1,154 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/aiapplyd/main/json-schema/aiapplyd-update-preferences-request-schema.json",
+  "title": "UpdatePreferencesRequest",
+  "x-generated": "2026-09-23",
+  "x-method": "derived",
+  "x-generator": "derive-json-schema.py",
+  "x-source": "openapi/aiapplyd-openapi.yml#/components/schemas/UpdatePreferencesRequest",
+  "type": "object",
+  "properties": {
+    "benefits": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Must-have job benefits"
+    },
+    "companySize": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Preferred company sizes"
+    },
+    "educationLevel": {
+      "type": "string",
+      "description": "Minimum education level filter"
+    },
+    "excludeIndustries": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Industries to exclude from matches"
+    },
+    "experienceLevel": {
+      "type": "string",
+      "enum": [
+        "entry",
+        "mid",
+        "senior",
+        "lead",
+        "executive"
+      ],
+      "description": "Target experience level (DEPRECATED scalar  -  prefer `experienceLevels`). When `experienceLevels` is present it wins; this scalar is kept so legacy mobile binaries keep working."
+    },
+    "experienceLevels": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "entry",
+          "mid",
+          "senior",
+          "lead",
+          "executive"
+        ],
+        "description": "Professional experience level"
+      },
+      "description": "Target experience levels (multi-select, new source of truth). Empty/omitted = no seniority constraint. The first element is mirrored into the deprecated scalar `experienceLevel`."
+    },
+    "includeRemote": {
+      "type": "boolean",
+      "description": "Include region-restricted remote jobs (workStyles \"remote\") even when specific locations are set. Does NOT control worldwide remote  -  see `remoteGlobal`."
+    },
+    "remoteGlobal": {
+      "type": "boolean",
+      "description": "Accept worldwide \"Remote  -  Anywhere (Global)\" jobs from any region. Independent of `includeRemote`/workStyles \"remote\" (which stay region-restricted). Set via the \"Remote  -  Anywhere (Global)\" option in the location picker."
+    },
+    "industries": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Target industries"
+    },
+    "isActive": {
+      "type": "boolean",
+      "description": "Enable or disable daily matches"
+    },
+    "jobTypes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Preferred job types"
+    },
+    "locations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "maxItems": 5,
+      "description": "Preferred locations as \"City, Country\" or \"Country\" (max 5). Middle admin segments (state/province) are stripped on ingest. Placeholder values (\"anywhere\", \"any\", ...) are rejected for security (they disable location scoping and let clients harvest the full job pool). An empty array is accepted ONLY for a caller opted into `remoteGlobal` - worldwide remote is itself the location answer."
+    },
+    "salaryCurrency": {
+      "type": "string",
+      "enum": [
+        "usd",
+        "eur",
+        "gbp",
+        "cad",
+        "aud",
+        "inr"
+      ],
+      "description": "Currency for the salary band (converted to USD for matching). Defaults to usd."
+    },
+    "salaryMax": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Maximum salary requirement"
+    },
+    "salaryMin": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Minimum salary requirement"
+    },
+    "skills": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "User skills (from resume or manual entry)"
+    },
+    "targetRoles": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "maxItems": 5,
+      "description": "Target role titles (max 5). When present, at least one specific title is required  -  empty arrays and placeholder values (\"anywhere\", \"any\", ...) are rejected for security (they disable role scoping and let clients harvest the full job pool)."
+    },
+    "visaSponsorship": {
+      "type": "string",
+      "description": "Visa sponsorship preference"
+    },
+    "workStyles": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "onsite",
+          "hybrid",
+          "remote"
+        ],
+        "description": "User's preferred work style, physical mode only, no geo scoping"
+      },
+      "minItems": 1,
+      "description": "Preferred work styles (onsite/hybrid/remote)  -  multi-select, at least 1 required. Geo scoping is inferred from `locations`, NOT this field."
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,968 @@
+{
+  "@context": {
+    "@vocab": "https://aiapplyd.com/schema#",
+    "schema": "https://schema.org/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "dcterms": "http://purl.org/dc/terms/",
+    "aiapplyd": "https://aiapplyd.com/schema#",
+    "AccountResponse": "aiapplyd:AccountResponse",
+    "data": {
+      "@id": "aiapplyd:data",
+      "@type": "@id"
+    },
+    "meta": {
+      "@id": "aiapplyd:meta",
+      "@type": "@id"
+    },
+    "success": {
+      "@id": "aiapplyd:success",
+      "@type": "xsd:boolean"
+    },
+    "Account": "aiapplyd:Account",
+    "id": {
+      "@id": "aiapplyd:id",
+      "@type": "xsd:string"
+    },
+    "email": {
+      "@id": "aiapplyd:email",
+      "@type": "xsd:string"
+    },
+    "name": {
+      "@id": "aiapplyd:name",
+      "@type": "xsd:string"
+    },
+    "image": {
+      "@id": "aiapplyd:image",
+      "@type": "xsd:string"
+    },
+    "phone": {
+      "@id": "aiapplyd:phone",
+      "@type": "xsd:string"
+    },
+    "emailVerified": {
+      "@id": "aiapplyd:emailVerified",
+      "@type": "xsd:string"
+    },
+    "marketingEmailsOptOut": {
+      "@id": "aiapplyd:marketingEmailsOptOut",
+      "@type": "xsd:boolean"
+    },
+    "stripeCustomerId": {
+      "@id": "aiapplyd:stripeCustomerId",
+      "@type": "xsd:string"
+    },
+    "company": {
+      "@id": "aiapplyd:company",
+      "@type": "xsd:string"
+    },
+    "companySlug": {
+      "@id": "aiapplyd:companySlug",
+      "@type": "xsd:string"
+    },
+    "locale": {
+      "@id": "aiapplyd:locale",
+      "@type": "xsd:string"
+    },
+    "createdAt": {
+      "@id": "aiapplyd:createdAt",
+      "@type": "xsd:string"
+    },
+    "updatedAt": {
+      "@id": "aiapplyd:updatedAt",
+      "@type": "xsd:string"
+    },
+    "ResponseMetadata": "aiapplyd:ResponseMetadata",
+    "duration": {
+      "@id": "aiapplyd:duration",
+      "@type": "xsd:decimal"
+    },
+    "performance": {
+      "@id": "aiapplyd:performance"
+    },
+    "requestId": {
+      "@id": "aiapplyd:requestId",
+      "@type": "xsd:string"
+    },
+    "timestamp": {
+      "@id": "aiapplyd:timestamp",
+      "@type": "xsd:dateTime"
+    },
+    "version": {
+      "@id": "aiapplyd:version",
+      "@type": "xsd:string"
+    },
+    "ApiErrorResponse": "aiapplyd:ApiErrorResponse",
+    "error": {
+      "@id": "aiapplyd:error"
+    },
+    "AccountUpdatedResponse": "aiapplyd:AccountUpdatedResponse",
+    "UpdateAccountRequest": "aiapplyd:UpdateAccountRequest",
+    "AppleAuthorizationStoredResponse": "aiapplyd:AppleAuthorizationStoredResponse",
+    "StoreAppleAuthorizationRequest": "aiapplyd:StoreAppleAuthorizationRequest",
+    "appleUserId": {
+      "@id": "aiapplyd:appleUserId",
+      "@type": "xsd:string"
+    },
+    "authorizationCode": {
+      "@id": "aiapplyd:authorizationCode",
+      "@type": "xsd:string"
+    },
+    "AccountDeletedResponse": "aiapplyd:AccountDeletedResponse",
+    "OverviewResponse": "aiapplyd:OverviewResponse",
+    "OverviewData": "aiapplyd:OverviewData",
+    "aiHistoryCount": {
+      "@id": "aiapplyd:aiHistoryCount",
+      "@type": "xsd:integer"
+    },
+    "formsLeftData": {
+      "@id": "aiapplyd:formsLeftData",
+      "@type": "@id"
+    },
+    "fillsOverTime": {
+      "@id": "aiapplyd:fillsOverTime",
+      "@container": "@list"
+    },
+    "averageTokensPerFill": {
+      "@id": "aiapplyd:averageTokensPerFill",
+      "@type": "xsd:decimal"
+    },
+    "totalTokensUsed": {
+      "@id": "aiapplyd:totalTokensUsed",
+      "@type": "xsd:decimal"
+    },
+    "successRate": {
+      "@id": "aiapplyd:successRate",
+      "@type": "@id"
+    },
+    "periodChange": {
+      "@id": "aiapplyd:periodChange",
+      "@type": "xsd:decimal"
+    },
+    "jobListingsCount": {
+      "@id": "aiapplyd:jobListingsCount",
+      "@type": "xsd:integer"
+    },
+    "averageAtsScore": {
+      "@id": "aiapplyd:averageAtsScore",
+      "@type": "xsd:decimal"
+    },
+    "outcomes": {
+      "@id": "aiapplyd:outcomes",
+      "@type": "@id"
+    },
+    "FormsLeftData": "aiapplyd:FormsLeftData",
+    "count": {
+      "@id": "aiapplyd:count",
+      "@type": "xsd:integer"
+    },
+    "percent": {
+      "@id": "aiapplyd:percent",
+      "@type": "xsd:decimal"
+    },
+    "TimeSeriesData": "aiapplyd:TimeSeriesData",
+    "date": {
+      "@id": "aiapplyd:date",
+      "@type": "xsd:string"
+    },
+    "SuccessRateData": "aiapplyd:SuccessRateData",
+    "successCount": {
+      "@id": "aiapplyd:successCount",
+      "@type": "xsd:integer"
+    },
+    "failureCount": {
+      "@id": "aiapplyd:failureCount",
+      "@type": "xsd:integer"
+    },
+    "pendingCount": {
+      "@id": "aiapplyd:pendingCount",
+      "@type": "xsd:integer"
+    },
+    "totalCount": {
+      "@id": "aiapplyd:totalCount",
+      "@type": "xsd:integer"
+    },
+    "OutcomeMetrics": "aiapplyd:OutcomeMetrics",
+    "emailResponseRate": {
+      "@id": "aiapplyd:emailResponseRate",
+      "@type": "xsd:decimal"
+    },
+    "interviewsBooked": {
+      "@id": "aiapplyd:interviewsBooked",
+      "@type": "xsd:integer"
+    },
+    "nextInterviewResultId": {
+      "@id": "aiapplyd:nextInterviewResultId",
+      "@type": "xsd:integer"
+    },
+    "offers": {
+      "@id": "aiapplyd:offers",
+      "@type": "xsd:integer"
+    },
+    "positiveEmailSignals": {
+      "@id": "aiapplyd:positiveEmailSignals",
+      "@type": "xsd:integer"
+    },
+    "upcomingInterviews": {
+      "@id": "aiapplyd:upcomingInterviews",
+      "@type": "xsd:integer"
+    },
+    "SuggestionsResponse": "aiapplyd:SuggestionsResponse",
+    "SuggestionsData": "aiapplyd:SuggestionsData",
+    "suggestions": {
+      "@id": "aiapplyd:suggestions",
+      "@container": "@list"
+    },
+    "Suggestion": "aiapplyd:Suggestion",
+    "type": {
+      "@id": "aiapplyd:type",
+      "@type": "xsd:string"
+    },
+    "title": {
+      "@id": "aiapplyd:title",
+      "@type": "xsd:string"
+    },
+    "description": {
+      "@id": "aiapplyd:description",
+      "@type": "xsd:string"
+    },
+    "icon": {
+      "@id": "aiapplyd:icon",
+      "@type": "xsd:string"
+    },
+    "priority": {
+      "@id": "aiapplyd:priority",
+      "@type": "xsd:decimal"
+    },
+    "AdminBlogPostsListResponse": "aiapplyd:AdminBlogPostsListResponse",
+    "AdminBlogPostListItem": "aiapplyd:AdminBlogPostListItem",
+    "_status": {
+      "@id": "aiapplyd:_status",
+      "@type": "xsd:string"
+    },
+    "authorId": {
+      "@id": "aiapplyd:authorId",
+      "@type": "xsd:string"
+    },
+    "categories": {
+      "@id": "aiapplyd:categories",
+      "@container": "@list"
+    },
+    "excerpt": {
+      "@id": "aiapplyd:excerpt",
+      "@type": "xsd:string"
+    },
+    "featured": {
+      "@id": "aiapplyd:featured",
+      "@type": "xsd:boolean"
+    },
+    "featuredImageId": {
+      "@id": "aiapplyd:featuredImageId",
+      "@type": "xsd:string"
+    },
+    "publishedAt": {
+      "@id": "aiapplyd:publishedAt",
+      "@type": "xsd:string"
+    },
+    "readingTime": {
+      "@id": "aiapplyd:readingTime",
+      "@type": "xsd:integer"
+    },
+    "scheduledPublishAt": {
+      "@id": "aiapplyd:scheduledPublishAt",
+      "@type": "xsd:string"
+    },
+    "slug": {
+      "@id": "aiapplyd:slug",
+      "@type": "xsd:string"
+    },
+    "CategorySummary": "aiapplyd:CategorySummary",
+    "AdminBlogPostResponse": "aiapplyd:AdminBlogPostResponse",
+    "AdminBlogPost": "aiapplyd:AdminBlogPost",
+    "content": {
+      "@id": "aiapplyd:content",
+      "@type": "@id"
+    },
+    "PostMeta": "aiapplyd:PostMeta",
+    "canonicalUrl": {
+      "@id": "aiapplyd:canonicalUrl",
+      "@type": "xsd:string"
+    },
+    "metaDescription": {
+      "@id": "aiapplyd:metaDescription",
+      "@type": "xsd:string"
+    },
+    "metaImage": {
+      "@id": "aiapplyd:metaImage",
+      "@type": "xsd:string"
+    },
+    "metaTitle": {
+      "@id": "aiapplyd:metaTitle",
+      "@type": "xsd:string"
+    },
+    "noIndex": {
+      "@id": "aiapplyd:noIndex",
+      "@type": "xsd:boolean"
+    },
+    "BlogPostCreatedResponse": "aiapplyd:BlogPostCreatedResponse",
+    "CreateBlogPostRequest": "aiapplyd:CreateBlogPostRequest",
+    "categoryIds": {
+      "@id": "aiapplyd:categoryIds",
+      "@container": "@list"
+    },
+    "AdminSuccessResponse": "aiapplyd:AdminSuccessResponse",
+    "UpdateBlogPostRequest": "aiapplyd:UpdateBlogPostRequest",
+    "PublishResponse": "aiapplyd:PublishResponse",
+    "BlogAuthorsListResponse": "aiapplyd:BlogAuthorsListResponse",
+    "BlogAuthorResponse": "aiapplyd:BlogAuthorResponse",
+    "avatarUrl": {
+      "@id": "aiapplyd:avatarUrl",
+      "@type": "@id"
+    },
+    "bio": {
+      "@id": "aiapplyd:bio",
+      "@type": "xsd:string"
+    },
+    "socialLinks": {
+      "@id": "aiapplyd:socialLinks"
+    },
+    "avatarId": {
+      "@id": "aiapplyd:avatarId",
+      "@type": "xsd:string"
+    },
+    "BlogAuthorCreatedResponse": "aiapplyd:BlogAuthorCreatedResponse",
+    "CreateBlogAuthorRequest": "aiapplyd:CreateBlogAuthorRequest",
+    "UpdateBlogAuthorRequest": "aiapplyd:UpdateBlogAuthorRequest",
+    "BlogCategoriesListResponse": "aiapplyd:BlogCategoriesListResponse",
+    "BlogCategoryResponse": "aiapplyd:BlogCategoryResponse",
+    "BlogCategoryCreatedResponse": "aiapplyd:BlogCategoryCreatedResponse",
+    "CreateBlogCategoryRequest": "aiapplyd:CreateBlogCategoryRequest",
+    "UpdateBlogCategoryRequest": "aiapplyd:UpdateBlogCategoryRequest",
+    "MediaListResponse": "aiapplyd:MediaListResponse",
+    "MediaResponse": "aiapplyd:MediaResponse",
+    "alt": {
+      "@id": "aiapplyd:alt",
+      "@type": "xsd:string"
+    },
+    "caption": {
+      "@id": "aiapplyd:caption",
+      "@type": "xsd:string"
+    },
+    "filename": {
+      "@id": "aiapplyd:filename",
+      "@type": "xsd:string"
+    },
+    "filesize": {
+      "@id": "aiapplyd:filesize",
+      "@type": "xsd:integer"
+    },
+    "focalX": {
+      "@id": "aiapplyd:focalX",
+      "@type": "xsd:integer"
+    },
+    "focalY": {
+      "@id": "aiapplyd:focalY",
+      "@type": "xsd:integer"
+    },
+    "height": {
+      "@id": "aiapplyd:height",
+      "@type": "xsd:integer"
+    },
+    "mimeType": {
+      "@id": "aiapplyd:mimeType",
+      "@type": "xsd:string"
+    },
+    "sizes": {
+      "@id": "aiapplyd:sizes"
+    },
+    "url": {
+      "@id": "aiapplyd:url",
+      "@type": "xsd:string"
+    },
+    "width": {
+      "@id": "aiapplyd:width",
+      "@type": "xsd:integer"
+    },
+    "MediaSizeVariant": "aiapplyd:MediaSizeVariant",
+    "MediaCreatedResponse": "aiapplyd:MediaCreatedResponse",
+    "MediaUploadRequest": "aiapplyd:MediaUploadRequest",
+    "TriggerScraperResponse": "aiapplyd:TriggerScraperResponse",
+    "TriggerScraperData": "aiapplyd:TriggerScraperData",
+    "startedAt": {
+      "@id": "aiapplyd:startedAt",
+      "@type": "xsd:string"
+    },
+    "TriggerEnrichmentBackfillResponse": "aiapplyd:TriggerEnrichmentBackfillResponse",
+    "TriggerEnrichmentBackfillData": "aiapplyd:TriggerEnrichmentBackfillData",
+    "attempted": {
+      "@id": "aiapplyd:attempted",
+      "@type": "xsd:integer"
+    },
+    "succeeded": {
+      "@id": "aiapplyd:succeeded",
+      "@type": "xsd:integer"
+    },
+    "TriggerEnrichmentBackfillBody": "aiapplyd:TriggerEnrichmentBackfillBody",
+    "limit": {
+      "@id": "aiapplyd:limit",
+      "@type": "xsd:integer"
+    },
+    "TriggerBackfillEmbeddingsResponse": "aiapplyd:TriggerBackfillEmbeddingsResponse",
+    "TriggerBackfillEmbeddingsData": "aiapplyd:TriggerBackfillEmbeddingsData",
+    "queuedFrom": {
+      "@id": "aiapplyd:queuedFrom",
+      "@type": "xsd:integer"
+    },
+    "TriggerBackfillEmbeddingsBody": "aiapplyd:TriggerBackfillEmbeddingsBody",
+    "offset": {
+      "@id": "aiapplyd:offset",
+      "@type": "xsd:integer"
+    },
+    "PurgeStaleResponse": "aiapplyd:PurgeStaleResponse",
+    "PurgeStaleData": "aiapplyd:PurgeStaleData",
+    "purged": {
+      "@id": "aiapplyd:purged",
+      "@type": "xsd:integer"
+    },
+    "vectorsPurged": {
+      "@id": "aiapplyd:vectorsPurged",
+      "@type": "xsd:integer"
+    },
+    "BackfillScrapedJobsResponse": "aiapplyd:BackfillScrapedJobsResponse",
+    "BackfillScrapedJobsData": "aiapplyd:BackfillScrapedJobsData",
+    "changedCity": {
+      "@id": "aiapplyd:changedCity",
+      "@type": "xsd:integer"
+    },
+    "changedRoleFamily": {
+      "@id": "aiapplyd:changedRoleFamily",
+      "@type": "xsd:integer"
+    },
+    "dryRun": {
+      "@id": "aiapplyd:dryRun",
+      "@type": "xsd:boolean"
+    },
+    "durationMs": {
+      "@id": "aiapplyd:durationMs",
+      "@type": "xsd:integer"
+    },
+    "mode": {
+      "@id": "aiapplyd:mode",
+      "@type": "xsd:string"
+    },
+    "scanned": {
+      "@id": "aiapplyd:scanned",
+      "@type": "xsd:integer"
+    },
+    "skippedNoChange": {
+      "@id": "aiapplyd:skippedNoChange",
+      "@type": "xsd:integer"
+    },
+    "updated": {
+      "@id": "aiapplyd:updated",
+      "@type": "xsd:integer"
+    },
+    "BackfillScrapedJobsBody": "aiapplyd:BackfillScrapedJobsBody",
+    "BackfillLinkedinApplyUrlsResponse": "aiapplyd:BackfillLinkedinApplyUrlsResponse",
+    "BackfillLinkedinApplyUrlsData": "aiapplyd:BackfillLinkedinApplyUrlsData",
+    "resolved": {
+      "@id": "aiapplyd:resolved",
+      "@type": "xsd:integer"
+    },
+    "skipped": {
+      "@id": "aiapplyd:skipped",
+      "@type": "xsd:integer"
+    },
+    "table": {
+      "@id": "aiapplyd:table",
+      "@type": "xsd:string"
+    },
+    "BackfillLinkedinApplyUrlsBody": "aiapplyd:BackfillLinkedinApplyUrlsBody",
+    "maxRows": {
+      "@id": "aiapplyd:maxRows",
+      "@type": "xsd:integer"
+    },
+    "ReparseLocationResponse": "aiapplyd:ReparseLocationResponse",
+    "ReparseLocationData": "aiapplyd:ReparseLocationData",
+    "batchId": {
+      "@id": "aiapplyd:batchId",
+      "@type": "xsd:string"
+    },
+    "failed": {
+      "@id": "aiapplyd:failed",
+      "@type": "xsd:integer"
+    },
+    "processed": {
+      "@id": "aiapplyd:processed",
+      "@type": "xsd:integer"
+    },
+    "BackfillScrapedJobContentHashResponse": "aiapplyd:BackfillScrapedJobContentHashResponse",
+    "BackfillScrapedJobContentHashData": "aiapplyd:BackfillScrapedJobContentHashData",
+    "hashed": {
+      "@id": "aiapplyd:hashed",
+      "@type": "xsd:integer"
+    },
+    "skippedEmptyInput": {
+      "@id": "aiapplyd:skippedEmptyInput",
+      "@type": "xsd:integer"
+    },
+    "BackfillScrapedJobContentHashBody": "aiapplyd:BackfillScrapedJobContentHashBody",
+    "BackfillJobDescriptionDerivativesResponse": "aiapplyd:BackfillJobDescriptionDerivativesResponse",
+    "BackfillJobDescriptionDerivativesData": "aiapplyd:BackfillJobDescriptionDerivativesData",
+    "budgetExceeded": {
+      "@id": "aiapplyd:budgetExceeded",
+      "@type": "xsd:boolean"
+    },
+    "pages": {
+      "@id": "aiapplyd:pages",
+      "@type": "xsd:integer"
+    },
+    "remaining": {
+      "@id": "aiapplyd:remaining",
+      "@type": "xsd:integer"
+    },
+    "rowsWritten": {
+      "@id": "aiapplyd:rowsWritten",
+      "@type": "xsd:integer"
+    },
+    "BackfillJobDescriptionDerivativesBody": "aiapplyd:BackfillJobDescriptionDerivativesBody",
+    "maxSubrequests": {
+      "@id": "aiapplyd:maxSubrequests",
+      "@type": "xsd:integer"
+    },
+    "runBudgetMs": {
+      "@id": "aiapplyd:runBudgetMs",
+      "@type": "xsd:integer"
+    },
+    "skipRemainingCount": {
+      "@id": "aiapplyd:skipRemainingCount",
+      "@type": "xsd:boolean"
+    },
+    "BackfillCompanyIntelResponse": "aiapplyd:BackfillCompanyIntelResponse",
+    "BackfillCompanyIntelData": "aiapplyd:BackfillCompanyIntelData",
+    "logoFetched": {
+      "@id": "aiapplyd:logoFetched",
+      "@type": "xsd:integer"
+    },
+    "refreshed": {
+      "@id": "aiapplyd:refreshed",
+      "@type": "xsd:integer"
+    },
+    "BackfillCompanyIntelBody": "aiapplyd:BackfillCompanyIntelBody",
+    "BackfillCompaniesFromJobsResponse": "aiapplyd:BackfillCompaniesFromJobsResponse",
+    "BackfillCompaniesFromJobsData": "aiapplyd:BackfillCompaniesFromJobsData",
+    "inserted": {
+      "@id": "aiapplyd:inserted",
+      "@type": "xsd:integer"
+    },
+    "skippedEmptyName": {
+      "@id": "aiapplyd:skippedEmptyName",
+      "@type": "xsd:integer"
+    },
+    "BackfillCompaniesFromJobsBody": "aiapplyd:BackfillCompaniesFromJobsBody",
+    "CanonicalizePreferencesResponse": "aiapplyd:CanonicalizePreferencesResponse",
+    "CanonicalizePreferencesData": "aiapplyd:CanonicalizePreferencesData",
+    "rolesChanged": {
+      "@id": "aiapplyd:rolesChanged",
+      "@type": "xsd:integer"
+    },
+    "locationsChanged": {
+      "@id": "aiapplyd:locationsChanged",
+      "@type": "xsd:integer"
+    },
+    "rolesDropped": {
+      "@id": "aiapplyd:rolesDropped",
+      "@type": "xsd:integer"
+    },
+    "locationsDropped": {
+      "@id": "aiapplyd:locationsDropped",
+      "@type": "xsd:integer"
+    },
+    "familiesChanged": {
+      "@id": "aiapplyd:familiesChanged",
+      "@type": "xsd:integer"
+    },
+    "nextCursor": {
+      "@id": "aiapplyd:nextCursor",
+      "@type": "xsd:integer"
+    },
+    "CanonicalizePreferencesBody": "aiapplyd:CanonicalizePreferencesBody",
+    "cursor": {
+      "@id": "aiapplyd:cursor",
+      "@type": "xsd:integer"
+    },
+    "MaterializeJobMatchResponse": "aiapplyd:MaterializeJobMatchResponse",
+    "MaterializeJobMatchData": "aiapplyd:MaterializeJobMatchData",
+    "jobMatchId": {
+      "@id": "aiapplyd:jobMatchId",
+      "@type": "xsd:integer"
+    },
+    "outcome": {
+      "@id": "aiapplyd:outcome",
+      "@type": "@id"
+    },
+    "scrapedJobId": {
+      "@id": "aiapplyd:scrapedJobId",
+      "@type": "xsd:integer"
+    },
+    "userId": {
+      "@id": "aiapplyd:userId",
+      "@type": "xsd:string"
+    },
+    "MaterializeJobMatchOutcome": "aiapplyd:MaterializeJobMatchOutcome",
+    "ReceiptProofArmResponse": "aiapplyd:ReceiptProofArmResponse",
+    "ReceiptProofArmData": "aiapplyd:ReceiptProofArmData",
+    "arm": {
+      "@id": "aiapplyd:arm"
+    },
+    "ReceiptProofArmPreconditionFailedResponse": "aiapplyd:ReceiptProofArmPreconditionFailedResponse",
+    "ReceiptProofArmPreconditionCode": "aiapplyd:ReceiptProofArmPreconditionCode",
+    "RediscoverMatchesResponse": "aiapplyd:RediscoverMatchesResponse",
+    "RediscoverMatchesData": "aiapplyd:RediscoverMatchesData",
+    "results": {
+      "@id": "aiapplyd:results",
+      "@container": "@list"
+    },
+    "RediscoverMatchesUserResult": "aiapplyd:RediscoverMatchesUserResult",
+    "totalActive": {
+      "@id": "aiapplyd:totalActive",
+      "@type": "xsd:integer"
+    },
+    "relaxations": {
+      "@id": "aiapplyd:relaxations",
+      "@type": "xsd:integer"
+    },
+    "funnel": {
+      "@id": "aiapplyd:funnel",
+      "@type": "@id"
+    },
+    "RediscoverMatchesFunnel": "aiapplyd:RediscoverMatchesFunnel",
+    "blockedGeoWorkMode": {
+      "@id": "aiapplyd:blockedGeoWorkMode",
+      "@type": "xsd:integer"
+    },
+    "blockedNonSurfaceableSource": {
+      "@id": "aiapplyd:blockedNonSurfaceableSource",
+      "@type": "xsd:integer"
+    },
+    "blockedOffFamilyScoreFloor": {
+      "@id": "aiapplyd:blockedOffFamilyScoreFloor",
+      "@type": "xsd:integer"
+    },
+    "blockedStaleUnverified": {
+      "@id": "aiapplyd:blockedStaleUnverified",
+      "@type": "xsd:integer"
+    },
+    "blockedThinDescription": {
+      "@id": "aiapplyd:blockedThinDescription",
+      "@type": "xsd:integer"
+    },
+    "blockedUpstreamExpired": {
+      "@id": "aiapplyd:blockedUpstreamExpired",
+      "@type": "xsd:integer"
+    },
+    "existingBlocked": {
+      "@id": "aiapplyd:existingBlocked"
+    },
+    "existingRenderable": {
+      "@id": "aiapplyd:existingRenderable",
+      "@type": "xsd:integer"
+    },
+    "existingUndecided": {
+      "@id": "aiapplyd:existingUndecided",
+      "@type": "xsd:integer"
+    },
+    "passing": {
+      "@id": "aiapplyd:passing",
+      "@type": "xsd:integer"
+    },
+    "poolSize": {
+      "@id": "aiapplyd:poolSize",
+      "@type": "xsd:integer"
+    },
+    "renderable": {
+      "@id": "aiapplyd:renderable",
+      "@type": "xsd:integer"
+    },
+    "written": {
+      "@id": "aiapplyd:written",
+      "@type": "xsd:integer"
+    },
+    "RediscoverMatchesRequest": "aiapplyd:RediscoverMatchesRequest",
+    "maxRelaxation": {
+      "@id": "aiapplyd:maxRelaxation",
+      "@type": "xsd:string"
+    },
+    "userIds": {
+      "@id": "aiapplyd:userIds",
+      "@container": "@list"
+    },
+    "BoardSweepResponse": "aiapplyd:BoardSweepResponse",
+    "BoardSweepData": "aiapplyd:BoardSweepData",
+    "note": {
+      "@id": "aiapplyd:note",
+      "@type": "xsd:string"
+    },
+    "started": {
+      "@id": "aiapplyd:started",
+      "@type": "xsd:boolean"
+    },
+    "BoardSweepRequest": "aiapplyd:BoardSweepRequest",
+    "rowBudget": {
+      "@id": "aiapplyd:rowBudget",
+      "@type": "xsd:integer"
+    },
+    "wallClockMs": {
+      "@id": "aiapplyd:wallClockMs",
+      "@type": "xsd:integer"
+    },
+    "ScrapeKickResponse": "aiapplyd:ScrapeKickResponse",
+    "ScrapeKickData": "aiapplyd:ScrapeKickData",
+    "enqueued": {
+      "@id": "aiapplyd:enqueued",
+      "@type": "xsd:boolean"
+    },
+    "inline": {
+      "@id": "aiapplyd:inline",
+      "@type": "xsd:boolean"
+    },
+    "message": {
+      "@id": "aiapplyd:message",
+      "@type": "xsd:string"
+    },
+    "opts": {
+      "@id": "aiapplyd:opts",
+      "@type": "@id"
+    },
+    "queueMessageId": {
+      "@id": "aiapplyd:queueMessageId"
+    },
+    "scraperKey": {
+      "@id": "aiapplyd:scraperKey",
+      "@type": "xsd:string"
+    },
+    "source": {
+      "@id": "aiapplyd:source",
+      "@type": "xsd:string"
+    },
+    "tenantSlugsEnqueued": {
+      "@id": "aiapplyd:tenantSlugsEnqueued",
+      "@type": "xsd:integer"
+    },
+    "timedOut": {
+      "@id": "aiapplyd:timedOut",
+      "@type": "xsd:boolean"
+    },
+    "ScrapeKickOptsEcho": "aiapplyd:ScrapeKickOptsEcho",
+    "locations": {
+      "@id": "aiapplyd:locations",
+      "@container": "@list"
+    },
+    "searchTerms": {
+      "@id": "aiapplyd:searchTerms",
+      "@container": "@list"
+    },
+    "workStyles": {
+      "@id": "aiapplyd:workStyles",
+      "@container": "@list"
+    },
+    "ScrapeKickBody": "aiapplyd:ScrapeKickBody",
+    "tenantSlugs": {
+      "@id": "aiapplyd:tenantSlugs",
+      "@container": "@list"
+    },
+    "ClearAiBreakerResponse": "aiapplyd:ClearAiBreakerResponse",
+    "ClearAiBreakerData": "aiapplyd:ClearAiBreakerData",
+    "cleared": {
+      "@id": "aiapplyd:cleared",
+      "@type": "xsd:boolean"
+    },
+    "key": {
+      "@id": "aiapplyd:key",
+      "@type": "xsd:string"
+    },
+    "previousSetAt": {
+      "@id": "aiapplyd:previousSetAt",
+      "@type": "xsd:string"
+    },
+    "wasActive": {
+      "@id": "aiapplyd:wasActive",
+      "@type": "xsd:boolean"
+    },
+    "ClearAiBreakerBody": "aiapplyd:ClearAiBreakerBody",
+    "RetireLegacyBoxesData": "aiapplyd:RetireLegacyBoxesData",
+    "boxCount": {
+      "@id": "aiapplyd:boxCount",
+      "@type": "xsd:integer"
+    },
+    "retired": {
+      "@id": "aiapplyd:retired",
+      "@container": "@list"
+    },
+    "RetiredLegacyBox": "aiapplyd:RetiredLegacyBox",
+    "alarmDeleted": {
+      "@id": "aiapplyd:alarmDeleted",
+      "@type": "xsd:boolean"
+    },
+    "shard": {
+      "@id": "aiapplyd:shard",
+      "@type": "xsd:integer"
+    },
+    "statusBefore": {
+      "@id": "aiapplyd:statusBefore",
+      "@type": "xsd:string"
+    },
+    "stopped": {
+      "@id": "aiapplyd:stopped",
+      "@type": "xsd:boolean"
+    },
+    "storageDeleted": {
+      "@id": "aiapplyd:storageDeleted",
+      "@type": "xsd:boolean"
+    },
+    "RetireLegacyBoxesBody": "aiapplyd:RetireLegacyBoxesBody",
+    "AdminStripeSyncCustomerResponse": "aiapplyd:AdminStripeSyncCustomerResponse",
+    "AdminStripeSyncCustomerData": "aiapplyd:AdminStripeSyncCustomerData",
+    "customerId": {
+      "@id": "aiapplyd:customerId",
+      "@type": "xsd:string"
+    },
+    "synced": {
+      "@id": "aiapplyd:synced",
+      "@type": "xsd:boolean"
+    },
+    "AdminStripeSyncCustomerBody": "aiapplyd:AdminStripeSyncCustomerBody",
+    "AdminCompGrantResponse": "aiapplyd:AdminCompGrantResponse",
+    "compEndsAt": {
+      "@id": "aiapplyd:compEndsAt",
+      "@type": "xsd:string"
+    },
+    "planId": {
+      "@id": "aiapplyd:planId",
+      "@type": "xsd:integer"
+    },
+    "planName": {
+      "@id": "aiapplyd:planName",
+      "@type": "xsd:string"
+    },
+    "priceId": {
+      "@id": "aiapplyd:priceId",
+      "@type": "xsd:string"
+    },
+    "stripeSubscriptionId": {
+      "@id": "aiapplyd:stripeSubscriptionId",
+      "@type": "xsd:string"
+    },
+    "tokenBalance": {
+      "@id": "aiapplyd:tokenBalance",
+      "@type": "xsd:integer"
+    },
+    "AdminCompGrantBody": "aiapplyd:AdminCompGrantBody",
+    "durationDays": {
+      "@id": "aiapplyd:durationDays",
+      "@type": "xsd:integer"
+    },
+    "interval": {
+      "@id": "aiapplyd:interval",
+      "@type": "xsd:string"
+    },
+    "reason": {
+      "@id": "aiapplyd:reason",
+      "@type": "xsd:string"
+    },
+    "AdminTokenCreditResponse": "aiapplyd:AdminTokenCreditResponse",
+    "AdminTokenCreditData": "aiapplyd:AdminTokenCreditData",
+    "applied": {
+      "@id": "aiapplyd:applied",
+      "@type": "xsd:boolean"
+    },
+    "balanceAfter": {
+      "@id": "aiapplyd:balanceAfter",
+      "@type": "xsd:integer"
+    },
+    "balanceBefore": {
+      "@id": "aiapplyd:balanceBefore",
+      "@type": "xsd:integer"
+    },
+    "referenceId": {
+      "@id": "aiapplyd:referenceId",
+      "@type": "xsd:string"
+    },
+    "tokens": {
+      "@id": "aiapplyd:tokens",
+      "@type": "xsd:integer"
+    },
+    "AdminTokenCreditBody": "aiapplyd:AdminTokenCreditBody",
+    "applicationResultIds": {
+      "@id": "aiapplyd:applicationResultIds",
+      "@container": "@list"
+    },
+    "idempotencyKey": {
+      "@id": "aiapplyd:idempotencyKey",
+      "@type": "xsd:string"
+    },
+    "AdminCloseJobResponse": "aiapplyd:AdminCloseJobResponse",
+    "AdminCloseJobData": "aiapplyd:AdminCloseJobData",
+    "applicationResultsUpdated": {
+      "@id": "aiapplyd:applicationResultsUpdated",
+      "@type": "xsd:boolean"
+    },
+    "jobMatchesDismissed": {
+      "@id": "aiapplyd:jobMatchesDismissed",
+      "@type": "xsd:boolean"
+    },
+    "jobUrl": {
+      "@id": "aiapplyd:jobUrl",
+      "@type": "@id"
+    },
+    "scrapedJobDeleted": {
+      "@id": "aiapplyd:scrapedJobDeleted",
+      "@type": "xsd:boolean"
+    },
+    "AdminCloseJobBody": "aiapplyd:AdminCloseJobBody",
+    "RepairDescriptionsResponse": "aiapplyd:RepairDescriptionsResponse",
+    "RepairDescriptionsData": "aiapplyd:RepairDescriptionsData",
+    "capRemainingMinutes": {
+      "@id": "aiapplyd:capRemainingMinutes",
+      "@type": "xsd:decimal"
+    },
+    "deadFlagged": {
+      "@id": "aiapplyd:deadFlagged",
+      "@type": "xsd:integer"
+    },
+    "improved": {
+      "@id": "aiapplyd:improved",
+      "@type": "xsd:integer"
+    },
+    "noChange": {
+      "@id": "aiapplyd:noChange",
+      "@type": "xsd:integer"
+    },
+    "RepairDescriptionsRequest": "aiapplyd:RepairDescriptionsRequest",
+    "jobIds": {
+      "@id": "aiapplyd:jobIds",
+      "@container": "@list"
+    },
+    "AdminDeadJobSweepResponse": "aiapplyd:AdminDeadJobSweepResponse",
+    "AdminDeadJobSweepData": "aiapplyd:AdminDeadJobSweepData",
+    "byReason": {
+      "@id": "aiapplyd:byReason"
+    },
+    "candidateCount": {
+      "@id": "aiapplyd:candidateCount",
+      "@type": "xsd:integer"
+    },
+    "deadCount": {
+      "@id": "aiapplyd:deadCount",
+      "@type": "xsd:integer"
+    },
+    "AdminDeadJobSweepBody": "aiapplyd:AdminDeadJobSweepBody",
+    "AdminSweepAllResponse": "aiapplyd:AdminSweepAllResponse"
+  },
+  "@type": "schema:Dataset",
+  "schema:name": "AI Applyd API JSON-LD context",
+  "schema:description": "A JSON-LD @context for the objects AI Applyd's own API contract declares: one class per component schema, one property per declared field, typed from the contract. Derived by script (derive-json-ld.py, 2026-09-23) from openapi/aiapplyd-openapi.yml.",
+  "dcterms:created": "2026-09-23",
+  "dcterms:source": [
+    "openapi/aiapplyd-openapi.yml"
+  ]
+}

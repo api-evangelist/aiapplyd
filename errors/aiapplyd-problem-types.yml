@@ -1,0 +1,98 @@
+generated: '2026-09-23'
+method: derived
+generator: derive-problem-types.py
+source:
+- openapi/aiapplyd-openapi.yml
+format: custom
+envelope:
+  media_type: application/json
+  schema: ApiErrorResponse
+coverage:
+  operations: 372
+  statuses_declared: 12
+problems:
+- status: 400
+  title: Bad Request
+  description: Bad Request
+  operations: 171
+  media_types:
+  - application/json
+  schema: ApiErrorResponse
+- status: 401
+  title: Unauthorized
+  description: Unauthorized
+  operations: 333
+  media_types:
+  - application/json
+  schema: ApiErrorResponse
+- status: 403
+  title: Forbidden
+  description: Forbidden
+  operations: 32
+  media_types:
+  - application/json
+  - text/plain
+  schema: ApiErrorResponse
+- status: 404
+  title: Not Found
+  description: Not Found
+  operations: 360
+  media_types:
+  - application/json
+  schema: ApiErrorResponse
+- status: 409
+  title: Conflict
+  description: Conflict
+  operations: 5
+  media_types:
+  - application/json
+  schema: ApiErrorResponse
+- status: 410
+  title: Gone
+  description: Job listing was deleted or never existed; body carries a redirectTo target
+  operations: 1
+  media_types:
+  - application/json
+  schema: JobListingGoneResponse
+- status: 412
+  title: Precondition Failed
+  description: Atomic create-only R2 precondition failed. No existing arm is adopted.
+  operations: 1
+  media_types:
+  - application/json
+  schema: ReceiptProofArmPreconditionFailedResponse
+- status: 422
+  title: Unprocessable Content
+  description: Invalid permission request
+  operations: 1
+  media_types:
+  - application/json
+  schema: ApiErrorResponse
+- status: 429
+  title: Too Many Requests
+  description: Too Many Requests
+  operations: 3
+  media_types:
+  - application/json
+  schema: ApiErrorResponse
+- status: 500
+  title: Internal Server Error
+  description: Internal Server Error
+  operations: 364
+  media_types:
+  - application/json
+  schema: ApiErrorResponse
+- status: 503
+  title: Service Unavailable
+  description: Service Unavailable
+  operations: 9
+  media_types:
+  - application/json
+  schema: ApiErrorResponse
+- status: 504
+  title: Gateway Timeout
+  description: Gateway Timeout
+  operations: 1
+  media_types:
+  - application/json
+  schema: ApiErrorResponse

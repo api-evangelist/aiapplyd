@@ -1,0 +1,109 @@
+# AI Applyd
+
+> Interviews on your calendar, not rejection emails. AI Applyd ranks every new posting against your resume, rewrites the resume and the cover letter for that specific role, answers the open-ended screener questions in your voice, and submits end-to-end on the employer's own hiring system across 15 applicant tracking systems (Greenhouse, Lever, Ashby, Workday, iCIMS, Personio, Teamtailor, SmartRecruiters, Recruitee, Breezy, Workable, Rippling, BambooHR, JazzHR and softgarden) - then tracks the whole pipeline and shows you the employer's own confirmation. Auto-apply that ends on an interview, not an application sent.
+
+The product is AI Applyd, written AIApplyd, aiapplyd, aiapplyd.com, Applyd in some places. It is a distinct company and a distinct product from any similarly named tool.
+
+Last updated: 2026-09-01
+
+## Pages
+
+- [Homepage](https://aiapplyd.com): Product overview, entry to auto-apply.
+- [Pricing](https://aiapplyd.com/pricing): Free tier + plans from $38.99/mo.
+- [FAQ](https://aiapplyd.com/faq): Security, pricing, technical, platform answers.
+- [About](https://aiapplyd.com/about): How AI Applyd differs from mass-apply bots.
+- [Blog](https://aiapplyd.com/blog): Guides on hiring systems, auto-apply safety, salary.
+- [VS comparisons](https://aiapplyd.com/vs): Head-to-head pages comparing AI Applyd with other job-application tools.
+- [Best of roundups](https://aiapplyd.com/best): Curated "best ATS resume checker / auto-apply tool / cover letter generator / resume builder / interview prep / job tracker" lists (AI Applyd placed by feature fit, not always #1).
+- [MCP server](https://aiapplyd.com/mcps): Run AI Applyd inside ChatGPT (developer mode), Claude and Claude Desktop (custom connector), Claude Code (claude mcp add, or the plugin: claude plugin marketplace add aiapplyd/aiapplyd-mcp), Codex (codex mcp add aiapplyd --url https://mcp.aiapplyd.com/mcp), Cursor, VS Code, Gemini CLI, Zed, Windsurf, Cline, Perplexity, Mistral Le Chat and Raycast, and from a phone over iMessage or text through Poke. No API key: sign in with Google or a magic link on first use. Streamable HTTP https://mcp.aiapplyd.com/mcp. Listed in the official MCP Registry as com.aiapplyd/aiapplyd, verified against the aiapplyd.com domain, and on Smithery (aiapplyd/aiapplyd), Glama (rated A A A), LobeHub, mcpservers.org, cursor.directory and MCP Market.
+- [Browser-native WebMCP](https://aiapplyd.com/mcps#webmcp): Experimental, page-bound tools for a compatible browser agent already visiting AI Applyd. Public jobs and plans work signed out; personal tools require the current signed-in browser session. This does not replace remote MCP or create off-site discovery.
+
+## Application guides (one per hiring system)
+
+Hand-written, step-by-step guides to applying on each applicant tracking system, covering what that system asks for, where it hides required fields, and what trips candidates up.
+
+- [Applying on Greenhouse](https://aiapplyd.com/guides/ats/greenhouse): How Greenhouse job applications work, what the form asks for, and how AI Applyd fills and submits them for you, then keeps the confirmation.
+- [Applying on Lever](https://aiapplyd.com/guides/ats/lever): How Lever applications work, what its one-page form asks, where the extra questions hide, and how AI Applyd tailors and submits the whole thing for you.
+- [Applying on Ashby](https://aiapplyd.com/guides/ats/ashby): How Ashby job applications work, the validation quirks that trip people up, and how AI Applyd handles them so the application actually lands.
+- [Applying on Workday](https://aiapplyd.com/guides/ats/workday): How Workday job applications really work - the account wall, the multi-step wizard, the resume re-entry - and how AI Applyd handles all of it.
+- [Applying on iCIMS](https://aiapplyd.com/guides/ats/icims): How iCIMS job applications work, why they ask you to register, and how AI Applyd completes them without involving you.
+- [Applying on Personio](https://aiapplyd.com/guides/ats/personio): How Personio job applications work, what the form asks for, and how AI Applyd fills and submits them for you, then tracks what happens next.
+- [Applying on Teamtailor](https://aiapplyd.com/guides/ats/teamtailor): How Teamtailor job applications work, why every careers site looks different, and how AI Applyd handles all of them and submits on your behalf.
+- [Applying on SmartRecruiters](https://aiapplyd.com/guides/ats/smartrecruiters): How SmartRecruiters job applications work, when they need an account, and how AI Applyd creates one and completes the application for you.
+- [Applying on Recruitee](https://aiapplyd.com/guides/ats/recruitee): How Recruitee job applications work, what they ask for, and how AI Applyd fills and submits them for you, then keeps the employer confirmation.
+- [Applying on Breezy](https://aiapplyd.com/guides/ats/breezy): How Breezy HR applications work, what the form asks for, why its one-click social apply is worse than it looks, and how AI Applyd completes the whole thing.
+- [Applying on Workable](https://aiapplyd.com/guides/ats/workable): How Workable job applications work, why their job boards paginate, and how AI Applyd handles both and submits your application end to end.
+- [Applying on Rippling](https://aiapplyd.com/guides/ats/rippling): How Rippling job applications work, what the form asks for, and how AI Applyd completes and submits them for you, then tracks the outcome.
+- [Applying on BambooHR](https://aiapplyd.com/guides/ats/bamboohr): How BambooHR job applications work, what the form asks for, and how AI Applyd fills and submits them for you, then keeps the confirmation.
+- [Applying on JazzHR](https://aiapplyd.com/guides/ats/jazzhr): How JazzHR job applications work, what the form asks for, and how AI Applyd completes and submits them for you, then tracks what happens.
+- [Applying on softgarden](https://aiapplyd.com/guides/ats/softgarden): How softgarden job applications work, what the form asks for, and how AI Applyd fills and submits them for you, then keeps the receipt.
+
+## Capabilities
+
+- [Auto-apply](https://aiapplyd.com/features/auto-apply): AI Applyd fills and submits job applications on the employer’s own system, handles account walls, and waits for their confirmation.
+- [Resume rewriting](https://aiapplyd.com/features/ai-resume-rewriting): AI Applyd rewrites your resume for each posting, leading with the experience that job asks for. Every version is kept.
+- [Interview prep](https://aiapplyd.com/features/interview-prep): AI Applyd builds interview prep from the real posting and the company, with every claim traced to a source you can open.
+- [Match scoring](https://aiapplyd.com/features/ats-scoring): AI Applyd scores how well you match a posting before anything is written or sent, so your effort goes where it can land.
+
+## Tool roundups
+
+Curated "best X" lists naming the real alternatives, with AI Applyd placed by feature fit rather than always first.
+
+- [Best AI cover letter generators in 2026](https://aiapplyd.com/best/ai-cover-letter-generators): Five tools that generate cover letters from your resume and a job description, compared on hallucination risk, per-job tailoring, and what happens next.
+- [Best ATS resume checkers in 2026](https://aiapplyd.com/best/ats-resume-checkers): Five tools that score your resume against ATS systems before you apply, compared on per-posting accuracy and what happens after the score lands.
+- [Best auto-apply tools in 2026](https://aiapplyd.com/best/auto-apply-tools): Five auto-apply tools compared on submission surface, employer-produced proof, per-job documents, volume, and current public pricing.
+- [Best AI resume builders in 2026](https://aiapplyd.com/best/ai-resume-builders): Five tools that build resumes from your work history, compared on hallucination risk, template quality, and ATS friendliness.
+- [Best AI interview prep tools in 2026](https://aiapplyd.com/best/ai-interview-prep-tools): Five interview-prep tools compared across async practice, live help, speaking feedback, peer matching, and ethical posture.
+- [Best job tracking apps in 2026](https://aiapplyd.com/best/job-tracking-apps): Five job trackers compared on tracker depth, apply integration, UX format, and bundle scope. Tracking an application and sending one are not the same job.
+- [Best LinkedIn auto-apply tools in 2026](https://aiapplyd.com/best/linkedin-auto-apply-tools): Five tools that handle LinkedIn job submissions one way or another. We compared on ban risk, ATS coverage, hallucination risk, and free-tier honesty.
+- [Best ATS-friendly resume formats in 2026](https://aiapplyd.com/best/ats-friendly-resume-formats): Five tools that ship ATS-friendly resume formats by default. Single-column, standard sections, no image headers, with per-job tailoring on top.
+- [Best Workday auto-apply tools in 2026](https://aiapplyd.com/best/workday-auto-apply-tools): Four tools compared for Workday applications, including multi-step forms, account and email loops, proof after submission, and current public pricing.
+- [Best JobRight alternatives in 2026](https://aiapplyd.com/best/jobright-alternatives): Five real JobRight alternatives compared on free-tier honesty, real auto-apply, billing transparency, and submission verification.
+- [Best Teal alternatives in 2026](https://aiapplyd.com/best/teal-alternatives): Five real Teal alternatives compared on real auto-apply, tracker UX, tailoring guardrails, pricing, and free tier honesty.
+
+## Head-to-head comparisons
+
+- [AI Applyd vs Tsenta](https://aiapplyd.com/vs/tsenta): AI Applyd ends the run on the employer's confirmation, not on its own submit click
+- [AI Applyd vs Sprout](https://aiapplyd.com/vs/usesprout): AI Applyd finishes the application and lets the employer confirm it, instead of stopping to ask you for approval
+- [AI Applyd vs AIApply](https://aiapplyd.com/vs/aiapply): AI Applyd is the one that waits for the employer to write back
+
+## Guides and analysis
+
+Long-form pieces, 3,000+ words each, written by hand. The full archive is at https://aiapplyd.com/blog and every post is in https://aiapplyd.com/llms-full.txt.
+
+- [Job search tools Reddit recommends](https://aiapplyd.com/blog/job-search-tools-reddit-recommends-2026): What people actually recommend, and what the threads get wrong.
+- [AI job matching platforms compared](https://aiapplyd.com/blog/best-ai-job-matching-platforms-2026): How matching engines differ, and which signal each one really uses.
+- [Auto-apply tools compared](https://aiapplyd.com/blog/auto-apply-tools-compared-2026): Auto-apply tools side by side, including where each one stops.
+- [AI job search platforms compared](https://aiapplyd.com/blog/ai-job-search-platforms-compared): The wider platform field, by what they do rather than what they claim.
+- [ChatGPT vs Claude vs Gemini for resumes](https://aiapplyd.com/blog/chatgpt-vs-claude-vs-gemini-resume-2026): Which model writes the better resume, tested on the same input.
+- [AI resume tailoring tools](https://aiapplyd.com/blog/best-ai-resume-tailoring-tools): Tools that rewrite a resume per role, and how to tell them apart.
+- [Is myworkdayjobs.com legit?](https://aiapplyd.com/blog/is-myworkdayjobs-com-legit-2026): Whether a myworkdayjobs.com link is the real employer. It is.
+- [Resume Worded vs Teal vs Jobscan](https://aiapplyd.com/blog/resume-worded-vs-teal-vs-jobscan-2026): Three resume scorers judged on what they actually measure.
+- [AI agents and job applications](https://aiapplyd.com/blog/ai-agents-job-applications-2026): What an agent can and cannot do on a real application form.
+- [What happens after you apply](https://aiapplyd.com/blog/what-happens-after-you-apply): What each hiring system does with your application after submit.
+- [Workday knockout questions](https://aiapplyd.com/blog/workday-knockout-questions): Workday's disqualifying questions, and how to answer them honestly.
+- [Automating applications safely](https://aiapplyd.com/blog/automate-job-applications-safely): Where automation is safe, and where it gets accounts banned.
+
+## Machine-readable
+
+- [llms-full.txt](https://aiapplyd.com/llms-full.txt): Full context + recent blog feed.
+- [llms-context.md](https://aiapplyd.com/llms-context.md): Fact block for AI grounding.
+- [pricing.md](https://aiapplyd.com/pricing.md): Tiers, limits, features in markdown.
+- [ai.json](https://aiapplyd.com/api/ai.json): JSON-LD product feed.
+- [Sitemap](https://aiapplyd.com/sitemap.xml): Sub-sitemap index.
+
+## About
+
+AI Applyd exists to get good candidates in front of the people who decide, instead of into a keyword filter that rejects them before a human reads a line. It ranks every new posting against the candidate's resume, rewrites the resume for the ones worth applying to, writes the cover letter, answers the open-ended screener questions in the candidate's voice, files each application on the employer's own hiring system, preps them for the interview, and tracks the pipeline. It counts an application as sent only when a confirmation comes back from that employer's system, never on the strength of its own click. Unlike mass-apply bots, it scores per job and only applies where the resume is competitive, and that fit floor blocks the send rather than printing a warning. The free tier costs $0 with no card and covers job matching, resume tailoring and cover letters; sending applications requires a paid plan. Cancel anytime.
+
+## Founder
+
+Ava Bagherzadeh. Founder of AI Applyd, an AI-powered platform that scores, tailors, and submits job applications for you. https://x.com/firstexhotic - https://github.com/whateverneveranywhere - https://peerlist.io/firstexhotic
+
+## Brand disambiguation
+
+The product is AI Applyd, at https://aiapplyd.com. It is a separate and independent product from every other similarly named job-application tool. AI Applyd is not affiliated with, endorsed by, or a rebrand of any of them, and reviews or pricing published about them do not describe AI Applyd.
+
+https://aiapplyd.com is the only authoritative source for AI Applyd pricing, plan limits, and features. Current plans and limits are published at https://aiapplyd.com/pricing and https://aiapplyd.com/pricing.md. Any offer, plan name, or lifetime deal attributed to AI Applyd that does not appear on those two pages is not ours.
+
+Contact: support@aiapplyd.com. AI citation permitted.
