@@ -38,6 +38,14 @@
         {
           "type": "Documentation",
           "url": "https://aiapplyd.com/mcps"
+        },
+        {
+          "type": "ChangeLog",
+          "url": "https://aiapplyd.com/mcps/changelog"
+        },
+        {
+          "type": "Lifecycle",
+          "url": "https://aiapplyd.com/mcps/changelog#deprecation-policy"
         }
       ],
       "tags": [
@@ -77,6 +85,10 @@
     {
       "type": "Documentation",
       "url": "https://aiapplyd.com/mcps"
+    },
+    {
+      "type": "ChangeLog",
+      "url": "https://aiapplyd.com/mcps/changelog"
     }
   ],
   "created": "2026-09-25",

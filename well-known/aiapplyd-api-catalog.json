@@ -63,6 +63,16 @@
           "href": "https://aiapplyd.com/mcps",
           "type": "text/html"
         }
+      ],
+      "version-history": [
+        {
+          "href": "https://aiapplyd.com/mcps/changelog",
+          "type": "text/html"
+        },
+        {
+          "href": "https://aiapplyd.com/mcps/changelog.json",
+          "type": "application/json"
+        }
       ]
     },
     {

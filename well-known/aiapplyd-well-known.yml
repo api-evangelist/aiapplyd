@@ -6,7 +6,7 @@ source: Live GET of the named /.well-known/ path list on every host the record k
 summary:
   hosts_probed: 3
   paths_probed: 33
-  documents_served: 7
+  documents_served: 8
 hosts:
 - host: api.aiapplyd.com
   control:
@@ -92,8 +92,10 @@ hosts:
     status: 404
     standard: ACP
   - path: /.well-known/mcp/server-card.json
-    status: 503
+    status: 200
     standard: MCP server card
+    content_type: application/json
+    file: aiapplyd-mcp-mcp-server-card.json
 - host: aiapplyd.com
   control:
     path: /.well-known/apis-io-negative-control-7f3ab91c.json
