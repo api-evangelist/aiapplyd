@@ -5,7 +5,7 @@ description: 'AI Applyd is a job-application automation platform for candidates:
   new postings to a profile, and fills and submits applications on the employer''s own hiring system across 15 ATS
   platforms (Workday, Greenhouse, Lever, Ashby, Workable, iCIMS, SmartRecruiters and more), counting an application
   as sent only when the employer''s system confirms it. It publishes a hosted remote MCP server at mcp.aiapplyd.com/mcp
-  (OAuth 2.1, 10 tools, listed in the official MCP Registry as com.aiapplyd/aiapplyd) with an MIT-licensed stdio
+  (OAuth 2.1, 17 tools, listed in the official MCP Registry as com.aiapplyd/aiapplyd) with an MIT-licensed stdio
   bridge on GitHub, and serves the OpenAPI 3.0 description of its application backend at api.aiapplyd.com/api/v1/openapi.json.'
 url: https://raw.githubusercontent.com/api-evangelist/aiapplyd/refs/heads/main/apis.yml
 x-type: company
@@ -17,7 +17,7 @@ x-tier-reason: enrichment pass 2026-09-23 (local-v5; was apis.io/add submission 
   host probed healthy (root 200, invented path 404, llms.txt 200))
 specificationVersion: '0.23'
 created: '2026-09-23'
-modified: '2026-09-23'
+modified: '2026-09-25'
 tags:
 - Job Search
 - Recruiting
@@ -68,6 +68,16 @@ common:
   url: mcp/aiapplyd-mcp.yml
 - type: WellKnown
   url: well-known/aiapplyd-well-known.yml
+- type: APICatalog
+  url: https://aiapplyd.com/.well-known/api-catalog
+- type: APIsJSON
+  url: https://aiapplyd.com/apis.json
+- type: SecurityTxt
+  url: https://aiapplyd.com/.well-known/security.txt
+- type: ContentSignal
+  url: https://aiapplyd.com/robots.txt
+- type: AgentSkill
+  url: skills/_index.yml
 - type: Hosts
   url: hosts/aiapplyd-hosts.yml
 - type: Vendors
@@ -85,6 +95,10 @@ common:
 - type: Documentation
   url: https://aiapplyd.com/mcps
 - type: APIReference
+  url: https://api.aiapplyd.com/api/v1/scalar
+- type: GettingStarted
+  url: https://aiapplyd.com/mcps
+- type: Console
   url: https://api.aiapplyd.com/api/v1/scalar
 - type: Pricing
   url: https://aiapplyd.com/pricing
@@ -139,15 +153,16 @@ apis:
   - type: JSONSchema
     url: json-schema/aiapplyd-auto-setup-request-schema.json
   - type: JSONSchema
-    url: json-schema/aiapplyd-post-ai-data-permission-data-schema.json
-  - type: JSONSchema
     url: json-schema/aiapplyd-update-preferences-request-schema.json
   aid: aiapplyd:ai-applyd-api
 - name: AI Applyd MCP Server
-  description: 'Hosted remote MCP server (streamable HTTP, OAuth 2.1 with dynamic client registration) exposing
-    10 tools: ATS resume scoring, job-description analysis, resume optimization and translation, interview questions,
-    job search and preferences, cover letters, PDF builds and auto-apply on the employer''s own ATS. Tool catalog
-    localizable via ?lang= (en, es, de, fr, pt-BR).'
+  description: 'Hosted remote MCP server (streamable HTTP, OAuth 2.1 with PKCE, dynamic client registration and
+    Client ID Metadata Documents) exposing 17 tools. The main loop: get job matches, apply to a match or a job URL
+    (automatically or held for review), track applications with employer-confirmed receipts, approve, reject, cancel
+    or refine held applications, read account readiness, set the resume, and save or skip matches. Also: ATS resume
+    scoring, job-description analysis, resume optimization and translation, interview preparation, job search and
+    preferences, cover letters and PDF builds. Every tool carries a title, all four annotation hints and an
+    outputSchema. Tool catalog localizable via ?lang= (en, es, de, fr, pt-BR).'
   humanURL: https://aiapplyd.com/mcps
   baseURL: https://mcp.aiapplyd.com/mcp
   tags:
@@ -161,6 +176,23 @@ apis:
     url: https://aiapplyd.com/mcps
   - type: SourceCode
     url: https://github.com/aiapplyd/aiapplyd-mcp
+  - type: MCPServer
+    url: mcp/aiapplyd-mcp.yml
+  - type: AgentSkill
+    name: find-matching-jobs
+    url: https://aiapplyd.com/.well-known/agent-skills/find-matching-jobs/SKILL.md
+  - type: AgentSkill
+    name: apply-to-a-job
+    url: https://aiapplyd.com/.well-known/agent-skills/apply-to-a-job/SKILL.md
+  - type: AgentSkill
+    name: review-and-send
+    url: https://aiapplyd.com/.well-known/agent-skills/review-and-send/SKILL.md
+  - type: AgentSkill
+    name: tailor-for-a-job
+    url: https://aiapplyd.com/.well-known/agent-skills/tailor-for-a-job/SKILL.md
+  - type: AgentSkill
+    name: track-applications
+    url: https://aiapplyd.com/.well-known/agent-skills/track-applications/SKILL.md
   aid: aiapplyd:ai-applyd-mcp-server
 x-enrichment:
   date: '2026-09-23'

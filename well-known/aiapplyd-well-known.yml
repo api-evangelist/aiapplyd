@@ -1,12 +1,15 @@
 generated: '2026-09-23'
 method: probed
 generator: harvest-well-known.py
+updated: '2026-09-25'
+update_note: The aiapplyd.com host was re-probed on 2026-09-25 (same path list plus agent-skills/index.json, negative control
+  still 404). The api.aiapplyd.com and mcp.aiapplyd.com rows are the 2026-09-23 probe, unchanged.
 source: Live GET of the named /.well-known/ path list on every host the record knows; every row is a request that
   was issued.
 summary:
   hosts_probed: 3
-  paths_probed: 33
-  documents_served: 3
+  paths_probed: 34
+  documents_served: 7
 hosts:
 - host: api.aiapplyd.com
   control:
@@ -93,14 +96,17 @@ hosts:
     content_type: application/json
     file: aiapplyd-mcp-mcp-server-card.json
 - host: aiapplyd.com
+  probed: '2026-09-25'
   control:
     path: /.well-known/apis-io-negative-control-7f3ab91c.json
     status: 404
     bytes: 0
   documents:
   - path: /.well-known/security.txt
-    status: 404
+    status: 200
     standard: RFC 9116
+    content_type: text/plain; charset=utf-8
+    file: aiapplyd-security.txt
   - path: /.well-known/openid-configuration
     status: 404
     standard: OpenID Connect Discovery 1.0
@@ -111,11 +117,15 @@ hosts:
     status: 404
     standard: RFC 9728
   - path: /.well-known/api-catalog
-    status: 404
+    status: 200
     standard: RFC 9727
+    content_type: application/linkset+json; profile="https://www.rfc-editor.org/info/rfc9727"
+    file: aiapplyd-api-catalog.json
   - path: /.well-known/apis.json
-    status: 404
+    status: 200
     standard: APIs.json
+    content_type: application/json; charset=utf-8
+    file: aiapplyd-apis.json
   - path: /.well-known/ai-plugin.json
     status: 404
     standard: OpenAI plugin manifest
@@ -131,3 +141,8 @@ hosts:
   - path: /.well-known/mcp/server-card.json
     status: 404
     standard: MCP server card
+  - path: /.well-known/agent-skills/index.json
+    status: 200
+    standard: Agent Skills discovery 0.2.0
+    content_type: application/json; charset=utf-8
+    file: aiapplyd-agent-skills-index.json

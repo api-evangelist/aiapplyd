@@ -42,9 +42,6 @@ artifacts:
   json-schema/aiapplyd-patch-user-preferences-schema.json:
     method: unknown
     evidence: no authorship recorded
-  json-schema/aiapplyd-post-ai-data-permission-data-schema.json:
-    method: unknown
-    evidence: no authorship recorded
   json-schema/aiapplyd-update-preferences-request-schema.json:
     method: unknown
     evidence: no authorship recorded
@@ -70,11 +67,11 @@ artifacts:
     method: searched
     evidence: 'derive-llms-provenance.py: harvested'
   mcp/aiapplyd-mcp-tools-list.json:
-    method: unknown
-    evidence: no authorship recorded
+    method: probed
+    evidence: verbatim tools/list result from https://mcp.aiapplyd.com/mcp, 2026-09-25
   mcp/aiapplyd-mcp.yml:
-    method: unknown
-    evidence: no authorship recorded
+    method: probed
+    evidence: declared in the artifact
   mcp/aiapplyd-tool-crosswalk.yml:
     method: derived
     evidence: declared in the artifact
@@ -106,6 +103,24 @@ artifacts:
   scopes/aiapplyd-scopes.yml:
     method: unknown
     evidence: no authorship recorded
+  skills/_index.yml:
+    method: searched
+    evidence: declared in the artifact
+  skills/aiapplyd-apply-to-a-job.md:
+    method: searched
+    evidence: provider-published SKILL.md saved verbatim from https://aiapplyd.com/.well-known/agent-skills/apply-to-a-job/SKILL.md; sha256 matches the digest in the provider's index
+  skills/aiapplyd-find-matching-jobs.md:
+    method: searched
+    evidence: provider-published SKILL.md saved verbatim from https://aiapplyd.com/.well-known/agent-skills/find-matching-jobs/SKILL.md; sha256 matches the digest in the provider's index
+  skills/aiapplyd-review-and-send.md:
+    method: searched
+    evidence: provider-published SKILL.md saved verbatim from https://aiapplyd.com/.well-known/agent-skills/review-and-send/SKILL.md; sha256 matches the digest in the provider's index
+  skills/aiapplyd-tailor-for-a-job.md:
+    method: searched
+    evidence: provider-published SKILL.md saved verbatim from https://aiapplyd.com/.well-known/agent-skills/tailor-for-a-job/SKILL.md; sha256 matches the digest in the provider's index
+  skills/aiapplyd-track-applications.md:
+    method: searched
+    evidence: provider-published SKILL.md saved verbatim from https://aiapplyd.com/.well-known/agent-skills/track-applications/SKILL.md; sha256 matches the digest in the provider's index
   security/aiapplyd-domain-security.yml:
     method: unknown
     evidence: no authorship recorded
@@ -118,6 +133,15 @@ artifacts:
   vocabulary/aiapplyd-vocabulary.yml:
     method: derived
     evidence: declared in the artifact
+  well-known/aiapplyd-agent-skills-index.json:
+    method: probed
+    evidence: served document saved by the 2026-09-25 probe recorded in well-known/aiapplyd-well-known.yml
+  well-known/aiapplyd-api-catalog.json:
+    method: probed
+    evidence: served document saved by the 2026-09-25 probe recorded in well-known/aiapplyd-well-known.yml
+  well-known/aiapplyd-apis.json:
+    method: probed
+    evidence: served document saved by the 2026-09-25 probe recorded in well-known/aiapplyd-well-known.yml
   well-known/aiapplyd-mcp-mcp-server-card.json:
     method: unknown
     evidence: no authorship recorded
@@ -130,3 +154,6 @@ artifacts:
   well-known/aiapplyd-well-known.yml:
     method: unknown
     evidence: no authorship recorded
+  well-known/aiapplyd-security.txt:
+    method: probed
+    evidence: served document saved by the 2026-09-25 probe recorded in well-known/aiapplyd-well-known.yml

@@ -1,0 +1,105 @@
+{
+  "aid": "aiapplyd",
+  "apis": [
+    {
+      "aid": "aiapplyd:ai-applyd-api",
+      "baseURL": "https://api.aiapplyd.com/api/v1",
+      "description": "The REST API behind the AI Applyd app: job matches and search preferences, resume scoring and rewriting, cover letters, interview prep, applications and their status, and account usage. Authenticated with a Bearer session token.",
+      "humanURL": "https://api.aiapplyd.com/api/v1/scalar",
+      "name": "AI Applyd API",
+      "properties": [
+        {
+          "type": "OpenAPI",
+          "url": "https://api.aiapplyd.com/api/v1/openapi.json"
+        },
+        {
+          "type": "APIReference",
+          "url": "https://api.aiapplyd.com/api/v1/scalar"
+        }
+      ],
+      "tags": [
+        "Job Search",
+        "Resumes",
+        "Applicant Tracking Systems",
+        "Automation"
+      ]
+    },
+    {
+      "aid": "aiapplyd:ai-applyd-mcp-server",
+      "baseURL": "https://mcp.aiapplyd.com/mcp",
+      "description": "Hosted remote MCP server over streamable HTTP with OAuth 2.1. An agent finds matching jobs, tailors the resume and cover letter, applies on the employer's own hiring system, and tracks every application until the employer confirms it.",
+      "humanURL": "https://aiapplyd.com/mcps",
+      "name": "AI Applyd MCP Server",
+      "properties": [
+        {
+          "type": "MCPServer",
+          "url": "https://mcp.aiapplyd.com/.well-known/mcp/server-card.json"
+        },
+        {
+          "type": "Documentation",
+          "url": "https://aiapplyd.com/mcps"
+        }
+      ],
+      "tags": [
+        "MCP",
+        "Job Search",
+        "Resumes",
+        "Automation",
+        "Artificial Intelligence"
+      ]
+    }
+  ],
+  "common": [
+    {
+      "type": "ContentSignal",
+      "url": "https://aiapplyd.com/robots.txt"
+    },
+    {
+      "type": "APICatalog",
+      "url": "https://aiapplyd.com/.well-known/api-catalog"
+    },
+    {
+      "type": "AgentSkill",
+      "url": "https://aiapplyd.com/.well-known/agent-skills/index.json"
+    },
+    {
+      "type": "Security",
+      "url": "https://aiapplyd.com/.well-known/security.txt"
+    },
+    {
+      "type": "Console",
+      "url": "https://api.aiapplyd.com/api/v1/scalar"
+    },
+    {
+      "type": "LLMsTxt",
+      "url": "https://aiapplyd.com/llms.txt"
+    },
+    {
+      "type": "Documentation",
+      "url": "https://aiapplyd.com/mcps"
+    }
+  ],
+  "created": "2026-09-25",
+  "description": "AI Applyd applies to jobs for you and ends on an interview. It matches new postings to your profile, scores and rewrites your resume per role, writes the cover letter, preps you for the interview, and fills and submits the application on the employer's own hiring system. An application counts as sent only when the employer confirms it.",
+  "image": "https://aiapplyd.com/static/images/logos/icon-logo-dark-square.png",
+  "maintainers": [
+    {
+      "email": "support@aiapplyd.com",
+      "FN": "AI Applyd"
+    }
+  ],
+  "modified": "2026-09-25",
+  "name": "AI Applyd",
+  "specificationVersion": "0.23",
+  "tags": [
+    "Job Search",
+    "Recruiting",
+    "Resumes",
+    "Applicant Tracking Systems",
+    "Career",
+    "Artificial Intelligence",
+    "MCP",
+    "Automation"
+  ],
+  "url": "https://aiapplyd.com/apis.json"
+}

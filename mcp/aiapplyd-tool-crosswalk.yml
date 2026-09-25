@@ -1,19 +1,102 @@
-generated: '2026-09-23'
+generated: '2026-09-25'
 method: derived
 source:
 - mcp/aiapplyd-mcp-tools-list.json
 - openapi/aiapplyd-openapi.yml
-note: The published OpenAPI carries no operationIds (0 of 372 operations), so REST bindings are recorded as METHOD
-  + path, matched by name and semantics.
+- https://api.aiapplyd.com/api/v1/openapi.json
+- provider MCP server source (packages/mcp-server/src/tools), read by the provider on 2026-09-25
+note: The published OpenAPI carries no operationIds, so REST bindings are recorded as METHOD + path. Each binding
+  below is the route the tool's handler actually calls, read from the provider's MCP server source on 2026-09-25,
+  and every route was checked present in both openapi/_original/aiapplyd-openapi.json and the live contract at
+  https://api.aiapplyd.com/api/v1/openapi.json.
 surfaces:
   openapi: openapi/aiapplyd-openapi.yml
   mcp: https://mcp.aiapplyd.com/mcp (tools/list anonymous; calls OAuth-gated)
   graphql: null
 crosswalk:
+- tool: aiapplyd_get_matches
+  category: jobs
+  rest:
+  - GET /job-matches
+  - GET /job-matches/{id}
+  - POST /jobs/parse-url
+  binding: rest
+  confidence: high
+  note: POST /jobs/parse-url serves the job_url input, which reads a posting without saving it.
+- tool: aiapplyd_apply
+  category: applications
+  rest:
+  - GET /job-matches/{id}
+  - POST /jobs/parse-url
+  - POST /jobs
+  - PUT /jobs/{id}
+  - POST /applications/prepare
+  binding: rest
+  confidence: high
+  note: POST /applications/prepare takes jobMatchId and mode. A job_url first runs parse-url, then POST /jobs (idempotent
+    per user and normalized source URL), then PUT /jobs/{id} to mint the match, then prepare.
+- tool: aiapplyd_get_applications
+  category: applications
+  rest:
+  - GET /applications
+  - GET /applications/by-id/{resultId}
+  - GET /applications/{resultId}/screenshot/{variant}
+  binding: rest
+  confidence: high
+- tool: aiapplyd_review_application
+  category: applications
+  rest:
+  - POST /applications/{resultId}/approve
+  - POST /applications/results/approve-batch
+  - POST /applications/{resultId}/reject
+  - POST /applications/{resultId}/cancel
+  - POST /applications/{resultId}/refine
+  - POST /applications/{resultId}/re-prepare
+  - PATCH /applications/{resultId}/stage
+  binding: rest
+  confidence: high
+  note: One tool, six decisions (approve, reject, cancel, refine, re_prepare, set_stage) over application_ids. Two
+    or more approvals go through approve-batch.
+- tool: aiapplyd_get_account
+  category: account
+  rest:
+  - GET /billing/subscription
+  - GET /applications/usage
+  - GET /ai/quota
+  - GET /job-matches/preferences
+  - GET /application-profile
+  - GET /user-documents
+  - GET /auth-health
+  - GET /ai-persona
+  binding: rest
+  confidence: high
+  note: Independent reads in parallel, composed into one account and readiness view.
+- tool: aiapplyd_set_resume
+  category: resume
+  rest:
+  - POST /onboarding/parse-resume
+  - POST /user-documents/{id}/set-base
+  - GET /user-documents/{id}/parse-status
+  binding: rest
+  confidence: high
+  note: resume_text and resume_url are sent to parse-resume as a multipart file; document_id uses set-base.
+- tool: aiapplyd_triage_matches
+  category: jobs
+  rest:
+  - POST /job-matches/{id}/save
+  - POST /job-matches/{id}/dismiss
+  binding: rest
+  confidence: high
 - tool: aiapplyd_score_resume
   category: scoring
   rest:
   - POST /ats/score
+  binding: rest
+  confidence: high
+- tool: aiapplyd_analyze_job_description
+  category: jobs
+  rest:
+  - POST /jobs/extract-keywords
   binding: rest
   confidence: high
 - tool: aiapplyd_optimize_resume
@@ -25,49 +108,74 @@ crosswalk:
 - tool: aiapplyd_generate_interview_questions
   category: interview
   rest:
+  - POST /jobs
   - POST /jobs/{id}/generate-interview-prep
+  - GET /jobs/{id}
+  - GET /applications/by-id/{resultId}
   binding: rest
-  confidence: low
-  note: REST route is keyed to a stored job; the tool takes free-text title/company/description.
+  confidence: high
+  note: Free-text title, company and description create a job record first; an application_id reads the job from
+    the application.
 - tool: aiapplyd_translate_resume
   category: resume
   rest:
-  - POST /user-documents/translate-preview
-  - POST /user-documents/{id}/translate
+  - GET /resume-builder
+  - POST /resume-builder/{id}/translate
   binding: rest
-  confidence: medium
+  confidence: high
 - tool: aiapplyd_search_jobs
   category: jobs
   rest:
   - GET /job-matches
   binding: rest
-  confidence: medium
-  note: Tool searches the curated match feed; REST lists the signed-in user's job matches.
+  confidence: high
+  note: Shares the handler of aiapplyd_get_matches; searches the curated match feed.
 - tool: aiapplyd_update_job_preferences
   category: jobs
   rest:
   - PUT /job-matches/preferences
+  - PUT /application-profile
   binding: rest
   confidence: high
+  note: application_answers go to PUT /application-profile; the other fields to PUT /job-matches/preferences.
 - tool: aiapplyd_generate_cover_letter
   category: cover-letter
   rest:
+  - GET /resume-builder
   - POST /resume-builder/{id}/generate-cover-letter
+  - GET /resume-builder/{id}
+  - GET /applications/by-id/{resultId}
+  - POST /applications/{resultId}/refine
   binding: rest
-  confidence: low
-  note: REST route is keyed to a resume-builder document; the tool takes a job description and company name.
-mcp_only:
-- tool: aiapplyd_analyze_job_description
-  reason: No REST route in the published contract analyzes a free-text job description on its own.
-- tool: aiapplyd_auto_apply
-  reason: Applications are created by the product pipeline; no public REST route accepts a job URL to apply to.
+  confidence: high
+  note: With an application_id the tool refines that application's cover letter; otherwise it writes one from the
+    saved resume.
 - tool: aiapplyd_build_pdf
-  reason: No REST route in the contract takes resume text and a template and returns a PDF.
+  category: resume
+  rest:
+  - POST /resume-builder
+  - POST /resume-builder/{id}/share
+  binding: rest
+  confidence: high
+  note: share is called only when make_public is true.
+- tool: aiapplyd_auto_apply
+  category: applications
+  rest:
+  - POST /jobs/parse-url
+  - POST /jobs
+  - PUT /jobs/{id}
+  - POST /applications/prepare
+  binding: alias
+  alias_of: aiapplyd_apply
+  confidence: high
+  note: Older name for aiapplyd_apply with a job_url, kept for existing clients.
+mcp_only: []
 rest_only: []
 coverage:
-  tools: 10
-  bound: 7
-  mcp_only: 3
-  rest_operations: 372
-rest_only_note: the remaining operations of the 372 in the contract (account, billing, applications, admin, internal,
-  webhooks) have no tool; not enumerated
+  tools: 17
+  bound: 16
+  alias: 1
+  mcp_only: 0
+  rest_operations_live: 265
+rest_only_note: the remaining operations in the contract (account management, billing, admin, internal, webhooks)
+  have no tool; not enumerated

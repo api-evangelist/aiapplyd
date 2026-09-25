@@ -1,4 +1,4 @@
-generated: '2026-09-23'
+generated: '2026-09-25'
 method: searched
 source:
 - https://github.com/aiapplyd/aiapplyd-mcp
@@ -9,12 +9,12 @@ packages:
   url: https://github.com/aiapplyd/aiapplyd-mcp
   language: TypeScript
   official: true
-  version: 1.6.0
-  published: '2026-09-23'
+  version: 1.8.0
+  published: '2026-09-25'
   install: npx -y github:aiapplyd/aiapplyd-mcp
   license: MIT
   note: stdio bridge to the hosted MCP server; distributed from GitHub, not published to npm (registry.npmjs.org/aiapplyd-mcp
-    404). Version from package.json and GitHub release v1.6.0.
+    404). Version from package.json and GitHub release v1.8.0.
 searched_absent:
   npm: https://registry.npmjs.org/aiapplyd-mcp 404
   pypi: https://pypi.org/pypi/aiapplyd/json 404
