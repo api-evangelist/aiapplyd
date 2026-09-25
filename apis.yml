@@ -1,24 +1,63 @@
 name: AI Applyd
+
 aid: aiapplyd
+
 description: 'AI Applyd is a job-application automation platform for candidates: it scores a resume against a posting
   for ATS compatibility, rewrites the resume and writes a cover letter per role, prepares interview material, matches
   new postings to a profile, and fills and submits applications on the employer''s own hiring system across 15 ATS
   platforms (Workday, Greenhouse, Lever, Ashby, Workable, iCIMS, SmartRecruiters and more), counting an application
   as sent only when the employer''s system confirms it. It publishes a hosted remote MCP server at mcp.aiapplyd.com/mcp
-  (OAuth 2.1, 10 tools, listed in the official MCP Registry as com.aiapplyd/aiapplyd) with an MIT-licensed stdio
+  (OAuth 2.1, 17 tools, listed in the official MCP Registry as com.aiapplyd/aiapplyd) with an MIT-licensed stdio
   bridge on GitHub, and serves the OpenAPI 3.0 description of its application backend at api.aiapplyd.com/api/v1/openapi.json.'
-url: https://raw.githubusercontent.com/api-evangelist/aiapplyd/refs/heads/main/apis.yml
+
+url: https://aiapplyd.com/apis.json
+
 x-type: company
+
 x-source: apis-io-submission
+
 x-submitted-by: 'ava@aiapplyd.com (Ava Bagherzadeh), email to info@apis.io 2026-09-23 "Listing request: AI Applyd
   MCP server"'
+
 x-tier: profiled
+
 x-tier-reason: enrichment pass 2026-09-23 (local-v5; was apis.io/add submission worked by the support sweep 2026-09-23;
   host probed healthy (root 200, invented path 404, llms.txt 200))
+
+deliveryModel:
+  model: saas
+  license_evidence:
+    not_product:
+    - aiapplyd/aiapplyd-mcp
+  open_source: unknown
+  commercial: true
+  callable_host: true
+  label: Hosted service · you call their endpoint
+  confidence: low
+  source:
+  - openapi
+  - pricing
+  - repository-not-product
+  generated: '2026-09-25'
+  method: derived
+
 specificationVersion: '0.23'
+
 created: '2026-09-23'
-modified: '2026-09-23'
+
+modified: '2026-09-25'
+
 tags:
+- Job Search
+- Recruiting
+- Resume
+- Applicant Tracking Systems
+- Careers
+- Artificial Intelligence
+- MCP
+- Automation
+
+tags_raw:
 - Job Search
 - Recruiting
 - Resumes
@@ -27,7 +66,22 @@ tags:
 - Artificial Intelligence
 - MCP
 - Automation
+
+image: https://aiapplyd.com/static/images/logos/icon-logo-dark-square.png
+
+maintainers:
+- FN: AI Applyd
+  email: support@aiapplyd.com
+
 common:
+- type: AgentSkill
+  url: skills/_index.yml
+- type: SecurityTxt
+  url: well-known/aiapplyd-security.txt
+- type: SecurityTxt
+  url: well-known/aiapplyd-mcp-security.txt
+- type: SecurityTxt
+  url: well-known/aiapplyd-api-security.txt
 - type: AgenticAccess
   url: agentic-access/aiapplyd-agentic-access.yml
 - type: RateLimits
@@ -86,6 +140,12 @@ common:
   url: https://aiapplyd.com/mcps
 - type: APIReference
   url: https://api.aiapplyd.com/api/v1/scalar
+- type: GettingStarted
+  url: https://aiapplyd.com/mcps
+- type: APICatalog
+  url: https://aiapplyd.com/.well-known/api-catalog
+- type: ContentSignal
+  url: https://aiapplyd.com/robots.txt
 - type: Pricing
   url: https://aiapplyd.com/pricing
 - type: Support
@@ -104,19 +164,23 @@ common:
   url: https://aiapplyd.com/legal/privacy
 - type: SecurityPolicy
   url: https://aiapplyd.com/legal/security
-image: https://aiapplyd.com/static/images/logos/icon-logo-dark-square.png
-maintainers:
-- FN: AI Applyd
-  email: support@aiapplyd.com
+
 apis:
 - name: AI Applyd API
-  description: 'The REST backend of the AI Applyd application (Hono + Zod), published as OpenAPI 3.0 with a Scalar
-    reference: accounts, job matches and preferences, ATS scoring and optimization, resume builder, user documents,
-    cover letters, interview prep, applications, billing and usage, plus admin, internal and inbound-webhook routes
-    the product itself uses. Session-authenticated with a Bearer token.'
+  description: 'The REST backend of the AI Applyd application, published as OpenAPI 3.0 with a Scalar reference
+    and an operationId on every operation (265 operations on 237 paths on 2026-09-25): accounts, job matches and
+    preferences, ATS scoring and optimization, resume builder, user documents, cover letters, interview prep,
+    applications, billing and usage, notifications and the other routes the web app uses. Authenticated with a
+    session Bearer token (BearerAuth).'
   humanURL: https://api.aiapplyd.com/api/v1/scalar
   baseURL: https://api.aiapplyd.com/api/v1
   tags:
+  - Job Search
+  - Resume
+  - Applicant Tracking Systems
+  - Recruiting
+  - Automation
+  tags_raw:
   - Job Search
   - Resumes
   - Applicant Tracking Systems
@@ -133,24 +197,30 @@ apis:
   - type: JSONSchema
     url: json-schema/aiapplyd-patch-user-preferences-schema.json
   - type: JSONSchema
-    url: json-schema/aiapplyd-apply-heartbeat-body-schema.json
-  - type: JSONSchema
     url: json-schema/aiapplyd-upsert-application-profile-schema.json
   - type: JSONSchema
     url: json-schema/aiapplyd-auto-setup-request-schema.json
   - type: JSONSchema
-    url: json-schema/aiapplyd-post-ai-data-permission-data-schema.json
-  - type: JSONSchema
     url: json-schema/aiapplyd-update-preferences-request-schema.json
   aid: aiapplyd:ai-applyd-api
 - name: AI Applyd MCP Server
-  description: 'Hosted remote MCP server (streamable HTTP, OAuth 2.1 with dynamic client registration) exposing
-    10 tools: ATS resume scoring, job-description analysis, resume optimization and translation, interview questions,
-    job search and preferences, cover letters, PDF builds and auto-apply on the employer''s own ATS. Tool catalog
-    localizable via ?lang= (en, es, de, fr, pt-BR).'
+  description: 'Hosted remote MCP server (streamable HTTP, with a legacy SSE endpoint; OAuth 2.1 with PKCE,
+    dynamic client registration and Client ID Metadata Documents), version 1.8.0, exposing 17 tools, 4 prompts and 3
+    resources. The main loop: get job matches, apply to a match or a job URL (automatically or held for review), track
+    applications with employer-confirmed receipts, approve, reject, cancel or refine held applications, read account
+    readiness, set the resume and save or skip matches; plus ATS resume scoring, job-description analysis, resume
+    optimization and translation, interview preparation, job search and preferences, cover letters and PDF builds.
+    Every tool carries a title, annotation hints and an outputSchema; five provider-published Agent Skills drive it.
+    Tool catalog localizable via ?lang= (en, es, de, fr, pt-BR).'
   humanURL: https://aiapplyd.com/mcps
   baseURL: https://mcp.aiapplyd.com/mcp
   tags:
+  - MCP
+  - Job Search
+  - Resume
+  - Automation
+  - Artificial Intelligence
+  tags_raw:
   - MCP
   - Job Search
   - Resumes
@@ -162,8 +232,9 @@ apis:
   - type: SourceCode
     url: https://github.com/aiapplyd/aiapplyd-mcp
   aid: aiapplyd:ai-applyd-mcp-server
+
 x-enrichment:
-  date: '2026-09-23'
+  date: '2026-09-25'
   status: enriched
-  artifacts_added: 38
+  artifacts_added: 14
   pass: local-v5

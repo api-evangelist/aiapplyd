@@ -1,23 +1,24 @@
-generated: '2026-09-23'
+generated: '2026-09-25'
 method: generated
 source: openapi/aiapplyd-openapi.yml
 description: Recommended x-agentic-access execution contracts, classified heuristically from
   the OpenAPI. A governance starting point for exposing this API to AI agents — review and bind
   audience per deployment. See research/curity/agentic-governance/.
 summary:
-  operations: 372
+  operations: 265
   by_action_class:
-    connected: 130
-    acting: 242
+    connected: 107
+    acting: 158
   by_consequence:
-    read: 130
-    write: 229
-    safety-critical: 6
-    physical: 7
-  human_in_the_loop_required: 6
+    read: 107
+    write: 150
+    physical: 5
+    safety-critical: 3
+  human_in_the_loop_required: 3
 operations:
 - path: /account
   method: get
+  operationId: getAccount
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -27,6 +28,7 @@ operations:
     audit: none
 - path: /account
   method: put
+  operationId: putAccount
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -42,6 +44,7 @@ operations:
     audit: required
 - path: /account
   method: delete
+  operationId: deleteAccount
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -57,6 +60,7 @@ operations:
     audit: required
 - path: /account/export
   method: get
+  operationId: getAccountExport
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -66,6 +70,7 @@ operations:
     audit: none
 - path: /account/apple-authorization
   method: post
+  operationId: postAccountAppleAuthorization
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -81,6 +86,7 @@ operations:
     audit: required
 - path: /overview
   method: get
+  operationId: getOverview
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -90,6 +96,7 @@ operations:
     audit: none
 - path: /overview/suggestions
   method: get
+  operationId: getOverviewSuggestions
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -97,1047 +104,9 @@ operations:
     token:
       max-ttl: 3600
     audit: none
-- path: /admin/blog/posts
-  method: get
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /admin/blog/posts
-  method: post
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /admin/blog/posts/{id}
-  method: get
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /admin/blog/posts/{id}
-  method: patch
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /admin/blog/posts/{id}
-  method: delete
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /admin/blog/posts/{id}/publish
-  method: post
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /admin/blog/posts/{id}/unpublish
-  method: post
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /admin/blog/authors
-  method: get
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /admin/blog/authors
-  method: post
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /admin/blog/authors/{id}
-  method: patch
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /admin/blog/authors/{id}
-  method: delete
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /admin/blog/categories
-  method: get
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /admin/blog/categories
-  method: post
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /admin/blog/categories/{id}
-  method: patch
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /admin/blog/categories/{id}
-  method: delete
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /admin/blog/media
-  method: get
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /admin/blog/media
-  method: post
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /admin/jobs/run-scraper
-  method: post
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /admin/jobs/run-scraper/{source}
-  method: post
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /admin/jobs/enrich
-  method: post
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /admin/jobs/backfill-embeddings
-  method: post
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /admin/jobs/purge-stale
-  method: post
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /admin/backfill/scraped-jobs
-  method: post
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /admin/backfill/linkedin-apply-urls
-  method: post
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /admin/backfill/reparse-location
-  method: post
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /admin/backfill/scraped-job-content-hash
-  method: post
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /admin/backfill/job-description-derivatives
-  method: post
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /admin/backfill/company-intel
-  method: post
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /admin/backfill/companies-from-jobs
-  method: post
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /admin/backfill/canonicalize-preferences
-  method: post
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /admin/job-matches/materialize
-  method: post
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /admin/receipt-proof-arm
-  method: post
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /admin/backfill/rediscover-matches
-  method: post
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /admin/dead-jobs/board-sweep
-  method: post
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /admin/scrape-kick
-  method: post
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /admin/ai/clear-breaker
-  method: post
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /admin/steel/retire-legacy-boxes
-  method: post
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /admin/stripe/sync-customer
-  method: post
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /admin/billing/comp-grant
-  method: post
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /admin/tokens/credit
-  method: post
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /admin/jobs/close
-  method: post
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /admin/jobs/repair-descriptions
-  method: post
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /admin/dead-job-sweep
-  method: post
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /admin/dead-jobs/sweep-all
-  method: post
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /admin/seo/gsc-sync
-  method: post
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /admin/seo/indexing-api-push
-  method: post
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /admin/seo/generate-sitemaps
-  method: post
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /admin/seo/cache-warm
-  method: post
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /admin/seo/gsc-health
-  method: get
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /admin/seo/title-seed
-  method: post
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /admin/applications/recover-stuck
-  method: post
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /admin/applications/redispatch
-  method: post
-  x-agentic-access:
-    action-class: acting
-    consequence: safety-critical
-    subject: required
-    audience: null
-    token:
-      max-ttl: 120
-      exchange: true
-      purpose-required: true
-      proof-of-possession: true
-    escalation:
-      human-in-the-loop: required
-    audit: required
-- path: /admin/observability/test
-  method: post
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /admin/observability/run-cf-snapshot
-  method: post
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /admin/posthog-status
-  method: get
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /admin/d1-replica-probe
-  method: get
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /admin/vectorize-probe
-  method: get
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /admin/steel-sessions
-  method: get
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /admin/steel-fleet-lifecycle
-  method: get
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /admin/discovery/role-families
-  method: get
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /admin/discovery/locations
-  method: get
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /admin/indexnow
-  method: post
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /admin/indexnow-reping
-  method: post
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /admin/send-rescue-zero-match
-  method: post
-  x-agentic-access:
-    action-class: acting
-    consequence: physical
-    subject: required
-    audience: null
-    token:
-      max-ttl: 300
-      exchange: true
-      purpose-required: true
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /admin/send-churn-checkin
-  method: post
-  x-agentic-access:
-    action-class: acting
-    consequence: physical
-    subject: required
-    audience: null
-    token:
-      max-ttl: 300
-      exchange: true
-      purpose-required: true
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /admin/coverage
-  method: get
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /admin/f2-f13-usage
-  method: get
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /admin/apply-success-rates
-  method: get
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /admin/scrape-health
-  method: get
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /admin/aggregator-reconcile
-  method: post
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /admin/scrape-rounds
-  method: get
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /admin/scrape-rounds/unquarantine
-  method: post
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /admin/scrape-rounds/force-probe
-  method: post
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /admin/scrape-rounds/{bucket}
-  method: get
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /admin/reset-onboarding
-  method: post
-  x-agentic-access:
-    action-class: acting
-    consequence: safety-critical
-    subject: required
-    audience: null
-    token:
-      max-ttl: 120
-      exchange: true
-      purpose-required: true
-      proof-of-possession: true
-    escalation:
-      human-in-the-loop: required
-    audit: required
-- path: /admin/reviews
-  method: get
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /admin/reviews/{id}/moderate
-  method: post
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
 - path: /ai/status
   method: get
+  operationId: getAiStatus
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -1147,6 +116,7 @@ operations:
     audit: none
 - path: /ai/activate
   method: post
+  operationId: postAiActivate
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -1162,6 +132,7 @@ operations:
     audit: required
 - path: /ai/quality-check
   method: post
+  operationId: postAiQualityCheck
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -1177,6 +148,7 @@ operations:
     audit: required
 - path: /ai/quality-stats
   method: get
+  operationId: getAiQualityStats
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -1186,6 +158,7 @@ operations:
     audit: none
 - path: /ai/run
   method: post
+  operationId: postAiRun
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -1201,6 +174,7 @@ operations:
     audit: required
 - path: /ai/quota
   method: get
+  operationId: getAiQuota
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -1210,6 +184,7 @@ operations:
     audit: none
 - path: /applications
   method: get
+  operationId: getApplications
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -1219,6 +194,7 @@ operations:
     audit: none
 - path: /applications/usage
   method: get
+  operationId: getApplicationsUsage
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -1228,6 +204,7 @@ operations:
     audit: none
 - path: /applications/prepare
   method: post
+  operationId: postApplicationsPrepare
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -1243,6 +220,7 @@ operations:
     audit: required
 - path: /applications/results/approve-batch
   method: post
+  operationId: postApplicationsResultsApproveBatch
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -1258,6 +236,7 @@ operations:
     audit: required
 - path: /applications/by-id/{resultId}
   method: get
+  operationId: getApplicationsByIdByResultId
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -1267,6 +246,7 @@ operations:
     audit: none
 - path: /applications/{resultId}/approve
   method: post
+  operationId: postApplicationsByResultIdApprove
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -1282,6 +262,7 @@ operations:
     audit: required
 - path: /applications/{resultId}/reject
   method: post
+  operationId: postApplicationsByResultIdReject
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -1297,6 +278,7 @@ operations:
     audit: required
 - path: /applications/{resultId}/retry
   method: post
+  operationId: postApplicationsByResultIdRetry
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -1312,6 +294,7 @@ operations:
     audit: required
 - path: /applications/{resultId}/retry-prep
   method: post
+  operationId: postApplicationsByResultIdRetryPrep
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -1327,6 +310,7 @@ operations:
     audit: required
 - path: /applications/{resultId}/cancel
   method: post
+  operationId: postApplicationsByResultIdCancel
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -1342,6 +326,7 @@ operations:
     audit: required
 - path: /applications/{resultId}/screenshot/{variant}
   method: get
+  operationId: getApplicationsByResultIdScreenshotByVariant
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -1351,6 +336,7 @@ operations:
     audit: none
 - path: /applications/by-job-match/{jobMatchId}
   method: get
+  operationId: getApplicationsByJobMatchByJobMatchId
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -1360,6 +346,7 @@ operations:
     audit: none
 - path: /applications/{resultId}/live-view
   method: get
+  operationId: getApplicationsByResultIdLiveView
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -1369,6 +356,7 @@ operations:
     audit: none
 - path: /applications/{resultId}/stage
   method: patch
+  operationId: patchApplicationsByResultIdStage
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -1384,6 +372,7 @@ operations:
     audit: required
 - path: /applications/{resultId}/extract-form
   method: post
+  operationId: postApplicationsByResultIdExtractForm
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -1399,6 +388,7 @@ operations:
     audit: required
 - path: /applications/{resultId}/form-values
   method: put
+  operationId: putApplicationsByResultIdFormValues
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -1414,6 +404,7 @@ operations:
     audit: required
 - path: /applications/{resultId}/download/{type}
   method: get
+  operationId: getApplicationsByResultIdDownloadByType
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -1423,6 +414,7 @@ operations:
     audit: none
 - path: /applications/{resultId}/submission-info
   method: get
+  operationId: getApplicationsByResultIdSubmissionInfo
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -1432,6 +424,7 @@ operations:
     audit: none
 - path: /applications/{resultId}/generate-outreach
   method: post
+  operationId: postApplicationsByResultIdGenerateOutreach
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -1447,6 +440,7 @@ operations:
     audit: required
 - path: /applications/{resultId}/refine
   method: post
+  operationId: postApplicationsByResultIdRefine
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -1462,6 +456,7 @@ operations:
     audit: required
 - path: /applications/{resultId}/document
   method: patch
+  operationId: patchApplicationsByResultIdDocument
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -1477,6 +472,7 @@ operations:
     audit: required
 - path: /applications/{resultId}/parse-tailored-resume
   method: post
+  operationId: postApplicationsByResultIdParseTailoredResume
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -1492,6 +488,7 @@ operations:
     audit: required
 - path: /applications/{resultId}/staleness
   method: get
+  operationId: getApplicationsByResultIdStaleness
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -1501,6 +498,7 @@ operations:
     audit: none
 - path: /applications/{resultId}/re-prepare
   method: post
+  operationId: postApplicationsByResultIdRePrepare
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -1516,6 +514,7 @@ operations:
     audit: required
 - path: /applications/{resultId}/switch-document
   method: post
+  operationId: postApplicationsByResultIdSwitchDocument
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -1531,6 +530,7 @@ operations:
     audit: required
 - path: /applications/{resultId}/negotiate
   method: get
+  operationId: getApplicationsByResultIdNegotiate
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -1540,6 +540,7 @@ operations:
     audit: none
 - path: /applications/{resultId}/negotiate
   method: post
+  operationId: postApplicationsByResultIdNegotiate
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -1555,6 +556,7 @@ operations:
     audit: required
 - path: /applications/{resultId}/generation-status
   method: get
+  operationId: getApplicationsByResultIdGenerationStatus
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -1564,6 +566,7 @@ operations:
     audit: none
 - path: /applications/{resultId}/queue-position
   method: get
+  operationId: getApplicationsByResultIdQueuePosition
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -1573,6 +576,7 @@ operations:
     audit: none
 - path: /applications/pipeline-status
   method: get
+  operationId: getApplicationsPipelineStatus
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -1582,6 +586,7 @@ operations:
     audit: none
 - path: /applications/{jobId}/level-strategy
   method: post
+  operationId: postApplicationsByJobIdLevelStrategy
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -1597,6 +602,7 @@ operations:
     audit: required
 - path: /applications/personalization-plan
   method: post
+  operationId: postApplicationsPersonalizationPlan
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -1612,6 +618,7 @@ operations:
     audit: required
 - path: /applications/recover-stuck
   method: post
+  operationId: postApplicationsRecoverStuck
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -1627,6 +634,7 @@ operations:
     audit: required
 - path: /applications/{resultId}/ai-edit/open
   method: post
+  operationId: postApplicationsByResultIdAiEditOpen
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -1642,6 +650,7 @@ operations:
     audit: required
 - path: /applications/{resultId}/ai-edit/rewind
   method: post
+  operationId: postApplicationsByResultIdAiEditRewind
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -1657,6 +666,7 @@ operations:
     audit: required
 - path: /applications/{resultId}/ai-edit/finalize
   method: post
+  operationId: postApplicationsByResultIdAiEditFinalize
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -1672,6 +682,7 @@ operations:
     audit: required
 - path: /applications/{resultId}/ai-edit/preview
   method: get
+  operationId: getApplicationsByResultIdAiEditPreview
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -1681,6 +692,7 @@ operations:
     audit: none
 - path: /applications/{resultId}/ai-edit/available-scopes
   method: get
+  operationId: getApplicationsByResultIdAiEditAvailableScopes
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -1690,6 +702,7 @@ operations:
     audit: none
 - path: /applications/{resultId}/ats-credentials
   method: get
+  operationId: getApplicationsByResultIdAtsCredentials
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -1699,6 +712,7 @@ operations:
     audit: none
 - path: /applications/{resultId}/ats-credentials/{credentialId}/reveal
   method: post
+  operationId: postApplicationsByResultIdAtsCredentialsByCredentialIdReveal
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -1714,6 +728,7 @@ operations:
     audit: required
 - path: /billing/create-checkout-session
   method: post
+  operationId: postBillingCreateCheckoutSession
   x-agentic-access:
     action-class: acting
     consequence: physical
@@ -1731,6 +746,7 @@ operations:
     audit: required
 - path: /billing/create-portal-session
   method: post
+  operationId: postBillingCreatePortalSession
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -1746,6 +762,7 @@ operations:
     audit: required
 - path: /billing/sync-after-checkout
   method: post
+  operationId: postBillingSyncAfterCheckout
   x-agentic-access:
     action-class: acting
     consequence: physical
@@ -1763,6 +780,7 @@ operations:
     audit: required
 - path: /billing/subscription
   method: get
+  operationId: getBillingSubscription
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -1772,6 +790,7 @@ operations:
     audit: none
 - path: /billing/cancel-subscription
   method: post
+  operationId: postBillingCancelSubscription
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -1787,6 +806,7 @@ operations:
     audit: required
 - path: /billing/subscription/switch
   method: post
+  operationId: postBillingSubscriptionSwitch
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -1802,6 +822,7 @@ operations:
     audit: required
 - path: /billing/invoices
   method: get
+  operationId: getBillingInvoices
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -1811,6 +832,7 @@ operations:
     audit: none
 - path: /billing/usage
   method: get
+  operationId: getBillingUsage
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -1820,6 +842,7 @@ operations:
     audit: none
 - path: /billing/action-costs
   method: get
+  operationId: getBillingActionCosts
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -1829,6 +852,7 @@ operations:
     audit: none
 - path: /native-billing/bootstrap
   method: post
+  operationId: postNativeBillingBootstrap
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -1838,6 +862,7 @@ operations:
     audit: none
 - path: /billing/native/verify
   method: post
+  operationId: postBillingNativeVerify
   x-agentic-access:
     action-class: acting
     consequence: physical
@@ -1855,6 +880,7 @@ operations:
     audit: required
 - path: /native-billing/purchases/accept
   method: post
+  operationId: postNativeBillingPurchasesAccept
   x-agentic-access:
     action-class: acting
     consequence: physical
@@ -1872,6 +898,7 @@ operations:
     audit: required
 - path: /blog/all-content
   method: get
+  operationId: getBlogAllContent
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -1881,6 +908,7 @@ operations:
     audit: none
 - path: /blog/posts
   method: get
+  operationId: getBlogPosts
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -1890,6 +918,7 @@ operations:
     audit: none
 - path: /blog/featured
   method: get
+  operationId: getBlogFeatured
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -1899,6 +928,7 @@ operations:
     audit: none
 - path: /blog/tags
   method: get
+  operationId: getBlogTags
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -1908,6 +938,7 @@ operations:
     audit: none
 - path: /blog/tag/{tag}
   method: get
+  operationId: getBlogTagByTag
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -1917,6 +948,7 @@ operations:
     audit: none
 - path: /blog/authors/{slug}
   method: get
+  operationId: getBlogAuthorsBySlug
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -1926,6 +958,7 @@ operations:
     audit: none
 - path: /blog/posts/{slug}
   method: get
+  operationId: getBlogPostsBySlug
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -1935,6 +968,7 @@ operations:
     audit: none
 - path: /blog/posts/{slug}/related
   method: get
+  operationId: getBlogPostsBySlugRelated
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -1944,6 +978,7 @@ operations:
     audit: none
 - path: /csp-report
   method: post
+  operationId: postCspReport
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -1959,6 +994,7 @@ operations:
     audit: required
 - path: /dashboard/bootstrap
   method: get
+  operationId: getDashboardBootstrap
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -1968,6 +1004,7 @@ operations:
     audit: none
 - path: /follow-ups/history
   method: get
+  operationId: getFollowUpsHistory
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -1977,6 +1014,7 @@ operations:
     audit: none
 - path: /follow-ups
   method: get
+  operationId: getFollowUps
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -1986,6 +1024,7 @@ operations:
     audit: none
 - path: /follow-ups/{applicationId}/draft
   method: get
+  operationId: getFollowUpsByApplicationIdDraft
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -1995,6 +1034,7 @@ operations:
     audit: none
 - path: /follow-ups/{applicationId}/sent
   method: post
+  operationId: postFollowUpsByApplicationIdSent
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -2010,6 +1050,7 @@ operations:
     audit: required
 - path: /follow-ups/{applicationId}/send-gmail
   method: post
+  operationId: postFollowUpsByApplicationIdSendGmail
   x-agentic-access:
     action-class: acting
     consequence: physical
@@ -2027,6 +1068,7 @@ operations:
     audit: required
 - path: /outreach/job/{jobId}/contacts
   method: get
+  operationId: getOutreachJobByJobIdContacts
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -2036,6 +1078,7 @@ operations:
     audit: none
 - path: /outreach/job/{jobId}/draft
   method: post
+  operationId: postOutreachJobByJobIdDraft
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -2051,6 +1094,7 @@ operations:
     audit: required
 - path: /outreach/{applicationResultId}/contacts
   method: get
+  operationId: getOutreachByApplicationResultIdContacts
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -2060,6 +1104,7 @@ operations:
     audit: none
 - path: /outreach/{applicationResultId}/draft
   method: post
+  operationId: postOutreachByApplicationResultIdDraft
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -2075,6 +1120,7 @@ operations:
     audit: required
 - path: /saved-searches
   method: get
+  operationId: getSavedSearches
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -2084,6 +1130,7 @@ operations:
     audit: none
 - path: /saved-searches
   method: post
+  operationId: postSavedSearches
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -2099,6 +1146,7 @@ operations:
     audit: required
 - path: /saved-searches/{id}
   method: patch
+  operationId: patchSavedSearchesById
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -2114,6 +1162,7 @@ operations:
     audit: required
 - path: /saved-searches/{id}
   method: delete
+  operationId: deleteSavedSearchesById
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -2129,6 +1178,7 @@ operations:
     audit: required
 - path: /notifications/push-token
   method: post
+  operationId: postNotificationsPushToken
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -2144,6 +1194,7 @@ operations:
     audit: required
 - path: /notifications/push-token/unregister
   method: post
+  operationId: postNotificationsPushTokenUnregister
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -2159,6 +1210,7 @@ operations:
     audit: required
 - path: /notifications
   method: get
+  operationId: getNotifications
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -2168,6 +1220,7 @@ operations:
     audit: none
 - path: /notifications/read
   method: patch
+  operationId: patchNotificationsRead
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -2183,6 +1236,7 @@ operations:
     audit: required
 - path: /notifications/dismiss
   method: patch
+  operationId: patchNotificationsDismiss
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -2198,6 +1252,7 @@ operations:
     audit: required
 - path: /tracking/activity/feed
   method: get
+  operationId: getTrackingActivityFeed
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -2207,6 +1262,7 @@ operations:
     audit: none
 - path: /tracking/activity/summary
   method: get
+  operationId: getTrackingActivitySummary
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -2216,6 +1272,7 @@ operations:
     audit: none
 - path: /tracking/activity/{jobListingId}
   method: get
+  operationId: getTrackingActivityByJobListingId
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -2225,6 +1282,7 @@ operations:
     audit: none
 - path: /health
   method: get
+  operationId: getHealth
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -2234,6 +1292,7 @@ operations:
     audit: none
 - path: /auth-health
   method: get
+  operationId: getAuthHealth
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -2243,6 +1302,7 @@ operations:
     audit: none
 - path: /auth-capabilities
   method: get
+  operationId: getAuthCapabilities
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -2252,6 +1312,7 @@ operations:
     audit: none
 - path: /auth/test-login
   method: post
+  operationId: postAuthTestLogin
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -2267,6 +1328,7 @@ operations:
     audit: required
 - path: /integrations/google/connect
   method: get
+  operationId: getIntegrationsGoogleConnect
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -2276,6 +1338,7 @@ operations:
     audit: none
 - path: /integrations/google/callback
   method: get
+  operationId: getIntegrationsGoogleCallback
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -2285,6 +1348,7 @@ operations:
     audit: none
 - path: /integrations/google/status
   method: get
+  operationId: getIntegrationsGoogleStatus
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -2294,201 +1358,7 @@ operations:
     audit: none
 - path: /integrations/google/disconnect
   method: post
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /internal/apply/ai-data-permission
-  method: post
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /internal/apply/rig-relay
-  method: post
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /internal/apply/heartbeat
-  method: post
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /internal/apply/redispatch
-  method: post
-  x-agentic-access:
-    action-class: acting
-    consequence: safety-critical
-    subject: required
-    audience: null
-    token:
-      max-ttl: 120
-      exchange: true
-      purpose-required: true
-      proof-of-possession: true
-    escalation:
-      human-in-the-loop: required
-    audit: required
-- path: /internal/apply/fresh-run
-  method: post
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /internal/apply/step
-  method: post
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /internal/apply/account-credential
-  method: post
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /internal/apply/verification
-  method: post
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /internal/apply/account-status
-  method: post
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /internal/apply/context
-  method: post
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /internal/apply/exit-quarantine
-  method: post
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /internal/apply/warm-identity
-  method: post
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /internal/apply/receipt
-  method: post
+  operationId: postIntegrationsGoogleDisconnect
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -2504,6 +1374,7 @@ operations:
     audit: required
 - path: /job-matches/preferences
   method: get
+  operationId: getJobMatchesPreferences
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -2513,6 +1384,7 @@ operations:
     audit: none
 - path: /job-matches/preferences
   method: put
+  operationId: putJobMatchesPreferences
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -2528,6 +1400,7 @@ operations:
     audit: required
 - path: /job-matches
   method: get
+  operationId: getJobMatches
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -2537,6 +1410,7 @@ operations:
     audit: none
 - path: /job-matches/work-style-supply
   method: get
+  operationId: getJobMatchesWorkStyleSupply
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -2546,6 +1420,7 @@ operations:
     audit: none
 - path: /job-matches/{id}
   method: get
+  operationId: getJobMatchesById
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -2555,6 +1430,7 @@ operations:
     audit: none
 - path: /job-matches/{id}/save
   method: post
+  operationId: postJobMatchesByIdSave
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -2570,6 +1446,7 @@ operations:
     audit: required
 - path: /job-matches/{id}/dismiss
   method: post
+  operationId: postJobMatchesByIdDismiss
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -2585,6 +1462,7 @@ operations:
     audit: required
 - path: /job-matches/subscribe-cell
   method: post
+  operationId: postJobMatchesSubscribeCell
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -2600,6 +1478,7 @@ operations:
     audit: required
 - path: /job-matches/validate-role
   method: post
+  operationId: postJobMatchesValidateRole
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -2615,6 +1494,7 @@ operations:
     audit: required
 - path: /job-matches/request-more
   method: post
+  operationId: postJobMatchesRequestMore
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -2630,6 +1510,7 @@ operations:
     audit: required
 - path: /job-matches/apply-relaxation
   method: post
+  operationId: postJobMatchesApplyRelaxation
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -2645,6 +1526,7 @@ operations:
     audit: required
 - path: /job-matches/revert-widening
   method: post
+  operationId: postJobMatchesRevertWidening
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -2660,6 +1542,7 @@ operations:
     audit: required
 - path: /job-matches/reset
   method: post
+  operationId: postJobMatchesReset
   x-agentic-access:
     action-class: acting
     consequence: safety-critical
@@ -2675,6 +1558,7 @@ operations:
     audit: required
 - path: /job-matches/{id}/evaluate
   method: post
+  operationId: postJobMatchesByIdEvaluate
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -2690,6 +1574,7 @@ operations:
     audit: required
 - path: /job-matches/{id}/evaluation
   method: get
+  operationId: getJobMatchesByIdEvaluation
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -2699,6 +1584,7 @@ operations:
     audit: none
 - path: /job-matches/{id}/verify-live
   method: post
+  operationId: postJobMatchesByIdVerifyLive
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -2714,6 +1600,7 @@ operations:
     audit: required
 - path: /jobs/extract-keywords
   method: post
+  operationId: postJobsExtractKeywords
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -2729,6 +1616,7 @@ operations:
     audit: required
 - path: /jobs/compare
   method: post
+  operationId: postJobsCompare
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -2744,6 +1632,7 @@ operations:
     audit: required
 - path: /jobs/parse-url
   method: post
+  operationId: postJobsParseUrl
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -2759,6 +1648,7 @@ operations:
     audit: required
 - path: /jobs/import-url
   method: post
+  operationId: postJobsImportUrl
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -2774,6 +1664,7 @@ operations:
     audit: required
 - path: /jobs/ats-scores/{atsScoreId}
   method: get
+  operationId: getJobsAtsScoresByAtsScoreId
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -2783,6 +1674,7 @@ operations:
     audit: none
 - path: /jobs/stats
   method: get
+  operationId: getJobsStats
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -2792,6 +1684,7 @@ operations:
     audit: none
 - path: /jobs
   method: get
+  operationId: getJobs
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -2801,6 +1694,7 @@ operations:
     audit: none
 - path: /jobs
   method: post
+  operationId: postJobs
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -2816,6 +1710,7 @@ operations:
     audit: required
 - path: /jobs/{id}
   method: get
+  operationId: getJobsById
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -2825,6 +1720,7 @@ operations:
     audit: none
 - path: /jobs/{id}
   method: put
+  operationId: putJobsById
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -2840,6 +1736,7 @@ operations:
     audit: required
 - path: /jobs/{id}
   method: delete
+  operationId: deleteJobsById
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -2855,6 +1752,7 @@ operations:
     audit: required
 - path: /jobs/{id}/ats-score
   method: post
+  operationId: postJobsByIdAtsScore
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -2870,6 +1768,7 @@ operations:
     audit: required
 - path: /jobs/{id}/ats-scores
   method: get
+  operationId: getJobsByIdAtsScores
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -2879,6 +1778,7 @@ operations:
     audit: none
 - path: /jobs/{id}/generate-interview-prep
   method: post
+  operationId: postJobsByIdGenerateInterviewPrep
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -2894,6 +1794,7 @@ operations:
     audit: required
 - path: /jobs/{id}/generate-all
   method: post
+  operationId: postJobsByIdGenerateAll
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -2909,6 +1810,7 @@ operations:
     audit: required
 - path: /jobs/{id}/comp-intelligence
   method: post
+  operationId: postJobsByIdCompIntelligence
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -2924,6 +1826,7 @@ operations:
     audit: required
 - path: /jobs/{id}/stage
   method: put
+  operationId: putJobsByIdStage
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -2939,6 +1842,7 @@ operations:
     audit: required
 - path: /jobs/{id}/ghosting-status
   method: get
+  operationId: getJobsByIdGhostingStatus
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -2948,6 +1852,7 @@ operations:
     audit: none
 - path: /linkedin/import-export
   method: post
+  operationId: postLinkedinImportExport
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -2963,6 +1868,7 @@ operations:
     audit: required
 - path: /linkedin/import-profile
   method: post
+  operationId: postLinkedinImportProfile
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -2978,6 +1884,7 @@ operations:
     audit: required
 - path: /linkedin/import-profile-html
   method: post
+  operationId: postLinkedinImportProfileHtml
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -2993,6 +1900,7 @@ operations:
     audit: required
 - path: /mcp/session
   method: post
+  operationId: postMcpSession
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -3008,6 +1916,7 @@ operations:
     audit: required
 - path: /ats/score
   method: post
+  operationId: postAtsScore
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -3023,6 +1932,7 @@ operations:
     audit: required
 - path: /ats/optimize
   method: post
+  operationId: postAtsOptimize
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -3038,6 +1948,7 @@ operations:
     audit: required
 - path: /onboarding/parse-resume
   method: post
+  operationId: postOnboardingParseResume
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -3053,6 +1964,7 @@ operations:
     audit: required
 - path: /onboarding/auto-setup
   method: post
+  operationId: postOnboardingAutoSetup
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -3068,6 +1980,7 @@ operations:
     audit: required
 - path: /onboarding/discover-status
   method: get
+  operationId: getOnboardingDiscoverStatus
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -3077,6 +1990,7 @@ operations:
     audit: none
 - path: /onboarding/profile
   method: post
+  operationId: postOnboardingProfile
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -3092,6 +2006,17 @@ operations:
     audit: required
 - path: /onboarding/profile
   method: get
+  operationId: getOnboardingProfile
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /onboarding/resume-prefill
+  method: get
+  operationId: getOnboardingResumePrefill
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -3101,6 +2026,7 @@ operations:
     audit: none
 - path: /onboarding/complete
   method: post
+  operationId: postOnboardingComplete
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -3116,6 +2042,7 @@ operations:
     audit: required
 - path: /onboarding/escrow
   method: post
+  operationId: postOnboardingEscrow
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -3131,6 +2058,7 @@ operations:
     audit: required
 - path: /onboarding/escrow/redeem
   method: post
+  operationId: postOnboardingEscrowRedeem
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -3146,6 +2074,7 @@ operations:
     audit: required
 - path: /pricing
   method: get
+  operationId: getPricing
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -3155,6 +2084,7 @@ operations:
     audit: none
 - path: /pricing/subscriptions
   method: get
+  operationId: getPricingSubscriptions
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -3164,6 +2094,7 @@ operations:
     audit: none
 - path: /application-profile
   method: get
+  operationId: getApplicationProfile
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -3173,6 +2104,7 @@ operations:
     audit: none
 - path: /application-profile
   method: put
+  operationId: putApplicationProfile
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -3188,6 +2120,7 @@ operations:
     audit: required
 - path: /application-profile/suggest
   method: post
+  operationId: postApplicationProfileSuggest
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -3203,6 +2136,7 @@ operations:
     audit: required
 - path: /ai-persona
   method: get
+  operationId: getAiPersona
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -3212,6 +2146,7 @@ operations:
     audit: none
 - path: /ai-persona
   method: put
+  operationId: putAiPersona
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -3227,6 +2162,7 @@ operations:
     audit: required
 - path: /ai-persona/scoring-weights
   method: patch
+  operationId: patchAiPersonaScoringWeights
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -3242,6 +2178,7 @@ operations:
     audit: required
 - path: /ai-persona/suggest-tone
   method: post
+  operationId: postAiPersonaSuggestTone
   x-agentic-access:
     action-class: acting
     consequence: safety-critical
@@ -3257,6 +2194,7 @@ operations:
     audit: required
 - path: /ai-persona/suggest-narrative
   method: post
+  operationId: postAiPersonaSuggestNarrative
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -3272,6 +2210,7 @@ operations:
     audit: required
 - path: /ai-persona/derive-custom-tone
   method: post
+  operationId: postAiPersonaDeriveCustomTone
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -3287,6 +2226,7 @@ operations:
     audit: required
 - path: /user/preferences
   method: get
+  operationId: getUserPreferences
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -3296,30 +2236,7 @@ operations:
     audit: none
 - path: /user/preferences
   method: patch
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /user/ai-data-permission
-  method: get
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /user/ai-data-permission
-  method: post
+  operationId: patchUserPreferences
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -3335,6 +2252,7 @@ operations:
     audit: required
 - path: /star-stories
   method: get
+  operationId: getStarStories
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -3344,6 +2262,7 @@ operations:
     audit: none
 - path: /star-stories
   method: post
+  operationId: postStarStories
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -3359,6 +2278,7 @@ operations:
     audit: required
 - path: /star-stories/draft
   method: post
+  operationId: postStarStoriesDraft
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -3374,6 +2294,7 @@ operations:
     audit: required
 - path: /star-stories/generate-from-resume
   method: post
+  operationId: postStarStoriesGenerateFromResume
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -3389,6 +2310,7 @@ operations:
     audit: required
 - path: /star-stories/extract-from-interview-prep/{jobId}
   method: post
+  operationId: postStarStoriesExtractFromInterviewPrepByJobId
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -3404,6 +2326,7 @@ operations:
     audit: required
 - path: /star-stories/{id}
   method: patch
+  operationId: patchStarStoriesById
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -3419,6 +2342,7 @@ operations:
     audit: required
 - path: /star-stories/{id}
   method: delete
+  operationId: deleteStarStoriesById
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -3434,6 +2358,7 @@ operations:
     audit: required
 - path: /achievements
   method: get
+  operationId: getAchievements
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -3443,6 +2368,7 @@ operations:
     audit: none
 - path: /proof-points
   method: get
+  operationId: getProofPoints
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -3452,6 +2378,7 @@ operations:
     audit: none
 - path: /proof-points
   method: post
+  operationId: postProofPoints
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -3467,6 +2394,7 @@ operations:
     audit: required
 - path: /proof-points/suggest
   method: post
+  operationId: postProofPointsSuggest
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -3482,6 +2410,7 @@ operations:
     audit: required
 - path: /proof-points/{id}
   method: patch
+  operationId: patchProofPointsById
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -3497,6 +2426,7 @@ operations:
     audit: required
 - path: /proof-points/{id}
   method: delete
+  operationId: deleteProofPointsById
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -3512,6 +2442,7 @@ operations:
     audit: required
 - path: /reviews/me
   method: get
+  operationId: getReviewsMe
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -3521,75 +2452,7 @@ operations:
     audit: none
 - path: /reviews/me
   method: post
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /offer-compare/offers
-  method: get
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /offer-compare/offers
-  method: post
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /offer-compare/offers/{id}
-  method: patch
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /offer-compare/offers/{id}
-  method: delete
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /offer-compare/run
-  method: post
+  operationId: postReviewsMe
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -3605,6 +2468,7 @@ operations:
     audit: required
 - path: /public/competitors
   method: get
+  operationId: getPublicCompetitors
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -3614,6 +2478,7 @@ operations:
     audit: none
 - path: /public/competitors/{slug}
   method: get
+  operationId: getPublicCompetitorsBySlug
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -3623,6 +2488,7 @@ operations:
     audit: none
 - path: /public/competitors/{slug}/alternatives
   method: get
+  operationId: getPublicCompetitorsBySlugAlternatives
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -3632,6 +2498,7 @@ operations:
     audit: none
 - path: /public/ats-score
   method: post
+  operationId: postPublicAtsScore
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -3647,6 +2514,7 @@ operations:
     audit: required
 - path: /public/ats-score/upload
   method: post
+  operationId: postPublicAtsScoreUpload
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -3662,6 +2530,7 @@ operations:
     audit: required
 - path: /public/reviews
   method: get
+  operationId: getPublicReviews
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -3671,6 +2540,7 @@ operations:
     audit: none
 - path: /analytics
   method: get
+  operationId: getAnalytics
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -3680,6 +2550,7 @@ operations:
     audit: none
 - path: /analytics/patterns
   method: get
+  operationId: getAnalyticsPatterns
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -3689,6 +2560,7 @@ operations:
     audit: none
 - path: /analytics/recommendations/apply
   method: post
+  operationId: postAnalyticsRecommendationsApply
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -3704,6 +2576,7 @@ operations:
     audit: required
 - path: /locations/search
   method: get
+  operationId: getLocationsSearch
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -3713,6 +2586,7 @@ operations:
     audit: none
 - path: /locations/popular
   method: get
+  operationId: getLocationsPopular
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -3722,6 +2596,7 @@ operations:
     audit: none
 - path: /locations/countries
   method: get
+  operationId: getLocationsCountries
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -3731,6 +2606,7 @@ operations:
     audit: none
 - path: /locations/initial-suggestions
   method: get
+  operationId: getLocationsInitialSuggestions
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -3740,6 +2616,7 @@ operations:
     audit: none
 - path: /referrals/stats
   method: get
+  operationId: getReferralsStats
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -3749,6 +2626,7 @@ operations:
     audit: none
 - path: /referrals/track
   method: post
+  operationId: postReferralsTrack
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -3764,6 +2642,7 @@ operations:
     audit: required
 - path: /referrals/convert
   method: post
+  operationId: postReferralsConvert
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -3779,6 +2658,7 @@ operations:
     audit: required
 - path: /companies/lookup
   method: get
+  operationId: getCompaniesLookup
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -3788,6 +2668,7 @@ operations:
     audit: none
 - path: /companies/{id}
   method: get
+  operationId: getCompaniesById
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -3797,6 +2678,7 @@ operations:
     audit: none
 - path: /support/public-content-report
   method: post
+  operationId: postSupportPublicContentReport
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -3812,6 +2694,7 @@ operations:
     audit: required
 - path: /support
   method: post
+  operationId: postSupport
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -3827,6 +2710,7 @@ operations:
     audit: required
 - path: /relay-inbox
   method: get
+  operationId: getRelayInbox
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -3836,6 +2720,7 @@ operations:
     audit: none
 - path: /relay-inbox/counts
   method: get
+  operationId: getRelayInboxCounts
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -3845,6 +2730,7 @@ operations:
     audit: none
 - path: /relay-inbox/bulk
   method: post
+  operationId: postRelayInboxBulk
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -3860,6 +2746,7 @@ operations:
     audit: required
 - path: /relay-inbox/{id}
   method: get
+  operationId: getRelayInboxById
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -3869,6 +2756,7 @@ operations:
     audit: none
 - path: /relay-inbox/{id}/thread
   method: get
+  operationId: getRelayInboxByIdThread
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -3878,6 +2766,7 @@ operations:
     audit: none
 - path: /relay-inbox/{id}/attachments/{partId}
   method: get
+  operationId: getRelayInboxByIdAttachmentsByPartId
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -3887,6 +2776,7 @@ operations:
     audit: none
 - path: /relay-inbox/{id}/category
   method: patch
+  operationId: patchRelayInboxByIdCategory
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -3902,6 +2792,7 @@ operations:
     audit: required
 - path: /relay-inbox/{id}/read
   method: patch
+  operationId: patchRelayInboxByIdRead
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -3917,6 +2808,7 @@ operations:
     audit: required
 - path: /relay-inbox/{id}/archive
   method: patch
+  operationId: patchRelayInboxByIdArchive
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -3932,6 +2824,7 @@ operations:
     audit: required
 - path: /relay-inbox/{id}/star
   method: patch
+  operationId: patchRelayInboxByIdStar
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -3947,6 +2840,7 @@ operations:
     audit: required
 - path: /relay-inbox/{id}/reply
   method: post
+  operationId: postRelayInboxByIdReply
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -3962,6 +2856,7 @@ operations:
     audit: required
 - path: /relay-inbox/forwarding/stop
   method: get
+  operationId: getRelayInboxForwardingStop
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -3971,6 +2866,7 @@ operations:
     audit: none
 - path: /relay-inbox/forwarding/stop
   method: post
+  operationId: postRelayInboxForwardingStop
   x-agentic-access:
     action-class: acting
     consequence: safety-critical
@@ -3986,6 +2882,7 @@ operations:
     audit: required
 - path: /resume-builder
   method: get
+  operationId: getResumeBuilder
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -3995,6 +2892,7 @@ operations:
     audit: none
 - path: /resume-builder
   method: post
+  operationId: postResumeBuilder
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -4010,6 +2908,7 @@ operations:
     audit: required
 - path: /resume-builder/templates
   method: get
+  operationId: getResumeBuilderTemplates
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -4019,6 +2918,7 @@ operations:
     audit: none
 - path: /resume-builder/import
   method: post
+  operationId: postResumeBuilderImport
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -4034,6 +2934,7 @@ operations:
     audit: required
 - path: /resume-builder/{id}/import-inline
   method: post
+  operationId: postResumeBuilderByIdImportInline
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -4049,6 +2950,7 @@ operations:
     audit: required
 - path: /resume-builder/{id}
   method: get
+  operationId: getResumeBuilderById
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -4058,6 +2960,7 @@ operations:
     audit: none
 - path: /resume-builder/{id}
   method: put
+  operationId: putResumeBuilderById
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -4073,6 +2976,7 @@ operations:
     audit: required
 - path: /resume-builder/{id}
   method: delete
+  operationId: deleteResumeBuilderById
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -4088,6 +2992,7 @@ operations:
     audit: required
 - path: /resume-builder/{id}/artifact
   method: post
+  operationId: postResumeBuilderByIdArtifact
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -4103,6 +3008,7 @@ operations:
     audit: required
 - path: /resume-builder/{id}/set-default
   method: post
+  operationId: postResumeBuilderByIdSetDefault
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -4118,6 +3024,7 @@ operations:
     audit: required
 - path: /resume-builder/{id}/ats-score
   method: post
+  operationId: postResumeBuilderByIdAtsScore
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -4133,6 +3040,7 @@ operations:
     audit: required
 - path: /resume-builder/{id}/ats-optimize
   method: post
+  operationId: postResumeBuilderByIdAtsOptimize
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -4148,6 +3056,7 @@ operations:
     audit: required
 - path: /resume-builder/{id}/generate-cover-letter
   method: post
+  operationId: postResumeBuilderByIdGenerateCoverLetter
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -4163,6 +3072,7 @@ operations:
     audit: required
 - path: /resume-builder/{id}/translate
   method: post
+  operationId: postResumeBuilderByIdTranslate
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -4178,6 +3088,7 @@ operations:
     audit: required
 - path: /resume-builder/{id}/share
   method: post
+  operationId: postResumeBuilderByIdShare
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -4193,6 +3104,7 @@ operations:
     audit: required
 - path: /resume-builder/{id}/chat-thread
   method: get
+  operationId: getResumeBuilderByIdChatThread
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -4202,6 +3114,7 @@ operations:
     audit: none
 - path: /resume-builder/{id}/chat-thread
   method: put
+  operationId: putResumeBuilderByIdChatThread
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -4217,6 +3130,7 @@ operations:
     audit: required
 - path: /resume-builder/shared/{token}
   method: get
+  operationId: getResumeBuilderSharedByToken
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -4226,6 +3140,7 @@ operations:
     audit: none
 - path: /resume-builder/{id}/tex
   method: post
+  operationId: postResumeBuilderByIdTex
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -4241,6 +3156,7 @@ operations:
     audit: required
 - path: /cover-letter/suggest-tone
   method: post
+  operationId: postCoverLetterSuggestTone
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -4256,6 +3172,7 @@ operations:
     audit: required
 - path: /resume-builder/{id}/suggest-section
   method: post
+  operationId: postResumeBuilderByIdSuggestSection
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -4271,6 +3188,7 @@ operations:
     audit: required
 - path: /search/describe
   method: post
+  operationId: postSearchDescribe
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -4286,6 +3204,7 @@ operations:
     audit: required
 - path: /search/describe/from-resume
   method: post
+  operationId: postSearchDescribeFromResume
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -4301,6 +3220,7 @@ operations:
     audit: required
 - path: /email-preferences
   method: get
+  operationId: getEmailPreferences
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -4310,6 +3230,7 @@ operations:
     audit: none
 - path: /email-preferences
   method: put
+  operationId: putEmailPreferences
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -4325,6 +3246,7 @@ operations:
     audit: required
 - path: /email-preferences/by-token
   method: get
+  operationId: getEmailPreferencesByToken
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -4334,6 +3256,7 @@ operations:
     audit: none
 - path: /email-preferences/by-token
   method: put
+  operationId: putEmailPreferencesByToken
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -4349,6 +3272,7 @@ operations:
     audit: required
 - path: /email-preferences/one-click
   method: post
+  operationId: postEmailPreferencesOneClick
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -4364,6 +3288,7 @@ operations:
     audit: required
 - path: /public-cancellation/request
   method: post
+  operationId: postPublicCancellationRequest
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -4379,6 +3304,7 @@ operations:
     audit: required
 - path: /public-cancellation/confirm
   method: post
+  operationId: postPublicCancellationConfirm
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -4394,6 +3320,7 @@ operations:
     audit: required
 - path: /public-deletion/request
   method: post
+  operationId: postPublicDeletionRequest
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -4409,6 +3336,7 @@ operations:
     audit: required
 - path: /public-deletion/confirm
   method: post
+  operationId: postPublicDeletionConfirm
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -4424,6 +3352,7 @@ operations:
     audit: required
 - path: /user-documents
   method: get
+  operationId: getUserDocuments
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -4433,6 +3362,7 @@ operations:
     audit: none
 - path: /user-documents
   method: post
+  operationId: postUserDocuments
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -4448,6 +3378,7 @@ operations:
     audit: required
 - path: /user-documents/translate-preview
   method: post
+  operationId: postUserDocumentsTranslatePreview
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -4463,6 +3394,7 @@ operations:
     audit: required
 - path: /user-documents/save-translation
   method: post
+  operationId: postUserDocumentsSaveTranslation
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -4478,6 +3410,7 @@ operations:
     audit: required
 - path: /user-documents/ats-score-preview
   method: post
+  operationId: postUserDocumentsAtsScorePreview
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -4493,6 +3426,7 @@ operations:
     audit: required
 - path: /user-documents/ats-optimize-preview
   method: post
+  operationId: postUserDocumentsAtsOptimizePreview
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -4508,6 +3442,7 @@ operations:
     audit: required
 - path: /user-documents/{id}/parse-status
   method: get
+  operationId: getUserDocumentsByIdParseStatus
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -4517,6 +3452,7 @@ operations:
     audit: none
 - path: /user-documents/{id}
   method: get
+  operationId: getUserDocumentsById
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -4526,6 +3462,7 @@ operations:
     audit: none
 - path: /user-documents/{id}
   method: put
+  operationId: putUserDocumentsById
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -4541,6 +3478,7 @@ operations:
     audit: required
 - path: /user-documents/{id}
   method: delete
+  operationId: deleteUserDocumentsById
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -4556,6 +3494,7 @@ operations:
     audit: required
 - path: /user-documents/{id}/set-base
   method: post
+  operationId: postUserDocumentsByIdSetBase
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -4571,6 +3510,7 @@ operations:
     audit: required
 - path: /user-documents/{id}/upload
   method: post
+  operationId: postUserDocumentsByIdUpload
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -4586,6 +3526,7 @@ operations:
     audit: required
 - path: /user-documents/{id}/download
   method: get
+  operationId: getUserDocumentsByIdDownload
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -4595,6 +3536,7 @@ operations:
     audit: none
 - path: /user-documents/{id}/translate
   method: post
+  operationId: postUserDocumentsByIdTranslate
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -4610,6 +3552,7 @@ operations:
     audit: required
 - path: /user-documents/{id}/tailor
   method: post
+  operationId: postUserDocumentsByIdTailor
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -4625,6 +3568,7 @@ operations:
     audit: required
 - path: /user-documents/{id}/ats-score
   method: post
+  operationId: postUserDocumentsByIdAtsScore
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -4640,6 +3584,7 @@ operations:
     audit: required
 - path: /user-documents/{id}/ats-optimize
   method: post
+  operationId: postUserDocumentsByIdAtsOptimize
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -4655,6 +3600,7 @@ operations:
     audit: required
 - path: /user-documents/{id}/share
   method: post
+  operationId: postUserDocumentsByIdShare
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -4670,6 +3616,7 @@ operations:
     audit: required
 - path: /user-documents/shared/{token}
   method: get
+  operationId: getUserDocumentsSharedByToken
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -4677,156 +3624,3 @@ operations:
     token:
       max-ttl: 3600
     audit: none
-- path: /webhooks/apple
-  method: post
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /webhooks/inbound-email
-  method: post
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /webhooks/instagram
-  method: get
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /webhooks/instagram
-  method: post
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /webhooks/meta-leadgen
-  method: get
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /webhooks/meta-leadgen
-  method: post
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /webhooks/native-billing/app-store
-  method: post
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /webhooks/native-billing/google-play
-  method: post
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /webhooks/ses-events
-  method: post
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /webhooks/stripe
-  method: post
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /webhooks/telegram/{token}
-  method: post
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required

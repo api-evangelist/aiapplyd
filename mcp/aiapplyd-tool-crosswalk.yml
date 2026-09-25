@@ -1,73 +1,473 @@
-generated: '2026-09-23'
+generated: '2026-09-25'
 method: derived
 source:
 - mcp/aiapplyd-mcp-tools-list.json
 - openapi/aiapplyd-openapi.yml
-note: The published OpenAPI carries no operationIds (0 of 372 operations), so REST bindings are recorded as METHOD
-  + path, matched by name and semantics.
+- https://api.aiapplyd.com/api/v1/openapi.json
+- https://github.com/api-evangelist/aiapplyd/pull/1 (tool-to-route bindings stated by the provider from its MCP server source)
+note: 'The live contract now carries an operationId on all 265 operations, so bindings are operationIds (routes kept beside
+  them). The tool-to-route bindings were stated by AI Applyd in api-evangelist/aiapplyd PR #1, read from its own MCP server
+  source, which is not public; API Evangelist checked that every route exists in the live contract fetched 2026-09-25 and
+  that each binding agrees with the tool name, description and inputSchema. Confidence is high on that basis.'
 surfaces:
   openapi: openapi/aiapplyd-openapi.yml
-  mcp: https://mcp.aiapplyd.com/mcp (tools/list anonymous; calls OAuth-gated)
+  mcp: https://mcp.aiapplyd.com/mcp (initialize/tools/list anonymous; tools/call OAuth-gated, 401)
   graphql: null
 crosswalk:
+- tool: aiapplyd_get_matches
+  category: jobs
+  rest:
+  - getJobMatches
+  - getJobMatchesById
+  - postJobsParseUrl
+  routes:
+  - GET /job-matches
+  - GET /job-matches/{id}
+  - POST /jobs/parse-url
+  binding: rest
+  confidence: high
+  note: POST /jobs/parse-url serves the job_url input, which reads a posting without saving it.
+- tool: aiapplyd_apply
+  category: applications
+  rest:
+  - getJobMatchesById
+  - postJobsParseUrl
+  - postJobs
+  - putJobsById
+  - postApplicationsPrepare
+  routes:
+  - GET /job-matches/{id}
+  - POST /jobs/parse-url
+  - POST /jobs
+  - PUT /jobs/{id}
+  - POST /applications/prepare
+  binding: rest
+  confidence: high
+  note: POST /applications/prepare takes jobMatchId and mode. A job_url first runs parse-url, then POST /jobs (idempotent
+    per user and normalized source URL), then PUT /jobs/{id} to mint the match, then prepare.
+- tool: aiapplyd_get_applications
+  category: applications
+  rest:
+  - getApplications
+  - getApplicationsByIdByResultId
+  - getApplicationsByResultIdScreenshotByVariant
+  routes:
+  - GET /applications
+  - GET /applications/by-id/{resultId}
+  - GET /applications/{resultId}/screenshot/{variant}
+  binding: rest
+  confidence: high
+- tool: aiapplyd_review_application
+  category: applications
+  rest:
+  - postApplicationsByResultIdApprove
+  - postApplicationsResultsApproveBatch
+  - postApplicationsByResultIdReject
+  - postApplicationsByResultIdCancel
+  - postApplicationsByResultIdRefine
+  - postApplicationsByResultIdRePrepare
+  - patchApplicationsByResultIdStage
+  routes:
+  - POST /applications/{resultId}/approve
+  - POST /applications/results/approve-batch
+  - POST /applications/{resultId}/reject
+  - POST /applications/{resultId}/cancel
+  - POST /applications/{resultId}/refine
+  - POST /applications/{resultId}/re-prepare
+  - PATCH /applications/{resultId}/stage
+  binding: rest
+  confidence: high
+  note: One tool, six decisions (approve, reject, cancel, refine, re_prepare, set_stage) over application_ids. Two or more
+    approvals go through approve-batch.
+- tool: aiapplyd_get_account
+  category: account
+  rest:
+  - getBillingSubscription
+  - getApplicationsUsage
+  - getAiQuota
+  - getJobMatchesPreferences
+  - getApplicationProfile
+  - getUserDocuments
+  - getAuthHealth
+  - getAiPersona
+  routes:
+  - GET /billing/subscription
+  - GET /applications/usage
+  - GET /ai/quota
+  - GET /job-matches/preferences
+  - GET /application-profile
+  - GET /user-documents
+  - GET /auth-health
+  - GET /ai-persona
+  binding: rest
+  confidence: high
+  note: Independent reads in parallel, composed into one account and readiness view.
+- tool: aiapplyd_set_resume
+  category: resume
+  rest:
+  - postOnboardingParseResume
+  - postUserDocumentsByIdSetBase
+  - getUserDocumentsByIdParseStatus
+  routes:
+  - POST /onboarding/parse-resume
+  - POST /user-documents/{id}/set-base
+  - GET /user-documents/{id}/parse-status
+  binding: rest
+  confidence: high
+  note: resume_text and resume_url are sent to parse-resume as a multipart file; document_id uses set-base.
+- tool: aiapplyd_triage_matches
+  category: jobs
+  rest:
+  - postJobMatchesByIdSave
+  - postJobMatchesByIdDismiss
+  routes:
+  - POST /job-matches/{id}/save
+  - POST /job-matches/{id}/dismiss
+  binding: rest
+  confidence: high
 - tool: aiapplyd_score_resume
   category: scoring
   rest:
+  - postAtsScore
+  routes:
   - POST /ats/score
+  binding: rest
+  confidence: high
+- tool: aiapplyd_analyze_job_description
+  category: jobs
+  rest:
+  - postJobsExtractKeywords
+  routes:
+  - POST /jobs/extract-keywords
   binding: rest
   confidence: high
 - tool: aiapplyd_optimize_resume
   category: resume
   rest:
+  - postAtsOptimize
+  routes:
   - POST /ats/optimize
   binding: rest
   confidence: high
 - tool: aiapplyd_generate_interview_questions
   category: interview
   rest:
+  - postJobs
+  - postJobsByIdGenerateInterviewPrep
+  - getJobsById
+  - getApplicationsByIdByResultId
+  routes:
+  - POST /jobs
   - POST /jobs/{id}/generate-interview-prep
+  - GET /jobs/{id}
+  - GET /applications/by-id/{resultId}
   binding: rest
-  confidence: low
-  note: REST route is keyed to a stored job; the tool takes free-text title/company/description.
+  confidence: high
+  note: Free-text title, company and description create a job record first; an application_id reads the job from the application.
 - tool: aiapplyd_translate_resume
   category: resume
   rest:
-  - POST /user-documents/translate-preview
-  - POST /user-documents/{id}/translate
+  - getResumeBuilder
+  - postResumeBuilderByIdTranslate
+  routes:
+  - GET /resume-builder
+  - POST /resume-builder/{id}/translate
   binding: rest
-  confidence: medium
+  confidence: high
 - tool: aiapplyd_search_jobs
   category: jobs
   rest:
+  - getJobMatches
+  routes:
   - GET /job-matches
   binding: rest
-  confidence: medium
-  note: Tool searches the curated match feed; REST lists the signed-in user's job matches.
+  confidence: high
+  note: Shares the handler of aiapplyd_get_matches; searches the curated match feed.
 - tool: aiapplyd_update_job_preferences
   category: jobs
   rest:
+  - putJobMatchesPreferences
+  - putApplicationProfile
+  routes:
   - PUT /job-matches/preferences
+  - PUT /application-profile
   binding: rest
   confidence: high
+  note: application_answers go to PUT /application-profile; the other fields to PUT /job-matches/preferences.
 - tool: aiapplyd_generate_cover_letter
   category: cover-letter
   rest:
+  - getResumeBuilder
+  - postResumeBuilderByIdGenerateCoverLetter
+  - getResumeBuilderById
+  - getApplicationsByIdByResultId
+  - postApplicationsByResultIdRefine
+  routes:
+  - GET /resume-builder
   - POST /resume-builder/{id}/generate-cover-letter
+  - GET /resume-builder/{id}
+  - GET /applications/by-id/{resultId}
+  - POST /applications/{resultId}/refine
   binding: rest
-  confidence: low
-  note: REST route is keyed to a resume-builder document; the tool takes a job description and company name.
-mcp_only:
-- tool: aiapplyd_analyze_job_description
-  reason: No REST route in the published contract analyzes a free-text job description on its own.
-- tool: aiapplyd_auto_apply
-  reason: Applications are created by the product pipeline; no public REST route accepts a job URL to apply to.
+  confidence: high
+  note: With an application_id the tool refines that application's cover letter; otherwise it writes one from the saved resume.
 - tool: aiapplyd_build_pdf
-  reason: No REST route in the contract takes resume text and a template and returns a PDF.
-rest_only: []
+  category: resume
+  rest:
+  - postResumeBuilder
+  - postResumeBuilderByIdShare
+  routes:
+  - POST /resume-builder
+  - POST /resume-builder/{id}/share
+  binding: rest
+  confidence: high
+  note: share is called only when make_public is true.
+- tool: aiapplyd_auto_apply
+  category: applications
+  rest:
+  - postJobsParseUrl
+  - postJobs
+  - putJobsById
+  - postApplicationsPrepare
+  routes:
+  - POST /jobs/parse-url
+  - POST /jobs
+  - PUT /jobs/{id}
+  - POST /applications/prepare
+  binding: alias
+  confidence: high
+  note: Older name for aiapplyd_apply with a job_url, kept for existing clients.
+mcp_only: []
+rest_only:
+- deleteAccount
+- deleteJobsById
+- deleteProofPointsById
+- deleteResumeBuilderById
+- deleteSavedSearchesById
+- deleteStarStoriesById
+- deleteUserDocumentsById
+- getAccount
+- getAccountExport
+- getAchievements
+- getAiQualityStats
+- getAiStatus
+- getAnalytics
+- getAnalyticsPatterns
+- getApplicationsByJobMatchByJobMatchId
+- getApplicationsByResultIdAiEditAvailableScopes
+- getApplicationsByResultIdAiEditPreview
+- getApplicationsByResultIdAtsCredentials
+- getApplicationsByResultIdDownloadByType
+- getApplicationsByResultIdGenerationStatus
+- getApplicationsByResultIdLiveView
+- getApplicationsByResultIdNegotiate
+- getApplicationsByResultIdQueuePosition
+- getApplicationsByResultIdStaleness
+- getApplicationsByResultIdSubmissionInfo
+- getApplicationsPipelineStatus
+- getAuthCapabilities
+- getBillingActionCosts
+- getBillingInvoices
+- getBillingUsage
+- getBlogAllContent
+- getBlogAuthorsBySlug
+- getBlogFeatured
+- getBlogPosts
+- getBlogPostsBySlug
+- getBlogPostsBySlugRelated
+- getBlogTagByTag
+- getBlogTags
+- getCompaniesById
+- getCompaniesLookup
+- getDashboardBootstrap
+- getEmailPreferences
+- getEmailPreferencesByToken
+- getFollowUps
+- getFollowUpsByApplicationIdDraft
+- getFollowUpsHistory
+- getHealth
+- getIntegrationsGoogleCallback
+- getIntegrationsGoogleConnect
+- getIntegrationsGoogleStatus
+- getJobMatchesByIdEvaluation
+- getJobMatchesWorkStyleSupply
+- getJobs
+- getJobsAtsScoresByAtsScoreId
+- getJobsByIdAtsScores
+- getJobsByIdGhostingStatus
+- getJobsStats
+- getLocationsCountries
+- getLocationsInitialSuggestions
+- getLocationsPopular
+- getLocationsSearch
+- getNotifications
+- getOnboardingDiscoverStatus
+- getOnboardingProfile
+- getOnboardingResumePrefill
+- getOutreachByApplicationResultIdContacts
+- getOutreachJobByJobIdContacts
+- getOverview
+- getOverviewSuggestions
+- getPricing
+- getPricingSubscriptions
+- getProofPoints
+- getPublicCompetitors
+- getPublicCompetitorsBySlug
+- getPublicCompetitorsBySlugAlternatives
+- getPublicReviews
+- getReferralsStats
+- getRelayInbox
+- getRelayInboxById
+- getRelayInboxByIdAttachmentsByPartId
+- getRelayInboxByIdThread
+- getRelayInboxCounts
+- getRelayInboxForwardingStop
+- getResumeBuilderByIdChatThread
+- getResumeBuilderSharedByToken
+- getResumeBuilderTemplates
+- getReviewsMe
+- getSavedSearches
+- getStarStories
+- getTrackingActivityByJobListingId
+- getTrackingActivityFeed
+- getTrackingActivitySummary
+- getUserDocumentsById
+- getUserDocumentsByIdDownload
+- getUserDocumentsSharedByToken
+- getUserPreferences
+- patchAiPersonaScoringWeights
+- patchApplicationsByResultIdDocument
+- patchNotificationsDismiss
+- patchNotificationsRead
+- patchProofPointsById
+- patchRelayInboxByIdArchive
+- patchRelayInboxByIdCategory
+- patchRelayInboxByIdRead
+- patchRelayInboxByIdStar
+- patchSavedSearchesById
+- patchStarStoriesById
+- patchUserPreferences
+- postAccountAppleAuthorization
+- postAiActivate
+- postAiPersonaDeriveCustomTone
+- postAiPersonaSuggestNarrative
+- postAiPersonaSuggestTone
+- postAiQualityCheck
+- postAiRun
+- postAnalyticsRecommendationsApply
+- postApplicationProfileSuggest
+- postApplicationsByJobIdLevelStrategy
+- postApplicationsByResultIdAiEditFinalize
+- postApplicationsByResultIdAiEditOpen
+- postApplicationsByResultIdAiEditRewind
+- postApplicationsByResultIdAtsCredentialsByCredentialIdReveal
+- postApplicationsByResultIdExtractForm
+- postApplicationsByResultIdGenerateOutreach
+- postApplicationsByResultIdNegotiate
+- postApplicationsByResultIdParseTailoredResume
+- postApplicationsByResultIdRetry
+- postApplicationsByResultIdRetryPrep
+- postApplicationsByResultIdSwitchDocument
+- postApplicationsPersonalizationPlan
+- postApplicationsRecoverStuck
+- postAuthTestLogin
+- postBillingCancelSubscription
+- postBillingCreateCheckoutSession
+- postBillingCreatePortalSession
+- postBillingNativeVerify
+- postBillingSubscriptionSwitch
+- postBillingSyncAfterCheckout
+- postCoverLetterSuggestTone
+- postCspReport
+- postEmailPreferencesOneClick
+- postFollowUpsByApplicationIdSendGmail
+- postFollowUpsByApplicationIdSent
+- postIntegrationsGoogleDisconnect
+- postJobMatchesApplyRelaxation
+- postJobMatchesByIdEvaluate
+- postJobMatchesByIdVerifyLive
+- postJobMatchesRequestMore
+- postJobMatchesReset
+- postJobMatchesRevertWidening
+- postJobMatchesSubscribeCell
+- postJobMatchesValidateRole
+- postJobsByIdAtsScore
+- postJobsByIdCompIntelligence
+- postJobsByIdGenerateAll
+- postJobsCompare
+- postJobsImportUrl
+- postLinkedinImportExport
+- postLinkedinImportProfile
+- postLinkedinImportProfileHtml
+- postMcpSession
+- postNativeBillingBootstrap
+- postNativeBillingPurchasesAccept
+- postNotificationsPushToken
+- postNotificationsPushTokenUnregister
+- postOnboardingAutoSetup
+- postOnboardingComplete
+- postOnboardingEscrow
+- postOnboardingEscrowRedeem
+- postOnboardingProfile
+- postOutreachByApplicationResultIdDraft
+- postOutreachJobByJobIdDraft
+- postProofPoints
+- postProofPointsSuggest
+- postPublicAtsScore
+- postPublicAtsScoreUpload
+- postPublicCancellationConfirm
+- postPublicCancellationRequest
+- postPublicDeletionConfirm
+- postPublicDeletionRequest
+- postReferralsConvert
+- postReferralsTrack
+- postRelayInboxBulk
+- postRelayInboxByIdReply
+- postRelayInboxForwardingStop
+- postResumeBuilderByIdArtifact
+- postResumeBuilderByIdAtsOptimize
+- postResumeBuilderByIdAtsScore
+- postResumeBuilderByIdImportInline
+- postResumeBuilderByIdSetDefault
+- postResumeBuilderByIdSuggestSection
+- postResumeBuilderByIdTex
+- postResumeBuilderImport
+- postReviewsMe
+- postSavedSearches
+- postSearchDescribe
+- postSearchDescribeFromResume
+- postStarStories
+- postStarStoriesDraft
+- postStarStoriesExtractFromInterviewPrepByJobId
+- postStarStoriesGenerateFromResume
+- postSupport
+- postSupportPublicContentReport
+- postUserDocuments
+- postUserDocumentsAtsOptimizePreview
+- postUserDocumentsAtsScorePreview
+- postUserDocumentsByIdAtsOptimize
+- postUserDocumentsByIdAtsScore
+- postUserDocumentsByIdShare
+- postUserDocumentsByIdTailor
+- postUserDocumentsByIdTranslate
+- postUserDocumentsByIdUpload
+- postUserDocumentsSaveTranslation
+- postUserDocumentsTranslatePreview
+- putAccount
+- putAiPersona
+- putApplicationsByResultIdFormValues
+- putEmailPreferences
+- putEmailPreferencesByToken
+- putJobsByIdStage
+- putResumeBuilderById
+- putResumeBuilderByIdChatThread
+- putUserDocumentsById
+rest_only_note: 'Operations no MCP tool calls: account, admin-facing product, billing, notifications, outreach and the other
+  routes the web app uses.'
 coverage:
-  tools: 10
-  bound: 7
-  mcp_only: 3
-  rest_operations: 372
-rest_only_note: the remaining operations of the 372 in the contract (account, billing, applications, admin, internal,
-  webhooks) have no tool; not enumerated
+  tools: 17
+  bound: 17
+  mcp_only: 0
+  rest_operations: 265
+  rest_bound: 42
+  rest_only: 223

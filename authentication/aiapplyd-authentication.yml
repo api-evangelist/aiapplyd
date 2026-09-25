@@ -1,4 +1,4 @@
-generated: '2026-09-23'
+generated: '2026-09-25'
 method: searched
 source:
 - https://api.aiapplyd.com/api/v1/openapi.json
@@ -9,13 +9,14 @@ schemes:
   type: http
   scheme: bearer
   applies_to: AI Applyd API (api.aiapplyd.com/api/v1)
-  description: 'Better Auth session token passed as `Authorization: Bearer <token>` on session-auth routes (McpSessionData
-    schema).'
-  note: The contract names BearerAuth in its top-level security requirement but does not define it under components.securitySchemes.
+  description: 'Session token from signing in to AI Applyd, sent as `Authorization: Bearer <token>` (the contract''s own components.securitySchemes.BearerAuth
+    description).'
+  note: Declared in components.securitySchemes and applied as the top-level security requirement since the 2026-09-25 contract;
+    on 2026-09-23 it was referenced but undeclared.
 - name: x-api-key
   type: apiKey
   in: header
-  applies_to: internal service-to-service routes only (/internal/*, /mcp/session)
+  applies_to: internal service-to-service route /mcp/session (the /internal/* routes left the public contract on 2026-09-25)
   description: Operation descriptions say "Internal (x-api-key)".
 - name: MCP OAuth
   type: oauth2
@@ -37,6 +38,9 @@ schemes:
   - email
   - profile
   - offline_access
-summary: REST backend uses session bearer tokens; the MCP server is an OAuth 2.1 protected resource (RFC 9728) with
-  public clients, PKCE and dynamic client registration.
+  client_id_metadata_document_supported: true
+  authorization_response_iss_parameter_supported: true
+summary: REST backend uses session bearer tokens (BearerAuth, declared in the contract); the MCP server is an OAuth 2.1 protected
+  resource (RFC 9728) with public clients, PKCE, dynamic client registration, Client ID Metadata Documents and the RFC 9207
+  iss parameter.
 docs: https://aiapplyd.com/mcps

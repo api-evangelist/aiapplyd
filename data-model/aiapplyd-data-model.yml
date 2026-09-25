@@ -1,4 +1,4 @@
-generated: '2026-09-23'
+generated: '2026-09-25'
 method: derived
 generator: derive-data-model.py
 source:
@@ -6,8 +6,8 @@ source:
 notation: has_one = property $ref; has_many = array of $ref; belongs_to = <entity>_id field
 summary:
   entities: 400
-  entities_in_spec: 882
-  relationships: 456
+  entities_in_spec: 633
+  relationships: 442
 entities:
 - name: AIPersonaData
   fields: 16
@@ -67,100 +67,27 @@ entities:
 - name: ActivityTimelineResponse
   fields: 3
   description: Successful API response
-- name: AdminBlogPost
-  fields: 17
-- name: AdminBlogPostListItem
-  fields: 15
-- name: AdminBlogPostResponse
+- name: AiEditAvailableScopesResponse
   fields: 3
   description: Successful API response
-- name: AdminBlogPostsListResponse
-  fields: 3
-  description: Successful API response
-- name: AdminCacheWarmData
+- name: AiEditDraft
   fields: 2
-- name: AdminCacheWarmResponse
-  fields: 3
-  description: Successful API response
-- name: AdminCloseJobData
+- name: AiEditDraftSections
   fields: 4
-- name: AdminCloseJobResponse
+- name: AiEditFinalizeResponse
   fields: 3
   description: Successful API response
-- name: AdminDeadJobSweepData
-  fields: 6
-- name: AdminDeadJobSweepResponse
+- name: AiEditOpenResponse
   fields: 3
   description: Successful API response
-- name: AdminGenerateSitemapsData
-  fields: 2
-- name: AdminGenerateSitemapsResponse
-  fields: 3
-  description: Successful API response
-- name: AdminGscSyncData
-  fields: 4
-- name: AdminGscSyncResponse
-  fields: 3
-  description: Successful API response
-- name: AdminIndexingApiPushData
-  fields: 2
-- name: AdminIndexingApiPushResponse
-  fields: 3
-  description: Successful API response
-- name: AdminRecoverStuckCandidate
-  fields: 6
-- name: AdminRecoverStuckData
-  fields: 4
-- name: AdminRecoverStuckResponse
-  fields: 3
-  description: Successful API response
-- name: AdminRedispatchData
-  fields: 3
-- name: AdminRedispatchFence
-  fields: 4
-  description: Populated whenever the retry-eligibility gate refused the row, whether or not an exoneration then
-    lifted it. Null when the row was never fenced (or was held / not found, where nothing was read).
-- name: AdminRedispatchOutcome
-  fields: 6
-- name: AdminRedispatchResponse
-  fields: 3
-  description: Successful API response
-- name: AdminReviewData
-  fields: 14
-- name: AdminReviewListResponse
-  fields: 3
-  description: Successful API response
-- name: AdminReviewResponse
-  fields: 3
-  description: Successful API response
-- name: AdminStripeSyncCustomerData
-  fields: 2
-- name: AdminStripeSyncCustomerResponse
-  fields: 3
-  description: Successful API response
-- name: AdminSuccessResponse
-  fields: 3
-  description: Successful API response
-- name: AdminSweepAllData
-  fields: 7
-- name: AdminSweepAllOrgBreakdown
-  fields: 6
-- name: AdminSweepAllResponse
-  fields: 3
-  description: Successful API response
-- name: AdminTitleSeedData
-  fields: 4
-- name: AdminTitleSeedResponse
-  fields: 3
-  description: Successful API response
-- name: AdminTokenCreditData
-  fields: 6
-- name: AdminTokenCreditResponse
+- name: AiEditRewindResponse
   fields: 3
   description: Successful API response
 - name: AllPostsWithContentResponse
   fields: 3
   description: Successful API response
+- name: AlternativeProsCons
+  fields: 2
 - name: AlternativeRow
   fields: 10
 - name: AlternativesEnrichment
@@ -170,63 +97,92 @@ entities:
 - name: AnalyticsResponse
   fields: 3
   description: Successful API response
+- name: AnonymousAtsScorePayload
+  fields: 5
 - name: AnonymousAtsScoreResponse
   fields: 3
   description: Successful API response
+- name: ApiErrorResponse
+  fields: 3
+- name: AppleAuthorizationStoredResponse
+  fields: 3
+  description: Successful API response
+- name: ApplicationConfigData
+  fields: 11
+- name: ApplicationFailedNotificationContent
+  fields: 2
+- name: ApplicationFailedNotificationPayload
+  fields: 3
 - name: ApplicationProfileData
   fields: 40
 - name: ApplicationProfileResponse
   fields: 3
   description: Successful API response
+- name: ApplicationProfileSuggestions
+  fields: 4
 - name: ApplicationQuota
   fields: 4
   description: Application multi-period quota
+- name: ApplicationQuotaResponse
+  fields: 3
+  description: Successful API response
+- name: ApplicationReadyToSendNotificationContent
+  fields: 2
+- name: ApplicationReadyToSendNotificationPayload
+  fields: 3
 - name: ApplicationResultData
   fields: 68
 - name: ApplicationResultItemResponse
   fields: 3
   description: Successful API response
-- name: ApplyAccountStatusResponse
+- name: ApplicationResultListResponse
   fields: 3
   description: Successful API response
-- name: ApplyContextResponse
+- name: ApplicationSubmittedNotificationContent
+  fields: 2
+- name: ApplicationSubmittedNotificationPayload
+  fields: 3
+- name: ApplicationsUsageResponse
   fields: 3
   description: Successful API response
-- name: ApplyExitQuarantineResponse
-  fields: 3
-  description: Successful API response
-- name: ApplyHeartbeatResponse
-  fields: 3
-  description: Successful API response
-- name: ApplyReceiptResponse
+- name: ApplyDocumentPatchResponse
   fields: 3
   description: Successful API response
 - name: ApplyRecommendationResponse
   fields: 3
   description: Successful API response
+- name: ApplyRecommendationResult
+  fields: 3
+- name: ApplyRelaxationData
+  fields: 4
 - name: ApplyRelaxationResponse
   fields: 3
   description: Successful API response
-- name: ApplyStepResponse
+- name: ApproveResultResponse
   fields: 3
   description: Successful API response
-- name: ApplySuccessRatesResponse
+- name: AtsGapAnalysis
+  fields: 4
+- name: AtsKeywordStrategy
+  fields: 4
+  description: Keyword injection strategy by resume section (populated when jobDescription is provided, null otherwise)
+- name: AtsOptimizeDocumentData
   fields: 3
-  description: Successful API response
-- name: ApplyVerificationResponse
-  fields: 3
-  description: Successful API response
-- name: ApplyWarmIdentityData
-  fields: 3
-- name: ApplyWarmIdentityResponse
-  fields: 3
-  description: Successful API response
 - name: AtsOptimizeDocumentResponse
   fields: 3
   description: Successful API response
+- name: AtsOptimizeRequest
+  fields: 2
+- name: AtsOptimizeTextData
+  fields: 3
 - name: AtsOptimizeTextResponse
   fields: 3
   description: Successful API response
+- name: AtsRequirementMapping
+  fields: 4
+- name: AtsRoleClassification
+  fields: 4
+  description: Role classification and archetype detection (populated when jobDescription is provided, null otherwise)
 - name: AtsScore
   fields: 11
 - name: AtsScoreData
@@ -245,6 +201,9 @@ entities:
 - name: AtsScoreTextResponse
   fields: 3
   description: Successful API response
+- name: AtsSectionScores
+  fields: 5
+  description: Per-section ATS sub-scores derived from the analysis.
 - name: AtsSuggestion
   fields: 3
 - name: AuthCapabilitiesPayload
@@ -257,40 +216,24 @@ entities:
 - name: AuthHealthResponse
   fields: 3
   description: Successful API response
+- name: AuthHealthUser
+  fields: 12
+- name: AuthProviders
+  fields: 4
 - name: AutoSetupData
   fields: 4
+- name: AutoSetupPreferencesData
+  fields: 10
 - name: AutoSetupResponse
   fields: 3
   description: Successful API response
-- name: BackfillCompaniesFromJobsResponse
+- name: BlockerRow
   fields: 3
-  description: Successful API response
-- name: BackfillCompanyIntelResponse
-  fields: 3
-  description: Successful API response
-- name: BackfillJobDescriptionDerivativesResponse
-  fields: 3
-  description: Successful API response
-- name: BackfillLinkedinApplyUrlsResponse
-  fields: 3
-  description: Successful API response
-- name: BackfillScrapedJobContentHashResponse
-  fields: 3
-  description: Successful API response
-- name: BackfillScrapedJobsResponse
-  fields: 3
-  description: Successful API response
 - name: BlogAuthor
   fields: 7
 - name: BlogAuthorWithPostsPayload
   fields: 2
 - name: BlogAuthorWithPostsResponse
-  fields: 3
-  description: Successful API response
-- name: BlogAuthorsListResponse
-  fields: 3
-  description: Successful API response
-- name: BlogCategoriesListResponse
   fields: 3
   description: Successful API response
 - name: BlogPost
@@ -300,26 +243,32 @@ entities:
   description: Successful API response
 - name: BlogPostSummary
   fields: 16
+- name: BlogPostWithRelevance
+  fields: 0
 - name: BlogPostsListResponse
   fields: 3
   description: Successful API response
-- name: BoardSweepResponse
+- name: BulkApproveResponse
   fields: 3
   description: Successful API response
 - name: CancelResponse
   fields: 3
   description: Successful API response
+- name: CancelResultData
+  fields: 2
+- name: CancelSubscriptionPayload
+  fields: 5
 - name: CancelSubscriptionResponse
   fields: 3
   description: Successful API response
-- name: CanonicalizePreferencesResponse
-  fields: 3
-  description: Successful API response
+- name: CaseStudyRecommendation
+  fields: 5
+  description: Recommended case study project to present during the interview. Null when none applies.
 - name: CategoriesListResponse
   fields: 3
   description: Successful API response
-- name: CategorySummary
-  fields: 3
+- name: CategoryCount
+  fields: 4
 - name: ChatThreadData
   fields: 2
 - name: ChatThreadResponse
@@ -327,51 +276,77 @@ entities:
   description: Successful API response
 - name: ChatThreadUIMessage
   fields: 3
-- name: ClearAiBreakerResponse
+- name: CompIntelligenceResponse
   fields: 3
   description: Successful API response
+- name: CompanyProfile
+  fields: 20
 - name: CompanyProfileResponse
   fields: 3
   description: Successful API response
-- name: ComparisonResponse
-  fields: 3
-  description: Successful API response
-- name: ComparisonResultData
-  fields: 6
 - name: CompetitorAlternativesPayload
   fields: 3
 - name: CompetitorAlternativesResponse
   fields: 3
   description: Successful API response
+- name: CompetitorComparisonRow
+  fields: 4
+  description: Single row in the feature-by-feature comparison grid.
 - name: CompetitorDetail
   fields: 15
 - name: CompetitorDetailResponse
   fields: 3
   description: Successful API response
+- name: CompetitorFaq
+  fields: 3
+  description: Single FAQ entry surfaced on a competitor comparison page.
+- name: CompetitorListItem
+  fields: 6
 - name: CompetitorListPayload
   fields: 1
 - name: CompetitorListResponse
   fields: 3
   description: Successful API response
+- name: CompetitorPillar
+  fields: 3
+  description: Single pillar card shown on a competitor comparison page.
+- name: ConfigListResponse
+  fields: 3
+  description: Paginated response with items and pagination metadata
+- name: ConfirmCancellationData
+  fields: 3
 - name: ConfirmCancellationResponse
   fields: 3
   description: Successful API response
+- name: ConfirmDeletionData
+  fields: 3
 - name: ConfirmDeletionResponse
   fields: 3
   description: Successful API response
+- name: ConvertReferralPayload
+  fields: 1
 - name: ConvertReferralResponse
   fields: 3
   description: Successful API response
-- name: CreateBlogPostRequest
-  fields: 13
+- name: CountrySummary
+  fields: 5
+- name: CreateCheckoutSessionResponse
+  fields: 3
+  description: Successful API response
 - name: CreatePortalSessionResponse
   fields: 3
   description: Successful API response
 - name: CreateResumeBuildRequest
   fields: 15
+- name: CreateSavedSearch
+  fields: 3
 - name: CvChange
   fields: 5
 - name: CvMatchBlock
+  fields: 3
+- name: CvMatchGap
+  fields: 2
+- name: CvMatchRequirement
   fields: 3
 - name: DailyApplication
   fields: 2
@@ -380,22 +355,50 @@ entities:
 - name: DashboardBootstrapResponse
   fields: 3
   description: Successful API response
+- name: DeriveCustomToneData
+  fields: 6
 - name: DeriveCustomToneResponse
   fields: 3
   description: Successful API response
 - name: DescribeSearchResult
   fields: 3
+- name: DimensionScores
+  fields: 10
+  description: Score per dimension (0-5)
+- name: DimensionWeights
+  fields: 10
+  description: Weight per dimension (sums to 1.0)
+- name: DiscoverStatusData
+  fields: 5
 - name: DiscoverStatusResponse
   fields: 3
   description: Successful API response
+- name: DocumentAtsScoredNotificationContent
+  fields: 2
+- name: DocumentAtsScoredNotificationPayload
+  fields: 2
+- name: DocumentTranslationReadyNotificationContent
+  fields: 2
+- name: DocumentTranslationReadyNotificationPayload
+  fields: 2
+- name: DocumentUploadedNotificationContent
+  fields: 2
+- name: DocumentUploadedNotificationPayload
+  fields: 2
+- name: DownlevelAcceptanceCriteria
+  fields: 3
 - name: DownlevelPlan
   fields: 3
   description: Non-null only when direction == 'downlevel'.
+- name: DraftStarStoryData
+  fields: 8
 - name: DraftStarStoryResponse
   fields: 3
   description: Successful API response
 - name: EducationEntry
   fields: 7
+- name: EducationItem
+  fields: 3
 - name: EmailPreferencesData
   fields: 8
 - name: EmailPreferencesResponse
@@ -404,14 +407,34 @@ entities:
 - name: EmailPreferencesUpdatedResponse
   fields: 3
   description: Successful API response
+- name: EmployerReceiptConfirmedNotificationContent
+  fields: 2
+- name: EmployerReceiptConfirmedNotificationPayload
+  fields: 3
+- name: EnsureConfigResponse
+  fields: 3
+  description: Successful API response
+- name: EvaluateMatchData
+  fields: 3
 - name: EvaluateMatchResponse
   fields: 3
   description: Successful API response
+- name: EvaluationBlocks
+  fields: 9
+  description: Persisted structured 7-block payload (Blocks A-G). Null when no evaluation has been generated yet
+    OR the stored blob failed schema validation.
 - name: ExperienceEntry
   fields: 7
 - name: ExtractFormData
   fields: 2
+- name: ExtractFormField
+  fields: 4
 - name: ExtractFormResponse
+  fields: 3
+  description: Successful API response
+- name: ExtractFormScreeningAnswer
+  fields: 3
+- name: ExtractKeywordsResponse
   fields: 3
   description: Successful API response
 - name: ExtractStarStoriesData
@@ -419,21 +442,33 @@ entities:
 - name: ExtractStarStoriesResponse
   fields: 3
   description: Successful API response
-- name: F2F13UsageResponse
-  fields: 3
-  description: Successful API response
+- name: ExtractedStarStoryCandidate
+  fields: 8
+- name: FollowUpDraftData
+  fields: 7
 - name: FollowUpDraftResponse
   fields: 3
   description: Successful API response
+- name: FollowUpHistoryItem
+  fields: 10
 - name: FollowUpHistoryPage
   fields: 2
 - name: FollowUpHistoryResponse
   fields: 3
   description: Successful API response
-- name: ForceProbeResponse
+- name: FollowUpListResponse
   fields: 3
   description: Successful API response
+- name: FormFieldValue
+  fields: 3
+- name: FormFieldsLogEntry
+  fields: 5
 - name: FormValuesRequest
+  fields: 2
+- name: FormValuesResponse
+  fields: 3
+  description: Successful API response
+- name: FormsLeftData
   fields: 2
 - name: GenerateInterviewPrepResponse
   fields: 3
@@ -449,6 +484,8 @@ entities:
 - name: GenerateTexResponse
   fields: 3
   description: Successful API response
+- name: GenerateTexResponseData
+  fields: 2
 - name: GenerationStatusData
   fields: 7
 - name: GenerationStatusResponse
@@ -459,39 +496,14 @@ entities:
 - name: GetActionCostsResponse
   fields: 3
   description: Successful API response
-- name: GetCoverageData
-  fields: 3
-- name: GetCoverageResponse
-  fields: 3
-  description: Successful API response
 - name: GetEvaluationData
   fields: 6
 - name: GetEvaluationResponse
   fields: 3
   description: Successful API response
-- name: GetGscHealthData
-  fields: 3
-- name: GetGscHealthResponse
-  fields: 3
-  description: Successful API response
 - name: GetInvoicesPayload
   fields: 2
 - name: GetInvoicesResponse
-  fields: 3
-  description: Successful API response
-- name: GetPostHogStatusData
-  fields: 4
-- name: GetPostHogStatusResponse
-  fields: 3
-  description: Successful API response
-- name: GetScrapeHealthData
-  fields: 3
-- name: GetScrapeHealthResponse
-  fields: 3
-  description: Successful API response
-- name: GetScrapeRoundDetailData
-  fields: 4
-- name: GetScrapeRoundDetailResponse
   fields: 3
   description: Successful API response
 - name: GetSubscriptionPayload
@@ -509,9 +521,13 @@ entities:
 - name: GhostingStatusResponse
   fields: 3
   description: Successful API response
+- name: GoogleConnectData
+  fields: 1
 - name: GoogleConnectResponse
   fields: 3
   description: Successful API response
+- name: GoogleDisconnectData
+  fields: 2
 - name: GoogleDisconnectResponse
   fields: 3
   description: Successful API response
@@ -522,24 +538,26 @@ entities:
 - name: GoogleStatusResponse
   fields: 3
   description: Successful API response
+- name: HealthPayload
+  fields: 4
 - name: HealthResponse
   fields: 3
   description: Successful API response
-- name: IndexNowRepingResponse
+- name: ImportFromDocumentResponse
   fields: 3
   description: Successful API response
-- name: IndexNowSubmitResponse
-  fields: 3
-  description: Successful API response
-- name: InternalFreshRunData
-  fields: 3
-- name: InternalFreshRunResponse
+- name: ImportJobByUrlResponse
   fields: 3
   description: Successful API response
 - name: InterviewPrepData
   fields: 15
+- name: InvoiceItemPayload
+  fields: 10
 - name: JobListing
   fields: 28
+- name: JobListingCreatedResponse
+  fields: 3
+  description: Successful API response
 - name: JobListingListItem
   fields: 31
 - name: JobListingListResponse
@@ -550,7 +568,12 @@ entities:
   description: Successful API response
 - name: JobMatchPreferencesData
   fields: 22
+- name: JobStatsData
+  fields: 5
 - name: JobStatsResponse
+  fields: 3
+  description: Successful API response
+- name: JobSuccessResponse
   fields: 3
   description: Successful API response
 - name: LevelStrategyBlock
@@ -568,21 +591,13 @@ entities:
     node shape.
 - name: LinkedinChange
   fields: 5
-- name: ListDynamicLocationsData
-  fields: 2
-- name: ListDynamicLocationsResponse
+- name: LinkedinImportResponse
   fields: 3
   description: Successful API response
-- name: ListDynamicRoleFamiliesData
-  fields: 2
-- name: ListDynamicRoleFamiliesResponse
-  fields: 3
-  description: Successful API response
-- name: ListScrapeRoundsData
+- name: LiveMatchData
+  fields: 10
+- name: LiveViewData
   fields: 4
-- name: ListScrapeRoundsResponse
-  fields: 3
-  description: Successful API response
 - name: LiveViewResponse
   fields: 3
   description: Successful API response
@@ -598,7 +613,12 @@ entities:
 - name: LocationSearchResponse
   fields: 3
   description: Successful API response
+- name: MarkFollowUpSentData
+  fields: 6
 - name: MarkFollowUpSentResponse
+  fields: 3
+  description: Successful API response
+- name: MatchActionResponse
   fields: 3
   description: Successful API response
 - name: MatchData
@@ -608,16 +628,16 @@ entities:
 - name: MatchListResponse
   fields: 3
   description: Successful API response
+- name: MatchQualityWeek
+  fields: 4
 - name: MatchResponse
   fields: 3
   description: Successful API response
-- name: MaterializeJobMatchResponse
-  fields: 3
-  description: Successful API response
+- name: MatchesReadyNotificationContent
+  fields: 2
+- name: MatchesReadyNotificationPayload
+  fields: 1
 - name: McpSessionResponse
-  fields: 3
-  description: Successful API response
-- name: MediaListResponse
   fields: 3
   description: Successful API response
 - name: MintOnboardingEscrowResponse
@@ -649,9 +669,6 @@ entities:
   description: Successful API response
 - name: OfferComparisonResult
   fields: 3
-- name: OfferResponse
-  fields: 3
-  description: Successful API response
 - name: OfferScore
   fields: 7
 - name: OnboardingCompleteData
@@ -662,8 +679,6 @@ entities:
 - name: OnboardingProfileResponse
   fields: 3
   description: Successful API response
-- name: OnboardingProfileUpsert
-  fields: 25
 - name: OutcomeMetrics
   fields: 6
   description: Real-outcome success metrics from the email + calendar pipeline (interviews booked, offers, upcoming
@@ -711,7 +726,10 @@ entities:
   fields: 3
   description: Successful API response
 - name: ParsedResumeData
-  fields: 23
+  fields: 29
+- name: PatchUserPreferencesResponse
+  fields: 3
+  description: Successful API response
 - name: PatternAnalysisData
   fields: 6
 - name: PersonalInfo
@@ -739,9 +757,6 @@ entities:
 - name: PopularLocationsResponse
   fields: 3
   description: Successful API response
-- name: PostMeta
-  fields: 5
-  description: SEO metadata for blog posts
 - name: PreferencesResponse
   fields: 3
   description: Successful API response
@@ -768,9 +783,6 @@ entities:
 - name: PublicReviewsResponse
   fields: 3
   description: Successful API response
-- name: PurgeStaleResponse
-  fields: 3
-  description: Successful API response
 - name: QualityCheckResponse
   fields: 3
   description: Successful API response
@@ -785,21 +797,11 @@ entities:
 - name: RePrepareResponse
   fields: 3
   description: Successful API response
-- name: ReceiptProofArmResponse
-  fields: 3
-  description: Successful API response
 - name: RedeemOnboardingEscrowPayload
   fields: 2
 - name: RedeemOnboardingEscrowResponse
   fields: 3
   description: Successful API response
-- name: RediscoverMatchesData
-  fields: 2
-- name: RediscoverMatchesResponse
-  fields: 3
-  description: Successful API response
-- name: RediscoverMatchesUserResult
-  fields: 6
 - name: ReferralStatsPayload
   fields: 8
 - name: ReferralStatsResponse
@@ -827,12 +829,6 @@ entities:
 - name: RelayInboxStateResponse
   fields: 3
   description: Successful API response
-- name: RepairDescriptionsResponse
-  fields: 3
-  description: Successful API response
-- name: ReparseLocationResponse
-  fields: 3
-  description: Successful API response
 - name: RequestCancellationResponse
   fields: 3
   description: Successful API response
@@ -845,9 +841,6 @@ entities:
 - name: ResetMatchesResponse
   fields: 3
   description: Successful API response
-- name: ResetOnboardingResponse
-  fields: 3
-  description: Successful API response
 - name: ResponseMetadata
   fields: 5
 - name: ResumeBuild
@@ -858,6 +851,9 @@ entities:
 - name: ResumeBuildResponse
   fields: 3
   description: Successful API response
+- name: ResumePrefillResponse
+  fields: 3
+  description: Successful API response
 - name: RevertWideningResponse
   fields: 3
   description: Successful API response
@@ -865,18 +861,11 @@ entities:
   fields: 3
   description: Successful API response
 - name: SavedSearchCriteria
-  fields: 16
+  fields: 18
   description: Filter criteria snapshot (mirrors job match preference filters)
 - name: SavedSearchData
   fields: 8
 - name: SavedSearchResponse
-  fields: 3
-  description: Successful API response
-- name: ScrapeHealthSummary
-  fields: 2
-- name: ScrapeKickData
-  fields: 11
-- name: ScrapeKickResponse
   fields: 3
   description: Successful API response
 - name: ScreenshotInfoData
@@ -897,13 +886,7 @@ entities:
 - name: SellSeniorPlan
   fields: 3
   description: Non-null only when direction is 'at_level' or 'stretch_up'.
-- name: SendChurnCheckinResponse
-  fields: 3
-  description: Successful API response
 - name: SendFollowUpGmailResponse
-  fields: 3
-  description: Successful API response
-- name: SendRescueZeroMatchResponse
   fields: 3
   description: Successful API response
 - name: ShareDocumentResponse
@@ -1004,18 +987,6 @@ entities:
 - name: TestLoginResponse
   fields: 3
   description: Successful API response
-- name: TriggerBackfillEmbeddingsResponse
-  fields: 3
-  description: Successful API response
-- name: TriggerEnrichmentBackfillResponse
-  fields: 3
-  description: Successful API response
-- name: TriggerScraperResponse
-  fields: 3
-  description: Successful API response
-- name: UnquarantineResponse
-  fields: 3
-  description: Successful API response
 - name: UpdateResumeBuildRequest
   fields: 16
 - name: UpdateStageResponse
@@ -1047,10 +1018,6 @@ entities:
 - name: VerifyLiveResponse
   fields: 3
   description: Successful API response
-- name: WarmIdentityCookie
-  fields: 16
-- name: WarmIdentityPatch
-  fields: 2
 - name: WorkStyleSupplyResponse
   fields: 3
   description: Successful API response
@@ -1063,7 +1030,15 @@ relationships:
   to: ResponseMetadata
   type: has_one
   via: meta
+- from: ApiErrorResponse
+  to: ResponseMetadata
+  type: has_one
+  via: meta
 - from: AccountUpdatedResponse
+  to: ResponseMetadata
+  type: has_one
+  via: meta
+- from: AppleAuthorizationStoredResponse
   to: ResponseMetadata
   type: has_one
   via: meta
@@ -1080,6 +1055,10 @@ relationships:
   type: has_one
   via: meta
 - from: OverviewData
+  to: FormsLeftData
+  type: has_one
+  via: formsLeftData
+- from: OverviewData
   to: OutcomeMetrics
   type: has_one
   via: outcomes
@@ -1095,379 +1074,11 @@ relationships:
   to: Suggestion
   type: has_many
   via: suggestions
-- from: AdminBlogPostsListResponse
-  to: AdminBlogPostListItem
-  type: has_many
-  via: data
-- from: AdminBlogPostsListResponse
+- from: ConfigListResponse
   to: ResponseMetadata
   type: has_one
   via: meta
-- from: AdminBlogPostListItem
-  to: CategorySummary
-  type: has_many
-  via: categories
-- from: AdminBlogPostResponse
-  to: AdminBlogPost
-  type: has_one
-  via: data
-- from: AdminBlogPostResponse
-  to: ResponseMetadata
-  type: has_one
-  via: meta
-- from: AdminBlogPost
-  to: CategorySummary
-  type: has_many
-  via: categories
-- from: AdminBlogPost
-  to: LexicalContent
-  type: has_one
-  via: content
-- from: AdminBlogPost
-  to: PostMeta
-  type: has_one
-  via: meta
-- from: CreateBlogPostRequest
-  to: LexicalContent
-  type: has_one
-  via: content
-- from: CreateBlogPostRequest
-  to: PostMeta
-  type: has_one
-  via: meta
-- from: AdminSuccessResponse
-  to: ResponseMetadata
-  type: has_one
-  via: meta
-- from: BlogAuthorsListResponse
-  to: ResponseMetadata
-  type: has_one
-  via: meta
-- from: BlogCategoriesListResponse
-  to: ResponseMetadata
-  type: has_one
-  via: meta
-- from: MediaListResponse
-  to: ResponseMetadata
-  type: has_one
-  via: meta
-- from: TriggerScraperResponse
-  to: ResponseMetadata
-  type: has_one
-  via: meta
-- from: TriggerEnrichmentBackfillResponse
-  to: ResponseMetadata
-  type: has_one
-  via: meta
-- from: TriggerBackfillEmbeddingsResponse
-  to: ResponseMetadata
-  type: has_one
-  via: meta
-- from: PurgeStaleResponse
-  to: ResponseMetadata
-  type: has_one
-  via: meta
-- from: BackfillScrapedJobsResponse
-  to: ResponseMetadata
-  type: has_one
-  via: meta
-- from: BackfillLinkedinApplyUrlsResponse
-  to: ResponseMetadata
-  type: has_one
-  via: meta
-- from: ReparseLocationResponse
-  to: ResponseMetadata
-  type: has_one
-  via: meta
-- from: BackfillScrapedJobContentHashResponse
-  to: ResponseMetadata
-  type: has_one
-  via: meta
-- from: BackfillJobDescriptionDerivativesResponse
-  to: ResponseMetadata
-  type: has_one
-  via: meta
-- from: BackfillCompanyIntelResponse
-  to: ResponseMetadata
-  type: has_one
-  via: meta
-- from: BackfillCompaniesFromJobsResponse
-  to: ResponseMetadata
-  type: has_one
-  via: meta
-- from: CanonicalizePreferencesResponse
-  to: ResponseMetadata
-  type: has_one
-  via: meta
-- from: MaterializeJobMatchResponse
-  to: ResponseMetadata
-  type: has_one
-  via: meta
-- from: ReceiptProofArmResponse
-  to: ResponseMetadata
-  type: has_one
-  via: meta
-- from: RediscoverMatchesResponse
-  to: RediscoverMatchesData
-  type: has_one
-  via: data
-- from: RediscoverMatchesResponse
-  to: ResponseMetadata
-  type: has_one
-  via: meta
-- from: RediscoverMatchesData
-  to: RediscoverMatchesUserResult
-  type: has_many
-  via: results
-- from: BoardSweepResponse
-  to: ResponseMetadata
-  type: has_one
-  via: meta
-- from: ScrapeKickResponse
-  to: ScrapeKickData
-  type: has_one
-  via: data
-- from: ScrapeKickResponse
-  to: ResponseMetadata
-  type: has_one
-  via: meta
-- from: ClearAiBreakerResponse
-  to: ResponseMetadata
-  type: has_one
-  via: meta
-- from: AdminStripeSyncCustomerResponse
-  to: AdminStripeSyncCustomerData
-  type: has_one
-  via: data
-- from: AdminStripeSyncCustomerResponse
-  to: ResponseMetadata
-  type: has_one
-  via: meta
-- from: AdminTokenCreditResponse
-  to: AdminTokenCreditData
-  type: has_one
-  via: data
-- from: AdminTokenCreditResponse
-  to: ResponseMetadata
-  type: has_one
-  via: meta
-- from: AdminCloseJobResponse
-  to: AdminCloseJobData
-  type: has_one
-  via: data
-- from: AdminCloseJobResponse
-  to: ResponseMetadata
-  type: has_one
-  via: meta
-- from: RepairDescriptionsResponse
-  to: ResponseMetadata
-  type: has_one
-  via: meta
-- from: AdminDeadJobSweepResponse
-  to: AdminDeadJobSweepData
-  type: has_one
-  via: data
-- from: AdminDeadJobSweepResponse
-  to: ResponseMetadata
-  type: has_one
-  via: meta
-- from: AdminSweepAllResponse
-  to: AdminSweepAllData
-  type: has_one
-  via: data
-- from: AdminSweepAllResponse
-  to: ResponseMetadata
-  type: has_one
-  via: meta
-- from: AdminSweepAllData
-  to: AdminSweepAllOrgBreakdown
-  type: has_many
-  via: byOrg
-- from: AdminGscSyncResponse
-  to: AdminGscSyncData
-  type: has_one
-  via: data
-- from: AdminGscSyncResponse
-  to: ResponseMetadata
-  type: has_one
-  via: meta
-- from: AdminIndexingApiPushResponse
-  to: AdminIndexingApiPushData
-  type: has_one
-  via: data
-- from: AdminIndexingApiPushResponse
-  to: ResponseMetadata
-  type: has_one
-  via: meta
-- from: AdminGenerateSitemapsResponse
-  to: AdminGenerateSitemapsData
-  type: has_one
-  via: data
-- from: AdminGenerateSitemapsResponse
-  to: ResponseMetadata
-  type: has_one
-  via: meta
-- from: AdminCacheWarmResponse
-  to: AdminCacheWarmData
-  type: has_one
-  via: data
-- from: AdminCacheWarmResponse
-  to: ResponseMetadata
-  type: has_one
-  via: meta
-- from: GetGscHealthResponse
-  to: GetGscHealthData
-  type: has_one
-  via: data
-- from: GetGscHealthResponse
-  to: ResponseMetadata
-  type: has_one
-  via: meta
-- from: AdminTitleSeedResponse
-  to: AdminTitleSeedData
-  type: has_one
-  via: data
-- from: AdminTitleSeedResponse
-  to: ResponseMetadata
-  type: has_one
-  via: meta
-- from: AdminRecoverStuckResponse
-  to: AdminRecoverStuckData
-  type: has_one
-  via: data
-- from: AdminRecoverStuckResponse
-  to: ResponseMetadata
-  type: has_one
-  via: meta
-- from: AdminRecoverStuckData
-  to: AdminRecoverStuckCandidate
-  type: has_many
-  via: flipped
-- from: AdminRecoverStuckData
-  to: AdminRecoverStuckCandidate
-  type: has_many
-  via: wouldChange
-- from: AdminRedispatchResponse
-  to: AdminRedispatchData
-  type: has_one
-  via: data
-- from: AdminRedispatchResponse
-  to: ResponseMetadata
-  type: has_one
-  via: meta
-- from: AdminRedispatchData
-  to: AdminRedispatchOutcome
-  type: has_many
-  via: outcomes
-- from: AdminRedispatchOutcome
-  to: AdminRedispatchFence
-  type: has_one
-  via: fence
-- from: GetPostHogStatusResponse
-  to: GetPostHogStatusData
-  type: has_one
-  via: data
-- from: GetPostHogStatusResponse
-  to: ResponseMetadata
-  type: has_one
-  via: meta
-- from: ListDynamicRoleFamiliesResponse
-  to: ListDynamicRoleFamiliesData
-  type: has_one
-  via: data
-- from: ListDynamicRoleFamiliesResponse
-  to: ResponseMetadata
-  type: has_one
-  via: meta
-- from: ListDynamicLocationsResponse
-  to: ListDynamicLocationsData
-  type: has_one
-  via: data
-- from: ListDynamicLocationsResponse
-  to: ResponseMetadata
-  type: has_one
-  via: meta
-- from: IndexNowSubmitResponse
-  to: ResponseMetadata
-  type: has_one
-  via: meta
-- from: IndexNowRepingResponse
-  to: ResponseMetadata
-  type: has_one
-  via: meta
-- from: SendRescueZeroMatchResponse
-  to: ResponseMetadata
-  type: has_one
-  via: meta
-- from: SendChurnCheckinResponse
-  to: ResponseMetadata
-  type: has_one
-  via: meta
-- from: GetCoverageResponse
-  to: GetCoverageData
-  type: has_one
-  via: data
-- from: GetCoverageResponse
-  to: ResponseMetadata
-  type: has_one
-  via: meta
-- from: F2F13UsageResponse
-  to: ResponseMetadata
-  type: has_one
-  via: meta
-- from: ApplySuccessRatesResponse
-  to: ResponseMetadata
-  type: has_one
-  via: meta
-- from: GetScrapeHealthResponse
-  to: GetScrapeHealthData
-  type: has_one
-  via: data
-- from: GetScrapeHealthResponse
-  to: ResponseMetadata
-  type: has_one
-  via: meta
-- from: GetScrapeHealthData
-  to: ScrapeHealthSummary
-  type: has_one
-  via: summary
-- from: ListScrapeRoundsResponse
-  to: ListScrapeRoundsData
-  type: has_one
-  via: data
-- from: ListScrapeRoundsResponse
-  to: ResponseMetadata
-  type: has_one
-  via: meta
-- from: UnquarantineResponse
-  to: ResponseMetadata
-  type: has_one
-  via: meta
-- from: ForceProbeResponse
-  to: ResponseMetadata
-  type: has_one
-  via: meta
-- from: GetScrapeRoundDetailResponse
-  to: GetScrapeRoundDetailData
-  type: has_one
-  via: data
-- from: GetScrapeRoundDetailResponse
-  to: ResponseMetadata
-  type: has_one
-  via: meta
-- from: ResetOnboardingResponse
-  to: ResponseMetadata
-  type: has_one
-  via: meta
-- from: AdminReviewListResponse
-  to: ResponseMetadata
-  type: has_one
-  via: meta
-- from: AdminReviewResponse
-  to: AdminReviewData
-  type: has_one
-  via: data
-- from: AdminReviewResponse
+- from: EnsureConfigResponse
   to: ResponseMetadata
   type: has_one
   via: meta
@@ -1480,6 +1091,14 @@ relationships:
   type: has_one
   via: meta
 - from: RunApplicationsResponse
+  to: ResponseMetadata
+  type: has_one
+  via: meta
+- from: ApplicationQuotaResponse
+  to: ResponseMetadata
+  type: has_one
+  via: meta
+- from: ApplicationResultListResponse
   to: ResponseMetadata
   type: has_one
   via: meta
@@ -1507,7 +1126,15 @@ relationships:
   to: PersonalInfo
   type: has_one
   via: personalInfo
+- from: ApplicationsUsageResponse
+  to: ResponseMetadata
+  type: has_one
+  via: meta
 - from: PrepareApplicationResponse
+  to: ResponseMetadata
+  type: has_one
+  via: meta
+- from: BulkApproveResponse
   to: ResponseMetadata
   type: has_one
   via: meta
@@ -1519,6 +1146,14 @@ relationships:
   to: ResponseMetadata
   type: has_one
   via: meta
+- from: ApproveResultResponse
+  to: ResponseMetadata
+  type: has_one
+  via: meta
+- from: CancelResponse
+  to: CancelResultData
+  type: has_one
+  via: data
 - from: CancelResponse
   to: ResponseMetadata
   type: has_one
@@ -1544,6 +1179,10 @@ relationships:
   type: has_one
   via: submissionInfo
 - from: LiveViewResponse
+  to: LiveViewData
+  type: has_one
+  via: data
+- from: LiveViewResponse
   to: ResponseMetadata
   type: has_one
   via: meta
@@ -1555,6 +1194,22 @@ relationships:
   to: ResponseMetadata
   type: has_one
   via: meta
+- from: ExtractFormData
+  to: ExtractFormField
+  type: has_many
+  via: formFields
+- from: ExtractFormData
+  to: ExtractFormScreeningAnswer
+  type: has_many
+  via: screeningAnswers
+- from: FormValuesResponse
+  to: ResponseMetadata
+  type: has_one
+  via: meta
+- from: FormValuesRequest
+  to: FormFieldValue
+  type: has_many
+  via: formFields
 - from: ScreenshotInfoResponse
   to: ScreenshotInfoData
   type: has_one
@@ -1563,11 +1218,19 @@ relationships:
   to: ResponseMetadata
   type: has_one
   via: meta
+- from: ScreenshotInfoData
+  to: FormFieldsLogEntry
+  type: has_many
+  via: formFieldsLog
 - from: GenerateOutreachResponse
   to: OutreachMessagesData
   type: has_one
   via: data
 - from: GenerateOutreachResponse
+  to: ResponseMetadata
+  type: has_one
+  via: meta
+- from: ApplyDocumentPatchResponse
   to: ResponseMetadata
   type: has_one
   via: meta
@@ -1647,6 +1310,10 @@ relationships:
   to: SellSeniorPlan
   type: has_one
   via: sellSeniorPlan
+- from: DownlevelPlan
+  to: DownlevelAcceptanceCriteria
+  type: has_one
+  via: acceptanceCriteria
 - from: PersonalizationPlanResponse
   to: PersonalizationPlanData
   type: has_one
@@ -1663,6 +1330,30 @@ relationships:
   to: LinkedinChange
   type: has_many
   via: linkedinChanges
+- from: AiEditOpenResponse
+  to: ResponseMetadata
+  type: has_one
+  via: meta
+- from: AiEditDraft
+  to: AiEditDraftSections
+  type: has_one
+  via: sections
+- from: AiEditRewindResponse
+  to: ResponseMetadata
+  type: has_one
+  via: meta
+- from: AiEditFinalizeResponse
+  to: ResponseMetadata
+  type: has_one
+  via: meta
+- from: AiEditAvailableScopesResponse
+  to: ResponseMetadata
+  type: has_one
+  via: meta
+- from: CreateCheckoutSessionResponse
+  to: ResponseMetadata
+  type: has_one
+  via: meta
 - from: CreatePortalSessionResponse
   to: ResponseMetadata
   type: has_one
@@ -1691,6 +1382,10 @@ relationships:
   to: SubscriptionPayload
   type: has_one
   via: subscription
+- from: CancelSubscriptionResponse
+  to: CancelSubscriptionPayload
+  type: has_one
+  via: data
 - from: CancelSubscriptionResponse
   to: ResponseMetadata
   type: has_one
@@ -1727,6 +1422,10 @@ relationships:
   to: ResponseMetadata
   type: has_one
   via: meta
+- from: GetInvoicesPayload
+  to: InvoiceItemPayload
+  type: has_many
+  via: invoices
 - from: GetUsageResponse
   to: GetUsagePayload
   type: has_one
@@ -1824,6 +1523,10 @@ relationships:
   type: has_one
   via: meta
 - from: CategoriesListResponse
+  to: CategoryCount
+  type: has_many
+  via: data
+- from: CategoriesListResponse
   to: ResponseMetadata
   type: has_one
   via: meta
@@ -1851,6 +1554,10 @@ relationships:
   to: ResponseMetadata
   type: has_one
   via: meta
+- from: RelatedPostsResponse
+  to: BlogPostWithRelevance
+  type: has_many
+  via: data
 - from: RelatedPostsResponse
   to: ResponseMetadata
   type: has_one
@@ -1891,6 +1598,14 @@ relationships:
   to: MatchListData
   type: has_one
   via: jobMatches
+- from: DashboardBootstrapData
+  to: ApplicationConfigData
+  type: has_one
+  via: agentConfig
+- from: AuthHealthData
+  to: AuthHealthUser
+  type: has_one
+  via: user
 - from: AnalyticsData
   to: DailyApplication
   type: has_many
@@ -1899,6 +1614,10 @@ relationships:
   to: DailyApplication
   type: has_many
   via: dailyApplications
+- from: AnalyticsData
+  to: MatchQualityWeek
+  type: has_many
+  via: matchQualityByWeek
 - from: AnalyticsData
   to: OutcomeMetrics
   type: has_one
@@ -1923,6 +1642,10 @@ relationships:
   to: MatchData
   type: has_many
   via: items
+- from: MatchListData
+  to: LiveMatchData
+  type: has_many
+  via: liveRows
 - from: FollowUpHistoryResponse
   to: FollowUpHistoryPage
   type: has_one
@@ -1931,10 +1654,26 @@ relationships:
   to: ResponseMetadata
   type: has_one
   via: meta
+- from: FollowUpHistoryPage
+  to: FollowUpHistoryItem
+  type: has_many
+  via: items
+- from: FollowUpListResponse
+  to: ResponseMetadata
+  type: has_one
+  via: meta
+- from: FollowUpDraftResponse
+  to: FollowUpDraftData
+  type: has_one
+  via: data
 - from: FollowUpDraftResponse
   to: ResponseMetadata
   type: has_one
   via: meta
+- from: MarkFollowUpSentResponse
+  to: MarkFollowUpSentData
+  type: has_one
+  via: data
 - from: MarkFollowUpSentResponse
   to: ResponseMetadata
   type: has_one
@@ -1983,12 +1722,48 @@ relationships:
   to: ResponseMetadata
   type: has_one
   via: meta
+- from: CreateSavedSearch
+  to: SavedSearchCriteria
+  type: has_one
+  via: criteria
 - from: NotificationFeedResponse
   to: ResponseMetadata
   type: has_one
   via: meta
+- from: ApplicationReadyToSendNotificationContent
+  to: ApplicationReadyToSendNotificationPayload
+  type: has_one
+  via: payload
+- from: ApplicationSubmittedNotificationContent
+  to: ApplicationSubmittedNotificationPayload
+  type: has_one
+  via: payload
+- from: EmployerReceiptConfirmedNotificationContent
+  to: EmployerReceiptConfirmedNotificationPayload
+  type: has_one
+  via: payload
+- from: ApplicationFailedNotificationContent
+  to: ApplicationFailedNotificationPayload
+  type: has_one
+  via: payload
+- from: MatchesReadyNotificationContent
+  to: MatchesReadyNotificationPayload
+  type: has_one
+  via: payload
 - from: AchievementUnlockedNotificationContent
   to: AchievementUnlockedNotificationPayload
+  type: has_one
+  via: payload
+- from: DocumentUploadedNotificationContent
+  to: DocumentUploadedNotificationPayload
+  type: has_one
+  via: payload
+- from: DocumentAtsScoredNotificationContent
+  to: DocumentAtsScoredNotificationPayload
+  type: has_one
+  via: payload
+- from: DocumentTranslationReadyNotificationContent
+  to: DocumentTranslationReadyNotificationPayload
   type: has_one
   via: payload
 - from: NotificationMutationResponse
@@ -2040,6 +1815,10 @@ relationships:
   type: belongs_to
   via: jobListingId
 - from: HealthResponse
+  to: HealthPayload
+  type: has_one
+  via: data
+- from: HealthResponse
   to: ResponseMetadata
   type: has_one
   via: meta
@@ -2059,10 +1838,18 @@ relationships:
   to: ResponseMetadata
   type: has_one
   via: meta
+- from: AuthCapabilitiesPayload
+  to: AuthProviders
+  type: has_one
+  via: providers
 - from: TestLoginResponse
   to: ResponseMetadata
   type: has_one
   via: meta
+- from: GoogleConnectResponse
+  to: GoogleConnectData
+  type: has_one
+  via: data
 - from: GoogleConnectResponse
   to: ResponseMetadata
   type: has_one
@@ -2084,65 +1871,13 @@ relationships:
   type: has_one
   via: gmail
 - from: GoogleDisconnectResponse
-  to: ResponseMetadata
-  type: has_one
-  via: meta
-- from: ApplyHeartbeatResponse
-  to: ResponseMetadata
-  type: has_one
-  via: meta
-- from: InternalFreshRunResponse
-  to: InternalFreshRunData
+  to: GoogleDisconnectData
   type: has_one
   via: data
-- from: InternalFreshRunResponse
+- from: GoogleDisconnectResponse
   to: ResponseMetadata
   type: has_one
   via: meta
-- from: ApplyStepResponse
-  to: ResponseMetadata
-  type: has_one
-  via: meta
-- from: ApplyVerificationResponse
-  to: ResponseMetadata
-  type: has_one
-  via: meta
-- from: ApplyAccountStatusResponse
-  to: ResponseMetadata
-  type: has_one
-  via: meta
-- from: ApplyContextResponse
-  to: ResponseMetadata
-  type: has_one
-  via: meta
-- from: ApplyExitQuarantineResponse
-  to: ResponseMetadata
-  type: has_one
-  via: meta
-- from: ApplyWarmIdentityResponse
-  to: ApplyWarmIdentityData
-  type: has_one
-  via: data
-- from: ApplyWarmIdentityResponse
-  to: ResponseMetadata
-  type: has_one
-  via: meta
-- from: ApplyWarmIdentityData
-  to: WarmIdentityCookie
-  type: has_many
-  via: cookies
-- from: WarmIdentityPatch
-  to: WarmIdentityCookie
-  type: has_many
-  via: cookies
-- from: ApplyReceiptResponse
-  to: ResponseMetadata
-  type: has_one
-  via: meta
-- from: PreferencesResponse
-  to: JobMatchPreferencesData
-  type: has_one
-  via: data
 - from: PreferencesResponse
   to: ResponseMetadata
   type: has_one
@@ -2167,6 +1902,10 @@ relationships:
   to: ResponseMetadata
   type: has_one
   via: meta
+- from: MatchActionResponse
+  to: ResponseMetadata
+  type: has_one
+  via: meta
 - from: SubscribeCellResponse
   to: SubscribeCellPayload
   type: has_one
@@ -2188,6 +1927,10 @@ relationships:
   type: has_one
   via: meta
 - from: ApplyRelaxationResponse
+  to: ApplyRelaxationData
+  type: has_one
+  via: data
+- from: ApplyRelaxationResponse
   to: ResponseMetadata
   type: has_one
   via: meta
@@ -2200,6 +1943,10 @@ relationships:
   type: has_one
   via: meta
 - from: EvaluateMatchResponse
+  to: EvaluateMatchData
+  type: has_one
+  via: data
+- from: EvaluateMatchResponse
   to: ResponseMetadata
   type: has_one
   via: meta
@@ -2211,6 +1958,18 @@ relationships:
   to: ResponseMetadata
   type: has_one
   via: meta
+- from: GetEvaluationData
+  to: EvaluationBlocks
+  type: has_one
+  via: blocks
+- from: CvMatchBlock
+  to: CvMatchGap
+  type: has_many
+  via: gaps
+- from: CvMatchBlock
+  to: CvMatchRequirement
+  type: has_many
+  via: requirements
 - from: LevelStrategyBlock
   to: DownlevelPlan
   type: has_one
@@ -2231,6 +1990,10 @@ relationships:
   to: ResponseMetadata
   type: has_one
   via: meta
+- from: ExtractKeywordsResponse
+  to: ResponseMetadata
+  type: has_one
+  via: meta
 - from: OfferComparisonResponse
   to: OfferComparisonResult
   type: has_one
@@ -2243,7 +2006,19 @@ relationships:
   to: OfferScore
   type: has_many
   via: offers
+- from: OfferComparisonResult
+  to: DimensionWeights
+  type: has_one
+  via: weights
+- from: OfferScore
+  to: DimensionScores
+  type: has_one
+  via: scores
 - from: ParseJobUrlResponse
+  to: ResponseMetadata
+  type: has_one
+  via: meta
+- from: ImportJobByUrlResponse
   to: ResponseMetadata
   type: has_one
   via: meta
@@ -2264,6 +2039,10 @@ relationships:
   type: belongs_to
   via: userDocumentId
 - from: JobStatsResponse
+  to: JobStatsData
+  type: has_one
+  via: data
+- from: JobStatsResponse
   to: ResponseMetadata
   type: has_one
   via: meta
@@ -2275,11 +2054,19 @@ relationships:
   to: ResponseMetadata
   type: has_one
   via: meta
+- from: JobListingCreatedResponse
+  to: ResponseMetadata
+  type: has_one
+  via: meta
 - from: JobListingResponse
   to: JobListing
   type: has_one
   via: data
 - from: JobListingResponse
+  to: ResponseMetadata
+  type: has_one
+  via: meta
+- from: JobSuccessResponse
   to: ResponseMetadata
   type: has_one
   via: meta
@@ -2299,7 +2086,15 @@ relationships:
   to: ResponseMetadata
   type: has_one
   via: meta
+- from: InterviewPrepData
+  to: CaseStudyRecommendation
+  type: has_one
+  via: caseStudyRecommendation
 - from: PollingResponse
+  to: ResponseMetadata
+  type: has_one
+  via: meta
+- from: CompIntelligenceResponse
   to: ResponseMetadata
   type: has_one
   via: meta
@@ -2319,6 +2114,14 @@ relationships:
   to: JobListing
   type: belongs_to
   via: jobListingId
+- from: LinkedinImportResponse
+  to: ResponseMetadata
+  type: has_one
+  via: meta
+- from: ParsedResumeData
+  to: EducationItem
+  type: has_many
+  via: education
 - from: McpSessionResponse
   to: ResponseMetadata
   type: has_one
@@ -2331,6 +2134,14 @@ relationships:
   to: ResponseMetadata
   type: has_one
   via: meta
+- from: AtsScoreTextData
+  to: AtsSectionScores
+  type: has_one
+  via: sectionScores
+- from: AtsOptimizeTextResponse
+  to: AtsOptimizeTextData
+  type: has_one
+  via: data
 - from: AtsOptimizeTextResponse
   to: ResponseMetadata
   type: has_one
@@ -2351,11 +2162,23 @@ relationships:
   to: ResponseMetadata
   type: has_one
   via: meta
+- from: AutoSetupData
+  to: AutoSetupPreferencesData
+  type: has_one
+  via: preferences
+- from: DiscoverStatusResponse
+  to: DiscoverStatusData
+  type: has_one
+  via: data
 - from: DiscoverStatusResponse
   to: ResponseMetadata
   type: has_one
   via: meta
 - from: OnboardingProfileResponse
+  to: ResponseMetadata
+  type: has_one
+  via: meta
+- from: ResumePrefillResponse
   to: ResponseMetadata
   type: has_one
   via: meta
@@ -2379,10 +2202,6 @@ relationships:
   to: ResponseMetadata
   type: has_one
   via: meta
-- from: RedeemOnboardingEscrowPayload
-  to: OnboardingProfileUpsert
-  type: has_one
-  via: answers
 - from: PricingResponse
   to: PricingWithLimitsPayload
   type: has_one
@@ -2419,6 +2238,10 @@ relationships:
   to: ResponseMetadata
   type: has_one
   via: meta
+- from: SuggestApplicationProfileData
+  to: ApplicationProfileSuggestions
+  type: has_one
+  via: suggestions
 - from: AIPersonaResponse
   to: AIPersonaData
   type: has_one
@@ -2436,6 +2259,10 @@ relationships:
   type: has_one
   via: meta
 - from: DeriveCustomToneResponse
+  to: DeriveCustomToneData
+  type: has_one
+  via: data
+- from: DeriveCustomToneResponse
   to: ResponseMetadata
   type: has_one
   via: meta
@@ -2447,6 +2274,10 @@ relationships:
   to: ResponseMetadata
   type: has_one
   via: meta
+- from: PatchUserPreferencesResponse
+  to: ResponseMetadata
+  type: has_one
+  via: meta
 - from: StarStoryResponse
   to: StarStoryData
   type: has_one
@@ -2455,6 +2286,10 @@ relationships:
   to: ResponseMetadata
   type: has_one
   via: meta
+- from: DraftStarStoryResponse
+  to: DraftStarStoryData
+  type: has_one
+  via: data
 - from: DraftStarStoryResponse
   to: ResponseMetadata
   type: has_one
@@ -2479,6 +2314,10 @@ relationships:
   to: ResponseMetadata
   type: has_one
   via: meta
+- from: ExtractStarStoriesData
+  to: ExtractedStarStoryCandidate
+  type: has_many
+  via: candidates
 - from: AchievementsResponse
   to: AchievementsData
   type: has_one
@@ -2511,18 +2350,6 @@ relationships:
   to: ProofPointData
   type: has_many
   via: created
-- from: OfferResponse
-  to: ResponseMetadata
-  type: has_one
-  via: meta
-- from: ComparisonResponse
-  to: ComparisonResultData
-  type: has_one
-  via: data
-- from: ComparisonResponse
-  to: ResponseMetadata
-  type: has_one
-  via: meta
 - from: CompetitorListResponse
   to: CompetitorListPayload
   type: has_one
@@ -2531,6 +2358,10 @@ relationships:
   to: ResponseMetadata
   type: has_one
   via: meta
+- from: CompetitorListPayload
+  to: CompetitorListItem
+  type: has_many
+  via: competitors
 - from: CompetitorDetailResponse
   to: CompetitorDetail
   type: has_one
@@ -2539,6 +2370,18 @@ relationships:
   to: ResponseMetadata
   type: has_one
   via: meta
+- from: CompetitorDetail
+  to: CompetitorComparisonRow
+  type: has_many
+  via: comparisonRows
+- from: CompetitorDetail
+  to: CompetitorFaq
+  type: has_many
+  via: faqs
+- from: CompetitorDetail
+  to: CompetitorPillar
+  type: has_many
+  via: pillars
 - from: CompetitorAlternativesResponse
   to: CompetitorAlternativesPayload
   type: has_one
@@ -2555,6 +2398,14 @@ relationships:
   to: AlternativeRow
   type: has_many
   via: alternatives
+- from: AlternativeRow
+  to: AlternativeProsCons
+  type: has_one
+  via: prosCons
+- from: AnonymousAtsScoreResponse
+  to: AnonymousAtsScorePayload
+  type: has_one
+  via: data
 - from: AnonymousAtsScoreResponse
   to: ResponseMetadata
   type: has_one
@@ -2575,6 +2426,14 @@ relationships:
   to: ResponseMetadata
   type: has_one
   via: meta
+- from: PatternAnalysisData
+  to: BlockerRow
+  type: has_many
+  via: blockers
+- from: ApplyRecommendationResponse
+  to: ApplyRecommendationResult
+  type: has_one
+  via: data
 - from: ApplyRecommendationResponse
   to: ResponseMetadata
   type: has_one
@@ -2607,6 +2466,10 @@ relationships:
   to: ResponseMetadata
   type: has_one
   via: meta
+- from: PopularCountriesPage
+  to: CountrySummary
+  type: has_many
+  via: items
 - from: LocationInitialSuggestionsResponse
   to: LocationInitialSuggestions
   type: has_one
@@ -2632,9 +2495,17 @@ relationships:
   type: has_one
   via: meta
 - from: ConvertReferralResponse
+  to: ConvertReferralPayload
+  type: has_one
+  via: data
+- from: ConvertReferralResponse
   to: ResponseMetadata
   type: has_one
   via: meta
+- from: CompanyProfileResponse
+  to: CompanyProfile
+  type: has_one
+  via: data
 - from: CompanyProfileResponse
   to: ResponseMetadata
   type: has_one
@@ -2699,6 +2570,10 @@ relationships:
   to: PersonalInfo
   type: has_one
   via: personalInfo
+- from: ImportFromDocumentResponse
+  to: ResponseMetadata
+  type: has_one
+  via: meta
 - from: ResumeBuildResponse
   to: ResumeBuild
   type: has_one
@@ -2740,6 +2615,26 @@ relationships:
   type: has_one
   via: meta
 - from: AtsScoreData
+  to: AtsGapAnalysis
+  type: has_many
+  via: gapAnalysis
+- from: AtsScoreData
+  to: AtsKeywordStrategy
+  type: has_one
+  via: keywordStrategy
+- from: AtsScoreData
+  to: AtsRequirementMapping
+  type: has_many
+  via: requirementMapping
+- from: AtsScoreData
+  to: AtsRoleClassification
+  type: has_one
+  via: roleClassification
+- from: AtsScoreData
+  to: AtsSuggestion
+  type: has_many
+  via: suggestions
+- from: AtsOptimizeRequest
   to: AtsSuggestion
   type: has_many
   via: suggestions
@@ -2767,6 +2662,10 @@ relationships:
   to: ResponseMetadata
   type: has_one
   via: meta
+- from: GenerateTexResponse
+  to: GenerateTexResponseData
+  type: has_one
+  via: data
 - from: GenerateTexResponse
   to: ResponseMetadata
   type: has_one
@@ -2828,6 +2727,10 @@ relationships:
   type: has_one
   via: meta
 - from: ConfirmCancellationResponse
+  to: ConfirmCancellationData
+  type: has_one
+  via: data
+- from: ConfirmCancellationResponse
   to: ResponseMetadata
   type: has_one
   via: meta
@@ -2835,6 +2738,10 @@ relationships:
   to: ResponseMetadata
   type: has_one
   via: meta
+- from: ConfirmDeletionResponse
+  to: ConfirmDeletionData
+  type: has_one
+  via: data
 - from: ConfirmDeletionResponse
   to: ResponseMetadata
   type: has_one
@@ -2847,6 +2754,10 @@ relationships:
   to: ResponseMetadata
   type: has_one
   via: meta
+- from: AtsOptimizeDocumentResponse
+  to: AtsOptimizeDocumentData
+  type: has_one
+  via: data
 - from: AtsOptimizeDocumentResponse
   to: ResponseMetadata
   type: has_one

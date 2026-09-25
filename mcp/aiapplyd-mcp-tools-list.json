@@ -4,10 +4,1667 @@
   "result": {
     "tools": [
       {
+        "name": "aiapplyd_get_matches",
+        "title": "Get Job Matches",
+        "description": "List the user's matched jobs: the roles AI Applyd found for them against their saved job preferences, best matches first, each with a job_match_id, title, company, location, match score, a 500-character excerpt of the posting and the apply URL. Pass job_match_ids (up to 10) to read the full posting, skills and benefits of specific matches; job_url to read any posting without saving it; query, location or remote_only to narrow the list; after_job_match_id with the newestJobMatchId you stored to see only matches newer than your last check. Read-only: it spends no credits and changes nothing. Do not use it to change what the user is matched against; use aiapplyd_update_job_preferences for that. Next: pass a job_match_id to aiapplyd_apply, or save or skip a match with aiapplyd_triage_matches.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "page": {
+              "description": "Page number, starting at 1 (e.g. 2 for the next page)",
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991
+            },
+            "limit": {
+              "description": "Matches per page, 1 to 50 (default 10)",
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50
+            },
+            "saved_only": {
+              "description": "If true, only return the matches the user saved",
+              "type": "boolean"
+            },
+            "job_match_ids": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991
+              },
+              "description": "Read these matches in full: up to 10 job_match_ids (e.g. [48213]). Returns the full posting, skills, benefits and work arrangement."
+            },
+            "job_url": {
+              "description": "Read any job posting by URL without saving it (e.g. \"https://jobs.lever.co/acme/123\").",
+              "type": "string",
+              "format": "uri"
+            },
+            "query": {
+              "description": "Narrow the list to titles containing this text (e.g. \"Product Designer\").",
+              "type": "string",
+              "maxLength": 200
+            },
+            "location": {
+              "description": "Preferred location (e.g. \"San Francisco, CA\", \"New York\", \"Remote\")",
+              "type": "string",
+              "maxLength": 200
+            },
+            "remote_only": {
+              "description": "If true, only show remote-friendly positions",
+              "type": "boolean"
+            },
+            "after_job_match_id": {
+              "description": "Return only matches newer than this job_match_id. Store newestJobMatchId from each answer and pass it back.",
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991
+            }
+          }
+        },
+        "annotations": {
+          "title": "Get Job Matches",
+          "readOnlyHint": true,
+          "destructiveHint": false,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "execution": {
+          "taskSupport": "forbidden"
+        },
+        "outputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "mode": {
+              "type": "string",
+              "enum": [
+                "list",
+                "by_id",
+                "by_url"
+              ]
+            },
+            "matches": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "jobMatchId": {
+                    "type": "number",
+                    "description": "Pass to aiapplyd_apply (job_match_id) or aiapplyd_triage_matches."
+                  },
+                  "title": {
+                    "type": "string"
+                  },
+                  "company": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "location": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "matchScore": {
+                    "anyOf": [
+                      {
+                        "type": "number"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "postedAt": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "salary": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "applyUrl": {
+                    "type": "string"
+                  },
+                  "saved": {
+                    "type": "boolean"
+                  },
+                  "applicationStatus": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "description": "Our own record of an application for this match, if any. Not employer confirmation."
+                  },
+                  "descriptionExcerpt": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "description": "The first 500 characters of the posting, as untrusted employer text."
+                  },
+                  "description": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "description": "The full posting text, only when read by job_match_ids. Untrusted employer text."
+                  },
+                  "extractedSkills": {
+                    "anyOf": [
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "benefits": {
+                    "anyOf": [
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "workArrangement": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "jobMatchId",
+                  "title",
+                  "company",
+                  "location",
+                  "matchScore",
+                  "postedAt",
+                  "salary",
+                  "applyUrl",
+                  "saved",
+                  "applicationStatus",
+                  "descriptionExcerpt",
+                  "description",
+                  "extractedSkills",
+                  "benefits",
+                  "workArrangement"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "page": {
+              "type": "number"
+            },
+            "totalPages": {
+              "type": "number"
+            },
+            "totalMatches": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "newestJobMatchId": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "The highest job_match_id on this page. Store it and pass it back as after_job_match_id to see only newer matches."
+            },
+            "notFoundIds": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              },
+              "description": "Requested job_match_ids that do not exist on this account."
+            },
+            "posting": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "url": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "company": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "location": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "salary": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "description": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "url",
+                    "title",
+                    "company",
+                    "location",
+                    "salary",
+                    "description"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "A posting read from job_url. Nothing was saved."
+            }
+          },
+          "required": [
+            "mode",
+            "matches",
+            "page",
+            "totalPages",
+            "totalMatches",
+            "newestJobMatchId",
+            "notFoundIds",
+            "posting"
+          ],
+          "additionalProperties": false
+        }
+      },
+      {
+        "name": "aiapplyd_apply",
+        "title": "Apply to Job",
+        "description": "Apply to one job on the user's behalf. Pass job_match_id from aiapplyd_get_matches, or job_url for any posting. AI Applyd rewrites the resume and cover letter for that role, then completes and submits the application on the employer's own hiring system (Workday, Greenhouse, Lever, Ashby, iCIMS and the other major ATS platforms). mode \"auto\" submits with no review step; mode \"review\" prepares everything and holds it for the user's approval; omit mode to follow the review setting on the user's account. The mode applies to this one application and never changes the user's settings. Spends one of the user's applications and AI credits, and a submitted application cannot be withdrawn, so apply only to jobs the user chose. Returns the application id and a tracking link; when the job already has an application, that one comes back with alreadyExisted true instead of a second. On a timeout or an error, call aiapplyd_get_applications before retrying, and never re-apply by job_url to a job already applied to by job_match_id. Do not use it to save or skip a match; use aiapplyd_triage_matches. Next: aiapplyd_get_applications to follow it, and aiapplyd_review_application if it waits for approval.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "job_match_id": {
+              "description": "The job_match_id of a match from aiapplyd_get_matches (e.g. 48213). Pass this OR job_url.",
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991
+            },
+            "job_url": {
+              "description": "URL of any job posting to apply to (e.g. \"https://boards.greenhouse.io/acme/jobs/123\"). Pass this OR job_match_id.",
+              "type": "string",
+              "format": "uri"
+            },
+            "mode": {
+              "description": "\"auto\" submits with no review step. \"review\" holds the prepared application for the user's approval. Omit to follow the user's account setting. Applies to this application only.",
+              "type": "string",
+              "enum": [
+                "auto",
+                "review"
+              ]
+            }
+          }
+        },
+        "annotations": {
+          "title": "Apply to Job",
+          "readOnlyHint": false,
+          "destructiveHint": true,
+          "idempotentHint": false,
+          "openWorldHint": true
+        },
+        "execution": {
+          "taskSupport": "forbidden"
+        },
+        "outputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "outcome": {
+              "type": "string",
+              "enum": [
+                "started",
+                "already_in_progress",
+                "not_confirmed"
+              ],
+              "description": "started: a new application; already_in_progress: this job already had one (alreadyExisted); not_confirmed: the user declined, nothing was sent."
+            },
+            "applicationId": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "The application to follow with aiapplyd_get_applications. Null only when nothing was started."
+            },
+            "jobMatchId": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "jobTitle": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "company": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "jobUrl": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "requestedMode": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "enum": [
+                    "auto_approve",
+                    "copilot"
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "recordedMode": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "status": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Our own record. Never proof the employer received it."
+            },
+            "preparationStatus": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "preparedUnderFreeWatch": {
+              "type": "boolean"
+            },
+            "alreadyExisted": {
+              "type": "boolean",
+              "description": "True when this job already had an application, which is returned instead of a second one."
+            },
+            "trackingUrl": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "outcome",
+            "applicationId",
+            "jobMatchId",
+            "jobTitle",
+            "company",
+            "jobUrl",
+            "requestedMode",
+            "recordedMode",
+            "status",
+            "preparationStatus",
+            "preparedUnderFreeWatch",
+            "alreadyExisted",
+            "trackingUrl"
+          ],
+          "additionalProperties": false
+        }
+      },
+      {
+        "name": "aiapplyd_get_applications",
+        "title": "Get Applications",
+        "description": "List the user's applications and where each one stands, or read one by application_id to see what will be or was sent: the tailored resume, the cover letter, the screening answers, why it stopped, and its place in the queue, plus the employer's confirmation page as an image when that page is the proof. Use this to check progress, to find applications waiting for the user's approval (status \"waiting_for_review\"), or to see whether an employer confirmed a submission. An application is reported as employer-confirmed only when the employer sent a receipt or showed its confirmation page. Other status filters: queued_to_apply, submitted, verified, not_landed, taken_down. Returns 20 per page. Read-only: it spends no credits. Do not use it to act on an application; use aiapplyd_review_application. Next: aiapplyd_review_application to approve, reject or change what is waiting.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "application_id": {
+              "description": "Read one application by its id (e.g. 1550). Omit to list applications.",
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991
+            },
+            "status": {
+              "description": "Filter the list: waiting_for_review (the review queue), queued_to_apply, submitted, verified, not_landed or taken_down. Omit for all.",
+              "type": "string",
+              "enum": [
+                "waiting_for_review",
+                "queued_to_apply",
+                "verified",
+                "submitted",
+                "not_landed",
+                "taken_down"
+              ]
+            },
+            "page": {
+              "description": "Page number, starting at 1 (e.g. 2 for the next page)",
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991
+            }
+          }
+        },
+        "annotations": {
+          "title": "Get Applications",
+          "readOnlyHint": true,
+          "destructiveHint": false,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "execution": {
+          "taskSupport": "forbidden"
+        },
+        "outputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "applications": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "applicationId": {
+                    "type": "number",
+                    "description": "Pass to aiapplyd_review_application or back to aiapplyd_get_applications."
+                  },
+                  "jobMatchId": {
+                    "anyOf": [
+                      {
+                        "type": "number"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "jobTitle": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "company": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "jobUrl": {
+                    "type": "string"
+                  },
+                  "status": {
+                    "type": "string",
+                    "description": "Our own record of the application. Never proof the employer received it; see employerConfirmed."
+                  },
+                  "applyMode": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "waitingForReview": {
+                    "type": "boolean",
+                    "description": "True when the application waits for the user's approval."
+                  },
+                  "employerConfirmed": {
+                    "type": "boolean",
+                    "description": "True ONLY when the employer sent a receipt or showed its confirmation page."
+                  },
+                  "confirmationProofs": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "What proves employerConfirmed: \"receipt\" and/or \"screenshot\"."
+                  },
+                  "createdAt": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "appliedAt": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "trackingUrl": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "applicationId",
+                  "jobMatchId",
+                  "jobTitle",
+                  "company",
+                  "jobUrl",
+                  "status",
+                  "applyMode",
+                  "waitingForReview",
+                  "employerConfirmed",
+                  "confirmationProofs",
+                  "createdAt",
+                  "appliedAt",
+                  "trackingUrl"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "page": {
+              "type": "number"
+            },
+            "totalPages": {
+              "type": "number"
+            },
+            "totalApplications": {
+              "type": "number"
+            },
+            "detail": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "applicationId": {
+                      "type": "number"
+                    },
+                    "jobListingId": {
+                      "anyOf": [
+                        {
+                          "type": "number"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "tailoredResume": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "coverLetter": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "contentLocked": {
+                      "type": "boolean",
+                      "description": "True when the resume and cover letter are a preview and the full text needs a plan."
+                    },
+                    "screeningAnswers": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "question": {
+                            "type": "string"
+                          },
+                          "answer": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "question",
+                          "answer"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "statusCode": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "statusLabel": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "errorCode": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "errorMessage": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "autoRetryStopped": {
+                      "anyOf": [
+                        {
+                          "type": "boolean"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "nextAutoRetryAt": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "queuePosition": {
+                      "anyOf": [
+                        {
+                          "type": "number"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "queueEtaMinutes": {
+                      "anyOf": [
+                        {
+                          "type": "number"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "confirmationScreenshotAttached": {
+                      "type": "boolean",
+                      "description": "True when the employer's verified confirmation page is attached as an image."
+                    }
+                  },
+                  "required": [
+                    "applicationId",
+                    "jobListingId",
+                    "tailoredResume",
+                    "coverLetter",
+                    "contentLocked",
+                    "screeningAnswers",
+                    "statusCode",
+                    "statusLabel",
+                    "errorCode",
+                    "errorMessage",
+                    "autoRetryStopped",
+                    "nextAutoRetryAt",
+                    "queuePosition",
+                    "queueEtaMinutes",
+                    "confirmationScreenshotAttached"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filled when one application_id was read: what will be or was sent."
+            }
+          },
+          "required": [
+            "applications",
+            "page",
+            "totalPages",
+            "totalApplications",
+            "detail"
+          ],
+          "additionalProperties": false
+        }
+      },
+      {
+        "name": "aiapplyd_review_application",
+        "title": "Approve or Reject Applications",
+        "description": "Act on the user's applications. decision \"approve\" submits each waiting application on the employer's hiring system under the user's name: it spends one of their applications per job and cannot be undone. \"reject\" skips it: nothing is sent and nothing is spent. \"cancel\" stops one that is still queued or preparing. \"refine\" rewrites its resume or cover letter from instructions (document_type and instructions; uses AI credits). \"re_prepare\" builds its documents again (optional steps). \"set_stage\" records how it is going (stage). Pass up to 25 application_ids from aiapplyd_get_applications. Only approve on the user's explicit go-ahead, such as a \"yes\" to a specific application. On a timeout or an error, call aiapplyd_get_applications before retrying; an approve that already went through is reported as already approved. Do not use it for matches with no application yet; use aiapplyd_apply or aiapplyd_triage_matches. Next: aiapplyd_get_applications to follow the submissions.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "decision": {
+              "type": "string",
+              "enum": [
+                "approve",
+                "reject",
+                "cancel",
+                "refine",
+                "re_prepare",
+                "set_stage"
+              ],
+              "description": "\"approve\" submits the application to the employer and cannot be undone. \"reject\" skips it and sends nothing. \"cancel\" stops a queued one. \"refine\" rewrites a document (needs document_type and instructions). \"re_prepare\" builds its documents again. \"set_stage\" records the stage (needs stage)."
+            },
+            "application_ids": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991
+              },
+              "description": "Application ids to act on, 1 to 25 (e.g. [1550, 1551]), from aiapplyd_get_applications"
+            },
+            "document_type": {
+              "description": "For refine: \"resume\" or \"cover_letter\".",
+              "type": "string",
+              "enum": [
+                "resume",
+                "cover_letter"
+              ]
+            },
+            "instructions": {
+              "description": "For refine: what to change, in the user's own words (up to 2,000 characters).",
+              "type": "string",
+              "maxLength": 2000
+            },
+            "steps": {
+              "description": "For re_prepare: the steps to run again. Omit to run every step that is out of date.",
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "quality_gate",
+                  "company_intel",
+                  "tailor_resume",
+                  "translate",
+                  "cover_letter"
+                ]
+              }
+            },
+            "stage": {
+              "description": "For set_stage: applied, callback, phone_screen, interview, offered, rejected or no_response.",
+              "type": "string",
+              "enum": [
+                "applied",
+                "callback",
+                "phone_screen",
+                "interview",
+                "offered",
+                "rejected",
+                "no_response"
+              ]
+            }
+          },
+          "required": [
+            "decision",
+            "application_ids"
+          ]
+        },
+        "annotations": {
+          "title": "Approve or Reject Applications",
+          "readOnlyHint": false,
+          "destructiveHint": true,
+          "idempotentHint": false,
+          "openWorldHint": true
+        },
+        "execution": {
+          "taskSupport": "forbidden"
+        },
+        "outputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "decision": {
+              "type": "string",
+              "enum": [
+                "approve",
+                "reject",
+                "cancel",
+                "refine",
+                "re_prepare",
+                "set_stage"
+              ]
+            },
+            "results": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "applicationId": {
+                    "type": "number"
+                  },
+                  "ok": {
+                    "type": "boolean"
+                  },
+                  "status": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "description": "Our own record after the action. Never proof the employer received it."
+                  },
+                  "reason": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "description": "Machine reason when ok is false, or \"already_approved\" for an approve that had already gone through."
+                  },
+                  "refinedContent": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "applicationStage": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "trackingUrl": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "applicationId",
+                  "ok",
+                  "status",
+                  "reason",
+                  "refinedContent",
+                  "applicationStage",
+                  "trackingUrl"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "succeeded": {
+              "type": "number"
+            },
+            "attempted": {
+              "type": "number"
+            },
+            "notConfirmed": {
+              "type": "boolean",
+              "description": "True when the user declined the confirmation prompt and nothing was sent."
+            }
+          },
+          "required": [
+            "decision",
+            "results",
+            "succeeded",
+            "attempted",
+            "notConfirmed"
+          ],
+          "additionalProperties": false
+        }
+      },
+      {
+        "name": "aiapplyd_get_account",
+        "title": "Get Account",
+        "description": "Show the user's AI Applyd account: plan, token balance, applications left in the current 30-day window, the job preferences their matches are found against, and readiness: whether a resume is on file, whether setup is finished, and which profile fields employer forms require that are still empty. Also lists their resumes and the default apply mode. Call it first, and before applying to several jobs. Read-only: it spends no credits and changes nothing. Do not use it to change anything; use aiapplyd_update_job_preferences or aiapplyd_set_resume. Next: aiapplyd_set_resume when no resume is on file, otherwise aiapplyd_get_matches.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {}
+        },
+        "annotations": {
+          "title": "Get Account",
+          "readOnlyHint": true,
+          "destructiveHint": false,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "execution": {
+          "taskSupport": "forbidden"
+        },
+        "outputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "plan": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "tier": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "interval": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "currentPeriodEnd": {
+                      "type": "string"
+                    },
+                    "endsAt": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "name",
+                    "tier",
+                    "status",
+                    "interval",
+                    "currentPeriodEnd",
+                    "endsAt"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "tokenBalance": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "applications": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "used": {
+                      "type": "number"
+                    },
+                    "limit": {
+                      "type": "number"
+                    },
+                    "remaining": {
+                      "type": "number"
+                    },
+                    "resetAt": {
+                      "type": "string"
+                    },
+                    "canApplyNow": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "used",
+                    "limit",
+                    "remaining",
+                    "resetAt",
+                    "canApplyNow"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "freeApplications": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "used": {
+                      "type": "number"
+                    },
+                    "limit": {
+                      "type": "number"
+                    },
+                    "remaining": {
+                      "type": "number"
+                    },
+                    "resetAt": {
+                      "type": "string"
+                    },
+                    "earnedRemaining": {
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "used",
+                    "limit",
+                    "remaining",
+                    "resetAt",
+                    "earnedRemaining"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "preferences": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "targetRoles": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "locations": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "includeRemote": {
+                      "type": "boolean"
+                    },
+                    "remoteWorldwide": {
+                      "type": "boolean"
+                    },
+                    "active": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "targetRoles",
+                    "locations",
+                    "includeRemote",
+                    "remoteWorldwide",
+                    "active"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "readiness": {
+              "type": "object",
+              "properties": {
+                "resumeOnFile": {
+                  "anyOf": [
+                    {
+                      "type": "boolean"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "description": "False means apply will fail: call aiapplyd_set_resume first."
+                },
+                "onboardingComplete": {
+                  "anyOf": [
+                    {
+                      "type": "boolean"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "missingRequiredForApply": {
+                  "anyOf": [
+                    {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "description": "Profile fields employer forms require that are empty. Ask the user; never guess."
+                }
+              },
+              "required": [
+                "resumeOnFile",
+                "onboardingComplete",
+                "missingRequiredForApply"
+              ],
+              "additionalProperties": false
+            },
+            "resumes": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "number",
+                        "description": "Pass to aiapplyd_set_resume as document_id to make it the base resume."
+                      },
+                      "title": {
+                        "type": "string"
+                      },
+                      "isBase": {
+                        "type": "boolean"
+                      },
+                      "updatedAt": {
+                        "anyOf": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "title",
+                      "isBase",
+                      "updatedAt"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "defaultApplyMode": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "enum": [
+                    "auto",
+                    "review"
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "What aiapplyd_apply does when mode is omitted. Read only."
+            },
+            "autopilot": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "enum": [
+                    "active",
+                    "paused"
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Whether AI Applyd applies on its own. Read only."
+            },
+            "billingUrl": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "plan",
+            "tokenBalance",
+            "applications",
+            "freeApplications",
+            "preferences",
+            "readiness",
+            "resumes",
+            "defaultApplyMode",
+            "autopilot",
+            "billingUrl"
+          ],
+          "additionalProperties": false
+        }
+      },
+      {
+        "name": "aiapplyd_set_resume",
+        "title": "Set Resume",
+        "description": "Put the user's resume on their AI Applyd account as the base every application is tailored from. Pass exactly one: resume_text (the full text), resume_url (an https link to a PDF, DOCX or plain text file, up to 10 MB), or document_id (one of their saved resumes, from aiapplyd_get_account). A new upload is read by AI and uses the user's AI credits; switching to a saved resume with document_id is free. It also finishes account setup, so AI Applyd starts finding jobs for them. Use it when aiapplyd_get_account shows no resume on file, or when the user gives a new one. Do not use it to rewrite or score a resume; use aiapplyd_optimize_resume or aiapplyd_score_resume. Next: aiapplyd_get_matches.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "resume_text": {
+              "description": "The full text of the resume. Pass this OR resume_url OR document_id.",
+              "type": "string",
+              "minLength": 50,
+              "maxLength": 50000
+            },
+            "resume_url": {
+              "description": "An https link to the resume file: PDF, DOCX or plain text, up to 10 MB. Pass this OR resume_text OR document_id.",
+              "type": "string",
+              "format": "uri"
+            },
+            "document_id": {
+              "description": "One of the user's saved resumes to make the base (an id from aiapplyd_get_account). Free. Pass this OR resume_text OR resume_url.",
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991
+            }
+          }
+        },
+        "annotations": {
+          "title": "Set Resume",
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "idempotentHint": false,
+          "openWorldHint": true
+        },
+        "execution": {
+          "taskSupport": "forbidden"
+        },
+        "outputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "documentId": {
+              "type": "number",
+              "description": "The resume now used as the base for every application."
+            },
+            "source": {
+              "type": "string",
+              "enum": [
+                "text",
+                "url",
+                "document"
+              ]
+            },
+            "parsed": {
+              "type": "boolean",
+              "description": "False when the resume is still being read; call aiapplyd_get_account in a minute."
+            },
+            "fullName": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "currentJobTitle": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "suggestedJobTitles": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "skillsCount": {
+              "type": "number"
+            },
+            "preferencesSeeded": {
+              "type": "boolean",
+              "description": "True when empty job preferences were filled from this resume."
+            },
+            "onboardingCompleted": {
+              "type": "boolean",
+              "description": "True when the account setup is finished, so AI Applyd searches for this user."
+            }
+          },
+          "required": [
+            "documentId",
+            "source",
+            "parsed",
+            "fullName",
+            "currentJobTitle",
+            "suggestedJobTitles",
+            "skillsCount",
+            "preferencesSeeded",
+            "onboardingCompleted"
+          ],
+          "additionalProperties": false
+        }
+      },
+      {
+        "name": "aiapplyd_triage_matches",
+        "title": "Save or Skip Matches",
+        "description": "Save or skip job matches: the answer to \"want this one?\". action \"save\" keeps matches in the user's saved list; action \"skip\" dismisses them so they stop showing, with an optional reason (not_interested, wrong_location, too_senior, too_junior, salary_too_low, wrong_role, company_mismatch, already_applied, other) that teaches the matcher. Pass up to 25 job_match_ids from aiapplyd_get_matches. Nothing is sent to any employer and nothing is spent. Do not use it to apply; use aiapplyd_apply. Next: aiapplyd_get_matches for the next matches.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "action": {
+              "type": "string",
+              "enum": [
+                "save",
+                "skip"
+              ],
+              "description": "\"save\" keeps the matches in the saved list. \"skip\" dismisses them."
+            },
+            "job_match_ids": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991
+              },
+              "description": "Job match ids from aiapplyd_get_matches, 1 to 25 (e.g. [48213, 48214])."
+            },
+            "reason": {
+              "description": "For skip: why, so the matcher learns (e.g. \"too_senior\").",
+              "type": "string",
+              "enum": [
+                "not_interested",
+                "wrong_location",
+                "too_senior",
+                "too_junior",
+                "salary_too_low",
+                "wrong_role",
+                "company_mismatch",
+                "already_applied",
+                "other"
+              ]
+            }
+          },
+          "required": [
+            "action",
+            "job_match_ids"
+          ]
+        },
+        "annotations": {
+          "title": "Save or Skip Matches",
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "execution": {
+          "taskSupport": "forbidden"
+        },
+        "outputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "action": {
+              "type": "string",
+              "enum": [
+                "save",
+                "skip"
+              ]
+            },
+            "results": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "jobMatchId": {
+                    "type": "number"
+                  },
+                  "ok": {
+                    "type": "boolean"
+                  },
+                  "saved": {
+                    "type": "boolean"
+                  },
+                  "dismissed": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "jobMatchId",
+                  "ok",
+                  "saved",
+                  "dismissed"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "succeeded": {
+              "type": "number"
+            },
+            "attempted": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "action",
+            "results",
+            "succeeded",
+            "attempted"
+          ],
+          "additionalProperties": false
+        }
+      },
+      {
         "name": "aiapplyd_score_resume",
         "title": "Score Resume",
-        "description": "Score a resume for ATS compatibility. Returns an overall score, section scores, the keywords the resume matches and the ones it is missing, and specific rewrite suggestions. Pass job_description to score against a posting, or omit it for a general ATS readiness score. Requires a connected AI Applyd account and uses the user's credits.",
+        "description": "Score a resume for ATS compatibility. Returns an overall score, section scores, the keywords the resume matches and the ones it is missing, and specific rewrite suggestions. Pass job_description to score against a posting, or omit it for a general ATS readiness score. Requires a connected AI Applyd account and uses the user's credits. Do not use it to rewrite the resume; use aiapplyd_optimize_resume. Next: aiapplyd_optimize_resume rewrites the resume against the same posting.",
         "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
           "type": "object",
           "properties": {
             "resume_text": {
@@ -17,33 +1674,96 @@
               "description": "Full text of the resume"
             },
             "job_description": {
+              "description": "Full text of the job description (optional, omit for a general ATS readiness score)",
               "type": "string",
               "minLength": 50,
-              "maxLength": 50000,
-              "description": "Full text of the job description (optional, omit for a general ATS readiness score)"
+              "maxLength": 50000
             }
           },
           "required": [
             "resume_text"
-          ],
-          "additionalProperties": false,
-          "$schema": "http://json-schema.org/draft-07/schema#"
+          ]
         },
         "annotations": {
-          "readOnlyHint": true,
+          "title": "Score Resume",
+          "readOnlyHint": false,
           "destructiveHint": false,
           "idempotentHint": false,
           "openWorldHint": true
         },
         "execution": {
           "taskSupport": "forbidden"
+        },
+        "outputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "overallScore": {
+              "type": "number"
+            },
+            "sectionScores": {
+              "type": "object",
+              "properties": {
+                "skills": {
+                  "type": "number"
+                },
+                "experience": {
+                  "type": "number"
+                },
+                "education": {
+                  "type": "number"
+                },
+                "formatting": {
+                  "type": "number"
+                },
+                "keywords": {
+                  "type": "number"
+                }
+              },
+              "required": [
+                "skills",
+                "experience",
+                "education",
+                "formatting",
+                "keywords"
+              ],
+              "additionalProperties": false
+            },
+            "keywordMatches": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "missingKeywords": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "suggestions": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "required": [
+            "overallScore",
+            "sectionScores",
+            "keywordMatches",
+            "missingKeywords",
+            "suggestions"
+          ],
+          "additionalProperties": false
         }
       },
       {
         "name": "aiapplyd_analyze_job_description",
         "title": "Analyze Job Description",
-        "description": "Extract what a job posting actually screens on: the exact ATS keywords, must-have versus nice-to-have requirements, seniority signals, and red flags. Call this before tailoring a resume so the resume mirrors the posting's own language. Requires a connected AI Applyd account and uses the user's AI credits.",
+        "description": "Extract what a job posting actually screens on: the exact ATS keywords, must-have versus nice-to-have requirements, seniority signals, and red flags. Call this before tailoring a resume so the resume mirrors the posting's own language. Requires a connected AI Applyd account and uses the user's AI credits. Do not use it to read a posting from a link; use aiapplyd_get_matches with job_url. Next: aiapplyd_score_resume or aiapplyd_optimize_resume with the same job description.",
         "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
           "type": "object",
           "properties": {
             "job_description": {
@@ -55,25 +1775,62 @@
           },
           "required": [
             "job_description"
-          ],
-          "additionalProperties": false,
-          "$schema": "http://json-schema.org/draft-07/schema#"
+          ]
         },
         "annotations": {
-          "readOnlyHint": true,
+          "title": "Analyze Job Description",
+          "readOnlyHint": false,
           "destructiveHint": false,
           "idempotentHint": false,
           "openWorldHint": true
         },
         "execution": {
           "taskSupport": "forbidden"
+        },
+        "outputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "keywords": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "term": {
+                    "type": "string"
+                  },
+                  "category": {
+                    "type": "string"
+                  },
+                  "importance": {
+                    "type": "number"
+                  },
+                  "mustHave": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "term",
+                  "category",
+                  "importance",
+                  "mustHave"
+                ],
+                "additionalProperties": false
+              }
+            }
+          },
+          "required": [
+            "keywords"
+          ],
+          "additionalProperties": false
         }
       },
       {
         "name": "aiapplyd_optimize_resume",
         "title": "Optimize Resume with AI",
-        "description": "Rewrite a resume so it passes ATS screening. Returns the rewritten resume, a projected ATS score, and an itemised summary of every change made. Pass job_description to tailor the rewrite to one specific posting, or omit it for general ATS optimization. Requires a connected AI Applyd account.",
+        "description": "Rewrite a resume so it passes ATS screening. Returns the rewritten resume, a projected ATS score, and an itemised summary of every change made. Pass job_description to tailor the rewrite to one specific posting, or omit it for general ATS optimization. Requires a connected AI Applyd account. Uses the user's AI credits. Do not use it to apply: aiapplyd_apply tailors the resume for every application on its own.",
         "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
           "type": "object",
           "properties": {
             "resume_text": {
@@ -83,19 +1840,18 @@
               "description": "Full text of the resume to optimize"
             },
             "job_description": {
+              "description": "Full text of the target job description (optional, omit for general ATS optimization)",
               "type": "string",
               "minLength": 50,
-              "maxLength": 50000,
-              "description": "Full text of the target job description (optional, omit for general ATS optimization)"
+              "maxLength": 50000
             }
           },
           "required": [
             "resume_text"
-          ],
-          "additionalProperties": false,
-          "$schema": "http://json-schema.org/draft-07/schema#"
+          ]
         },
         "annotations": {
+          "title": "Optimize Resume with AI",
           "readOnlyHint": false,
           "destructiveHint": false,
           "idempotentHint": false,
@@ -103,55 +1859,121 @@
         },
         "execution": {
           "taskSupport": "forbidden"
+        },
+        "outputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "optimizedResume": {
+              "type": "string"
+            },
+            "changes": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "projectedAtsScore": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "optimizedResume",
+            "changes",
+            "projectedAtsScore"
+          ],
+          "additionalProperties": false
         }
       },
       {
         "name": "aiapplyd_generate_interview_questions",
         "title": "Generate Interview Questions",
-        "description": "Produce interview preparation for a specific role and company: company insights, the questions this role is asked with approach guidance, STAR scenarios drawn from the posting, talking points, questions to ask the interviewer, and salary negotiation prep. Requires a connected AI Applyd account.",
+        "description": "Produce interview preparation for a specific role and company: company insights, the questions this role is asked with approach guidance, STAR scenarios drawn from the posting, talking points, questions to ask the interviewer, and salary negotiation prep. Pass application_id to prep for a job the user applied to (no new saved job), or job_title and company_name for any other job. Requires a connected AI Applyd account. Uses the user's AI credits, and saves the job to their account if it is not saved yet. Do not use it for a cover letter; use aiapplyd_generate_cover_letter.",
         "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
           "type": "object",
           "properties": {
             "job_title": {
+              "description": "Title of the position (e.g. \"Senior Software Engineer\"). Pass with company_name, or pass application_id instead.",
               "type": "string",
               "minLength": 2,
-              "maxLength": 200,
-              "description": "Title of the position (e.g. \"Senior Software Engineer\")"
+              "maxLength": 200
             },
             "company_name": {
+              "description": "Name of the company. Pass with job_title, or pass application_id instead.",
               "type": "string",
               "minLength": 1,
-              "maxLength": 200,
-              "description": "Name of the company"
+              "maxLength": 200
             },
             "job_description": {
+              "description": "Full text of the job description (optional but recommended for better results)",
               "type": "string",
-              "maxLength": 50000,
-              "description": "Full text of the job description (optional but recommended for better results)"
+              "maxLength": 50000
+            },
+            "application_id": {
+              "description": "Prep for the job of this application (an id from aiapplyd_get_applications). Replaces job_title and company_name.",
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991
             }
-          },
-          "required": [
-            "job_title",
-            "company_name"
-          ],
-          "additionalProperties": false,
-          "$schema": "http://json-schema.org/draft-07/schema#"
+          }
         },
         "annotations": {
-          "readOnlyHint": true,
+          "title": "Generate Interview Questions",
+          "readOnlyHint": false,
           "destructiveHint": false,
           "idempotentHint": false,
           "openWorldHint": true
         },
         "execution": {
           "taskSupport": "forbidden"
+        },
+        "outputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "jobId": {
+              "type": "number"
+            },
+            "jobTitle": {
+              "type": "string"
+            },
+            "companyName": {
+              "type": "string"
+            },
+            "questionsToAsk": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "prepUrl": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "jobId",
+            "jobTitle",
+            "companyName",
+            "questionsToAsk",
+            "prepUrl"
+          ],
+          "additionalProperties": false
         }
       },
       {
         "name": "aiapplyd_translate_resume",
         "title": "Translate Resume",
-        "description": "Translate the resume saved on the user's AI Applyd account into another language, ready to send to employers in that market. Saves the translation as a new resume and leaves the original unchanged. Requires a connected AI Applyd account.",
+        "description": "Translate the user's base resume, the one saved on their AI Applyd account, into another language (for example Spanish, French, German, Portuguese or Japanese), ready to send to employers in that market. Returns the new resume's title and a link; the translation is saved as a separate resume and the original stays unchanged. Needs a resume on file (see aiapplyd_set_resume) and uses the user's AI credits. Do not use it to tailor a resume to a job; use aiapplyd_optimize_resume, or aiapplyd_apply, which tailors every application.",
         "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
           "type": "object",
           "properties": {
             "target_language": {
@@ -163,11 +1985,10 @@
           },
           "required": [
             "target_language"
-          ],
-          "additionalProperties": false,
-          "$schema": "http://json-schema.org/draft-07/schema#"
+          ]
         },
         "annotations": {
+          "title": "Translate Resume",
           "readOnlyHint": false,
           "destructiveHint": false,
           "idempotentHint": false,
@@ -175,13 +1996,43 @@
         },
         "execution": {
           "taskSupport": "forbidden"
+        },
+        "outputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "targetLanguage": {
+              "type": "string"
+            },
+            "sourceResumeId": {
+              "type": "number"
+            },
+            "translatedResumeId": {
+              "type": "number"
+            },
+            "translatedTitle": {
+              "type": "string"
+            },
+            "url": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "targetLanguage",
+            "sourceResumeId",
+            "translatedResumeId",
+            "translatedTitle",
+            "url"
+          ],
+          "additionalProperties": false
         }
       },
       {
         "name": "aiapplyd_search_jobs",
         "title": "Search Jobs",
-        "description": "Return the user's AI-curated job matches, filtered by title, location, and remote preference. Each match carries a match score, company, location, salary, extracted skills, and the application URL. Read-only: it never changes which roles AI Applyd hunts for (use aiapplyd_update_job_preferences for that). Requires a connected AI Applyd account.",
+        "description": "Deprecated alias of aiapplyd_get_matches, use aiapplyd_get_matches. Returns the user's matched jobs filtered by title, location and remote, exactly as aiapplyd_get_matches with query, location and remote_only. Read-only: it never changes which roles AI Applyd hunts for.",
         "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
           "type": "object",
           "properties": {
             "job_title": {
@@ -191,22 +2042,21 @@
               "description": "Job title to search for (e.g. \"Software Engineer\", \"Product Manager\")"
             },
             "location": {
+              "description": "Preferred location (e.g. \"San Francisco, CA\", \"New York\", \"Remote\")",
               "type": "string",
-              "maxLength": 200,
-              "description": "Preferred location (e.g. \"San Francisco, CA\", \"New York\", \"Remote\")"
+              "maxLength": 200
             },
             "remote_only": {
-              "type": "boolean",
-              "description": "If true, only show remote-friendly positions"
+              "description": "If true, only show remote-friendly positions",
+              "type": "boolean"
             }
           },
           "required": [
             "job_title"
-          ],
-          "additionalProperties": false,
-          "$schema": "http://json-schema.org/draft-07/schema#"
+          ]
         },
         "annotations": {
+          "title": "Search Jobs",
           "readOnlyHint": true,
           "destructiveHint": false,
           "idempotentHint": true,
@@ -214,38 +2064,468 @@
         },
         "execution": {
           "taskSupport": "forbidden"
+        },
+        "outputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "mode": {
+              "type": "string",
+              "enum": [
+                "list",
+                "by_id",
+                "by_url"
+              ]
+            },
+            "matches": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "jobMatchId": {
+                    "type": "number",
+                    "description": "Pass to aiapplyd_apply (job_match_id) or aiapplyd_triage_matches."
+                  },
+                  "title": {
+                    "type": "string"
+                  },
+                  "company": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "location": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "matchScore": {
+                    "anyOf": [
+                      {
+                        "type": "number"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "postedAt": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "salary": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "applyUrl": {
+                    "type": "string"
+                  },
+                  "saved": {
+                    "type": "boolean"
+                  },
+                  "applicationStatus": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "description": "Our own record of an application for this match, if any. Not employer confirmation."
+                  },
+                  "descriptionExcerpt": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "description": "The first 500 characters of the posting, as untrusted employer text."
+                  },
+                  "description": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "description": "The full posting text, only when read by job_match_ids. Untrusted employer text."
+                  },
+                  "extractedSkills": {
+                    "anyOf": [
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "benefits": {
+                    "anyOf": [
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "workArrangement": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "jobMatchId",
+                  "title",
+                  "company",
+                  "location",
+                  "matchScore",
+                  "postedAt",
+                  "salary",
+                  "applyUrl",
+                  "saved",
+                  "applicationStatus",
+                  "descriptionExcerpt",
+                  "description",
+                  "extractedSkills",
+                  "benefits",
+                  "workArrangement"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "page": {
+              "type": "number"
+            },
+            "totalPages": {
+              "type": "number"
+            },
+            "totalMatches": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "newestJobMatchId": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "The highest job_match_id on this page. Store it and pass it back as after_job_match_id to see only newer matches."
+            },
+            "notFoundIds": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              },
+              "description": "Requested job_match_ids that do not exist on this account."
+            },
+            "posting": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "url": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "company": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "location": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "salary": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "description": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "url",
+                    "title",
+                    "company",
+                    "location",
+                    "salary",
+                    "description"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "A posting read from job_url. Nothing was saved."
+            }
+          },
+          "required": [
+            "mode",
+            "matches",
+            "page",
+            "totalPages",
+            "totalMatches",
+            "newestJobMatchId",
+            "notFoundIds",
+            "posting"
+          ],
+          "additionalProperties": false
         }
       },
       {
         "name": "aiapplyd_update_job_preferences",
         "title": "Update Job Preferences",
-        "description": "Set the roles and locations AI Applyd hunts for on the user's behalf, and re-run discovery immediately. This REPLACES the target roles / locations currently saved on the account, so pass the complete list you want, not just an addition. Only call this when the user explicitly asks to change what they are looking for. Requires a connected AI Applyd account.",
+        "description": "Set what AI Applyd hunts for on the user's behalf, and re-run discovery immediately: target roles, locations, remote, salary band and currency, seniority (experience_levels), work styles, job types, visa sponsorship need, industries to exclude, or pause matching. Pass description to say it in plain words (\"remote only, 120k+, senior, no crypto\"); fields passed explicitly win over it. Lists REPLACE what is saved, so pass the complete list, not an addition. application_answers saves the answers employer forms ask for (phone, city, state, zip, country, LinkedIn, work authorization, relocation, start date, notice period): fill only values the user stated, never guesses. Only call this when the user asks. Read the current preferences first with aiapplyd_get_account. Do not use it to search; use aiapplyd_get_matches with query.",
         "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
           "type": "object",
           "properties": {
             "target_roles": {
+              "description": "Full list of job titles to hunt for. REPLACES the saved list.",
               "type": "array",
               "items": {
                 "type": "string"
-              },
-              "description": "Full list of job titles to hunt for. REPLACES the saved list."
+              }
             },
             "locations": {
+              "description": "Full list of preferred locations. REPLACES the saved list.",
               "type": "array",
               "items": {
                 "type": "string"
-              },
-              "description": "Full list of preferred locations. REPLACES the saved list."
+              }
+            },
+            "include_remote": {
+              "description": "Include remote jobs in the user's region alongside their locations.",
+              "type": "boolean"
             },
             "remote_only": {
-              "type": "boolean",
-              "description": "Whether to include remote-friendly positions"
+              "description": "Deprecated name of include_remote. Use include_remote.",
+              "type": "boolean"
+            },
+            "salary_min": {
+              "description": "Lowest yearly salary the user accepts, in salary_currency (e.g. 120000).",
+              "type": "number",
+              "minimum": 0
+            },
+            "salary_max": {
+              "description": "Highest yearly salary to target, in salary_currency.",
+              "type": "number",
+              "minimum": 0
+            },
+            "salary_currency": {
+              "description": "Currency of the salary band (default usd).",
+              "type": "string",
+              "enum": [
+                "usd",
+                "eur",
+                "gbp",
+                "cad",
+                "aud",
+                "inr"
+              ]
+            },
+            "experience_levels": {
+              "description": "Seniority to match: entry, mid, senior, lead, executive. REPLACES the saved list.",
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "entry",
+                  "mid",
+                  "senior",
+                  "lead",
+                  "executive"
+                ]
+              }
+            },
+            "work_styles": {
+              "description": "Work styles to match: onsite, hybrid, remote. REPLACES the saved list.",
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "onsite",
+                  "hybrid",
+                  "remote"
+                ]
+              }
+            },
+            "job_types": {
+              "description": "Job types to match: full_time, part_time, contract, internship, freelance, temporary. REPLACES the saved list.",
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "full_time",
+                  "part_time",
+                  "contract",
+                  "internship",
+                  "freelance",
+                  "temporary"
+                ]
+              }
+            },
+            "needs_visa_sponsorship": {
+              "description": "True when the user needs visa sponsorship to take the job.",
+              "type": "boolean"
+            },
+            "exclude_industries": {
+              "description": "Industries to never match (e.g. [\"Crypto\"]). REPLACES the saved list.",
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "paused": {
+              "description": "True pauses new matches for the user; false resumes them. It never changes auto-apply.",
+              "type": "boolean"
+            },
+            "description": {
+              "description": "What the user wants, in their own words (e.g. \"remote only, 120k+, senior, no crypto\"). Fields passed explicitly win over it. Uses AI credits.",
+              "type": "string",
+              "maxLength": 2000
+            },
+            "application_answers": {
+              "description": "Answers employer forms ask for, saved to the user's application profile: phone, city, state, zip_code, country, linkedin_url, work_authorization, willing_to_relocate, available_start_date, notice_period. Only values the user stated, never guesses.",
+              "type": "object",
+              "properties": {
+                "phone": {
+                  "type": "string"
+                },
+                "city": {
+                  "type": "string"
+                },
+                "state": {
+                  "type": "string"
+                },
+                "zip_code": {
+                  "type": "string"
+                },
+                "country": {
+                  "type": "string"
+                },
+                "linkedin_url": {
+                  "type": "string"
+                },
+                "work_authorization": {
+                  "type": "string",
+                  "enum": [
+                    "us_citizen",
+                    "permanent_resident",
+                    "visa_holder",
+                    "require_sponsorship",
+                    "other"
+                  ]
+                },
+                "willing_to_relocate": {
+                  "type": "boolean"
+                },
+                "available_start_date": {
+                  "type": "string"
+                },
+                "notice_period": {
+                  "type": "string",
+                  "enum": [
+                    "immediately",
+                    "two_weeks",
+                    "one_month",
+                    "two_months",
+                    "three_months",
+                    "flexible"
+                  ]
+                }
+              }
             }
-          },
-          "additionalProperties": false,
-          "$schema": "http://json-schema.org/draft-07/schema#"
+          }
         },
         "annotations": {
+          "title": "Update Job Preferences",
           "readOnlyHint": false,
           "destructiveHint": true,
           "idempotentHint": true,
@@ -253,36 +2533,231 @@
         },
         "execution": {
           "taskSupport": "forbidden"
+        },
+        "outputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "targetRoles": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "locations": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "includeRemote": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "remoteWorldwide": {
+              "type": "boolean"
+            },
+            "salaryMin": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "salaryMax": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "salaryCurrency": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "experienceLevels": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "workStyles": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "jobTypes": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "visaSponsorship": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "excludeIndustries": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "paused": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "applicationAnswersSaved": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "The application_answers fields written to the application profile."
+            },
+            "describedSummary": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "How AI Applyd understood `description`, when one was given."
+            },
+            "onboardingCompleted": {
+              "type": "boolean",
+              "description": "True when this call finished the account setup, so AI Applyd starts searching for these roles."
+            }
+          },
+          "required": [
+            "targetRoles",
+            "locations",
+            "includeRemote",
+            "remoteWorldwide",
+            "salaryMin",
+            "salaryMax",
+            "salaryCurrency",
+            "experienceLevels",
+            "workStyles",
+            "jobTypes",
+            "visaSponsorship",
+            "excludeIndustries",
+            "paused",
+            "applicationAnswersSaved",
+            "describedSummary",
+            "onboardingCompleted"
+          ],
+          "additionalProperties": false
         }
       },
       {
         "name": "aiapplyd_generate_cover_letter",
         "title": "Generate Cover Letter",
-        "description": "Write a cover letter for a specific job from the resume already saved on the user's AI Applyd account, in their own voice and free of recruiter cliches. Returns the finished letter and saves it to the account. Requires a paid plan (Hired in 30+).",
+        "description": "Write a cover letter for a specific job from the base resume saved on the user's AI Applyd account, in their own voice and free of recruiter cliches. Returns the finished letter as text and saves it to the account. Pass application_id instead to get the letter already written for that application (no new letter), with instructions to change it. Needs a resume on file (see aiapplyd_set_resume) and a paid plan (Hired in 30+); without either it says so and links the fix. Uses the user's AI credits. Do not use it for applications: aiapplyd_apply already writes a cover letter for every one.",
         "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
           "type": "object",
           "properties": {
             "job_description": {
+              "description": "Full text of the target job description. Pass with company_name, or pass application_id instead.",
               "type": "string",
               "minLength": 50,
-              "maxLength": 50000,
-              "description": "Full text of the target job description"
+              "maxLength": 50000
             },
             "company_name": {
+              "description": "Name of the company you are applying to",
               "type": "string",
               "minLength": 1,
-              "maxLength": 200,
-              "description": "Name of the company you are applying to"
+              "maxLength": 200
+            },
+            "application_id": {
+              "description": "Return the cover letter already written for this application (an id from aiapplyd_get_applications) instead of writing a new one.",
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991
+            },
+            "instructions": {
+              "description": "With application_id: what to change in that letter, in the user's own words.",
+              "type": "string",
+              "maxLength": 2000
             }
-          },
-          "required": [
-            "job_description",
-            "company_name"
-          ],
-          "additionalProperties": false,
-          "$schema": "http://json-schema.org/draft-07/schema#"
+          }
         },
         "annotations": {
+          "title": "Generate Cover Letter",
           "readOnlyHint": false,
           "destructiveHint": false,
           "idempotentHint": false,
@@ -290,13 +2765,67 @@
         },
         "execution": {
           "taskSupport": "forbidden"
+        },
+        "outputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "coverLetter": {
+              "type": "string"
+            },
+            "companyName": {
+              "type": "string"
+            },
+            "source": {
+              "type": "string",
+              "enum": [
+                "generated",
+                "application",
+                "refined"
+              ],
+              "description": "generated: newly written; application: the letter already prepared for application_id; refined: that letter, changed as asked."
+            },
+            "resumeBuildId": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "applicationId": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "url": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "coverLetter",
+            "companyName",
+            "source",
+            "resumeBuildId",
+            "applicationId",
+            "url"
+          ],
+          "additionalProperties": false
         }
       },
       {
         "name": "aiapplyd_auto_apply",
         "title": "Auto Apply to Job",
-        "description": "Apply to ONE specific job posting end to end: the resume and cover letter are rewritten for that role, then the form is completed and submitted on the employer's own hiring system, not a job board. All fifteen major ATS platforms land: Workday, Greenhouse, Lever, Ashby, Workable, iCIMS, Personio, Recruitee, Teamtailor, Rippling, Breezy, SmartRecruiters, BambooHR, JazzHR, softgarden. Follows the account's review setting: submits directly, or routes to the review queue. Requires a paid plan (Hired in 30+).",
+        "description": "Deprecated alias of aiapplyd_apply, use aiapplyd_apply. Applies to ONE job posting by job_url, end to end, on the employer's own hiring system (Workday, Greenhouse, Lever, Ashby, Workable, iCIMS, Personio, Recruitee, Teamtailor, Rippling, Breezy, SmartRecruiters, BambooHR, JazzHR, softgarden), following the account's review setting. Spends one of the user's applications.",
         "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
           "type": "object",
           "properties": {
             "job_url": {
@@ -307,11 +2836,10 @@
           },
           "required": [
             "job_url"
-          ],
-          "additionalProperties": false,
-          "$schema": "http://json-schema.org/draft-07/schema#"
+          ]
         },
         "annotations": {
+          "title": "Auto Apply to Job",
           "readOnlyHint": false,
           "destructiveHint": true,
           "idempotentHint": false,
@@ -319,13 +2847,158 @@
         },
         "execution": {
           "taskSupport": "forbidden"
+        },
+        "outputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "outcome": {
+              "type": "string",
+              "enum": [
+                "started",
+                "already_in_progress",
+                "not_confirmed"
+              ],
+              "description": "started: a new application; already_in_progress: this job already had one (alreadyExisted); not_confirmed: the user declined, nothing was sent."
+            },
+            "applicationId": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "The application to follow with aiapplyd_get_applications. Null only when nothing was started."
+            },
+            "jobMatchId": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "jobTitle": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "company": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "jobUrl": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "requestedMode": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "enum": [
+                    "auto_approve",
+                    "copilot"
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "recordedMode": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "status": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Our own record. Never proof the employer received it."
+            },
+            "preparationStatus": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "preparedUnderFreeWatch": {
+              "type": "boolean"
+            },
+            "alreadyExisted": {
+              "type": "boolean",
+              "description": "True when this job already had an application, which is returned instead of a second one."
+            },
+            "trackingUrl": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "outcome",
+            "applicationId",
+            "jobMatchId",
+            "jobTitle",
+            "company",
+            "jobUrl",
+            "requestedMode",
+            "recordedMode",
+            "status",
+            "preparationStatus",
+            "preparedUnderFreeWatch",
+            "alreadyExisted",
+            "trackingUrl"
+          ],
+          "additionalProperties": false
         }
       },
       {
         "name": "aiapplyd_build_pdf",
         "title": "Build Resume",
-        "description": "Build a formatted, ATS-clean resume from raw text in the user's AI Applyd resume builder, where it stays editable and downloads as a PDF. Templates: modern, classic, or minimal. Private to the account by default; set make_public to true only if the user explicitly asks for a shareable public link. Requires a paid plan (Hired in 30+).",
+        "description": "Build a formatted, ATS-clean resume from raw text in the user's AI Applyd resume builder, where it stays editable and downloads as a PDF. Templates: modern, classic, or minimal. Private to the account by default; set make_public to true only if the user explicitly asks for a shareable public link. Requires a paid plan (Hired in 30+). Uses the user's AI credits. Do not use it to rewrite a resume; use aiapplyd_optimize_resume.",
         "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
           "type": "object",
           "properties": {
             "resume_text": {
@@ -335,26 +3008,25 @@
               "description": "Full text of the resume"
             },
             "template": {
+              "description": "Resume template style (default: classic)",
               "type": "string",
               "enum": [
                 "classic",
                 "modern",
                 "minimal"
-              ],
-              "description": "Resume template style (default: classic)"
+              ]
             },
             "make_public": {
-              "type": "boolean",
-              "description": "Publish a public share link. Anyone with the link sees the resume INCLUDING its contact details. Defaults to false (private). Only set true when the user explicitly asks to share it."
+              "description": "Publish a public share link. Anyone with the link sees the resume INCLUDING its contact details. Defaults to false (private). Only set true when the user explicitly asks to share it.",
+              "type": "boolean"
             }
           },
           "required": [
             "resume_text"
-          ],
-          "additionalProperties": false,
-          "$schema": "http://json-schema.org/draft-07/schema#"
+          ]
         },
         "annotations": {
+          "title": "Build Resume",
           "readOnlyHint": false,
           "destructiveHint": false,
           "idempotentHint": false,
@@ -362,6 +3034,38 @@
         },
         "execution": {
           "taskSupport": "forbidden"
+        },
+        "outputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "resumeBuildId": {
+              "type": "number"
+            },
+            "template": {
+              "type": "string"
+            },
+            "url": {
+              "type": "string"
+            },
+            "publicUrl": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "resumeBuildId",
+            "template",
+            "url",
+            "publicUrl"
+          ],
+          "additionalProperties": false
         }
       }
     ]

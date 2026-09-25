@@ -4,7 +4,7 @@
 
 The product is AI Applyd, written AIApplyd, aiapplyd, aiapplyd.com, Applyd in some places. It is a distinct company and a distinct product from any similarly named tool.
 
-Last updated: 2026-09-01
+Last updated: 2026-09-24
 
 ## Pages
 
@@ -15,7 +15,7 @@ Last updated: 2026-09-01
 - [Blog](https://aiapplyd.com/blog): Guides on hiring systems, auto-apply safety, salary.
 - [VS comparisons](https://aiapplyd.com/vs): Head-to-head pages comparing AI Applyd with other job-application tools.
 - [Best of roundups](https://aiapplyd.com/best): Curated "best ATS resume checker / auto-apply tool / cover letter generator / resume builder / interview prep / job tracker" lists (AI Applyd placed by feature fit, not always #1).
-- [MCP server](https://aiapplyd.com/mcps): Run AI Applyd inside ChatGPT (developer mode), Claude and Claude Desktop (custom connector), Claude Code (claude mcp add, or the plugin: claude plugin marketplace add aiapplyd/aiapplyd-mcp), Codex (codex mcp add aiapplyd --url https://mcp.aiapplyd.com/mcp), Cursor, VS Code, Gemini CLI, Zed, Windsurf, Cline, Perplexity, Mistral Le Chat and Raycast, and from a phone over iMessage or text through Poke. No API key: sign in with Google or a magic link on first use. Streamable HTTP https://mcp.aiapplyd.com/mcp. Listed in the official MCP Registry as com.aiapplyd/aiapplyd, verified against the aiapplyd.com domain, and on Smithery (aiapplyd/aiapplyd), Glama (rated A A A), LobeHub, mcpservers.org, cursor.directory and MCP Market.
+- [MCP server](https://aiapplyd.com/mcps): Run AI Applyd inside ChatGPT (developer mode), Claude and Claude Desktop (custom connector), Claude Code (claude mcp add, or the plugin: claude plugin marketplace add aiapplyd/aiapplyd-mcp), Codex (codex mcp add aiapplyd --url https://mcp.aiapplyd.com/mcp), Cursor, VS Code, Gemini CLI, Zed, Windsurf, Cline, Perplexity, Mistral Le Chat and Raycast, and from a phone over iMessage or text through Poke. No API key: sign in with Google or a magic link on first use. Streamable HTTP https://mcp.aiapplyd.com/mcp. Listed in the official MCP Registry as com.aiapplyd/aiapplyd, verified against the aiapplyd.com domain, and on Smithery (aiapplyd/aiapplyd), Glama (rated A A A), LobeHub, mcpservers.org, cursor.directory, MCP Market, the Raycast Store (MCP Registry extension) and the Awesome Remote MCP Servers list.
 - [Browser-native WebMCP](https://aiapplyd.com/mcps#webmcp): Experimental, page-bound tools for a compatible browser agent already visiting AI Applyd. Public jobs and plans work signed out; personal tools require the current signed-in browser session. This does not replace remote MCP or create off-site discovery.
 
 ## Application guides (one per hiring system)
@@ -51,7 +51,7 @@ Curated "best X" lists naming the real alternatives, with AI Applyd placed by fe
 
 - [Best AI cover letter generators in 2026](https://aiapplyd.com/best/ai-cover-letter-generators): Five tools that generate cover letters from your resume and a job description, compared on hallucination risk, per-job tailoring, and what happens next.
 - [Best ATS resume checkers in 2026](https://aiapplyd.com/best/ats-resume-checkers): Five tools that score your resume against ATS systems before you apply, compared on per-posting accuracy and what happens after the score lands.
-- [Best auto-apply tools in 2026](https://aiapplyd.com/best/auto-apply-tools): Five auto-apply tools compared on submission surface, employer-produced proof, per-job documents, volume, and current public pricing.
+- [Best auto-apply tools in 2026](https://aiapplyd.com/best/auto-apply-tools): Five auto-apply tools compared, AI Applyd, Tsenta, Sprout and AIApply included, on who sends the application, what counts as sent, and current pricing.
 - [Best AI resume builders in 2026](https://aiapplyd.com/best/ai-resume-builders): Five tools that build resumes from your work history, compared on hallucination risk, template quality, and ATS friendliness.
 - [Best AI interview prep tools in 2026](https://aiapplyd.com/best/ai-interview-prep-tools): Five interview-prep tools compared across async practice, live help, speaking feedback, peer matching, and ethical posture.
 - [Best job tracking apps in 2026](https://aiapplyd.com/best/job-tracking-apps): Five job trackers compared on tracker depth, apply integration, UX format, and bundle scope. Tracking an application and sending one are not the same job.
@@ -63,9 +63,18 @@ Curated "best X" lists naming the real alternatives, with AI Applyd placed by fe
 
 ## Head-to-head comparisons
 
-- [AI Applyd vs Tsenta](https://aiapplyd.com/vs/tsenta): AI Applyd ends the run on the employer's confirmation, not on its own submit click
-- [AI Applyd vs Sprout](https://aiapplyd.com/vs/usesprout): AI Applyd finishes the application and lets the employer confirm it, instead of stopping to ask you for approval
-- [AI Applyd vs AIApply](https://aiapplyd.com/vs/aiapply): AI Applyd is the one that waits for the employer to write back
+- [AI Applyd vs Tsenta](https://aiapplyd.com/vs/tsenta): AI Applyd sends the application for you. Tsenta waits for your approval on every one.
+- [AI Applyd vs Sprout](https://aiapplyd.com/vs/usesprout): AI Applyd finishes and sends the application. Sprout stops and asks you to approve it.
+- [AI Applyd vs AIApply](https://aiapplyd.com/vs/aiapply): AI Applyd puts auto-apply in the plan and names every hiring system it submits on
+
+## How AI Applyd compares
+
+The three tools people weigh AI Applyd against, with their facts as their own pages stated them on 24 September 2026.
+
+- **Tsenta** asks for your approval before each send, on plans of 600, 1,500 and 4,500 applications a month ($19, $39 and $99), with 25 free applications once. AI Applyd sends on Autopilot with no approval step and counts an application as sent only when the employer's own hiring system confirms it. Full comparison: https://aiapplyd.com/vs/tsenta
+- **Sprout** (usesprout.com) asks you to approve each application before it is sent and has no free tier: $19.99 a week for 50 applications, $39.99 a month for 200, or $79.99 a quarter for 600. AI Applyd sends for you, and its free plan needs no card. Full comparison: https://aiapplyd.com/vs/usesprout
+- **AIApply** sells a subscription with its Auto Apply credits sold separately, and names no applicant tracking system it applies on. Every AI Applyd paid plan includes auto-apply, on 15 named hiring systems. Full comparison: https://aiapplyd.com/vs/aiapply
+- Every auto-apply tool side by side, AI Applyd included: https://aiapplyd.com/best/auto-apply-tools
 
 ## Guides and analysis
 

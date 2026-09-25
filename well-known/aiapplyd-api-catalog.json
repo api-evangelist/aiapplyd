@@ -1,0 +1,78 @@
+{
+  "linkset": [
+    {
+      "anchor": "https://aiapplyd.com/.well-known/api-catalog",
+      "describedby": [
+        {
+          "href": "https://aiapplyd.com/apis.json",
+          "type": "application/json"
+        }
+      ],
+      "item": [
+        {
+          "href": "https://api.aiapplyd.com/api/v1"
+        },
+        {
+          "href": "https://mcp.aiapplyd.com/mcp"
+        }
+      ]
+    },
+    {
+      "anchor": "https://api.aiapplyd.com/api/v1",
+      "service-desc": [
+        {
+          "href": "https://api.aiapplyd.com/api/v1/openapi.json",
+          "type": "application/vnd.oai.openapi+json"
+        }
+      ],
+      "service-doc": [
+        {
+          "href": "https://api.aiapplyd.com/api/v1/scalar",
+          "type": "text/html"
+        }
+      ],
+      "service-meta": [
+        {
+          "href": "https://aiapplyd.com/llms.txt",
+          "type": "text/plain"
+        }
+      ],
+      "terms-of-service": [
+        {
+          "href": "https://aiapplyd.com/legal/terms",
+          "type": "text/html"
+        }
+      ]
+    },
+    {
+      "anchor": "https://mcp.aiapplyd.com/mcp",
+      "describedby": [
+        {
+          "href": "https://github.com/aiapplyd/aiapplyd-mcp",
+          "type": "text/html"
+        }
+      ],
+      "service-desc": [
+        {
+          "href": "https://mcp.aiapplyd.com/.well-known/oauth-protected-resource",
+          "type": "application/json"
+        }
+      ],
+      "service-doc": [
+        {
+          "href": "https://aiapplyd.com/mcps",
+          "type": "text/html"
+        }
+      ]
+    },
+    {
+      "anchor": "https://aiapplyd.com/.well-known/agent-skills/index.json",
+      "service-doc": [
+        {
+          "href": "https://aiapplyd.com/mcps",
+          "type": "text/html"
+        }
+      ]
+    }
+  ]
+}

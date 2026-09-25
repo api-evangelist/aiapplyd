@@ -1,4 +1,4 @@
-generated: '2026-09-23'
+generated: '2026-09-25'
 method: probed
 generator: harvest-well-known.py
 source: Live GET of the named /.well-known/ path list on every host the record knows; every row is a request that
@@ -6,7 +6,7 @@ source: Live GET of the named /.well-known/ path list on every host the record k
 summary:
   hosts_probed: 3
   paths_probed: 33
-  documents_served: 3
+  documents_served: 7
 hosts:
 - host: api.aiapplyd.com
   control:
@@ -15,8 +15,10 @@ hosts:
     bytes: 0
   documents:
   - path: /.well-known/security.txt
-    status: 404
+    status: 200
     standard: RFC 9116
+    content_type: text/plain; charset=utf-8
+    file: aiapplyd-api-security.txt
   - path: /.well-known/openid-configuration
     status: 404
     standard: OpenID Connect Discovery 1.0
@@ -54,8 +56,10 @@ hosts:
     bytes: 0
   documents:
   - path: /.well-known/security.txt
-    status: 404
+    status: 200
     standard: RFC 9116
+    content_type: text/plain; charset=utf-8
+    file: aiapplyd-mcp-security.txt
   - path: /.well-known/openid-configuration
     status: 404
     standard: OpenID Connect Discovery 1.0
@@ -88,10 +92,8 @@ hosts:
     status: 404
     standard: ACP
   - path: /.well-known/mcp/server-card.json
-    status: 200
+    status: 503
     standard: MCP server card
-    content_type: application/json
-    file: aiapplyd-mcp-mcp-server-card.json
 - host: aiapplyd.com
   control:
     path: /.well-known/apis-io-negative-control-7f3ab91c.json
@@ -99,8 +101,10 @@ hosts:
     bytes: 0
   documents:
   - path: /.well-known/security.txt
-    status: 404
+    status: 200
     standard: RFC 9116
+    content_type: text/plain; charset=utf-8
+    file: aiapplyd-security.txt
   - path: /.well-known/openid-configuration
     status: 404
     standard: OpenID Connect Discovery 1.0
@@ -111,11 +115,18 @@ hosts:
     status: 404
     standard: RFC 9728
   - path: /.well-known/api-catalog
-    status: 404
+    status: 200
     standard: RFC 9727
+    content_type: application/linkset+json; profile="https://www.rfc-editor.org/info/rfc9727"
+    file: aiapplyd-api-catalog.json
+    note: 'live on the provider''s host; the document names github.com: the hosting platform serves it'
+    served_by_platform:
+    - github.com
   - path: /.well-known/apis.json
-    status: 404
+    status: 200
     standard: APIs.json
+    content_type: application/json; charset=utf-8
+    file: aiapplyd-apis.json
   - path: /.well-known/ai-plugin.json
     status: 404
     standard: OpenAI plugin manifest

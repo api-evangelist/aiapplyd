@@ -1,0 +1,214 @@
+generated: '2026-09-25'
+method: searched
+source: https://aiapplyd.com/.well-known/agent-skills/index.json
+description: Provider-published Agent Skills, saved verbatim. AI Applyd serves an Agent Skills discovery index (schema https://schemas.agentskills.io/discovery/0.2.0/schema.json)
+  listing five SKILL.md files with sha256 digests; each file was fetched on 2026-09-25 and its digest matches the index. The
+  skills drive the hosted MCP server and name its tools; operations[] lists the REST operationIds those tools bind to per
+  mcp/aiapplyd-tool-crosswalk.yml. API Evangelist authored none of them.
+discovery:
+  url: https://aiapplyd.com/.well-known/agent-skills/index.json
+  status: 200
+  content_type: application/json; charset=utf-8
+  schema: https://schemas.agentskills.io/discovery/0.2.0/schema.json
+skill_count: 5
+skills:
+- file: skills/aiapplyd-find-matching-jobs.md
+  name: find-matching-jobs
+  author: AI Applyd
+  method: searched
+  api: aiapplyd:ai-applyd-mcp-server
+  source: https://aiapplyd.com/.well-known/agent-skills/find-matching-jobs/SKILL.md
+  digest: sha256:8181cb438157b10517d4a166253de2e94b9a7b0cd2cce9b131fdad4beb3a1a03
+  digest_verified: '2026-09-25'
+  description: Find jobs that fit the user with AI Applyd, save or skip them, and change what it looks for. Use this skill
+    whenever the user asks for job matches, new jobs, openings, roles to apply to, remote jobs, jobs in a city, "what jobs
+    fit me", wants to save or skip a job, or wants to change their target roles, locations or salary, even if they do not
+    name AI Applyd.
+  mcp_tools:
+  - aiapplyd_apply
+  - aiapplyd_get_account
+  - aiapplyd_get_matches
+  - aiapplyd_search_jobs
+  - aiapplyd_set_resume
+  - aiapplyd_triage_matches
+  - aiapplyd_update_job_preferences
+  operations:
+  - getAiPersona
+  - getAiQuota
+  - getApplicationProfile
+  - getApplicationsUsage
+  - getAuthHealth
+  - getBillingSubscription
+  - getJobMatches
+  - getJobMatchesById
+  - getJobMatchesPreferences
+  - getUserDocuments
+  - getUserDocumentsByIdParseStatus
+  - postApplicationsPrepare
+  - postJobMatchesByIdDismiss
+  - postJobMatchesByIdSave
+  - postJobs
+  - postJobsParseUrl
+  - postOnboardingParseResume
+  - postUserDocumentsByIdSetBase
+  - putApplicationProfile
+  - putJobMatchesPreferences
+  - putJobsById
+- file: skills/aiapplyd-apply-to-a-job.md
+  name: apply-to-a-job
+  author: AI Applyd
+  method: searched
+  api: aiapplyd:ai-applyd-mcp-server
+  source: https://aiapplyd.com/.well-known/agent-skills/apply-to-a-job/SKILL.md
+  digest: sha256:0785f7b872448411dff08b47a7a6755f4704039c28489b6b656b15dc2157b41b
+  digest_verified: '2026-09-25'
+  description: Send a real job application with AI Applyd. It tailors the resume and cover letter, then fills in and submits
+    the employer's own hiring form (Workday, Greenhouse, Lever, Ashby, Workable and 10 more ATS platforms). Use this skill
+    whenever the user wants to apply to a job, send or submit an application, auto-apply, says "go ahead and apply" or "yes"
+    to a match, or pastes a job link and says apply.
+  mcp_tools:
+  - aiapplyd_apply
+  - aiapplyd_auto_apply
+  - aiapplyd_get_account
+  - aiapplyd_get_applications
+  - aiapplyd_set_resume
+  - aiapplyd_update_job_preferences
+  operations:
+  - getAiPersona
+  - getAiQuota
+  - getApplicationProfile
+  - getApplications
+  - getApplicationsByIdByResultId
+  - getApplicationsByResultIdScreenshotByVariant
+  - getApplicationsUsage
+  - getAuthHealth
+  - getBillingSubscription
+  - getJobMatchesById
+  - getJobMatchesPreferences
+  - getUserDocuments
+  - getUserDocumentsByIdParseStatus
+  - postApplicationsPrepare
+  - postJobs
+  - postJobsParseUrl
+  - postOnboardingParseResume
+  - postUserDocumentsByIdSetBase
+  - putApplicationProfile
+  - putJobMatchesPreferences
+  - putJobsById
+- file: skills/aiapplyd-review-and-send.md
+  name: review-and-send
+  author: AI Applyd
+  method: searched
+  api: aiapplyd:ai-applyd-mcp-server
+  source: https://aiapplyd.com/.well-known/agent-skills/review-and-send/SKILL.md
+  digest: sha256:8fdeac57eaf644c899ef818a954b4e903897ffaa10d7ac31eec999ddbc8342d4
+  digest_verified: '2026-09-25'
+  description: Review the applications AI Applyd prepared, change them, and send the ones the user approves. Use this skill
+    whenever the user asks what is waiting for them, wants to see their review queue, approve, reject or cancel an application,
+    change a tailored resume or cover letter, says "send it" or "send them all", or answers yes or no to an application AI
+    Applyd held for review.
+  mcp_tools:
+  - aiapplyd_get_applications
+  - aiapplyd_review_application
+  operations:
+  - getApplications
+  - getApplicationsByIdByResultId
+  - getApplicationsByResultIdScreenshotByVariant
+  - patchApplicationsByResultIdStage
+  - postApplicationsByResultIdApprove
+  - postApplicationsByResultIdCancel
+  - postApplicationsByResultIdRePrepare
+  - postApplicationsByResultIdRefine
+  - postApplicationsByResultIdReject
+  - postApplicationsResultsApproveBatch
+- file: skills/aiapplyd-tailor-for-a-job.md
+  name: tailor-for-a-job
+  author: AI Applyd
+  method: searched
+  api: aiapplyd:ai-applyd-mcp-server
+  source: https://aiapplyd.com/.well-known/agent-skills/tailor-for-a-job/SKILL.md
+  digest: sha256:7c54872b2399117062a9182391c1dd679222b32a819dc5374d113a6b0623535b
+  digest_verified: '2026-09-25'
+  description: Tailor the user's resume and cover letter to one job posting with AI Applyd. It gives the posting's keywords,
+    an ATS score, a rewritten resume, a cover letter, a PDF and interview prep. Use this skill whenever the user pastes a
+    job description, asks how well their resume fits a role, wants their resume rewritten, optimized or translated for a job,
+    needs a cover letter or a resume PDF, or wants to prepare for an interview.
+  mcp_tools:
+  - aiapplyd_analyze_job_description
+  - aiapplyd_apply
+  - aiapplyd_build_pdf
+  - aiapplyd_generate_cover_letter
+  - aiapplyd_generate_interview_questions
+  - aiapplyd_get_account
+  - aiapplyd_optimize_resume
+  - aiapplyd_score_resume
+  - aiapplyd_set_resume
+  - aiapplyd_translate_resume
+  operations:
+  - getAiPersona
+  - getAiQuota
+  - getApplicationProfile
+  - getApplicationsByIdByResultId
+  - getApplicationsUsage
+  - getAuthHealth
+  - getBillingSubscription
+  - getJobMatchesById
+  - getJobMatchesPreferences
+  - getJobsById
+  - getResumeBuilder
+  - getResumeBuilderById
+  - getUserDocuments
+  - getUserDocumentsByIdParseStatus
+  - postApplicationsByResultIdRefine
+  - postApplicationsPrepare
+  - postAtsOptimize
+  - postAtsScore
+  - postJobs
+  - postJobsByIdGenerateInterviewPrep
+  - postJobsExtractKeywords
+  - postJobsParseUrl
+  - postOnboardingParseResume
+  - postResumeBuilder
+  - postResumeBuilderByIdGenerateCoverLetter
+  - postResumeBuilderByIdShare
+  - postResumeBuilderByIdTranslate
+  - postUserDocumentsByIdSetBase
+  - putJobsById
+- file: skills/aiapplyd-track-applications.md
+  name: track-applications
+  author: AI Applyd
+  method: searched
+  api: aiapplyd:ai-applyd-mcp-server
+  source: https://aiapplyd.com/.well-known/agent-skills/track-applications/SKILL.md
+  digest: sha256:1754bc774360d91045562dfd455ace5acd27886c629882761390f13d635a53ac
+  digest_verified: '2026-09-25'
+  description: Check where the user's job applications stand with AI Applyd, which employers confirmed them, and how many
+    applications and credits the user has left. Use this skill whenever the user asks "did it go through", "what did I apply
+    to", for an application status, a receipt or a confirmation, their plan, their balance, or how many applications they
+    have left.
+  mcp_tools:
+  - aiapplyd_get_account
+  - aiapplyd_get_applications
+  - aiapplyd_review_application
+  - aiapplyd_update_job_preferences
+  operations:
+  - getAiPersona
+  - getAiQuota
+  - getApplicationProfile
+  - getApplications
+  - getApplicationsByIdByResultId
+  - getApplicationsByResultIdScreenshotByVariant
+  - getApplicationsUsage
+  - getAuthHealth
+  - getBillingSubscription
+  - getJobMatchesPreferences
+  - getUserDocuments
+  - patchApplicationsByResultIdStage
+  - postApplicationsByResultIdApprove
+  - postApplicationsByResultIdCancel
+  - postApplicationsByResultIdRePrepare
+  - postApplicationsByResultIdRefine
+  - postApplicationsByResultIdReject
+  - postApplicationsResultsApproveBatch
+  - putApplicationProfile
+  - putJobMatchesPreferences

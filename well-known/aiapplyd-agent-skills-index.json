@@ -1,0 +1,40 @@
+{
+  "$schema": "https://schemas.agentskills.io/discovery/0.2.0/schema.json",
+  "skills": [
+    {
+      "description": "Find jobs that fit the user with AI Applyd, save or skip them, and change what it looks for. Use this skill whenever the user asks for job matches, new jobs, openings, roles to apply to, remote jobs, jobs in a city, \"what jobs fit me\", wants to save or skip a job, or wants to change their target roles, locations or salary, even if they do not name AI Applyd.",
+      "digest": "sha256:8181cb438157b10517d4a166253de2e94b9a7b0cd2cce9b131fdad4beb3a1a03",
+      "name": "find-matching-jobs",
+      "type": "skill-md",
+      "url": "/.well-known/agent-skills/find-matching-jobs/SKILL.md"
+    },
+    {
+      "description": "Send a real job application with AI Applyd. It tailors the resume and cover letter, then fills in and submits the employer's own hiring form (Workday, Greenhouse, Lever, Ashby, Workable and 10 more ATS platforms). Use this skill whenever the user wants to apply to a job, send or submit an application, auto-apply, says \"go ahead and apply\" or \"yes\" to a match, or pastes a job link and says apply.",
+      "digest": "sha256:0785f7b872448411dff08b47a7a6755f4704039c28489b6b656b15dc2157b41b",
+      "name": "apply-to-a-job",
+      "type": "skill-md",
+      "url": "/.well-known/agent-skills/apply-to-a-job/SKILL.md"
+    },
+    {
+      "description": "Review the applications AI Applyd prepared, change them, and send the ones the user approves. Use this skill whenever the user asks what is waiting for them, wants to see their review queue, approve, reject or cancel an application, change a tailored resume or cover letter, says \"send it\" or \"send them all\", or answers yes or no to an application AI Applyd held for review.",
+      "digest": "sha256:8fdeac57eaf644c899ef818a954b4e903897ffaa10d7ac31eec999ddbc8342d4",
+      "name": "review-and-send",
+      "type": "skill-md",
+      "url": "/.well-known/agent-skills/review-and-send/SKILL.md"
+    },
+    {
+      "description": "Tailor the user's resume and cover letter to one job posting with AI Applyd. It gives the posting's keywords, an ATS score, a rewritten resume, a cover letter, a PDF and interview prep. Use this skill whenever the user pastes a job description, asks how well their resume fits a role, wants their resume rewritten, optimized or translated for a job, needs a cover letter or a resume PDF, or wants to prepare for an interview.",
+      "digest": "sha256:7c54872b2399117062a9182391c1dd679222b32a819dc5374d113a6b0623535b",
+      "name": "tailor-for-a-job",
+      "type": "skill-md",
+      "url": "/.well-known/agent-skills/tailor-for-a-job/SKILL.md"
+    },
+    {
+      "description": "Check where the user's job applications stand with AI Applyd, which employers confirmed them, and how many applications and credits the user has left. Use this skill whenever the user asks \"did it go through\", \"what did I apply to\", for an application status, a receipt or a confirmation, their plan, their balance, or how many applications they have left.",
+      "digest": "sha256:1754bc774360d91045562dfd455ace5acd27886c629882761390f13d635a53ac",
+      "name": "track-applications",
+      "type": "skill-md",
+      "url": "/.well-known/agent-skills/track-applications/SKILL.md"
+    }
+  ]
+}

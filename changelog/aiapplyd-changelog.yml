@@ -1,9 +1,21 @@
-generated: '2026-09-23'
+generated: '2026-09-25'
 method: searched
 source: https://github.com/aiapplyd/aiapplyd-mcp/releases
 scheme: semver (MCP server releases)
-current_version: 1.6.0
+current_version: 1.8.0
 entries:
+- version: 1.8.0
+  date: '2026-09-25'
+  breaking: false
+  highlights:
+  - '17 tools (was 10). New: aiapplyd_get_matches, aiapplyd_apply, aiapplyd_get_applications, aiapplyd_review_application,
+    aiapplyd_get_account, aiapplyd_set_resume, aiapplyd_triage_matches; aiapplyd_search_jobs and aiapplyd_auto_apply stay
+    as older names'
+  - Every tool has a title, all four annotation hints and an outputSchema
+  - 'New prompt: apply_to_my_matches'
+  - OAuth 2.1 now also advertises Client ID Metadata Documents and the RFC 9207 iss parameter
+  - The plugin ships five skills, byte-identical to https://aiapplyd.com/.well-known/agent-skills/index.json
+  source: https://github.com/aiapplyd/aiapplyd-mcp/releases/tag/v1.8.0
 - version: 1.6.0
   date: '2026-09-23'
   breaking: false
