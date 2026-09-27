@@ -1,0 +1,3907 @@
+openapi: 3.2.0
+info:
+  title: Aiapplyd Jobs API
+  version: 115c47ce
+  contact:
+    email: support@aiapplyd.com
+    name: AI Applyd
+    url: https://aiapplyd.com
+  license:
+    name: Proprietary
+    url: https://aiapplyd.com/legal/terms
+  description: 'Operations tagged jobs across 2 of this provider''s published API definitions: aiapplyd-openapi.json, aiapplyd-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- description: Current environment
+  url: https://api.aiapplyd.com/api/v1
+security:
+- BearerAuth: []
+tags:
+- name: Jobs
+paths:
+  /jobs/extract-keywords:
+    post:
+      tags:
+      - Jobs
+      summary: Extract Keywords from Job Description
+      description: Extract ATS keywords and skills from a job description. Requires authentication.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExtractKeywordsRequest'
+      responses:
+        '200':
+          description: Extracted keywords with categories and importance weights
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExtractKeywordsResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: postJobsExtractKeywords
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+  /jobs/compare:
+    post:
+      tags:
+      - Jobs
+      summary: Compare Job Offers
+      description: Compare 2-5 job listings side-by-side with weighted scoring across 10 dimensions. Requires authentication and a resume.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OfferComparisonRequest'
+      responses:
+        '200':
+          description: Offer comparison matrix with scores and recommendation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OfferComparisonResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: postJobsCompare
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+  /jobs/parse-url:
+    post:
+      tags:
+      - Jobs
+      summary: Parse Job URL
+      description: Fetch a job posting URL and extract structured job data using AI.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ParseJobUrlRequest'
+      responses:
+        '200':
+          description: Parsed job data from URL
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ParseJobUrlResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: postJobsParseUrl
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+  /jobs/import-url:
+    post:
+      tags:
+      - Jobs
+      summary: Import Job by URL
+      description: Scrape a single job posting from a direct application URL and add it to the authenticated user's feed. Rejects aggregator URLs (LinkedIn / Indeed / Glassdoor) - paste the company's direct application URL (Greenhouse / Lever / Ashby / Workday, etc.).
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ImportJobByUrlRequest'
+      responses:
+        '200':
+          description: Job imported into the user feed (or matched to a pre-existing pooled posting)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImportJobByUrlResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: postJobsImportUrl
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+  /jobs/ats-scores/{atsScoreId}:
+    get:
+      tags:
+      - Jobs
+      summary: Get ATS Score
+      description: Get a single ATS score row by id (for polling async generation status).
+      parameters:
+      - schema:
+          type: string
+          pattern: ^\d+$
+          description: ATS score identifier
+          example: '1'
+        required: true
+        description: ATS score identifier
+        in: path
+        name: atsScoreId
+      responses:
+        '200':
+          description: ATS score row
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AtsScoreRecordResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: getJobsAtsScoresByAtsScoreId
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+  /jobs/stats:
+    get:
+      tags:
+      - Jobs
+      summary: Job Listing Stats
+      description: 'Aggregate counts for the authenticated user: totals, applied-today, applied-this-week, ghosted, and interviewing.'
+      responses:
+        '200':
+          description: Aggregate job listing stats
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobStatsResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: getJobsStats
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+  /jobs:
+    get:
+      tags:
+      - Jobs
+      summary: List Job Listings
+      description: Get all job listings for the authenticated user.
+      parameters:
+      - schema:
+          type: string
+          enum:
+          - saved
+          - preparing
+          - applied
+          - interviewing
+          - offered
+          - rejected
+          - archived
+          description: Filter by a single job listing status
+          example: saved
+        required: false
+        description: Filter by a single job listing status
+        name: status
+        in: query
+      - schema:
+          type: string
+          description: Filter by multiple job listing statuses (comma-separated)
+          example: applied,preparing
+        required: false
+        description: Filter by multiple job listing statuses (comma-separated)
+        name: statuses
+        in: query
+      - schema:
+          type: string
+          maxLength: 200
+          description: Search job listings by title, company, or location
+          example: software engineer
+        required: false
+        description: Search job listings by title, company, or location
+        name: search
+        in: query
+      - schema:
+          type: string
+          enum:
+          - newest
+          - oldest
+          - best_match
+          - status
+          - company_az
+          description: Sort order for the returned listings
+          example: newest
+        required: false
+        description: Sort order for the returned listings
+        name: sort
+        in: query
+      responses:
+        '200':
+          description: List of job listings
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobListingListResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: getJobs
+    post:
+      tags:
+      - Jobs
+      summary: Create Job Listing
+      description: 'Create a new job listing for tracking and ATS analysis. Idempotent per user on `sourceUrl`: when the caller already tracks the same posting (tracking params, trailing slash and fragment ignored), the existing listing is returned with 200 and nothing is inserted.'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateJobListingRequest'
+      responses:
+        '200':
+          description: The caller already tracks this posting; that listing is returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobListingCreatedResponse'
+        '201':
+          description: Job listing created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobListingCreatedResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: postJobs
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+  /jobs/{id}:
+    get:
+      tags:
+      - Jobs
+      summary: Get Job Listing
+      description: Get a specific job listing by ID. Returns 410 Gone with a redirect target when the listing was deleted (e.g. blog deep-link to a stale ID).
+      parameters:
+      - schema:
+          type: string
+          pattern: ^\d+$
+          description: Job listing identifier
+          example: '1'
+        required: true
+        description: Job listing identifier
+        in: path
+        name: id
+      responses:
+        '200':
+          description: Job listing details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobListingResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '410':
+          description: Job listing was deleted or never existed; body carries a redirectTo target
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobListingGoneResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: getJobsById
+    put:
+      tags:
+      - Jobs
+      summary: Update Job Listing
+      description: Update an existing job listing.
+      parameters:
+      - schema:
+          type: string
+          pattern: ^\d+$
+          description: Job listing identifier
+          example: '1'
+        required: true
+        description: Job listing identifier
+        in: path
+        name: id
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateJobListingRequest'
+      responses:
+        '200':
+          description: Job listing updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobListingResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: putJobsById
+    delete:
+      tags:
+      - Jobs
+      summary: Delete Job Listing
+      description: Delete a job listing and all associated ATS scores.
+      parameters:
+      - schema:
+          type: string
+          pattern: ^\d+$
+          description: Job listing identifier
+          example: '1'
+        required: true
+        description: Job listing identifier
+        in: path
+        name: id
+      responses:
+        '200':
+          description: Job listing deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobSuccessResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: deleteJobsById
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+  /jobs/{id}/ats-score:
+    post:
+      tags:
+      - Jobs
+      summary: Run ATS Score Analysis
+      description: Run ATS compatibility analysis for a document against this job listing.
+      parameters:
+      - schema:
+          type: string
+          pattern: ^\d+$
+          description: Job listing identifier
+          example: '1'
+        required: true
+        description: Job listing identifier
+        in: path
+        name: id
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RunAtsScoreRequest'
+      responses:
+        '201':
+          description: ATS score analysis completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AtsScoreRecordResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: postJobsByIdAtsScore
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+  /jobs/{id}/ats-scores:
+    get:
+      tags:
+      - Jobs
+      summary: List ATS Scores
+      description: Get all ATS scores for a job listing.
+      parameters:
+      - schema:
+          type: string
+          pattern: ^\d+$
+          description: Job listing identifier
+          example: '1'
+        required: true
+        description: Job listing identifier
+        in: path
+        name: id
+      responses:
+        '200':
+          description: List of ATS scores
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AtsScoreListResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: getJobsByIdAtsScores
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+  /jobs/{id}/generate-interview-prep:
+    post:
+      tags:
+      - Jobs
+      summary: Generate Interview Prep Content
+      description: Generate AI-powered interview preparation content for a specific job listing.
+      parameters:
+      - schema:
+          type: string
+          pattern: ^\d+$
+          description: Job listing identifier
+          example: '1'
+        required: true
+        description: Job listing identifier
+        in: path
+        name: id
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GenerateInterviewPrepRequest'
+      responses:
+        '200':
+          description: Interview prep content generated successfully, or a polling/throttled envelope
+          content:
+            application/json:
+              schema:
+                anyOf:
+                - $ref: '#/components/schemas/GenerateInterviewPrepResponse'
+                - $ref: '#/components/schemas/PollingResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: postJobsByIdGenerateInterviewPrep
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+  /jobs/{id}/generate-all:
+    post:
+      tags:
+      - Jobs
+      summary: Generate Full Job Timeline
+      description: Kick off interview prep, compensation intelligence, and the match report (when a job match is linked) in one batched, personalized action. Returns a polling envelope; the job-detail tabs poll each status.
+      parameters:
+      - schema:
+          type: string
+          pattern: ^\d+$
+          description: Job listing identifier
+          example: '1'
+        required: true
+        description: Job listing identifier
+        in: path
+        name: id
+      responses:
+        '202':
+          description: Timeline generation queued; poll the job detail for per-tab statuses
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PollingResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: postJobsByIdGenerateAll
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+  /jobs/{id}/comp-intelligence:
+    post:
+      tags:
+      - Jobs
+      summary: Analyze Compensation Intelligence
+      description: Analyze salary ranges, market demand, negotiation leverage, and compensation signals for a specific job listing.
+      parameters:
+      - schema:
+          type: string
+          pattern: ^\d+$
+          description: Job listing identifier
+          example: '1'
+        required: true
+        description: Job listing identifier
+        in: path
+        name: id
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompIntelligenceRequest'
+      responses:
+        '200':
+          description: Compensation intelligence analysis completed, or a polling/throttled envelope
+          content:
+            application/json:
+              schema:
+                anyOf:
+                - $ref: '#/components/schemas/CompIntelligenceResponse'
+                - $ref: '#/components/schemas/PollingResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: postJobsByIdCompIntelligence
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+  /jobs/{id}/stage:
+    put:
+      tags:
+      - Jobs
+      summary: Update Application Stage
+      description: Update the application stage for a job listing.
+      parameters:
+      - schema:
+          type: string
+          pattern: ^\d+$
+          description: Job listing identifier
+          example: '1'
+        required: true
+        description: Job listing identifier
+        in: path
+        name: id
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateStageBody'
+      responses:
+        '200':
+          description: Application stage updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateStageResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: putJobsByIdStage
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+  /jobs/{id}/ghosting-status:
+    get:
+      tags:
+      - Jobs
+      summary: Get Ghosting Status
+      description: Detect potential ghosting based on time since last inbound email for this job.
+      parameters:
+      - schema:
+          type: string
+          pattern: ^\d+$
+          description: Job listing identifier
+          example: '1'
+        required: true
+        description: Job listing identifier
+        in: path
+        name: id
+      responses:
+        '200':
+          description: Ghosting detection result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GhostingStatusResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: getJobsByIdGhostingStatus
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+components:
+  schemas:
+    UpdateStageData:
+      type: object
+      properties:
+        applicationStage:
+          type: string
+          enum:
+          - applied
+          - callback
+          - phone_screen
+          - interview
+          - offered
+          - rejected
+          - no_response
+          description: Stage of the job application pipeline
+          example: applied
+        id:
+          type: integer
+          description: Job listing ID
+        updatedAt:
+          type:
+          - string
+          - 'null'
+          description: Update timestamp
+      required:
+      - applicationStage
+      - id
+      - updatedAt
+      additionalProperties: false
+    ParsedJobData:
+      type: object
+      properties:
+        company:
+          type:
+          - string
+          - 'null'
+          description: Company name
+          example: Acme Corp
+        location:
+          type:
+          - string
+          - 'null'
+          description: Job location
+          example: Remote, US
+        salary:
+          type:
+          - string
+          - 'null'
+          description: Salary range or details
+          example: $120,000 - $160,000
+        title:
+          type:
+          - string
+          - 'null'
+          description: Extracted job title
+          example: Senior Software Engineer
+        description:
+          type:
+          - string
+          - 'null'
+          description: Extracted job description
+          example: We are looking for a senior engineer...
+        requirements:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: Extracted job requirements
+          example:
+          - 5+ years experience
+          - Bachelor degree
+        keywords:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: Extracted ATS keywords
+          example:
+          - react
+          - typescript
+          - aws
+      required:
+      - company
+      - location
+      - salary
+      - title
+      - description
+      - requirements
+      - keywords
+      additionalProperties: false
+    ApiErrorResponse:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+            context:
+              oneOf:
+              - type: object
+                properties:
+                  errorType:
+                    type: string
+                    enum:
+                    - validation
+                  field:
+                    type: string
+                  fieldErrors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        code:
+                          type: string
+                        expected:
+                          type: string
+                        field:
+                          type: string
+                        message:
+                          type: string
+                        received:
+                          type: string
+                      required:
+                      - field
+                      - message
+                  schemaName:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  attemptedEmail:
+                    type: string
+                    format: email
+                  errorType:
+                    type: string
+                    enum:
+                    - authentication
+                  failureReason:
+                    type: string
+                    enum:
+                    - invalid_credentials
+                    - account_locked
+                    - expired_token
+                    - token_expired
+                    - missing_token
+                    - invalid_token
+                    - session_expired
+                    description: Reason for authentication failure
+                    example: token_expired
+                  ipAddress:
+                    type: string
+                  operation:
+                    type: string
+                  service:
+                    type: string
+                  userAgent:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  actualPermission:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - authorization
+                  requiredPermission:
+                    type: string
+                  resource:
+                    type: string
+                  resourceId:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  constraint:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - database
+                  operation:
+                    type: string
+                    enum:
+                    - insert
+                    - update
+                    - delete
+                    - select
+                    - batch
+                    - transaction
+                    - migration
+                    description: Type of database operation
+                    example: select
+                  resourceId:
+                    type: string
+                  sqlState:
+                    type: string
+                  table:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  endpoint:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - external_service
+                  httpStatus:
+                    type: number
+                  operation:
+                    type: string
+                  resourceId:
+                    type: string
+                  responseTime:
+                    type: number
+                  retryAttempt:
+                    type: integer
+                  service:
+                    type: string
+                  serviceName:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  errorType:
+                    type: string
+                    enum:
+                    - resource
+                  resource:
+                    type: string
+                  resourceId:
+                    type: string
+                  service:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  errorType:
+                    type: string
+                    enum:
+                    - rate_limit
+                  limit:
+                    type: number
+                  resetTime:
+                    type: string
+                  windowMs:
+                    type: number
+                required:
+                - errorType
+              - type: object
+                properties:
+                  configKey:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - configuration
+                  operation:
+                    type: string
+                  service:
+                    type: string
+                required:
+                - errorType
+              description: Type-safe error context information
+              example:
+                errorType: validation
+                fieldErrors:
+                - field: email
+                  message: Invalid email format
+            details:
+              oneOf:
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - validation
+                  validationErrors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        code:
+                          type: string
+                        field:
+                          type: string
+                        message:
+                          type: string
+                      required:
+                      - field
+                      - message
+                required:
+                - detailType
+                - validationErrors
+                additionalProperties: false
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - service_error
+                  originalError:
+                    type: string
+                  serviceName:
+                    type: string
+                required:
+                - detailType
+                - serviceName
+                additionalProperties: false
+              - type: object
+                properties:
+                  currentSize:
+                    type: number
+                  detailType:
+                    type: string
+                    enum:
+                    - batch
+                  originalError:
+                    type: string
+                  statementCount:
+                    type: number
+                required:
+                - detailType
+                additionalProperties: false
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - rate_limit
+                  limit:
+                    type: number
+                  resetTime:
+                    type: string
+                  windowMs:
+                    type: number
+                required:
+                - detailType
+                - limit
+                - resetTime
+                - windowMs
+                additionalProperties: false
+              - type: object
+                properties:
+                  conflictingField:
+                    type: string
+                  detailType:
+                    type: string
+                    enum:
+                    - resource
+                  resourceId:
+                    anyOf:
+                    - type: string
+                    - type: number
+                  resourceType:
+                    type: string
+                required:
+                - detailType
+                additionalProperties: false
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - generic
+                  info:
+                    type: string
+                required:
+                - detailType
+                additionalProperties: false
+              - type: object
+                properties:
+                  currentTokens:
+                    type: integer
+                    minimum: 0
+                  detailType:
+                    type: string
+                    enum:
+                    - insufficient_tokens
+                  requiredTokens:
+                    type: integer
+                    minimum: 0
+                required:
+                - currentTokens
+                - detailType
+                - requiredTokens
+                additionalProperties: false
+            message:
+              type: string
+            validation:
+              type: array
+              items:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  field:
+                    type: string
+                  message:
+                    type: string
+                required:
+                - field
+                - message
+                additionalProperties: false
+          required:
+          - code
+          - message
+          additionalProperties: false
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - false
+      required:
+      - error
+      - success
+      additionalProperties: false
+    ExtractKeywordsRequest:
+      type: object
+      properties:
+        jobDescription:
+          type: string
+          minLength: 50
+          maxLength: 50000
+          description: Job description text to extract keywords from
+          example: We are looking for a Senior Software Engineer with 5+ years of experience in React and Node.js...
+      required:
+      - jobDescription
+      additionalProperties: false
+    CompIntelligenceRequest:
+      type: object
+      properties:
+        jobDescription:
+          type: string
+          maxLength: 50000
+          description: Full job description text for compensation analysis
+          example: We are looking for a senior engineer with 5+ years experience...
+        company:
+          type: string
+          description: Company name
+          example: Acme Corp
+        jobTitle:
+          type: string
+          description: Job title
+          example: Senior Software Engineer
+        location:
+          type: string
+          description: Job location for geographic cost-of-living adjustments
+          example: San Francisco, CA
+        retry:
+          type: boolean
+          default: false
+          description: Force a fresh run, reclaiming a previously FAILED slot. Omit on a plain visit.
+          example: false
+      required:
+      - jobDescription
+      - company
+      - jobTitle
+      additionalProperties: false
+    AtsScoreListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/AtsScore'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    StarStory:
+      type: object
+      properties:
+        action:
+          type: string
+          description: What the candidate did (specific, detailed)
+        bestForQuestions:
+          type: array
+          items:
+            type: string
+          description: Question types this story can answer
+        id:
+          type: string
+          description: Unique identifier like story-1, story-2
+        interviewerType:
+          type: string
+          enum:
+          - hr_screener
+          - technical_lead
+          - hiring_manager
+          - executive
+          description: Which interviewer persona this story is best for
+          example: hiring_manager
+        reflection:
+          type: string
+          description: What was learned or what would be done differently - signals seniority
+        requirement:
+          type: string
+          description: The specific JD requirement this story addresses
+        result:
+          type: string
+          description: Quantified outcome with metrics where possible
+        situation:
+          type: string
+          description: 1-2 sentences describing the context
+        task:
+          type: string
+          description: What specifically needed to be done
+        theme:
+          type: string
+          description: 'Category: leadership, technical-challenge, conflict-resolution, process-improvement, failure-recovery, cross-functional, innovation'
+        title:
+          type: string
+          description: Short memorable title for this story
+      required:
+      - action
+      - bestForQuestions
+      - id
+      - interviewerType
+      - reflection
+      - requirement
+      - result
+      - situation
+      - task
+      - theme
+      - title
+    JobListing:
+      type: object
+      properties:
+        company:
+          type:
+          - string
+          - 'null'
+          description: Company name
+          example: Acme Corp
+        companyLogoUrl:
+          type:
+          - string
+          - 'null'
+          description: Company logo URL
+          example: https://www.google.com/s2/favicons?domain=google.com&sz=128
+        companyDomain:
+          type:
+          - string
+          - 'null'
+          description: Company domain for the FE DDG-favicon logo fallback
+          example: acme.com
+        location:
+          type:
+          - string
+          - 'null'
+          description: Job location
+          example: Remote, US
+        salary:
+          type:
+          - string
+          - 'null'
+          description: Salary range or details
+          example: $120,000 - $160,000
+        sourceUrl:
+          type:
+          - string
+          - 'null'
+          description: URL where the job listing was found
+          example: https://linkedin.com/jobs/123
+        title:
+          type: string
+          description: Job title
+          example: Senior Software Engineer
+        createdAt:
+          type:
+          - string
+          - 'null'
+          description: Creation timestamp
+          example: '2024-01-01T00:00:00Z'
+        id:
+          type: integer
+          description: Job listing identifier
+          example: 1
+        jobMatchId:
+          type:
+          - integer
+          - 'null'
+          description: Associated job match identifier
+          example: 42
+        status:
+          type: string
+          enum:
+          - saved
+          - preparing
+          - applied
+          - interviewing
+          - offered
+          - rejected
+          - archived
+          description: Status of a job listing
+          example: saved
+        updatedAt:
+          type:
+          - string
+          - 'null'
+          description: Last update timestamp
+          example: '2024-01-15T10:30:00Z'
+        userId:
+          type: string
+          description: Owner user identifier
+          example: user_123
+        source:
+          type:
+          - string
+          - 'null'
+          enum:
+          - linkedin
+          - indeed
+          - glassdoor
+          - google
+          - ziprecruiter
+          - remotive
+          - jobicy
+          - arbeitnow
+          - ashby
+          - greenhouse
+          - himalayas
+          - lever
+          - recruitee
+          - smartrecruiters
+          - themuse
+          - workingnomads
+          - join
+          - bayt
+          - naukri
+          - bdjobs
+          - web
+          - company_career_page
+          - manual
+          - pool
+          - workable
+          - remoteok
+          - weworkremotely
+          - reed
+          - wellfound
+          - dice
+          - monster
+          - careerbuilder
+          - simplyhired
+          - builtin
+          - snagajob
+          - seek
+          - totaljobs
+          - stepstone
+          - nofluffjobs
+          - devitjobs
+          - workday
+          - jobspresso
+          - landingjobs
+          - personio
+          - rss
+          - teamtailor
+          - breezy
+          - jazzhr
+          - pinpoint
+          - comeet
+          - bamboohr
+          - icims
+          - polymer
+          - gohire
+          - eddy
+          - recruiterflow
+          - hireology
+          - workstream
+          - bullhorn
+          - rippling
+          - softgarden
+          - jobtech
+          - null
+          description: Source platform where the job was found (from linked job match)
+          example: ashby
+        resolvedApplyUrl:
+          type:
+          - string
+          - 'null'
+          description: Resolved external ATS apply URL from the linked job match (e.g. the Greenhouse/Lever page a LinkedIn-scraped job actually applies on). Prefer this over `source` for the provider badge.
+          example: https://boards.greenhouse.io/acme/jobs/123
+        linkedinApplyMethod:
+          type:
+          - string
+          - 'null'
+          enum:
+          - easy_apply
+          - offsite
+          - unknown
+          - null
+          description: Resolved LinkedIn apply target from the linked job match. `offsite` → applies on a company ATS (use resolvedApplyUrl for the badge); `easy_apply` → "LinkedIn Easy Apply"; `unknown`/null → fall back to `source`.
+          example: offsite
+        description:
+          type: string
+          description: Full job description text
+          example: We are looking for a senior engineer...
+        requirements:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: Job requirements
+          example:
+          - 5+ years experience
+          - Bachelor degree
+        keywords:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: Extracted ATS keywords
+          example:
+          - react
+          - typescript
+          - aws
+        interviewPrepContent:
+          type:
+          - string
+          - 'null'
+          description: AI-generated interview prep content (JSON)
+        interviewPrepStatus:
+          type:
+          - string
+          - 'null'
+          description: 'Interview prep generation status: idle, generating, completed, failed'
+        careerPageData:
+          type:
+          - string
+          - 'null'
+          description: AI-resolved career page data (JSON)
+        careerPageStatus:
+          type:
+          - string
+          - 'null'
+          description: 'Career page resolution status: idle, resolving, completed, failed'
+        compIntelligenceContent:
+          type:
+          - string
+          - 'null'
+          description: AI-generated compensation intelligence data (JSON)
+        compIntelligenceStatus:
+          type:
+          - string
+          - 'null'
+          description: 'Compensation intelligence generation status: idle, generating, completed, failed'
+        offerComparisonContent:
+          type:
+          - string
+          - 'null'
+          description: AI-generated offer comparison result (JSON, shared across every job in the comparison set)
+        offerComparisonKey:
+          type:
+          - string
+          - 'null'
+          description: Fingerprint of the jobId set this comparison was produced for (sorted, comma-separated)
+        offerComparisonStatus:
+          type:
+          - string
+          - 'null'
+          description: 'Offer comparison generation status: idle, generating, completed, failed'
+      required:
+      - company
+      - companyLogoUrl
+      - location
+      - salary
+      - sourceUrl
+      - title
+      - createdAt
+      - id
+      - jobMatchId
+      - status
+      - updatedAt
+      - userId
+      - source
+      - resolvedApplyUrl
+      - linkedinApplyMethod
+      - description
+      - requirements
+      - keywords
+    UpdateStageResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/UpdateStageData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    ExtractKeywordsResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            keywords:
+              type: array
+              items:
+                $ref: '#/components/schemas/KeywordItem'
+          required:
+          - keywords
+          additionalProperties: false
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    JobListingListItem:
+      type: object
+      properties:
+        company:
+          type:
+          - string
+          - 'null'
+          description: Company name
+          example: Acme Corp
+        companyLogoUrl:
+          type:
+          - string
+          - 'null'
+          description: Company logo URL
+          example: https://www.google.com/s2/favicons?domain=google.com&sz=128
+        companyDomain:
+          type:
+          - string
+          - 'null'
+          description: Company domain for the FE DDG-favicon logo fallback
+          example: acme.com
+        location:
+          type:
+          - string
+          - 'null'
+          description: Job location
+          example: Remote, US
+        salary:
+          type:
+          - string
+          - 'null'
+          description: Salary range or details
+          example: $120,000 - $160,000
+        sourceUrl:
+          type:
+          - string
+          - 'null'
+          description: URL where the job listing was found
+          example: https://linkedin.com/jobs/123
+        title:
+          type: string
+          description: Job title
+          example: Senior Software Engineer
+        createdAt:
+          type:
+          - string
+          - 'null'
+          description: Creation timestamp
+          example: '2024-01-01T00:00:00Z'
+        id:
+          type: integer
+          description: Job listing identifier
+          example: 1
+        jobMatchId:
+          type:
+          - integer
+          - 'null'
+          description: Associated job match identifier
+          example: 42
+        status:
+          type: string
+          enum:
+          - saved
+          - preparing
+          - applied
+          - interviewing
+          - offered
+          - rejected
+          - archived
+          description: Status of a job listing
+          example: saved
+        updatedAt:
+          type:
+          - string
+          - 'null'
+          description: Last update timestamp
+          example: '2024-01-15T10:30:00Z'
+        source:
+          type:
+          - string
+          - 'null'
+          enum:
+          - linkedin
+          - indeed
+          - glassdoor
+          - google
+          - ziprecruiter
+          - remotive
+          - jobicy
+          - arbeitnow
+          - ashby
+          - greenhouse
+          - himalayas
+          - lever
+          - recruitee
+          - smartrecruiters
+          - themuse
+          - workingnomads
+          - join
+          - bayt
+          - naukri
+          - bdjobs
+          - web
+          - company_career_page
+          - manual
+          - pool
+          - workable
+          - remoteok
+          - weworkremotely
+          - reed
+          - wellfound
+          - dice
+          - monster
+          - careerbuilder
+          - simplyhired
+          - builtin
+          - snagajob
+          - seek
+          - totaljobs
+          - stepstone
+          - nofluffjobs
+          - devitjobs
+          - workday
+          - jobspresso
+          - landingjobs
+          - personio
+          - rss
+          - teamtailor
+          - breezy
+          - jazzhr
+          - pinpoint
+          - comeet
+          - bamboohr
+          - icims
+          - polymer
+          - gohire
+          - eddy
+          - recruiterflow
+          - hireology
+          - workstream
+          - bullhorn
+          - rippling
+          - softgarden
+          - jobtech
+          - null
+          description: Source platform where the job was found (from linked job match)
+          example: ashby
+        resolvedApplyUrl:
+          type:
+          - string
+          - 'null'
+          description: Resolved external ATS apply URL from the linked job match (e.g. the Greenhouse/Lever page a LinkedIn-scraped job actually applies on). Prefer this over `source` for the provider badge.
+          example: https://boards.greenhouse.io/acme/jobs/123
+        linkedinApplyMethod:
+          type:
+          - string
+          - 'null'
+          enum:
+          - easy_apply
+          - offsite
+          - unknown
+          - null
+          description: Resolved LinkedIn apply target from the linked job match. `offsite` → applies on a company ATS (use resolvedApplyUrl for the badge); `easy_apply` → "LinkedIn Easy Apply"; `unknown`/null → fall back to `source`.
+          example: offsite
+        atsScoreCount:
+          type: integer
+          minimum: 0
+          description: Number of ATS scores for this job listing
+          example: 2
+        latestAtsScore:
+          type:
+          - integer
+          - 'null'
+          minimum: 0
+          maximum: 100
+          description: Most recent ATS overall score (0-100), null if no scores exist
+          example: 78
+        preparationStatus:
+          type:
+          - string
+          - 'null'
+          description: Preparation status of the linked application result (null if no application)
+          example: ready
+        autoRetryStopped:
+          type: boolean
+          description: True when NO automatic lane will retry this application (submit evidence fences it, or the retry budget is spent). The UI must not promise a retry when this is true.
+          example: false
+        autoRetryStoppedReason:
+          type:
+          - string
+          - 'null'
+          enum:
+          - submit_evidence
+          - attempts_spent
+          - not_retryable
+          - cancelled
+          - needs_review
+          - orphaned
+          - null
+          description: Which permanent-abandonment lane stopped this row, or null when it is not stopped / could not be evaluated.
+          example: null
+        employerReceiptConfirmed:
+          type: boolean
+          description: True when employer receipt proof exists. Page or screenshot proof stays separate in landingProofs. Outranks every status/error/retry field on this row.
+          example: false
+        submitEvidenceTier:
+          type: string
+          enum:
+          - other_side_confirmed
+          - our_click_only
+          - no_submit_evidence
+          description: 'Whose observation backs this row: other_side_confirmed (the employer produced a receipt), our_click_only (we clicked Submit but read no receipt), or no_submit_evidence (we never clicked).'
+          example: no_submit_evidence
+        nextAutoRetryAt:
+          type:
+          - string
+          - 'null'
+          description: Earliest ISO timestamp an automatic attempt can re-claim this row. A floor, not a guarantee. Null means we are not naming a time - NOT that no retry exists.
+          example: null
+        statusDisplay:
+          anyOf:
+          - type: object
+            properties:
+              label:
+                type: string
+                minLength: 1
+                description: Legacy English badge text for rolling compatibility. V2 clients localize from code and params instead of rendering this field.
+                example: Trying again shortly · pass 3 of 4
+              noCreditUsed:
+                type: boolean
+                description: True only when no billable AI or browser work ran for this row (the skipped short-circuits). An errored apply is never "free".
+                example: false
+              pendingRetryAt:
+                type:
+                - string
+                - 'null'
+                format: date-time
+                description: Earliest ISO timestamp an automatic attempt can re-claim this row, echoed only with matching V2 scheduledAttempt params. Null means we are not naming a time, never that no retry exists.
+                example: null
+              tone:
+                type: string
+                enum:
+                - success
+                - warning
+                - info
+                - destructive
+                - settled
+                - neutral
+                - muted
+                description: Platform-agnostic colour verdict for a derived application status badge. Web maps it to a Tailwind bg-* class, mobile to a theme hex. Never a class name on the wire.
+                example: info
+              code:
+                type: string
+                enum:
+                - queued
+                - preparing
+                - queued_to_apply
+                - waiting_for_browser
+                - submitting
+                - action_needed
+                - waiting_for_review
+                - applied
+                - applied_confirming_landing
+                - employer_receipt_confirmed
+                - sent_no_receipt_read
+                - submitted_verifying
+                - already_applied
+                - retrying_our_hiccup
+                - retrying_soon
+                - employer_rejected_retrying
+                - failed_retrying
+                - resumes_when_funded
+                - signing_in
+                - paused
+                - resuming
+                - resume_required
+                - not_through
+                - no_form
+                - not_ready_to_send
+                - not_submitted
+                - linkedin_easy_apply
+                - job_unavailable
+                - aggregator_skipped
+                - result_submitted
+                - result_submitted_awaiting_receipt
+                - cancelled
+                - result_error
+                - result_preparing
+                - result_pending_approval
+                - result_ready_to_submit
+                - result_skipped
+                - stopped_generic
+                - stopped_submit_evidence
+                - stopped_attempts_spent
+                - stopped_not_retryable
+                - stopped_cancelled
+                - stopped_needs_review
+                - stopped_orphaned
+                - stopped_our_click_only
+                - unknown
+                description: Stable semantic code for a derived application status display. Clients localize this code and use the legacy label only for rolling compatibility.
+                example: queued_to_apply
+              params:
+                type: object
+                properties:
+                  attemptsMade:
+                    type:
+                    - integer
+                    - 'null'
+                    exclusiveMinimum: 0
+                  retryBudget:
+                    type:
+                    - object
+                    - 'null'
+                    properties:
+                      remaining:
+                        type: integer
+                        minimum: 0
+                      total:
+                        type: integer
+                        exclusiveMinimum: 0
+                    required:
+                    - remaining
+                    - total
+                    additionalProperties: false
+                  scheduledAttempt:
+                    type:
+                    - object
+                    - 'null'
+                    properties:
+                      current:
+                        type: integer
+                        exclusiveMinimum: 0
+                      total:
+                        type: integer
+                        exclusiveMinimum: 0
+                    required:
+                    - current
+                    - total
+                    additionalProperties: false
+                required:
+                - attemptsMade
+                - retryBudget
+                - scheduledAttempt
+                additionalProperties: false
+              schemaVersion:
+                type: number
+                enum:
+                - 2
+            required:
+            - label
+            - noCreditUsed
+            - pendingRetryAt
+            - tone
+            - code
+            - params
+            - schemaVersion
+            additionalProperties: false
+          - type: object
+            properties:
+              label:
+                type: string
+                minLength: 1
+                description: Legacy English badge text for rolling compatibility. V2 clients localize from code and params instead of rendering this field.
+                example: Trying again shortly · pass 3 of 4
+              noCreditUsed:
+                type: boolean
+                description: True only when no billable AI or browser work ran for this row (the skipped short-circuits). An errored apply is never "free".
+                example: false
+              pendingRetryAt:
+                type:
+                - string
+                - 'null'
+                format: date-time
+                description: Earliest ISO timestamp an automatic attempt can re-claim this row, echoed only with matching V2 scheduledAttempt params. Null means we are not naming a time, never that no retry exists.
+                example: null
+              tone:
+                type: string
+                enum:
+                - success
+                - warning
+                - info
+                - destructive
+                - settled
+                - neutral
+                - muted
+                description: Platform-agnostic colour verdict for a derived application status badge. Web maps it to a Tailwind bg-* class, mobile to a theme hex. Never a class name on the wire.
+                example: info
+            required:
+            - label
+            - noCreditUsed
+            - pendingRetryAt
+            - tone
+            additionalProperties: false
+          - {}
+          description: The server-derived application status verdict. V2 clients localize its stable code and typed params, then map the semantic tone to platform tokens. The English label remains only for rolling compatibility. Null means the listing has no linked application, so clients fall back to the job listing status.
+          example: null
+        errorCode:
+          type:
+          - string
+          - 'null'
+          description: Terminal error code of the latest application result, or null. Drives the status label.
+          example: agent_stuck
+        applicationResultStatus:
+          type:
+          - string
+          - 'null'
+          description: Status of the linked application result (null if no application)
+          example: ready_to_submit
+        legitimacyTier:
+          type:
+          - string
+          - 'null'
+          enum:
+          - high_confidence
+          - proceed_with_caution
+          - suspicious
+          - null
+          description: Deterministic posting-legitimacy verdict from the parent job match. Null when not yet evaluated.
+          example: proceed_with_caution
+        legitimacySignals:
+          anyOf:
+          - type: string
+          - {}
+          description: Serialized LegitimacySignals payload (score + signals[] + tier) from the parent job match. Null when not yet evaluated.
+        freshnessStatus:
+          type:
+          - string
+          - 'null'
+          enum:
+          - fresh
+          - aging
+          - stale
+          - unknown
+          - null
+          description: Posting age bucket (fresh / aging / stale / unknown) from the scraped_job snapshot.
+          example: fresh
+        repostedCount:
+          type:
+          - integer
+          - 'null'
+          minimum: 0
+          description: Number of prior live scraped_job rows for this URL family. 0 when no repost history.
+          example: 0
+        lastRepostDate:
+          type:
+          - string
+          - 'null'
+          description: posted_date of the most-recent prior repost. Null when no prior posting exists.
+          example: '2026-03-04'
+      required:
+      - company
+      - companyLogoUrl
+      - location
+      - salary
+      - sourceUrl
+      - title
+      - createdAt
+      - id
+      - jobMatchId
+      - status
+      - updatedAt
+      - source
+      - resolvedApplyUrl
+      - linkedinApplyMethod
+      - atsScoreCount
+      - latestAtsScore
+      - preparationStatus
+      - autoRetryStopped
+      - autoRetryStoppedReason
+      - employerReceiptConfirmed
+      - submitEvidenceTier
+      - nextAutoRetryAt
+      - statusDisplay
+      - errorCode
+      - applicationResultStatus
+    ResponseMetadata:
+      type: object
+      properties:
+        duration:
+          type: number
+          description: Request duration in milliseconds
+          example: 150
+          exclusiveMinimum: 0
+        performance:
+          type: object
+          properties:
+            dbQueries:
+              type: integer
+              minimum: 0
+            totalDbTime:
+              type: number
+              minimum: 0
+          description: Performance metrics (preview/local only)
+        requestId:
+          type: string
+          description: Unique request identifier
+          example: req_abc123
+        timestamp:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp
+          example: '2026-09-25T17:29:47.224Z'
+        version:
+          type: string
+          description: API version
+          example: v1
+    GenerateInterviewPrepRequest:
+      type: object
+      properties:
+        retry:
+          type: boolean
+          default: false
+          description: Force a fresh run, reclaiming a previously FAILED slot. Omit on a plain visit.
+          example: false
+      additionalProperties: false
+    CaseStudyRecommendation:
+      type:
+      - object
+      - 'null'
+      properties:
+        anticipatedQuestions:
+          type: array
+          items:
+            type: string
+          description: Questions the interviewer might ask about this project
+        framingStrategy:
+          type: string
+          description: How to frame the presentation (what to emphasize, what order)
+        keyMetrics:
+          type: array
+          items:
+            type: string
+          description: Specific metrics to highlight from this project
+        projectName:
+          type: string
+          description: Which project from the resume to present as a case study
+        whyThisProject:
+          type: string
+          description: Why this project is the best fit for this specific role
+      required:
+      - anticipatedQuestions
+      - framingStrategy
+      - keyMetrics
+      - projectName
+      - whyThisProject
+      description: Recommended case study project to present during the interview. Null when none applies.
+    RunAtsScoreRequest:
+      type: object
+      properties:
+        userDocumentId:
+          type: integer
+          description: User document ID (resume/cover letter) to score against this job listing
+          example: 1
+          exclusiveMinimum: 0
+      required:
+      - userDocumentId
+      additionalProperties: false
+    ImportJobByUrlRequest:
+      type: object
+      properties:
+        url:
+          type: string
+          format: uri
+          description: Direct application URL of the job posting to import (company career page or a recognised ATS - Greenhouse / Lever / Ashby / Workday / etc.). Aggregators (LinkedIn / Indeed / Glassdoor) are rejected.
+          example: https://job-boards.greenhouse.io/acme/jobs/1234567
+      required:
+      - url
+      additionalProperties: false
+    SectionScores:
+      type: object
+      properties:
+        education:
+          type: integer
+          minimum: 0
+          maximum: 100
+          description: Education match score (0-100)
+          example: 90
+        experience:
+          type: integer
+          minimum: 0
+          maximum: 100
+          description: Experience match score (0-100)
+          example: 70
+        formatting:
+          type: integer
+          minimum: 0
+          maximum: 100
+          description: Resume formatting score (0-100)
+          example: 75
+        keywords:
+          type: integer
+          minimum: 0
+          maximum: 100
+          description: Keyword coverage score (0-100)
+          example: 65
+        skills:
+          type: integer
+          minimum: 0
+          maximum: 100
+          description: Skills match score (0-100)
+          example: 85
+      required:
+      - education
+      - experience
+      - formatting
+      - keywords
+      - skills
+      additionalProperties: false
+    KeywordItem:
+      type: object
+      properties:
+        term:
+          type: string
+          description: Keyword or skill term
+          example: React
+        category:
+          type: string
+          enum:
+          - technical_skill
+          - soft_skill
+          - certification
+          - tool
+          - experience
+          - education
+          - industry_knowledge
+          description: Category of the keyword
+          example: technical_skill
+        importance:
+          type: integer
+          minimum: 1
+          maximum: 10
+          description: Importance weight (1-10)
+          example: 9
+      required:
+      - term
+      - category
+      - importance
+      additionalProperties: false
+    JobListingCreatedResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            id:
+              type: integer
+            title:
+              type: string
+            jobMatchId:
+              type:
+              - integer
+              - 'null'
+              description: The linked job match, when one exists. Null on a freshly created listing.
+              example: 42
+          required:
+          - id
+          - title
+          - jobMatchId
+          additionalProperties: false
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    RedFlagQuestion:
+      type: object
+      properties:
+        question:
+          type: string
+          description: A potentially tricky question the candidate might face
+        sampleAnswer:
+          type: string
+          description: A concrete example answer the candidate can adapt
+        sourceTag:
+          type:
+          - string
+          - 'null'
+          description: 'Real external [source: <URL>] only when the question is grounded in a URL. Null otherwise - do NOT emit [source: JD] / [inferred from JD]; quote the JD phrase in the question text instead.'
+        suggestedApproach:
+          type: string
+          description: How to answer without being defensive or evasive
+        why:
+          type: string
+          description: Why this question might come up for this role/candidate
+      required:
+      - question
+      - sampleAnswer
+      - sourceTag
+      - suggestedApproach
+      - why
+    PollingResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/PollingEnvelope'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    CompIntelligenceResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            companyCompReputation:
+              type: object
+              properties:
+                signals:
+                  type: array
+                  items:
+                    type: string
+                  description: Signals that indicate comp positioning (funding, size, industry, benefits mentioned)
+                tier:
+                  type: string
+              required:
+              - signals
+              - tier
+              additionalProperties: false
+            geographicFactors:
+              type: object
+              properties:
+                costOfLivingAdjustment:
+                  type:
+                  - string
+                  - 'null'
+                  description: How location affects comp, or null if remote
+                locationTier:
+                  type: string
+                remotePolicy:
+                  type:
+                  - string
+                  - 'null'
+              required:
+              - costOfLivingAdjustment
+              - locationTier
+              - remotePolicy
+              additionalProperties: false
+            levelAnalysis:
+              type: object
+              properties:
+                compBand:
+                  type: string
+                  description: Typical comp band for this level in this industry
+                detectedLevel:
+                  type: string
+                  description: Seniority level detected from JD (Junior, Mid, Senior, Staff, Principal, etc.)
+                levelJustification:
+                  type: string
+                  description: Why this level was detected (years req, scope, reporting structure)
+              required:
+              - compBand
+              - detectedLevel
+              - levelJustification
+              additionalProperties: false
+            marketDemand:
+              type: object
+              properties:
+                level:
+                  type: string
+                reasoning:
+                  type: string
+                trendDirection:
+                  type: string
+              required:
+              - level
+              - reasoning
+              - trendDirection
+              additionalProperties: false
+            negotiationInsights:
+              type: object
+              properties:
+                counterOfferScript:
+                  type: string
+                  description: How to respond to a below-target offer
+                initialResponseScript:
+                  type: string
+                  description: How to answer "what are your salary expectations?"
+                leveragePoints:
+                  type: array
+                  items:
+                    type: string
+                  description: Specific advantages the candidate has for negotiation
+                riskFactors:
+                  type: array
+                  items:
+                    type: string
+                  description: Things that might limit negotiation leverage
+              required:
+              - counterOfferScript
+              - initialResponseScript
+              - leveragePoints
+              - riskFactors
+              additionalProperties: false
+            salaryRange:
+              type: object
+              properties:
+                currency:
+                  type: string
+                high:
+                  type:
+                  - number
+                  - 'null'
+                low:
+                  type:
+                  - number
+                  - 'null'
+                median:
+                  type:
+                  - number
+                  - 'null'
+                source:
+                  type: string
+                  description: How this range was estimated (JD signals, role level, industry benchmarks)
+              required:
+              - currency
+              - high
+              - low
+              - median
+              - source
+              additionalProperties: false
+          required:
+          - companyCompReputation
+          - geographicFactors
+          - levelAnalysis
+          - marketDemand
+          - negotiationInsights
+          - salaryRange
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    JobListingResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/JobListing'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    JobStatsResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/JobStatsData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    OfferScore:
+      type: object
+      properties:
+        company:
+          type: string
+          description: Company name
+          example: Acme Corp
+        jobId:
+          type: integer
+          description: Job listing identifier
+          example: 1
+        jobTitle:
+          type: string
+          description: Job title
+          example: Senior Software Engineer
+        scores:
+          $ref: '#/components/schemas/DimensionScores'
+        strengths:
+          type: array
+          items:
+            type: string
+          description: 2-3 key strengths for this offer
+          example:
+          - Strong skills match
+          - Modern tech stack
+        weaknesses:
+          type: array
+          items:
+            type: string
+          description: 1-2 key weaknesses for this offer
+          example:
+          - Below-market compensation
+        weightedTotal:
+          type: number
+          minimum: 0
+          maximum: 5
+          description: Weighted total score (0-5)
+          example: 3.8
+      required:
+      - company
+      - jobId
+      - jobTitle
+      - scores
+      - strengths
+      - weaknesses
+      - weightedTotal
+    DimensionScores:
+      type: object
+      properties:
+        role_alignment:
+          type: number
+          minimum: 0
+          maximum: 5
+        skills_match:
+          type: number
+          minimum: 0
+          maximum: 5
+        level_fit:
+          type: number
+          minimum: 0
+          maximum: 5
+        comp_estimate:
+          type: number
+          minimum: 0
+          maximum: 5
+        growth_trajectory:
+          type: number
+          minimum: 0
+          maximum: 5
+        remote_quality:
+          type: number
+          minimum: 0
+          maximum: 5
+        company_reputation:
+          type: number
+          minimum: 0
+          maximum: 5
+        tech_stack:
+          type: number
+          minimum: 0
+          maximum: 5
+        speed_to_offer:
+          type: number
+          minimum: 0
+          maximum: 5
+        culture_signals:
+          type: number
+          minimum: 0
+          maximum: 5
+      required:
+      - role_alignment
+      - skills_match
+      - level_fit
+      - comp_estimate
+      - growth_trajectory
+      - remote_quality
+      - company_reputation
+      - tech_stack
+      - speed_to_offer
+      - culture_signals
+      description: Score per dimension (0-5)
+    DimensionWeights:
+      type: object
+      properties:
+        role_alignment:
+          type: number
+        skills_match:
+          type: number
+        level_fit:
+          type: number
+        comp_estimate:
+          type: number
+        growth_trajectory:
+          type: number
+        remote_quality:
+          type: number
+        company_reputation:
+          type: number
+        tech_stack:
+          type: number
+        speed_to_offer:
+          type: number
+        culture_signals:
+          type: number
+      required:
+      - role_alignment
+      - skills_match
+      - level_fit
+      - comp_estimate
+      - growth_trajectory
+      - remote_quality
+      - company_reputation
+      - tech_stack
+      - speed_to_offer
+      - culture_signals
+      description: Weight per dimension (sums to 1.0)
+    JobSuccessResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            success:
+              type: boolean
+              enum:
+              - true
+          required:
+          - success
+          additionalProperties: false
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    UpdateJobListingRequest:
+      type: object
+      properties:
+        company:
+          type:
+          - string
+          - 'null'
+          maxLength: 200
+        description:
+          type: string
+          minLength: 1
+          maxLength: 50000
+          description: Full job description text
+          example: We are looking for a senior engineer...
+        keywords:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            minLength: 1
+            maxLength: 100
+          maxItems: 100
+        location:
+          type:
+          - string
+          - 'null'
+          maxLength: 200
+        requirements:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            minLength: 1
+            maxLength: 500
+          maxItems: 50
+        salary:
+          type:
+          - string
+          - 'null'
+          maxLength: 100
+        sourceUrl:
+          type:
+          - string
+          - 'null'
+          format: uri
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+          description: Job title
+          example: Senior Software Engineer
+        status:
+          type: string
+          enum:
+          - saved
+          - preparing
+          - applied
+          - interviewing
+          - offered
+          - rejected
+          - archived
+          description: Job listing status
+          example: saved
+      additionalProperties: false
+    OfferComparisonRequest:
+      type: object
+      properties:
+        jobIds:
+          type: array
+          items:
+            type: integer
+            exclusiveMinimum: 0
+          minItems: 2
+          maxItems: 5
+          description: Job listing IDs to compare (2-5)
+          example:
+          - 1
+          - 2
+          - 3
+      required:
+      - jobIds
+      additionalProperties: false
+    OfferComparisonResult:
+      type: object
+      properties:
+        offers:
+          type: array
+          items:
+            $ref: '#/components/schemas/OfferScore'
+          description: Scored offers in order
+        recommendation:
+          type: string
+          description: Which offer to prioritize and why
+          example: 'Prioritize Offer #1 at Acme Corp for strongest role alignment and growth trajectory.'
+        weights:
+          $ref: '#/components/schemas/DimensionWeights'
+      required:
+      - offers
+      - recommendation
+      - weights
+    NegotiationPrep:
+      type:
+      - object
+      - 'null'
+      properties:
+        counterOfferScript:
+          type: string
+          description: How to respond if offered below expectations
+        initialResponseScript:
+          type: string
+          description: How to handle the salary expectations question
+        leveragePoints:
+          type: array
+          items:
+            type: string
+          description: Specific strengths that give negotiation leverage
+        salaryResearchInsights:
+          type: string
+          description: What can be inferred about comp from the JD/company context
+      required:
+      - counterOfferScript
+      - initialResponseScript
+      - leveragePoints
+      - salaryResearchInsights
+      description: Salary negotiation preparation and scripts. Null when AI cannot infer comp signals.
+    AtsScore:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: ATS score identifier
+          example: 1
+        jobListingId:
+          type: integer
+          description: Job listing identifier
+          example: 1
+        userDocumentId:
+          type:
+          - integer
+          - 'null'
+          description: User document identifier (resumes, cover letters)
+          example: 1
+        overallScore:
+          type: integer
+          minimum: 0
+          maximum: 100
+          description: Overall ATS compatibility score (0-100)
+          example: 78
+        keywordMatches:
+          type: array
+          items:
+            type: string
+          description: Keywords found in the document
+          example:
+          - react
+          - typescript
+          - node.js
+        missingKeywords:
+          type: array
+          items:
+            type: string
+          description: Keywords from the job listing missing in the document
+          example:
+          - kubernetes
+          - terraform
+        sectionScores:
+          $ref: '#/components/schemas/SectionScores'
+        status:
+          type: string
+          enum:
+          - idle
+          - generating
+          - completed
+          - failed
+          description: Async generation status for queued ATS scoring (`generating` while the queue worker is running, `completed` when real values are written, `failed` on error)
+          example: completed
+        suggestions:
+          type: array
+          items:
+            type: string
+          description: Improvement suggestions
+          example:
+          - Add Kubernetes experience
+          - Include cloud certifications
+        modelName:
+          type: string
+          description: AI model used for scoring
+          example: google/gemini-2.5-flash-lite
+        createdAt:
+          type:
+          - string
+          - 'null'
+          description: Creation timestamp
+          example: '2024-01-01T00:00:00Z'
+      required:
+      - id
+      - jobListingId
+      - userDocumentId
+      - overallScore
+      - keywordMatches
+      - missingKeywords
+      - sectionScores
+      - status
+      - suggestions
+      - modelName
+      - createdAt
+      additionalProperties: false
+    UpdateStageBody:
+      type: object
+      properties:
+        applicationStage:
+          type: string
+          enum:
+          - applied
+          - callback
+          - phone_screen
+          - interview
+          - offered
+          - rejected
+          - no_response
+          description: New application stage
+          example: interview
+      required:
+      - applicationStage
+      additionalProperties: false
+    ParseJobUrlRequest:
+      type: object
+      properties:
+        url:
+          type: string
+          format: uri
+          description: URL of the job posting to parse
+          example: https://linkedin.com/jobs/view/123456
+      required:
+      - url
+      additionalProperties: false
+    CreateJobListingRequest:
+      type: object
+      properties:
+        company:
+          type: string
+          maxLength: 200
+          description: Company name
+          example: Acme Corp
+        description:
+          type: string
+          minLength: 1
+          maxLength: 50000
+          description: Full job description text
+          example: We are looking for a senior engineer...
+        keywords:
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 100
+          maxItems: 100
+          description: ATS keywords
+          example:
+          - react
+          - typescript
+          - aws
+        location:
+          type: string
+          maxLength: 200
+          description: Job location
+          example: Remote, US
+        requirements:
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 500
+          maxItems: 50
+          description: Job requirements
+          example:
+          - 5+ years experience
+          - Bachelor degree
+        salary:
+          type: string
+          maxLength: 100
+          description: Salary range or details
+          example: $120,000 - $160,000
+        sourceUrl:
+          type: string
+          format: uri
+          description: URL where the job listing was found
+          example: https://linkedin.com/jobs/123
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+          description: Job title
+          example: Senior Software Engineer
+      required:
+      - description
+      - title
+      additionalProperties: false
+    QuestionToStoryMapEntry:
+      type: object
+      properties:
+        bestStoryId:
+          type:
+          - string
+          - 'null'
+          description: Star story id that best matches this question, or null if no match
+        coverage:
+          type: string
+          enum:
+          - strong
+          - partial
+          - none
+          description: How well the candidate's story bank covers this question
+        likelyQuestion:
+          type: string
+          description: A likely question pulled from interviewStrategy.commonQuestions
+      required:
+      - bestStoryId
+      - coverage
+      - likelyQuestion
+    GhostingStatusData:
+      type: object
+      properties:
+        ghostingStatus:
+          type: string
+          enum:
+          - none
+          - at_risk
+          - likely_ghosted
+          description: Ghosting detection state for a job application
+          example: none
+        jobListingId:
+          type: integer
+          description: Job listing ID
+      required:
+      - ghostingStatus
+      - jobListingId
+      additionalProperties: false
+    InterviewPrepData:
+      type: object
+      properties:
+        candidateAngle:
+          type:
+          - object
+          - 'null'
+          properties:
+            interviewTopics:
+              type: array
+              items:
+                type: string
+              description: Topics to bring up in the interview
+            questionsToAsk:
+              type: array
+              items:
+                type: string
+              description: Smart questions that demonstrate research
+            relevantProjects:
+              type: array
+              items:
+                type: string
+              description: Which candidate projects to highlight and why
+            uniqueValue:
+              type: string
+              description: What unique value the candidate brings to this team
+          required:
+          - interviewTopics
+          - questionsToAsk
+          - relevantProjects
+          - uniqueValue
+          description: 'Personalized candidate angle: unique value, projects, topics, questions. Null when AI cannot infer.'
+        caseStudyRecommendation:
+          $ref: '#/components/schemas/CaseStudyRecommendation'
+        companyInsights:
+          type: object
+          properties:
+            keyValues:
+              type: array
+              items:
+                type: string
+              description: 3-5 company values or culture pillars
+            recentHighlights:
+              type: array
+              items:
+                type: string
+              description: 2-3 things the candidate should know
+            summary:
+              type: string
+              description: 2-3 sentences about the company from job context
+          required:
+          - keyValues
+          - recentHighlights
+          - summary
+        companyIntel:
+          type:
+          - object
+          - 'null'
+          properties:
+            founded:
+              type:
+              - string
+              - 'null'
+              description: Approximate founding year or era if detectable
+            industry:
+              type:
+              - string
+              - 'null'
+              description: Primary industry or sector
+            keyProducts:
+              type: array
+              items:
+                type: string
+              description: 1-3 key products, services, or focus areas
+            newsSignals:
+              type: array
+              items:
+                type: string
+              description: 2-3 growth or activity signals inferred from the job description
+            overview:
+              type: string
+              description: 'Company overview: what they do, industry position, notable achievements'
+            size:
+              type:
+              - string
+              - 'null'
+              description: Company size estimate (startup, mid-size, enterprise) if detectable
+          required:
+          - founded
+          - industry
+          - keyProducts
+          - newsSignals
+          - overview
+          - size
+          description: Company intelligence extracted from job posting context. Null when JD has no signals.
+        competitiveLandscape:
+          type:
+          - object
+          - 'null'
+          properties:
+            differentiator:
+              type:
+              - string
+              - 'null'
+              description: Company moat or key differentiator
+            mainCompetitors:
+              type: array
+              items:
+                type: string
+              description: Primary competitors
+            marketPosition:
+              type:
+              - string
+              - 'null'
+              description: Market positioning (leader, challenger, niche)
+          required:
+          - differentiator
+          - mainCompetitors
+          - marketPosition
+          description: 'Competitive landscape: competitors, differentiator, market position. Null when AI cannot infer.'
+        engineeringCulture:
+          type:
+          - object
+          - 'null'
+          properties:
+            deploymentStyle:
+              type:
+              - string
+              - 'null'
+              description: CI/CD culture, deploy frequency
+            glassdoorSignals:
+              type: array
+              items:
+                type: string
+              description: Key signals from employee reviews
+            remotePolicy:
+              type:
+              - string
+              - 'null'
+              description: Remote work policy
+            teamStructure:
+              type:
+              - string
+              - 'null'
+              description: Team organization (pods, squads, traditional)
+          required:
+          - deploymentStyle
+          - glassdoorSignals
+          - remotePolicy
+          - teamStructure
+          description: 'Engineering culture: deployment, team structure, remote policy, review signals. Null when AI cannot infer.'
+        hiringContact:
+          type:
+          - object
+          - 'null'
+          properties:
+            confidence:
+              type: string
+              enum:
+              - high
+              - medium
+              - low
+              description: Confidence level in the extracted contact info
+              example: medium
+            emailPattern:
+              type:
+              - string
+              - 'null'
+              description: Guessed email pattern like firstname.lastname@company.com
+            linkedinSearchUrl:
+              type:
+              - string
+              - 'null'
+              description: LinkedIn people search URL for finding this contact
+            name:
+              type:
+              - string
+              - 'null'
+              description: Hiring manager or recruiter name extracted from job description signals
+            title:
+              type:
+              - string
+              - 'null'
+              description: Role/title of the hiring contact
+          required:
+          - confidence
+          - emailPattern
+          - linkedinSearchUrl
+          - name
+          - title
+          description: Extracted hiring contact information from job description. Null when JD has no contact signals.
+        interviewStrategy:
+          type:
+          - object
+          - 'null'
+          properties:
+            commonQuestions:
+              type: array
+              items:
+                type: object
+                properties:
+                  approach:
+                    type: string
+                    description: Suggested approach to answering
+                  question:
+                    type: string
+                    description: Likely interview question for this role
+                  sourceTag:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'Real external [source: <URL>] only when grounded in a URL. Null otherwise - do NOT emit [source: JD] / [inferred from JD]; quote the JD phrase in the question text instead.'
+                required:
+                - approach
+                - question
+                - sourceTag
+              description: 4-6 common questions with approach guidance
+            dosAndDonts:
+              type: object
+              properties:
+                donts:
+                  type: array
+                  items:
+                    type: string
+                  description: 4-6 things to avoid during the interview
+                dos:
+                  type: array
+                  items:
+                    type: string
+                  description: 4-6 things to do during the interview
+              required:
+              - donts
+              - dos
+            narrativeContext:
+              type:
+              - string
+              - 'null'
+              description: Echo of the personalNarrative the model used when generating red-flag questions, so the UI can show what context drove the predictions. Null when no narrative was supplied.
+            redFlagQuestions:
+              type: array
+              items:
+                $ref: '#/components/schemas/RedFlagQuestion'
+              description: 3-5 tricky background questions, narrative-aware when personal narrative is set
+            talkingPoints:
+              type: array
+              items:
+                type: object
+                properties:
+                  guidance:
+                    type: string
+                    description: How to frame this for the role
+                  topic:
+                    type: string
+                    description: Strength or experience to highlight
+                required:
+                - guidance
+                - topic
+              description: 3-5 key talking points to emphasize during the interview
+          required:
+          - commonQuestions
+          - dosAndDonts
+          - narrativeContext
+          - redFlagQuestions
+          - talkingPoints
+          description: Interview day strategy and guidance. Null when AI cannot generate strategy.
+        negotiationPrep:
+          $ref: '#/components/schemas/NegotiationPrep'
+        postInterview:
+          type:
+          - object
+          - 'null'
+          properties:
+            evaluationCriteria:
+              type: array
+              items:
+                type: string
+              description: 3-5 criteria to evaluate if this role is the right fit
+            immediateSteps:
+              type: array
+              items:
+                type: string
+              description: 3-5 action items to complete right after the interview
+          required:
+          - evaluationCriteria
+          - immediateSteps
+          description: Post-interview action plan and evaluation framework. Null when AI cannot generate.
+        probableChallenges:
+          type:
+          - object
+          - 'null'
+          properties:
+            migrations:
+              type: array
+              items:
+                type: string
+              description: Potential platform or technology migrations
+            painPoints:
+              type: array
+              items:
+                type: string
+              description: Inferred pain points from JD and hiring signals
+            scalingChallenges:
+              type: array
+              items:
+                type: string
+              description: Likely scaling or technical challenges
+          required:
+          - migrations
+          - painPoints
+          - scalingChallenges
+          description: Probable technical challenges the team faces. Null when AI cannot infer.
+        questionsToAsk:
+          type: array
+          items:
+            type: string
+          description: 4-6 smart, company/role-specific questions
+        recentMovements:
+          type:
+          - object
+          - 'null'
+          properties:
+            funding:
+              type:
+              - string
+              - 'null'
+              description: Recent funding rounds or financial events
+            partnerships:
+              type: array
+              items:
+                type: string
+              description: Recent partnerships or acquisitions
+            productLaunches:
+              type: array
+              items:
+                type: string
+              description: Recent product launches or pivots
+            recentHires:
+              type: array
+              items:
+                type: string
+              description: Notable recent hires or leadership changes
+          required:
+          - funding
+          - partnerships
+          - productLaunches
+          - recentHires
+          description: 'Recent company movements: funding, hires, launches, partnerships. Null when AI has no signals.'
+        rolePreparation:
+          type: object
+          properties:
+            keyTerms:
+              type: array
+              items:
+                type: string
+              description: Terms to weave into interview responses
+            questionToStoryMap:
+              type:
+              - array
+              - 'null'
+              items:
+                $ref: '#/components/schemas/QuestionToStoryMapEntry'
+              description: For each likely question, the best-matching star story (or null) plus a coverage signal. Null when AI did not emit the map.
+            sourceTag:
+              type:
+              - string
+              - 'null'
+              description: 'Real external [source: <URL>] for the role preparation narrative, or null. Do NOT emit [source: JD] / [inferred from JD].'
+            starScenarios:
+              type: array
+              items:
+                type: object
+                properties:
+                  requirement:
+                    type: string
+                  sourceTag:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'Real external [source: <URL>] only when grounded in a URL, or null. Do NOT emit [source: JD] / [inferred from JD]; quote the JD phrase in the requirement text instead.'
+                  suggestedApproach:
+                    type: string
+                required:
+                - requirement
+                - sourceTag
+                - suggestedApproach
+              description: 3-5 STAR scenario items
+            starStories:
+              type:
+              - array
+              - 'null'
+              items:
+                $ref: '#/components/schemas/StarStory'
+              description: 6-10 STAR+Reflection stories mapped to JD requirements. Null when AI did not emit stories.
+          required:
+          - keyTerms
+          - questionToStoryMap
+          - sourceTag
+          - starScenarios
+          - starStories
+        techStrategy:
+          type:
+          - object
+          - 'null'
+          properties:
+            aiProducts:
+              type: array
+              items:
+                type: string
+              description: AI/ML products or features the company offers
+            engineeringBlog:
+              type:
+              - string
+              - 'null'
+              description: Engineering blog URL, null if unknown
+            notableProjects:
+              type: array
+              items:
+                type: string
+              description: Notable open source or public technical projects
+            techStack:
+              type: array
+              items:
+                type: string
+              description: Known or inferred technology stack
+          required:
+          - aiProducts
+          - engineeringBlog
+          - notableProjects
+          - techStack
+          description: 'AI/Tech strategy: products, stack, engineering blog, open source. Null when AI cannot infer.'
+      required:
+      - candidateAngle
+      - caseStudyRecommendation
+      - companyInsights
+      - companyIntel
+      - competitiveLandscape
+      - engineeringCulture
+      - hiringContact
+      - interviewStrategy
+      - negotiationPrep
+      - postInterview
+      - probableChallenges
+      - questionsToAsk
+      - recentMovements
+      - rolePreparation
+      - techStrategy
+    OfferComparisonResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/OfferComparisonResult'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    GhostingStatusResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/GhostingStatusData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    ParseJobUrlResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ParsedJobData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    JobListingListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/JobListingListItem'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    PollingEnvelope:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Human-readable description of the async operation state
+          example: Resume optimization started
+        resourceId:
+          type: string
+          description: Identifier of the resource whose detail endpoint should be polled
+          example: '42'
+        retryAfterMs:
+          type: integer
+          minimum: 0
+          description: Suggested delay before the next poll, in milliseconds
+          example: 3000
+        status:
+          type: string
+          enum:
+          - pending
+          - processing
+          - streaming
+          - completed
+          - failed
+          description: Status of async polling operation
+          example: processing
+        throttled:
+          type: boolean
+          description: True when the per-user hourly auto-generation cap was hit; no work was enqueued and the client should not poll.
+          example: true
+      required:
+      - message
+      - retryAfterMs
+      - status
+      additionalProperties: false
+    GenerateInterviewPrepResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/InterviewPrepData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    JobStatsData:
+      type: object
+      properties:
+        appliedThisWeek:
+          type: integer
+          minimum: 0
+          description: Job listings with status=applied updated within the past 7 days
+          example: 5
+        appliedToday:
+          type: integer
+          minimum: 0
+          description: Job listings with status=applied updated in the last 24 hours
+          example: 2
+        ghostedCount:
+          type: integer
+          minimum: 0
+          description: Count of ghosting_detected events in the unified activity log
+          example: 3
+        interviewingCount:
+          type: integer
+          minimum: 0
+          description: Job listings currently in the interviewing status
+          example: 1
+        total:
+          type: integer
+          minimum: 0
+          description: Total job listings for the authenticated user (non-archived)
+          example: 42
+      required:
+      - appliedThisWeek
+      - appliedToday
+      - ghostedCount
+      - interviewingCount
+      - total
+      additionalProperties: false
+    JobListingGoneResponse:
+      type: object
+      properties:
+        hasArchiveInfo:
+          type: boolean
+          description: True when redirectTo was derived from real archive data, false when it is the catch-all default
+          example: false
+        redirectTo:
+          type: string
+          minLength: 1
+          description: Path the frontend should redirect to after a gone response
+          example: /dashboard/discover
+        status:
+          type: string
+          enum:
+          - gone
+          description: Discriminator literal so clients can match this body shape via safeParse
+          example: gone
+      required:
+      - hasArchiveInfo
+      - redirectTo
+      - status
+      additionalProperties: false
+    AtsScoreRecordResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/AtsScore'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    ImportJobByUrlResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            jobId:
+              type: integer
+              description: scraped_job.id of the imported (or pre-existing deduped) posting
+              example: 4242
+              exclusiveMinimum: 0
+            isDuplicate:
+              type: boolean
+              description: True when the URL collided with a posting already in the shared pool (no net-new row created)
+              example: false
+            title:
+              type:
+              - string
+              - 'null'
+              description: Imported job title
+              example: Senior Software Engineer
+            company:
+              type:
+              - string
+              - 'null'
+              description: Imported company name
+              example: Acme Corp
+            location:
+              type:
+              - string
+              - 'null'
+              description: Imported job location
+              example: Remote, US
+          required:
+          - jobId
+          - isDuplicate
+          - title
+          - company
+          - location
+          additionalProperties: false
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+  securitySchemes:
+    BearerAuth:
+      description: 'Session token from signing in to AI Applyd, sent as `Authorization: Bearer <token>`.'
+      scheme: bearer
+      type: http
+x-refined-from:
+- aiapplyd-openapi.json
+- aiapplyd-openapi.yml

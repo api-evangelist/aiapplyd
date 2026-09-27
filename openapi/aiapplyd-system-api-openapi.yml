@@ -1,0 +1,757 @@
+openapi: 3.2.0
+info:
+  title: Aiapplyd System API
+  version: 115c47ce
+  contact:
+    email: support@aiapplyd.com
+    name: AI Applyd
+    url: https://aiapplyd.com
+  license:
+    name: Proprietary
+    url: https://aiapplyd.com/legal/terms
+  description: 'Operations tagged system across 2 of this provider''s published API definitions: aiapplyd-openapi.json, aiapplyd-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- description: Current environment
+  url: https://api.aiapplyd.com/api/v1
+security:
+- BearerAuth: []
+tags:
+- description: System health and diagnostics
+  name: System
+paths:
+  /health:
+    get:
+      tags:
+      - System
+      summary: Health Check
+      description: Basic health check endpoint for monitoring. This is a public endpoint that does not require authentication.
+      responses:
+        '200':
+          description: Successful health check response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: getHealth
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+  /auth-health:
+    get:
+      tags:
+      - System
+      summary: Authenticated Health Check
+      description: Health check endpoint that returns authenticated user info and plan limitations. This endpoint requires authentication.
+      responses:
+        '200':
+          description: Successful authenticated health check response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthHealthResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: getAuthHealth
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+  /auth-capabilities:
+    get:
+      tags:
+      - System
+      summary: Auth Capabilities
+      description: 'Which sign-in methods this deployment can actually complete. Public and unauthenticated: a client has to know this BEFORE it renders a sign-in button, so requiring a session would be circular. Returns booleans only - never any configured credential value.'
+      responses:
+        '200':
+          description: Resolved sign-in provider availability
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthCapabilitiesResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: getAuthCapabilities
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+components:
+  schemas:
+    HealthResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/HealthPayload'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    ApiErrorResponse:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+            context:
+              oneOf:
+              - type: object
+                properties:
+                  errorType:
+                    type: string
+                    enum:
+                    - validation
+                  field:
+                    type: string
+                  fieldErrors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        code:
+                          type: string
+                        expected:
+                          type: string
+                        field:
+                          type: string
+                        message:
+                          type: string
+                        received:
+                          type: string
+                      required:
+                      - field
+                      - message
+                  schemaName:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  attemptedEmail:
+                    type: string
+                    format: email
+                  errorType:
+                    type: string
+                    enum:
+                    - authentication
+                  failureReason:
+                    type: string
+                    enum:
+                    - invalid_credentials
+                    - account_locked
+                    - expired_token
+                    - token_expired
+                    - missing_token
+                    - invalid_token
+                    - session_expired
+                    description: Reason for authentication failure
+                    example: token_expired
+                  ipAddress:
+                    type: string
+                  operation:
+                    type: string
+                  service:
+                    type: string
+                  userAgent:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  actualPermission:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - authorization
+                  requiredPermission:
+                    type: string
+                  resource:
+                    type: string
+                  resourceId:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  constraint:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - database
+                  operation:
+                    type: string
+                    enum:
+                    - insert
+                    - update
+                    - delete
+                    - select
+                    - batch
+                    - transaction
+                    - migration
+                    description: Type of database operation
+                    example: select
+                  resourceId:
+                    type: string
+                  sqlState:
+                    type: string
+                  table:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  endpoint:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - external_service
+                  httpStatus:
+                    type: number
+                  operation:
+                    type: string
+                  resourceId:
+                    type: string
+                  responseTime:
+                    type: number
+                  retryAttempt:
+                    type: integer
+                  service:
+                    type: string
+                  serviceName:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  errorType:
+                    type: string
+                    enum:
+                    - resource
+                  resource:
+                    type: string
+                  resourceId:
+                    type: string
+                  service:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  errorType:
+                    type: string
+                    enum:
+                    - rate_limit
+                  limit:
+                    type: number
+                  resetTime:
+                    type: string
+                  windowMs:
+                    type: number
+                required:
+                - errorType
+              - type: object
+                properties:
+                  configKey:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - configuration
+                  operation:
+                    type: string
+                  service:
+                    type: string
+                required:
+                - errorType
+              description: Type-safe error context information
+              example:
+                errorType: validation
+                fieldErrors:
+                - field: email
+                  message: Invalid email format
+            details:
+              oneOf:
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - validation
+                  validationErrors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        code:
+                          type: string
+                        field:
+                          type: string
+                        message:
+                          type: string
+                      required:
+                      - field
+                      - message
+                required:
+                - detailType
+                - validationErrors
+                additionalProperties: false
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - service_error
+                  originalError:
+                    type: string
+                  serviceName:
+                    type: string
+                required:
+                - detailType
+                - serviceName
+                additionalProperties: false
+              - type: object
+                properties:
+                  currentSize:
+                    type: number
+                  detailType:
+                    type: string
+                    enum:
+                    - batch
+                  originalError:
+                    type: string
+                  statementCount:
+                    type: number
+                required:
+                - detailType
+                additionalProperties: false
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - rate_limit
+                  limit:
+                    type: number
+                  resetTime:
+                    type: string
+                  windowMs:
+                    type: number
+                required:
+                - detailType
+                - limit
+                - resetTime
+                - windowMs
+                additionalProperties: false
+              - type: object
+                properties:
+                  conflictingField:
+                    type: string
+                  detailType:
+                    type: string
+                    enum:
+                    - resource
+                  resourceId:
+                    anyOf:
+                    - type: string
+                    - type: number
+                  resourceType:
+                    type: string
+                required:
+                - detailType
+                additionalProperties: false
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - generic
+                  info:
+                    type: string
+                required:
+                - detailType
+                additionalProperties: false
+              - type: object
+                properties:
+                  currentTokens:
+                    type: integer
+                    minimum: 0
+                  detailType:
+                    type: string
+                    enum:
+                    - insufficient_tokens
+                  requiredTokens:
+                    type: integer
+                    minimum: 0
+                required:
+                - currentTokens
+                - detailType
+                - requiredTokens
+                additionalProperties: false
+            message:
+              type: string
+            validation:
+              type: array
+              items:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  field:
+                    type: string
+                  message:
+                    type: string
+                required:
+                - field
+                - message
+                additionalProperties: false
+          required:
+          - code
+          - message
+          additionalProperties: false
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - false
+      required:
+      - error
+      - success
+      additionalProperties: false
+    AuthCapabilitiesResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/AuthCapabilitiesPayload'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    HealthPayload:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+          - healthy
+          - degraded
+          - unhealthy
+          description: System health status indicator
+          example: healthy
+        ok:
+          type: boolean
+          description: Health check status indicator
+          example: true
+        version:
+          type: string
+          description: API version
+          example: 2.0.0
+        timestamp:
+          type: number
+          description: Unix timestamp in milliseconds
+          example: 1790357387224
+      required:
+      - status
+      - ok
+      - version
+      - timestamp
+      additionalProperties: false
+    AuthHealthUser:
+      type: object
+      properties:
+        id:
+          type: string
+          description: User identifier
+          example: user_123
+        email:
+          type: string
+          format: email
+          description: User email address
+          example: user@example.com
+        name:
+          type:
+          - string
+          - 'null'
+          description: User display name
+          example: John Doe
+        image:
+          type:
+          - string
+          - 'null'
+          description: User avatar URL
+          example: https://example.com/avatar.jpg
+        phone:
+          type:
+          - string
+          - 'null'
+          description: User phone number
+          example: '+1234567890'
+        emailVerified:
+          type:
+          - string
+          - 'null'
+          description: Email verification timestamp
+          example: '2024-01-01T00:00:00Z'
+        stripeCustomerId:
+          type:
+          - string
+          - 'null'
+          description: Stripe customer ID
+          example: cus_1234567890
+        role:
+          type:
+          - string
+          - 'null'
+          description: User role (e.g. "user" or "admin"). Admins are never forced through onboarding.
+          example: user
+        company:
+          type:
+          - string
+          - 'null'
+          description: User-supplied current employer name (B2B segmentation).
+          example: Acme Corp
+        companySlug:
+          type:
+          - string
+          - 'null'
+          description: Slugified company key used as PostHog group identifier.
+          example: acme-corp
+        createdAt:
+          type: string
+          description: Account creation timestamp
+          example: '2024-01-01T00:00:00Z'
+        updatedAt:
+          type: string
+          description: Last update timestamp
+          example: '2024-01-01T00:00:00Z'
+      required:
+      - id
+      - email
+      - name
+      - image
+      - phone
+      - emailVerified
+      - stripeCustomerId
+      - role
+      - company
+      - companySlug
+      - createdAt
+      - updatedAt
+    AuthHealthResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/AuthHealthData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    AuthHealthData:
+      type:
+      - object
+      - 'null'
+      properties:
+        status:
+          type: string
+          enum:
+          - success
+        user:
+          $ref: '#/components/schemas/AuthHealthUser'
+        limitations:
+          $ref: '#/components/schemas/PlanLimitations'
+        hasCompletedSetup:
+          type: boolean
+          description: Whether the user has completed onboarding (has job match preferences)
+          example: false
+        onboardingCompleted:
+          type: boolean
+          description: Whether the user finished the onboarding wizard (user.onboarding_completed_at is set)
+          example: false
+      required:
+      - status
+      - user
+      - limitations
+      - hasCompletedSetup
+      - onboardingCompleted
+    AuthProviders:
+      type: object
+      properties:
+        appReview:
+          type: boolean
+          description: Whether the installed app may show its review-code sign-in control. True only when both review credentials are configured.
+          example: false
+        apple:
+          type: boolean
+          description: Whether the server can complete a "Sign in with Apple" exchange. False until the full AUTH_APPLE_* set is configured, in which case Better Auth registers no `apple` provider at all.
+          example: false
+        google:
+          type: boolean
+          description: Whether the server can complete a Google OAuth exchange (both AUTH_GOOGLE_ID and AUTH_GOOGLE_SECRET present).
+          example: true
+        magicLink:
+          type: boolean
+          description: Whether the server can DELIVER a magic link. The plugin is always registered, but without SES credentials the send throws and the user dead-ends after submitting their email.
+          example: true
+      required:
+      - appReview
+      - apple
+      - google
+      - magicLink
+      additionalProperties: false
+    PlanLimitations:
+      type: object
+      properties:
+        initialTokens:
+          type: number
+        isProSubscriber:
+          type: boolean
+        maxJobListings:
+          type: number
+        maxResumeBuilds:
+          type: number
+        maxTokens:
+          type: number
+        maxUserDocuments:
+          type: number
+        planTier:
+          type: string
+          enum:
+          - job_seeker
+          - hired_in_30
+          - hired_yesterday
+          description: Subscription plan tier level
+          example: job_seeker
+        tokensRemaining:
+          type: number
+          description: Combined-pool balance (plan + onboarding grant + permanent purchased value). For DISPLAY only - sidebar wallet, low-balance banner, plan badges. NOT the amount a normal apply can spend.
+        tokensSpendable:
+          type: number
+          description: Balance a fresh (non-first-apply) submission can actually reserve = plan pool plus permanent purchased pool. The apply-affordability gate MUST read this, never tokensRemaining, so the FE button gate matches what the backend reserve will spend.
+      required:
+      - initialTokens
+      - isProSubscriber
+      - maxJobListings
+      - maxResumeBuilds
+      - maxTokens
+      - maxUserDocuments
+      - planTier
+      - tokensRemaining
+      - tokensSpendable
+      additionalProperties: false
+    ResponseMetadata:
+      type: object
+      properties:
+        duration:
+          type: number
+          description: Request duration in milliseconds
+          example: 150
+          exclusiveMinimum: 0
+        performance:
+          type: object
+          properties:
+            dbQueries:
+              type: integer
+              minimum: 0
+            totalDbTime:
+              type: number
+              minimum: 0
+          description: Performance metrics (preview/local only)
+        requestId:
+          type: string
+          description: Unique request identifier
+          example: req_abc123
+        timestamp:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp
+          example: '2026-09-25T17:29:47.224Z'
+        version:
+          type: string
+          description: API version
+          example: v1
+    AuthCapabilitiesPayload:
+      type: object
+      properties:
+        providers:
+          $ref: '#/components/schemas/AuthProviders'
+      required:
+      - providers
+      additionalProperties: false
+  securitySchemes:
+    BearerAuth:
+      description: 'Session token from signing in to AI Applyd, sent as `Authorization: Bearer <token>`.'
+      scheme: bearer
+      type: http
+x-refined-from:
+- aiapplyd-openapi.json
+- aiapplyd-openapi.yml

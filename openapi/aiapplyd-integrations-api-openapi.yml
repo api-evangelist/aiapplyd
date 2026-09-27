@@ -1,0 +1,713 @@
+openapi: 3.2.0
+info:
+  title: Aiapplyd Integrations API
+  version: 115c47ce
+  contact:
+    email: support@aiapplyd.com
+    name: AI Applyd
+    url: https://aiapplyd.com
+  license:
+    name: Proprietary
+    url: https://aiapplyd.com/legal/terms
+  description: 'Operations tagged integrations across 2 of this provider''s published API definitions: aiapplyd-openapi.json, aiapplyd-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- description: Current environment
+  url: https://api.aiapplyd.com/api/v1
+security:
+- BearerAuth: []
+tags:
+- name: Integrations
+paths:
+  /integrations/google/connect:
+    get:
+      tags:
+      - Integrations
+      summary: Build Google OAuth connect URL
+      description: Builds the Google authorization URL for the requested services (gmail,calendar) and mints a one-time CSRF state. The FE opens the returned `authUrl`.
+      parameters:
+      - schema:
+          type: string
+          minLength: 1
+          description: Comma-separated services to connect (gmail,calendar)
+          example: gmail,calendar
+        required: true
+        description: Comma-separated services to connect (gmail,calendar)
+        name: services
+        in: query
+      responses:
+        '200':
+          description: Google authorization URL built
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GoogleConnectResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: getIntegrationsGoogleConnect
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+  /integrations/google/callback:
+    get:
+      tags:
+      - Integrations
+      summary: Google OAuth callback
+      description: Exchanges the authorization code for tokens, persists the connection(s), then 302-redirects to the web app integrations page.
+      parameters:
+      - schema:
+          type: string
+          minLength: 1
+          description: Authorization code returned by Google
+        required: false
+        description: Authorization code returned by Google
+        name: code
+        in: query
+      - schema:
+          type: string
+          minLength: 1
+          description: Error code returned by Google when the user cancels consent
+        required: false
+        description: Error code returned by Google when the user cancels consent
+        name: error
+        in: query
+      - schema:
+          type: string
+          minLength: 1
+          description: One-time CSRF state minted by the connect endpoint
+        required: true
+        description: One-time CSRF state minted by the connect endpoint
+        name: state
+        in: query
+      responses:
+        '302':
+          description: Redirect (302, Location header) back to the web app integrations page after the OAuth round-trip
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: getIntegrationsGoogleCallback
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+  /integrations/google/status:
+    get:
+      tags:
+      - Integrations
+      summary: Google integration status
+      description: 'Returns per-service (gmail, calendar) connection status: connected flag, account email, granted scopes.'
+      responses:
+        '200':
+          description: Google integration status retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GoogleStatusResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: getIntegrationsGoogleStatus
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+  /integrations/google/disconnect:
+    post:
+      tags:
+      - Integrations
+      summary: Disconnect a Google service
+      description: Revokes the OAuth token at Google, removes the stored connection row, and marks it revoked. Body selects the service (gmail | calendar).
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GoogleDisconnectBody'
+      responses:
+        '200':
+          description: Google service disconnected
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GoogleDisconnectResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: postIntegrationsGoogleDisconnect
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+components:
+  schemas:
+    GoogleStatusResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/GoogleStatusData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    ApiErrorResponse:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+            context:
+              oneOf:
+              - type: object
+                properties:
+                  errorType:
+                    type: string
+                    enum:
+                    - validation
+                  field:
+                    type: string
+                  fieldErrors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        code:
+                          type: string
+                        expected:
+                          type: string
+                        field:
+                          type: string
+                        message:
+                          type: string
+                        received:
+                          type: string
+                      required:
+                      - field
+                      - message
+                  schemaName:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  attemptedEmail:
+                    type: string
+                    format: email
+                  errorType:
+                    type: string
+                    enum:
+                    - authentication
+                  failureReason:
+                    type: string
+                    enum:
+                    - invalid_credentials
+                    - account_locked
+                    - expired_token
+                    - token_expired
+                    - missing_token
+                    - invalid_token
+                    - session_expired
+                    description: Reason for authentication failure
+                    example: token_expired
+                  ipAddress:
+                    type: string
+                  operation:
+                    type: string
+                  service:
+                    type: string
+                  userAgent:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  actualPermission:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - authorization
+                  requiredPermission:
+                    type: string
+                  resource:
+                    type: string
+                  resourceId:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  constraint:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - database
+                  operation:
+                    type: string
+                    enum:
+                    - insert
+                    - update
+                    - delete
+                    - select
+                    - batch
+                    - transaction
+                    - migration
+                    description: Type of database operation
+                    example: select
+                  resourceId:
+                    type: string
+                  sqlState:
+                    type: string
+                  table:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  endpoint:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - external_service
+                  httpStatus:
+                    type: number
+                  operation:
+                    type: string
+                  resourceId:
+                    type: string
+                  responseTime:
+                    type: number
+                  retryAttempt:
+                    type: integer
+                  service:
+                    type: string
+                  serviceName:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  errorType:
+                    type: string
+                    enum:
+                    - resource
+                  resource:
+                    type: string
+                  resourceId:
+                    type: string
+                  service:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  errorType:
+                    type: string
+                    enum:
+                    - rate_limit
+                  limit:
+                    type: number
+                  resetTime:
+                    type: string
+                  windowMs:
+                    type: number
+                required:
+                - errorType
+              - type: object
+                properties:
+                  configKey:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - configuration
+                  operation:
+                    type: string
+                  service:
+                    type: string
+                required:
+                - errorType
+              description: Type-safe error context information
+              example:
+                errorType: validation
+                fieldErrors:
+                - field: email
+                  message: Invalid email format
+            details:
+              oneOf:
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - validation
+                  validationErrors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        code:
+                          type: string
+                        field:
+                          type: string
+                        message:
+                          type: string
+                      required:
+                      - field
+                      - message
+                required:
+                - detailType
+                - validationErrors
+                additionalProperties: false
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - service_error
+                  originalError:
+                    type: string
+                  serviceName:
+                    type: string
+                required:
+                - detailType
+                - serviceName
+                additionalProperties: false
+              - type: object
+                properties:
+                  currentSize:
+                    type: number
+                  detailType:
+                    type: string
+                    enum:
+                    - batch
+                  originalError:
+                    type: string
+                  statementCount:
+                    type: number
+                required:
+                - detailType
+                additionalProperties: false
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - rate_limit
+                  limit:
+                    type: number
+                  resetTime:
+                    type: string
+                  windowMs:
+                    type: number
+                required:
+                - detailType
+                - limit
+                - resetTime
+                - windowMs
+                additionalProperties: false
+              - type: object
+                properties:
+                  conflictingField:
+                    type: string
+                  detailType:
+                    type: string
+                    enum:
+                    - resource
+                  resourceId:
+                    anyOf:
+                    - type: string
+                    - type: number
+                  resourceType:
+                    type: string
+                required:
+                - detailType
+                additionalProperties: false
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - generic
+                  info:
+                    type: string
+                required:
+                - detailType
+                additionalProperties: false
+              - type: object
+                properties:
+                  currentTokens:
+                    type: integer
+                    minimum: 0
+                  detailType:
+                    type: string
+                    enum:
+                    - insufficient_tokens
+                  requiredTokens:
+                    type: integer
+                    minimum: 0
+                required:
+                - currentTokens
+                - detailType
+                - requiredTokens
+                additionalProperties: false
+            message:
+              type: string
+            validation:
+              type: array
+              items:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  field:
+                    type: string
+                  message:
+                    type: string
+                required:
+                - field
+                - message
+                additionalProperties: false
+          required:
+          - code
+          - message
+          additionalProperties: false
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - false
+      required:
+      - error
+      - success
+      additionalProperties: false
+    GoogleStatusData:
+      type: object
+      properties:
+        calendar:
+          $ref: '#/components/schemas/GoogleServiceStatus'
+        gmail:
+          $ref: '#/components/schemas/GoogleServiceStatus'
+      required:
+      - calendar
+      - gmail
+      additionalProperties: false
+    GoogleDisconnectBody:
+      type: object
+      properties:
+        service:
+          type: string
+          enum:
+          - gmail
+          - calendar
+          description: Service within an integration provider the user opted into
+          example: gmail
+      required:
+      - service
+      additionalProperties: false
+    GoogleDisconnectResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/GoogleDisconnectData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    GoogleConnectResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/GoogleConnectData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    GoogleServiceStatus:
+      type: object
+      properties:
+        connected:
+          type: boolean
+          description: Whether a live (non-revoked) connection exists for this service
+          example: true
+        email:
+          type:
+          - string
+          - 'null'
+          description: Connected Google account email, when known
+          example: user@gmail.com
+        scopes:
+          type: array
+          items:
+            type: string
+          description: OAuth scopes Google granted for this service
+          example:
+          - https://www.googleapis.com/auth/gmail.modify
+      required:
+      - connected
+      - email
+      - scopes
+      additionalProperties: false
+    GoogleConnectData:
+      type: object
+      properties:
+        authUrl:
+          type: string
+          format: uri
+          description: Google authorization URL to redirect / open the user to
+          example: https://accounts.google.com/o/oauth2/v2/auth?...
+      required:
+      - authUrl
+      additionalProperties: false
+    GoogleDisconnectData:
+      type: object
+      properties:
+        disconnected:
+          type: boolean
+          description: True when the connection row was removed (or already absent)
+          example: true
+        service:
+          type: string
+          enum:
+          - gmail
+          - calendar
+          description: Service within an integration provider the user opted into
+          example: gmail
+      required:
+      - disconnected
+      - service
+      additionalProperties: false
+    ResponseMetadata:
+      type: object
+      properties:
+        duration:
+          type: number
+          description: Request duration in milliseconds
+          example: 150
+          exclusiveMinimum: 0
+        performance:
+          type: object
+          properties:
+            dbQueries:
+              type: integer
+              minimum: 0
+            totalDbTime:
+              type: number
+              minimum: 0
+          description: Performance metrics (preview/local only)
+        requestId:
+          type: string
+          description: Unique request identifier
+          example: req_abc123
+        timestamp:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp
+          example: '2026-09-25T17:29:47.224Z'
+        version:
+          type: string
+          description: API version
+          example: v1
+  securitySchemes:
+    BearerAuth:
+      description: 'Session token from signing in to AI Applyd, sent as `Authorization: Bearer <token>`.'
+      scheme: bearer
+      type: http
+x-refined-from:
+- aiapplyd-openapi.json
+- aiapplyd-openapi.yml

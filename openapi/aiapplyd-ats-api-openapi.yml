@@ -1,0 +1,656 @@
+openapi: 3.2.0
+info:
+  title: Aiapplyd Ats API
+  version: 115c47ce
+  contact:
+    email: support@aiapplyd.com
+    name: AI Applyd
+    url: https://aiapplyd.com
+  license:
+    name: Proprietary
+    url: https://aiapplyd.com/legal/terms
+  description: 'Operations tagged ats across 2 of this provider''s published API definitions: aiapplyd-openapi.json, aiapplyd-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- description: Current environment
+  url: https://api.aiapplyd.com/api/v1
+security:
+- BearerAuth: []
+tags:
+- name: ATS
+paths:
+  /ats/score:
+    post:
+      tags:
+      - ATS
+      summary: Score raw resume text for ATS compatibility
+      description: Synchronous ATS scoring on raw resume text. Session-authed. Gated by plan-action limits + AI prerequisites.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AtsTextRequest'
+      responses:
+        '200':
+          description: ATS score computed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AtsScoreTextResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: postAtsScore
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+  /ats/optimize:
+    post:
+      tags:
+      - ATS
+      summary: Optimize raw resume text for ATS compatibility
+      description: Synchronous ATS optimization on raw resume text. Session-authed. Gated by plan-action limits + AI prerequisites.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AtsTextRequest'
+      responses:
+        '200':
+          description: ATS-optimized content returned.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AtsOptimizeTextResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: postAtsOptimize
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+components:
+  schemas:
+    ApiErrorResponse:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+            context:
+              oneOf:
+              - type: object
+                properties:
+                  errorType:
+                    type: string
+                    enum:
+                    - validation
+                  field:
+                    type: string
+                  fieldErrors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        code:
+                          type: string
+                        expected:
+                          type: string
+                        field:
+                          type: string
+                        message:
+                          type: string
+                        received:
+                          type: string
+                      required:
+                      - field
+                      - message
+                  schemaName:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  attemptedEmail:
+                    type: string
+                    format: email
+                  errorType:
+                    type: string
+                    enum:
+                    - authentication
+                  failureReason:
+                    type: string
+                    enum:
+                    - invalid_credentials
+                    - account_locked
+                    - expired_token
+                    - token_expired
+                    - missing_token
+                    - invalid_token
+                    - session_expired
+                    description: Reason for authentication failure
+                    example: token_expired
+                  ipAddress:
+                    type: string
+                  operation:
+                    type: string
+                  service:
+                    type: string
+                  userAgent:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  actualPermission:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - authorization
+                  requiredPermission:
+                    type: string
+                  resource:
+                    type: string
+                  resourceId:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  constraint:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - database
+                  operation:
+                    type: string
+                    enum:
+                    - insert
+                    - update
+                    - delete
+                    - select
+                    - batch
+                    - transaction
+                    - migration
+                    description: Type of database operation
+                    example: select
+                  resourceId:
+                    type: string
+                  sqlState:
+                    type: string
+                  table:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  endpoint:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - external_service
+                  httpStatus:
+                    type: number
+                  operation:
+                    type: string
+                  resourceId:
+                    type: string
+                  responseTime:
+                    type: number
+                  retryAttempt:
+                    type: integer
+                  service:
+                    type: string
+                  serviceName:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  errorType:
+                    type: string
+                    enum:
+                    - resource
+                  resource:
+                    type: string
+                  resourceId:
+                    type: string
+                  service:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  errorType:
+                    type: string
+                    enum:
+                    - rate_limit
+                  limit:
+                    type: number
+                  resetTime:
+                    type: string
+                  windowMs:
+                    type: number
+                required:
+                - errorType
+              - type: object
+                properties:
+                  configKey:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - configuration
+                  operation:
+                    type: string
+                  service:
+                    type: string
+                required:
+                - errorType
+              description: Type-safe error context information
+              example:
+                errorType: validation
+                fieldErrors:
+                - field: email
+                  message: Invalid email format
+            details:
+              oneOf:
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - validation
+                  validationErrors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        code:
+                          type: string
+                        field:
+                          type: string
+                        message:
+                          type: string
+                      required:
+                      - field
+                      - message
+                required:
+                - detailType
+                - validationErrors
+                additionalProperties: false
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - service_error
+                  originalError:
+                    type: string
+                  serviceName:
+                    type: string
+                required:
+                - detailType
+                - serviceName
+                additionalProperties: false
+              - type: object
+                properties:
+                  currentSize:
+                    type: number
+                  detailType:
+                    type: string
+                    enum:
+                    - batch
+                  originalError:
+                    type: string
+                  statementCount:
+                    type: number
+                required:
+                - detailType
+                additionalProperties: false
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - rate_limit
+                  limit:
+                    type: number
+                  resetTime:
+                    type: string
+                  windowMs:
+                    type: number
+                required:
+                - detailType
+                - limit
+                - resetTime
+                - windowMs
+                additionalProperties: false
+              - type: object
+                properties:
+                  conflictingField:
+                    type: string
+                  detailType:
+                    type: string
+                    enum:
+                    - resource
+                  resourceId:
+                    anyOf:
+                    - type: string
+                    - type: number
+                  resourceType:
+                    type: string
+                required:
+                - detailType
+                additionalProperties: false
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - generic
+                  info:
+                    type: string
+                required:
+                - detailType
+                additionalProperties: false
+              - type: object
+                properties:
+                  currentTokens:
+                    type: integer
+                    minimum: 0
+                  detailType:
+                    type: string
+                    enum:
+                    - insufficient_tokens
+                  requiredTokens:
+                    type: integer
+                    minimum: 0
+                required:
+                - currentTokens
+                - detailType
+                - requiredTokens
+                additionalProperties: false
+            message:
+              type: string
+            validation:
+              type: array
+              items:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  field:
+                    type: string
+                  message:
+                    type: string
+                required:
+                - field
+                - message
+                additionalProperties: false
+          required:
+          - code
+          - message
+          additionalProperties: false
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - false
+      required:
+      - error
+      - success
+      additionalProperties: false
+    AtsOptimizeTextData:
+      type: object
+      properties:
+        optimizedContent:
+          type: string
+          description: ATS-optimized resume content.
+        changesSummary:
+          type: array
+          items:
+            type: string
+          description: Summary of changes applied during optimization.
+          example:
+          - Surfaced "TypeScript" in the skills section.
+        atsScore:
+          type:
+          - number
+          - 'null'
+          minimum: 0
+          maximum: 100
+          description: Re-scored ATS compatibility of the optimized content, or null when not computed.
+          example: null
+      required:
+      - optimizedContent
+      - changesSummary
+      - atsScore
+      additionalProperties: false
+    AtsOptimizeTextResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/AtsOptimizeTextData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    AtsScoreTextResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/AtsScoreTextData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    AtsSectionScores:
+      type: object
+      properties:
+        skills:
+          type: number
+          minimum: 0
+          maximum: 100
+        experience:
+          type: number
+          minimum: 0
+          maximum: 100
+        education:
+          type: number
+          minimum: 0
+          maximum: 100
+        formatting:
+          type: number
+          minimum: 0
+          maximum: 100
+        keywords:
+          type: number
+          minimum: 0
+          maximum: 100
+      required:
+      - skills
+      - experience
+      - education
+      - formatting
+      - keywords
+      additionalProperties: false
+      description: Per-section ATS sub-scores derived from the analysis.
+    AtsScoreTextData:
+      type: object
+      properties:
+        overallScore:
+          type: number
+          minimum: 0
+          maximum: 100
+          description: Overall ATS compatibility score (0-100).
+          example: 72
+        keywordMatches:
+          type: array
+          items:
+            type: string
+          description: Keywords found in the resume that match the job description.
+          example:
+          - JavaScript
+          - React
+          - Node.js
+        missingKeywords:
+          type: array
+          items:
+            type: string
+          description: Important keywords from the job description missing from the resume.
+          example:
+          - TypeScript
+          - GraphQL
+        sectionScores:
+          $ref: '#/components/schemas/AtsSectionScores'
+        suggestions:
+          type: array
+          items:
+            type: string
+          description: Actionable improvement suggestions.
+          example:
+          - Add "TypeScript" to your skills section.
+        modelName:
+          type: string
+          description: AI model that produced the score.
+          example: google/gemini-2.5-flash
+      required:
+      - overallScore
+      - keywordMatches
+      - missingKeywords
+      - sectionScores
+      - suggestions
+      - modelName
+      additionalProperties: false
+    AtsTextRequest:
+      type: object
+      properties:
+        resumeText:
+          type: string
+          minLength: 50
+          maxLength: 50000
+          description: Raw resume text to analyze (50-50000 chars).
+          example: 'Jane Doe
+
+            Senior Software Engineer
+
+            5+ years building React + TypeScript...'
+        jobDescription:
+          type: string
+          maxLength: 50000
+          description: Job description to score against. Omit for general ATS compatibility.
+          example: We are looking for a Senior Software Engineer with React and TypeScript experience...
+      required:
+      - resumeText
+      additionalProperties: false
+    ResponseMetadata:
+      type: object
+      properties:
+        duration:
+          type: number
+          description: Request duration in milliseconds
+          example: 150
+          exclusiveMinimum: 0
+        performance:
+          type: object
+          properties:
+            dbQueries:
+              type: integer
+              minimum: 0
+            totalDbTime:
+              type: number
+              minimum: 0
+          description: Performance metrics (preview/local only)
+        requestId:
+          type: string
+          description: Unique request identifier
+          example: req_abc123
+        timestamp:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp
+          example: '2026-09-25T17:29:47.224Z'
+        version:
+          type: string
+          description: API version
+          example: v1
+  securitySchemes:
+    BearerAuth:
+      description: 'Session token from signing in to AI Applyd, sent as `Authorization: Bearer <token>`.'
+      scheme: bearer
+      type: http
+x-refined-from:
+- aiapplyd-openapi.json
+- aiapplyd-openapi.yml

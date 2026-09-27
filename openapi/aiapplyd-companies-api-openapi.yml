@@ -1,0 +1,688 @@
+openapi: 3.2.0
+info:
+  title: Aiapplyd Companies API
+  version: 115c47ce
+  contact:
+    email: support@aiapplyd.com
+    name: AI Applyd
+    url: https://aiapplyd.com
+  license:
+    name: Proprietary
+    url: https://aiapplyd.com/legal/terms
+  description: 'Operations tagged companies across 2 of this provider''s published API definitions: aiapplyd-openapi.json, aiapplyd-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- description: Current environment
+  url: https://api.aiapplyd.com/api/v1
+security:
+- BearerAuth: []
+tags:
+- name: Companies
+paths:
+  /companies/lookup:
+    get:
+      tags:
+      - Companies
+      summary: Lookup Company by Name
+      description: Look up a company by name using normalized matching.
+      parameters:
+      - schema:
+          type: string
+          minLength: 1
+          maxLength: 200
+          description: Company name to look up
+          example: Google
+        required: true
+        description: Company name to look up
+        name: name
+        in: query
+      responses:
+        '200':
+          description: Company found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompanyProfileResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: getCompaniesLookup
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+  /companies/{id}:
+    get:
+      tags:
+      - Companies
+      summary: Get Company Profile
+      description: Get a company profile by ID.
+      parameters:
+      - schema:
+          type: string
+          pattern: ^\d+$
+          description: Company identifier
+          example: '1'
+        required: true
+        description: Company identifier
+        in: path
+        name: id
+      responses:
+        '200':
+          description: Company profile retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompanyProfileResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: getCompaniesById
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+components:
+  schemas:
+    ApiErrorResponse:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+            context:
+              oneOf:
+              - type: object
+                properties:
+                  errorType:
+                    type: string
+                    enum:
+                    - validation
+                  field:
+                    type: string
+                  fieldErrors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        code:
+                          type: string
+                        expected:
+                          type: string
+                        field:
+                          type: string
+                        message:
+                          type: string
+                        received:
+                          type: string
+                      required:
+                      - field
+                      - message
+                  schemaName:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  attemptedEmail:
+                    type: string
+                    format: email
+                  errorType:
+                    type: string
+                    enum:
+                    - authentication
+                  failureReason:
+                    type: string
+                    enum:
+                    - invalid_credentials
+                    - account_locked
+                    - expired_token
+                    - token_expired
+                    - missing_token
+                    - invalid_token
+                    - session_expired
+                    description: Reason for authentication failure
+                    example: token_expired
+                  ipAddress:
+                    type: string
+                  operation:
+                    type: string
+                  service:
+                    type: string
+                  userAgent:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  actualPermission:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - authorization
+                  requiredPermission:
+                    type: string
+                  resource:
+                    type: string
+                  resourceId:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  constraint:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - database
+                  operation:
+                    type: string
+                    enum:
+                    - insert
+                    - update
+                    - delete
+                    - select
+                    - batch
+                    - transaction
+                    - migration
+                    description: Type of database operation
+                    example: select
+                  resourceId:
+                    type: string
+                  sqlState:
+                    type: string
+                  table:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  endpoint:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - external_service
+                  httpStatus:
+                    type: number
+                  operation:
+                    type: string
+                  resourceId:
+                    type: string
+                  responseTime:
+                    type: number
+                  retryAttempt:
+                    type: integer
+                  service:
+                    type: string
+                  serviceName:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  errorType:
+                    type: string
+                    enum:
+                    - resource
+                  resource:
+                    type: string
+                  resourceId:
+                    type: string
+                  service:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  errorType:
+                    type: string
+                    enum:
+                    - rate_limit
+                  limit:
+                    type: number
+                  resetTime:
+                    type: string
+                  windowMs:
+                    type: number
+                required:
+                - errorType
+              - type: object
+                properties:
+                  configKey:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - configuration
+                  operation:
+                    type: string
+                  service:
+                    type: string
+                required:
+                - errorType
+              description: Type-safe error context information
+              example:
+                errorType: validation
+                fieldErrors:
+                - field: email
+                  message: Invalid email format
+            details:
+              oneOf:
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - validation
+                  validationErrors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        code:
+                          type: string
+                        field:
+                          type: string
+                        message:
+                          type: string
+                      required:
+                      - field
+                      - message
+                required:
+                - detailType
+                - validationErrors
+                additionalProperties: false
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - service_error
+                  originalError:
+                    type: string
+                  serviceName:
+                    type: string
+                required:
+                - detailType
+                - serviceName
+                additionalProperties: false
+              - type: object
+                properties:
+                  currentSize:
+                    type: number
+                  detailType:
+                    type: string
+                    enum:
+                    - batch
+                  originalError:
+                    type: string
+                  statementCount:
+                    type: number
+                required:
+                - detailType
+                additionalProperties: false
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - rate_limit
+                  limit:
+                    type: number
+                  resetTime:
+                    type: string
+                  windowMs:
+                    type: number
+                required:
+                - detailType
+                - limit
+                - resetTime
+                - windowMs
+                additionalProperties: false
+              - type: object
+                properties:
+                  conflictingField:
+                    type: string
+                  detailType:
+                    type: string
+                    enum:
+                    - resource
+                  resourceId:
+                    anyOf:
+                    - type: string
+                    - type: number
+                  resourceType:
+                    type: string
+                required:
+                - detailType
+                additionalProperties: false
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - generic
+                  info:
+                    type: string
+                required:
+                - detailType
+                additionalProperties: false
+              - type: object
+                properties:
+                  currentTokens:
+                    type: integer
+                    minimum: 0
+                  detailType:
+                    type: string
+                    enum:
+                    - insufficient_tokens
+                  requiredTokens:
+                    type: integer
+                    minimum: 0
+                required:
+                - currentTokens
+                - detailType
+                - requiredTokens
+                additionalProperties: false
+            message:
+              type: string
+            validation:
+              type: array
+              items:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  field:
+                    type: string
+                  message:
+                    type: string
+                required:
+                - field
+                - message
+                additionalProperties: false
+          required:
+          - code
+          - message
+          additionalProperties: false
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - false
+      required:
+      - error
+      - success
+      additionalProperties: false
+    CompanyProfileResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/CompanyProfile'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    ResponseMetadata:
+      type: object
+      properties:
+        duration:
+          type: number
+          description: Request duration in milliseconds
+          example: 150
+          exclusiveMinimum: 0
+        performance:
+          type: object
+          properties:
+            dbQueries:
+              type: integer
+              minimum: 0
+            totalDbTime:
+              type: number
+              minimum: 0
+          description: Performance metrics (preview/local only)
+        requestId:
+          type: string
+          description: Unique request identifier
+          example: req_abc123
+        timestamp:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp
+          example: '2026-09-25T17:29:47.224Z'
+        version:
+          type: string
+          description: API version
+          example: v1
+    CompanyProfile:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Company identifier
+          example: 1
+        name:
+          type: string
+          description: Company name
+          example: Google
+        domain:
+          type:
+          - string
+          - 'null'
+          description: Company domain
+          example: google.com
+        industry:
+          type:
+          - string
+          - 'null'
+          description: Company industry
+          example: Technology
+        size:
+          type:
+          - string
+          - 'null'
+          description: Company size
+          example: enterprise
+        atsPlatform:
+          type:
+          - string
+          - 'null'
+          description: ATS platform
+          example: Greenhouse
+        boardUrl:
+          type:
+          - string
+          - 'null'
+          description: Job board URL
+          example: https://careers.google.com
+        careerPageUrl:
+          type:
+          - string
+          - 'null'
+          description: Career page URL
+          example: https://careers.google.com
+        glassdoorUrl:
+          type:
+          - string
+          - 'null'
+          description: Glassdoor URL
+          example: https://www.glassdoor.com/Overview/Google
+        linkedinCompanyUrl:
+          type:
+          - string
+          - 'null'
+          description: LinkedIn URL
+          example: https://www.linkedin.com/company/google
+        teamPageUrl:
+          type:
+          - string
+          - 'null'
+          description: Team page URL
+          example: https://about.google.com/team
+        emailPattern:
+          type:
+          - string
+          - 'null'
+          description: Email pattern
+          example: firstname.lastname@google.com
+        techStack:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: Tech stack
+          example:
+          - Go
+          - Python
+        missionSummary:
+          type:
+          - string
+          - 'null'
+          description: Mission summary
+        valuesSummary:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: Company values
+        talkingPoints:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: Interview talking points
+        socialLinks:
+          type:
+          - object
+          - 'null'
+          properties:
+            crunchbase:
+              type:
+              - string
+              - 'null'
+            github:
+              type:
+              - string
+              - 'null'
+            glassdoor:
+              type:
+              - string
+              - 'null'
+            linkedin:
+              type:
+              - string
+              - 'null'
+            twitter:
+              type:
+              - string
+              - 'null'
+          required:
+          - crunchbase
+          - github
+          - glassdoor
+          - linkedin
+          - twitter
+          additionalProperties: false
+          description: Social media links
+          example:
+            crunchbase: null
+            github: https://github.com/google
+            glassdoor: null
+            linkedin: https://www.linkedin.com/company/google
+            twitter: null
+        logoUrl:
+          type:
+          - string
+          - 'null'
+          description: Logo URL
+        researchGeneratedAt:
+          type:
+          - string
+          - 'null'
+          description: When research was generated
+        lastScrapedAt:
+          type:
+          - string
+          - 'null'
+          description: When data was scraped
+      required:
+      - id
+      - name
+      - domain
+      - industry
+      - size
+      - atsPlatform
+      - boardUrl
+      - careerPageUrl
+      - glassdoorUrl
+      - linkedinCompanyUrl
+      - teamPageUrl
+      - emailPattern
+      - techStack
+      - missionSummary
+      - valuesSummary
+      - talkingPoints
+      - socialLinks
+      - logoUrl
+      - researchGeneratedAt
+      - lastScrapedAt
+      additionalProperties: false
+  securitySchemes:
+    BearerAuth:
+      description: 'Session token from signing in to AI Applyd, sent as `Authorization: Bearer <token>`.'
+      scheme: bearer
+      type: http
+x-refined-from:
+- aiapplyd-openapi.json
+- aiapplyd-openapi.yml

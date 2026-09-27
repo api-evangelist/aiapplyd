@@ -1,0 +1,1330 @@
+openapi: 3.2.0
+info:
+  title: Aiapplyd Star Stories API
+  version: 115c47ce
+  contact:
+    email: support@aiapplyd.com
+    name: AI Applyd
+    url: https://aiapplyd.com
+  license:
+    name: Proprietary
+    url: https://aiapplyd.com/legal/terms
+  description: 'Operations tagged star-stories across 2 of this provider''s published API definitions: aiapplyd-openapi.json, aiapplyd-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- description: Current environment
+  url: https://api.aiapplyd.com/api/v1
+security:
+- BearerAuth: []
+tags:
+- name: star-stories
+paths:
+  /star-stories:
+    get:
+      tags:
+      - star-stories
+      summary: List STAR Stories
+      description: List the authenticated user's STAR+Reflection story bank, optionally filtered by theme.
+      parameters:
+      - schema:
+          type: integer
+          minimum: 1
+          maximum: 200
+          description: Maximum stories to return
+          example: 50
+        required: false
+        description: Maximum stories to return
+        name: limit
+        in: query
+      - schema:
+          type: string
+          minLength: 1
+          maxLength: 200
+          description: Case-insensitive keyword filter across title + STAR narrative (server-side LIKE).
+          example: led a team
+        required: false
+        description: Case-insensitive keyword filter across title + STAR narrative (server-side LIKE).
+        name: search
+        in: query
+      - schema:
+          type: string
+          enum:
+          - leadership
+          - technical_challenge
+          - conflict_resolution
+          - ambiguity
+          - customer_impact
+          - failure
+          - ownership
+          - cross_functional
+          - scaling
+          - other
+          description: Filter to a single theme
+          example: leadership
+        required: false
+        description: Filter to a single theme
+        name: theme
+        in: query
+      responses:
+        '200':
+          description: STAR stories retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StarStoryListResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: getStarStories
+    post:
+      tags:
+      - star-stories
+      summary: Create STAR Story
+      description: Create a new STAR+Reflection story in the user's reusable bank.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateStarStory'
+      responses:
+        '201':
+          description: STAR story created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StarStoryResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: postStarStories
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+  /star-stories/draft:
+    post:
+      tags:
+      - star-stories
+      summary: AI-draft a STAR Story
+      description: Draft a full STAR+Reflection story from the interview question + the user's resume / proof-points / persona. The composer pre-fills these fields for the user to edit; the user never publishes them blind.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DraftStarStoryRequest'
+      responses:
+        '200':
+          description: STAR story drafted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DraftStarStoryResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: postStarStoriesDraft
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+  /star-stories/generate-from-resume:
+    post:
+      tags:
+      - star-stories
+      summary: Generate STAR Stories from Resume
+      description: 'One-click: AI-generate several STAR+Reflection stories from the user''s resume, proof-points and persona, persist them, and return the created rows. The user reviews and edits each one - they are never published blind.'
+      responses:
+        '201':
+          description: STAR stories generated and persisted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenerateStarStoriesFromResumeResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: postStarStoriesGenerateFromResume
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+  /star-stories/extract-from-interview-prep/{jobId}:
+    post:
+      tags:
+      - star-stories
+      summary: Extract STAR Stories from Interview Prep
+      description: Mine the most recent interview-prep generation for the given job listing and surface stories that are NOT already in the user's bank, ready for "save to bank" UI.
+      parameters:
+      - schema:
+          type: string
+          pattern: ^\d+$
+          description: Job listing ID whose generated interview prep should be mined for new stories
+          example: '1'
+        required: true
+        description: Job listing ID whose generated interview prep should be mined for new stories
+        in: path
+        name: jobId
+      responses:
+        '200':
+          description: Stories extracted from interview prep
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExtractStarStoriesResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: postStarStoriesExtractFromInterviewPrepByJobId
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+  /star-stories/{id}:
+    patch:
+      tags:
+      - star-stories
+      summary: Update STAR Story
+      description: Update an existing STAR+Reflection story by id.
+      parameters:
+      - schema:
+          type: string
+          minLength: 1
+          description: STAR story identifier (UUID)
+          example: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+        required: true
+        description: STAR story identifier (UUID)
+        in: path
+        name: id
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateStarStory'
+      responses:
+        '200':
+          description: STAR story updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StarStoryResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: patchStarStoriesById
+    delete:
+      tags:
+      - star-stories
+      summary: Delete STAR Story
+      description: Hard-delete a STAR+Reflection story. No soft-archive / no rollback window.
+      parameters:
+      - schema:
+          type: string
+          minLength: 1
+          description: STAR story identifier (UUID)
+          example: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+        required: true
+        description: STAR story identifier (UUID)
+        in: path
+        name: id
+      responses:
+        '200':
+          description: STAR story deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StarStoryDeletedResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: deleteStarStoriesById
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+components:
+  schemas:
+    ApiErrorResponse:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+            context:
+              oneOf:
+              - type: object
+                properties:
+                  errorType:
+                    type: string
+                    enum:
+                    - validation
+                  field:
+                    type: string
+                  fieldErrors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        code:
+                          type: string
+                        expected:
+                          type: string
+                        field:
+                          type: string
+                        message:
+                          type: string
+                        received:
+                          type: string
+                      required:
+                      - field
+                      - message
+                  schemaName:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  attemptedEmail:
+                    type: string
+                    format: email
+                  errorType:
+                    type: string
+                    enum:
+                    - authentication
+                  failureReason:
+                    type: string
+                    enum:
+                    - invalid_credentials
+                    - account_locked
+                    - expired_token
+                    - token_expired
+                    - missing_token
+                    - invalid_token
+                    - session_expired
+                    description: Reason for authentication failure
+                    example: token_expired
+                  ipAddress:
+                    type: string
+                  operation:
+                    type: string
+                  service:
+                    type: string
+                  userAgent:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  actualPermission:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - authorization
+                  requiredPermission:
+                    type: string
+                  resource:
+                    type: string
+                  resourceId:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  constraint:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - database
+                  operation:
+                    type: string
+                    enum:
+                    - insert
+                    - update
+                    - delete
+                    - select
+                    - batch
+                    - transaction
+                    - migration
+                    description: Type of database operation
+                    example: select
+                  resourceId:
+                    type: string
+                  sqlState:
+                    type: string
+                  table:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  endpoint:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - external_service
+                  httpStatus:
+                    type: number
+                  operation:
+                    type: string
+                  resourceId:
+                    type: string
+                  responseTime:
+                    type: number
+                  retryAttempt:
+                    type: integer
+                  service:
+                    type: string
+                  serviceName:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  errorType:
+                    type: string
+                    enum:
+                    - resource
+                  resource:
+                    type: string
+                  resourceId:
+                    type: string
+                  service:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  errorType:
+                    type: string
+                    enum:
+                    - rate_limit
+                  limit:
+                    type: number
+                  resetTime:
+                    type: string
+                  windowMs:
+                    type: number
+                required:
+                - errorType
+              - type: object
+                properties:
+                  configKey:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - configuration
+                  operation:
+                    type: string
+                  service:
+                    type: string
+                required:
+                - errorType
+              description: Type-safe error context information
+              example:
+                errorType: validation
+                fieldErrors:
+                - field: email
+                  message: Invalid email format
+            details:
+              oneOf:
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - validation
+                  validationErrors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        code:
+                          type: string
+                        field:
+                          type: string
+                        message:
+                          type: string
+                      required:
+                      - field
+                      - message
+                required:
+                - detailType
+                - validationErrors
+                additionalProperties: false
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - service_error
+                  originalError:
+                    type: string
+                  serviceName:
+                    type: string
+                required:
+                - detailType
+                - serviceName
+                additionalProperties: false
+              - type: object
+                properties:
+                  currentSize:
+                    type: number
+                  detailType:
+                    type: string
+                    enum:
+                    - batch
+                  originalError:
+                    type: string
+                  statementCount:
+                    type: number
+                required:
+                - detailType
+                additionalProperties: false
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - rate_limit
+                  limit:
+                    type: number
+                  resetTime:
+                    type: string
+                  windowMs:
+                    type: number
+                required:
+                - detailType
+                - limit
+                - resetTime
+                - windowMs
+                additionalProperties: false
+              - type: object
+                properties:
+                  conflictingField:
+                    type: string
+                  detailType:
+                    type: string
+                    enum:
+                    - resource
+                  resourceId:
+                    anyOf:
+                    - type: string
+                    - type: number
+                  resourceType:
+                    type: string
+                required:
+                - detailType
+                additionalProperties: false
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - generic
+                  info:
+                    type: string
+                required:
+                - detailType
+                additionalProperties: false
+              - type: object
+                properties:
+                  currentTokens:
+                    type: integer
+                    minimum: 0
+                  detailType:
+                    type: string
+                    enum:
+                    - insufficient_tokens
+                  requiredTokens:
+                    type: integer
+                    minimum: 0
+                required:
+                - currentTokens
+                - detailType
+                - requiredTokens
+                additionalProperties: false
+            message:
+              type: string
+            validation:
+              type: array
+              items:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  field:
+                    type: string
+                  message:
+                    type: string
+                required:
+                - field
+                - message
+                additionalProperties: false
+          required:
+          - code
+          - message
+          additionalProperties: false
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - false
+      required:
+      - error
+      - success
+      additionalProperties: false
+    CreateStarStory:
+      type: object
+      properties:
+        action:
+          type: string
+          minLength: 1
+          maxLength: 4000
+          description: What the candidate did (specific, detailed)
+          example: Re-architected the build pipeline to use parallel test sharding...
+        bestForQuestions:
+          type: array
+          items:
+            type: string
+            maxLength: 300
+          maxItems: 20
+          description: Question types this story is best for
+          example:
+          - Tell me about a time you led
+          - Describe a hard technical decision
+        reflection:
+          type:
+          - string
+          - 'null'
+          maxLength: 2000
+          description: Lessons learned / what would be done differently (signals seniority)
+          example: I learned to invest in observability before scaling, not after.
+        result:
+          type: string
+          minLength: 1
+          maxLength: 2000
+          description: Quantified outcome with metrics where possible
+          example: Cut CI time from 22 min to 6 min, unblocking 12 engineers.
+        situation:
+          type: string
+          minLength: 1
+          maxLength: 2000
+          description: Context for the story (1-2 sentences)
+          example: Our flagship CI pipeline grew to 22 minutes per run.
+        task:
+          type: string
+          minLength: 1
+          maxLength: 2000
+          description: What needed to be done
+          example: Get CI under 10 minutes without dropping coverage.
+        theme:
+          type: string
+          enum:
+          - leadership
+          - technical_challenge
+          - conflict_resolution
+          - ambiguity
+          - customer_impact
+          - failure
+          - ownership
+          - cross_functional
+          - scaling
+          - other
+          description: Theme tag for the story
+          example: technical_challenge
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+          description: Short memorable title
+          example: Cutting CI from 22 to 6 minutes
+      required:
+      - action
+      - result
+      - situation
+      - task
+      - theme
+      - title
+      additionalProperties: false
+    StarStoryListResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: '#/components/schemas/StarStoryData'
+          required:
+          - items
+          additionalProperties: false
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    ExtractStarStoriesResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ExtractStarStoriesData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    DraftStarStoryRequest:
+      type: object
+      properties:
+        persist:
+          type: boolean
+          default: false
+          description: Also persist the drafted story to the bank and return the saved row
+          example: false
+        question:
+          type: string
+          minLength: 1
+          maxLength: 500
+          description: The interview question the drafted story should answer
+          example: Tell me about a time you led a team through a hard technical decision.
+      required:
+      - question
+      additionalProperties: false
+    ExtractStarStoriesData:
+      type: object
+      properties:
+        candidates:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExtractedStarStoryCandidate'
+        promotedExistingIds:
+          type: array
+          items:
+            type: string
+      required:
+      - candidates
+      - promotedExistingIds
+      additionalProperties: false
+    StarStoryResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/StarStoryData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    ExtractedStarStoryCandidate:
+      type: object
+      properties:
+        action:
+          type: string
+        bestForQuestions:
+          type: array
+          items:
+            type: string
+        reflection:
+          type:
+          - string
+          - 'null'
+        result:
+          type: string
+        situation:
+          type: string
+        task:
+          type: string
+        theme:
+          type: string
+          enum:
+          - leadership
+          - technical_challenge
+          - conflict_resolution
+          - ambiguity
+          - customer_impact
+          - failure
+          - ownership
+          - cross_functional
+          - scaling
+          - other
+          description: Theme tag for a STAR+Reflection story
+          example: leadership
+        title:
+          type: string
+      required:
+      - action
+      - bestForQuestions
+      - reflection
+      - result
+      - situation
+      - task
+      - theme
+      - title
+      additionalProperties: false
+    GenerateStarStoriesFromResumeResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/GenerateStarStoriesFromResumeData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    DraftStarStoryResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/DraftStarStoryData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    GenerateStarStoriesFromResumeData:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/StarStoryData'
+      required:
+      - items
+      additionalProperties: false
+    StarStoryDeletedResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            success:
+              type: boolean
+              enum:
+              - true
+          required:
+          - success
+          additionalProperties: false
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    DraftStarStoryData:
+      type: object
+      properties:
+        action:
+          type: string
+          description: Drafted Action narrative
+        reflection:
+          type:
+          - string
+          - 'null'
+          description: Drafted Reflection (lessons learned)
+        result:
+          type: string
+          description: Drafted quantified Result
+        savedStory:
+          type:
+          - object
+          - 'null'
+          properties:
+            action:
+              type: string
+              description: What the candidate did (specific, detailed)
+            bestForQuestions:
+              type: array
+              items:
+                type: string
+              description: Question types this story can answer
+              example:
+              - Tell me about a time you led a team
+              - How do you handle conflict?
+            createdAt:
+              type: string
+              description: Story creation timestamp (ISO-8601)
+              example: '2026-01-15T12:00:00Z'
+            derivedFromResume:
+              type: boolean
+              description: True when this row was produced by the one-click "generate from resume" flow. Lets the UI flip its CTA to "Regenerate" and replace prior AI rows instead of duplicating them.
+              example: true
+            id:
+              type: string
+              description: STAR story identifier (UUID)
+              example: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+            reflection:
+              type:
+              - string
+              - 'null'
+              description: Lessons learned / what would be done differently (signals seniority)
+              example: I learned to invest in observability before scaling, not after.
+            result:
+              type: string
+              description: Quantified outcome with metrics where possible
+            situation:
+              type: string
+              description: Context for the story (1-2 sentences)
+            task:
+              type: string
+              description: What needed to be done
+            theme:
+              type: string
+              enum:
+              - leadership
+              - technical_challenge
+              - conflict_resolution
+              - ambiguity
+              - customer_impact
+              - failure
+              - ownership
+              - cross_functional
+              - scaling
+              - other
+              description: Theme tag for a STAR+Reflection story
+              example: leadership
+            title:
+              type: string
+              description: Short memorable title
+              example: Cutting CI from 22 to 6 minutes
+            updatedAt:
+              type: string
+              description: Story last update timestamp (ISO-8601)
+              example: '2026-03-10T08:30:00Z'
+            usageCount:
+              type: integer
+              minimum: 0
+              description: How many interview-prep generations have used this story
+              example: 3
+            userId:
+              type: string
+              description: Owner user identifier
+              example: user_123
+          required:
+          - action
+          - bestForQuestions
+          - createdAt
+          - derivedFromResume
+          - id
+          - reflection
+          - result
+          - situation
+          - task
+          - theme
+          - title
+          - updatedAt
+          - usageCount
+          - userId
+          additionalProperties: false
+          description: The persisted bank row when `persist` was requested; null/omitted otherwise
+        situation:
+          type: string
+          description: Drafted Situation context
+        task:
+          type: string
+          description: Drafted Task
+        theme:
+          type: string
+          enum:
+          - leadership
+          - technical_challenge
+          - conflict_resolution
+          - ambiguity
+          - customer_impact
+          - failure
+          - ownership
+          - cross_functional
+          - scaling
+          - other
+          description: Theme tag for a STAR+Reflection story
+          example: leadership
+        title:
+          type: string
+          description: Drafted short title
+      required:
+      - action
+      - reflection
+      - result
+      - situation
+      - task
+      - theme
+      - title
+      additionalProperties: false
+    StarStoryData:
+      type: object
+      properties:
+        action:
+          type: string
+          description: What the candidate did (specific, detailed)
+        bestForQuestions:
+          type: array
+          items:
+            type: string
+          description: Question types this story can answer
+          example:
+          - Tell me about a time you led a team
+          - How do you handle conflict?
+        createdAt:
+          type: string
+          description: Story creation timestamp (ISO-8601)
+          example: '2026-01-15T12:00:00Z'
+        derivedFromResume:
+          type: boolean
+          description: True when this row was produced by the one-click "generate from resume" flow. Lets the UI flip its CTA to "Regenerate" and replace prior AI rows instead of duplicating them.
+          example: true
+        id:
+          type: string
+          description: STAR story identifier (UUID)
+          example: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+        reflection:
+          type:
+          - string
+          - 'null'
+          description: Lessons learned / what would be done differently (signals seniority)
+          example: I learned to invest in observability before scaling, not after.
+        result:
+          type: string
+          description: Quantified outcome with metrics where possible
+        situation:
+          type: string
+          description: Context for the story (1-2 sentences)
+        task:
+          type: string
+          description: What needed to be done
+        theme:
+          type: string
+          enum:
+          - leadership
+          - technical_challenge
+          - conflict_resolution
+          - ambiguity
+          - customer_impact
+          - failure
+          - ownership
+          - cross_functional
+          - scaling
+          - other
+          description: Theme tag for a STAR+Reflection story
+          example: leadership
+        title:
+          type: string
+          description: Short memorable title
+          example: Cutting CI from 22 to 6 minutes
+        updatedAt:
+          type: string
+          description: Story last update timestamp (ISO-8601)
+          example: '2026-03-10T08:30:00Z'
+        usageCount:
+          type: integer
+          minimum: 0
+          description: How many interview-prep generations have used this story
+          example: 3
+        userId:
+          type: string
+          description: Owner user identifier
+          example: user_123
+      required:
+      - action
+      - bestForQuestions
+      - createdAt
+      - derivedFromResume
+      - id
+      - reflection
+      - result
+      - situation
+      - task
+      - theme
+      - title
+      - updatedAt
+      - usageCount
+      - userId
+      additionalProperties: false
+    ResponseMetadata:
+      type: object
+      properties:
+        duration:
+          type: number
+          description: Request duration in milliseconds
+          example: 150
+          exclusiveMinimum: 0
+        performance:
+          type: object
+          properties:
+            dbQueries:
+              type: integer
+              minimum: 0
+            totalDbTime:
+              type: number
+              minimum: 0
+          description: Performance metrics (preview/local only)
+        requestId:
+          type: string
+          description: Unique request identifier
+          example: req_abc123
+        timestamp:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp
+          example: '2026-09-25T17:29:47.224Z'
+        version:
+          type: string
+          description: API version
+          example: v1
+    UpdateStarStory:
+      type: object
+      properties:
+        action:
+          type: string
+          minLength: 1
+          maxLength: 4000
+          description: What the candidate did (specific, detailed)
+          example: Re-architected the build pipeline to use parallel test sharding...
+        bestForQuestions:
+          type: array
+          items:
+            type: string
+            maxLength: 300
+          maxItems: 20
+          description: Question types this story is best for
+          example:
+          - Tell me about a time you led
+          - Describe a hard technical decision
+        reflection:
+          type:
+          - string
+          - 'null'
+          maxLength: 2000
+          description: Lessons learned / what would be done differently (signals seniority)
+          example: I learned to invest in observability before scaling, not after.
+        result:
+          type: string
+          minLength: 1
+          maxLength: 2000
+          description: Quantified outcome with metrics where possible
+          example: Cut CI time from 22 min to 6 min, unblocking 12 engineers.
+        situation:
+          type: string
+          minLength: 1
+          maxLength: 2000
+          description: Context for the story (1-2 sentences)
+          example: Our flagship CI pipeline grew to 22 minutes per run.
+        task:
+          type: string
+          minLength: 1
+          maxLength: 2000
+          description: What needed to be done
+          example: Get CI under 10 minutes without dropping coverage.
+        theme:
+          type: string
+          enum:
+          - leadership
+          - technical_challenge
+          - conflict_resolution
+          - ambiguity
+          - customer_impact
+          - failure
+          - ownership
+          - cross_functional
+          - scaling
+          - other
+          description: Theme tag for the story
+          example: technical_challenge
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+          description: Short memorable title
+          example: Cutting CI from 22 to 6 minutes
+      additionalProperties: false
+  securitySchemes:
+    BearerAuth:
+      description: 'Session token from signing in to AI Applyd, sent as `Authorization: Bearer <token>`.'
+      scheme: bearer
+      type: http
+x-refined-from:
+- aiapplyd-openapi.json
+- aiapplyd-openapi.yml

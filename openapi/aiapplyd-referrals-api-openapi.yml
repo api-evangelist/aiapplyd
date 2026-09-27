@@ -1,0 +1,705 @@
+openapi: 3.2.0
+info:
+  title: Aiapplyd Referrals API
+  version: 115c47ce
+  contact:
+    email: support@aiapplyd.com
+    name: AI Applyd
+    url: https://aiapplyd.com
+  license:
+    name: Proprietary
+    url: https://aiapplyd.com/legal/terms
+  description: 'Operations tagged referrals across 2 of this provider''s published API definitions: aiapplyd-openapi.json, aiapplyd-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- description: Current environment
+  url: https://api.aiapplyd.com/api/v1
+security:
+- BearerAuth: []
+tags:
+- name: Referrals
+paths:
+  /referrals/stats:
+    get:
+      description: Get referral program stats for the authenticated user including click count, signups, subscriptions, and tokens earned.
+      summary: Get Referral Stats
+      tags:
+      - Referrals
+      responses:
+        '200':
+          description: Referral stats for the authenticated user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReferralStatsResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: getReferralsStats
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+  /referrals/track:
+    post:
+      description: Track a referral link click. Called when a visitor lands on /r/{code}. Creates a referral record with status clicked.
+      summary: Track Referral Click
+      tags:
+      - Referrals
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TrackReferralBody'
+      responses:
+        '200':
+          description: Referral click tracked
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TrackReferralResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: postReferralsTrack
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+  /referrals/convert:
+    post:
+      description: Convert a referral after signup. Called by frontend if localStorage has a referral_code. Links the new user to the referral record.
+      summary: Convert Referral
+      tags:
+      - Referrals
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConvertReferralBody'
+      responses:
+        '200':
+          description: Referral converted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConvertReferralResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: postReferralsConvert
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+components:
+  schemas:
+    ReferralEarnedApplies:
+      type: object
+      properties:
+        lifetime:
+          type: integer
+          minimum: 0
+          description: Earned applies granted to the referrer across all converting signups
+          example: 0
+        lifetimeCap:
+          type: integer
+          minimum: 0
+          description: Lifetime ceiling for earned applies
+          example: 0
+        perConvertingShare:
+          type: integer
+          minimum: 0
+          description: Earned applies granted when a referred signup completes
+          example: 0
+        remaining:
+          type: integer
+          minimum: 0
+          description: Earned applies available for the next application send
+          example: 0
+      required:
+      - lifetime
+      - lifetimeCap
+      - perConvertingShare
+      - remaining
+      additionalProperties: false
+    ApiErrorResponse:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+            context:
+              oneOf:
+              - type: object
+                properties:
+                  errorType:
+                    type: string
+                    enum:
+                    - validation
+                  field:
+                    type: string
+                  fieldErrors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        code:
+                          type: string
+                        expected:
+                          type: string
+                        field:
+                          type: string
+                        message:
+                          type: string
+                        received:
+                          type: string
+                      required:
+                      - field
+                      - message
+                  schemaName:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  attemptedEmail:
+                    type: string
+                    format: email
+                  errorType:
+                    type: string
+                    enum:
+                    - authentication
+                  failureReason:
+                    type: string
+                    enum:
+                    - invalid_credentials
+                    - account_locked
+                    - expired_token
+                    - token_expired
+                    - missing_token
+                    - invalid_token
+                    - session_expired
+                    description: Reason for authentication failure
+                    example: token_expired
+                  ipAddress:
+                    type: string
+                  operation:
+                    type: string
+                  service:
+                    type: string
+                  userAgent:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  actualPermission:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - authorization
+                  requiredPermission:
+                    type: string
+                  resource:
+                    type: string
+                  resourceId:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  constraint:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - database
+                  operation:
+                    type: string
+                    enum:
+                    - insert
+                    - update
+                    - delete
+                    - select
+                    - batch
+                    - transaction
+                    - migration
+                    description: Type of database operation
+                    example: select
+                  resourceId:
+                    type: string
+                  sqlState:
+                    type: string
+                  table:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  endpoint:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - external_service
+                  httpStatus:
+                    type: number
+                  operation:
+                    type: string
+                  resourceId:
+                    type: string
+                  responseTime:
+                    type: number
+                  retryAttempt:
+                    type: integer
+                  service:
+                    type: string
+                  serviceName:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  errorType:
+                    type: string
+                    enum:
+                    - resource
+                  resource:
+                    type: string
+                  resourceId:
+                    type: string
+                  service:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  errorType:
+                    type: string
+                    enum:
+                    - rate_limit
+                  limit:
+                    type: number
+                  resetTime:
+                    type: string
+                  windowMs:
+                    type: number
+                required:
+                - errorType
+              - type: object
+                properties:
+                  configKey:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - configuration
+                  operation:
+                    type: string
+                  service:
+                    type: string
+                required:
+                - errorType
+              description: Type-safe error context information
+              example:
+                errorType: validation
+                fieldErrors:
+                - field: email
+                  message: Invalid email format
+            details:
+              oneOf:
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - validation
+                  validationErrors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        code:
+                          type: string
+                        field:
+                          type: string
+                        message:
+                          type: string
+                      required:
+                      - field
+                      - message
+                required:
+                - detailType
+                - validationErrors
+                additionalProperties: false
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - service_error
+                  originalError:
+                    type: string
+                  serviceName:
+                    type: string
+                required:
+                - detailType
+                - serviceName
+                additionalProperties: false
+              - type: object
+                properties:
+                  currentSize:
+                    type: number
+                  detailType:
+                    type: string
+                    enum:
+                    - batch
+                  originalError:
+                    type: string
+                  statementCount:
+                    type: number
+                required:
+                - detailType
+                additionalProperties: false
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - rate_limit
+                  limit:
+                    type: number
+                  resetTime:
+                    type: string
+                  windowMs:
+                    type: number
+                required:
+                - detailType
+                - limit
+                - resetTime
+                - windowMs
+                additionalProperties: false
+              - type: object
+                properties:
+                  conflictingField:
+                    type: string
+                  detailType:
+                    type: string
+                    enum:
+                    - resource
+                  resourceId:
+                    anyOf:
+                    - type: string
+                    - type: number
+                  resourceType:
+                    type: string
+                required:
+                - detailType
+                additionalProperties: false
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - generic
+                  info:
+                    type: string
+                required:
+                - detailType
+                additionalProperties: false
+              - type: object
+                properties:
+                  currentTokens:
+                    type: integer
+                    minimum: 0
+                  detailType:
+                    type: string
+                    enum:
+                    - insufficient_tokens
+                  requiredTokens:
+                    type: integer
+                    minimum: 0
+                required:
+                - currentTokens
+                - detailType
+                - requiredTokens
+                additionalProperties: false
+            message:
+              type: string
+            validation:
+              type: array
+              items:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  field:
+                    type: string
+                  message:
+                    type: string
+                required:
+                - field
+                - message
+                additionalProperties: false
+          required:
+          - code
+          - message
+          additionalProperties: false
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - false
+      required:
+      - error
+      - success
+      additionalProperties: false
+    TrackReferralBody:
+      type: object
+      properties:
+        referralCode:
+          type: string
+          minLength: 1
+          description: Referral code from the /r/{code} link (7-char short code, or a legacy raw user ID for backward compatibility)
+          example: K7M2QPX
+      required:
+      - referralCode
+      additionalProperties: false
+    TrackReferralResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            status:
+              type: string
+              enum:
+              - clicked
+              - signed_up
+              - subscribed
+              description: 'Referral lifecycle status: clicked (visited link), signed_up (created account), subscribed (purchased plan)'
+              example: clicked
+            tracked:
+              type: boolean
+              description: Whether the referral click was tracked
+          required:
+          - status
+          - tracked
+          additionalProperties: false
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    ConvertReferralResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ConvertReferralPayload'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    ConvertReferralPayload:
+      type: object
+      properties:
+        converted:
+          type: boolean
+          description: Whether the referral was successfully converted
+      required:
+      - converted
+      additionalProperties: false
+    ConvertReferralBody:
+      type: object
+      properties:
+        referralCode:
+          type: string
+          minLength: 1
+          description: Referral code from localStorage, set during /r/{code} redirect (7-char short code, or a legacy raw user ID for backward compatibility)
+          example: K7M2QPX
+      required:
+      - referralCode
+      additionalProperties: false
+    ReferralStatsResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ReferralStatsPayload'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    ReferralStatsPayload:
+      type: object
+      properties:
+        earnedApplies:
+          $ref: '#/components/schemas/ReferralEarnedApplies'
+        pendingRewardPerReferral:
+          type: integer
+          minimum: 0
+          description: Tokens the referrer earns per friend who subscribes (REFERRAL_REWARD_TOKENS)
+          example: 0
+        pendingRewards:
+          type: integer
+          minimum: 0
+          description: Tokens the referrer will earn when their signed-up-but-not-yet-subscribed friends subscribe (signedUpCount × reward-per-referral)
+          example: 0
+        referralCode:
+          type: string
+          description: The user 7-char short referral code (used in /r/{code} links)
+          example: K7M2QPX
+        referredCount:
+          type: integer
+          minimum: 0
+          description: Total referral link clicks
+          example: 0
+        signedUpCount:
+          type: integer
+          minimum: 0
+          description: Users who signed up via referral but have not yet subscribed
+          example: 0
+        subscribedCount:
+          type: integer
+          minimum: 0
+          description: Users who subscribed via referral
+          example: 0
+        totalTokensEarned:
+          type: integer
+          minimum: 0
+          description: Total tokens earned from referrals (claimed)
+          example: 0
+      required:
+      - earnedApplies
+      - pendingRewardPerReferral
+      - pendingRewards
+      - referralCode
+      - referredCount
+      - signedUpCount
+      - subscribedCount
+      - totalTokensEarned
+      additionalProperties: false
+    ResponseMetadata:
+      type: object
+      properties:
+        duration:
+          type: number
+          description: Request duration in milliseconds
+          example: 150
+          exclusiveMinimum: 0
+        performance:
+          type: object
+          properties:
+            dbQueries:
+              type: integer
+              minimum: 0
+            totalDbTime:
+              type: number
+              minimum: 0
+          description: Performance metrics (preview/local only)
+        requestId:
+          type: string
+          description: Unique request identifier
+          example: req_abc123
+        timestamp:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp
+          example: '2026-09-25T17:29:47.224Z'
+        version:
+          type: string
+          description: API version
+          example: v1
+  securitySchemes:
+    BearerAuth:
+      description: 'Session token from signing in to AI Applyd, sent as `Authorization: Bearer <token>`.'
+      scheme: bearer
+      type: http
+x-refined-from:
+- aiapplyd-openapi.json
+- aiapplyd-openapi.yml

@@ -1,0 +1,643 @@
+openapi: 3.2.0
+info:
+  title: Aiapplyd Pricing API
+  version: 115c47ce
+  contact:
+    email: support@aiapplyd.com
+    name: AI Applyd
+    url: https://aiapplyd.com
+  license:
+    name: Proprietary
+    url: https://aiapplyd.com/legal/terms
+  description: 'Operations tagged pricing across 2 of this provider''s published API definitions: aiapplyd-openapi.json, aiapplyd-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- description: Current environment
+  url: https://api.aiapplyd.com/api/v1
+security:
+- BearerAuth: []
+tags:
+- name: Pricing
+paths:
+  /pricing:
+    get:
+      tags:
+      - Pricing
+      summary: Get All Pricing
+      description: Get all pricing options (subscription plans). This is a public endpoint accessible without authentication.
+      responses:
+        '200':
+          description: Successful response with all pricing data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PricingResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: getPricing
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+  /pricing/subscriptions:
+    get:
+      tags:
+      - Pricing
+      summary: List Subscription Plans
+      description: Get all available subscription plans. This is a public endpoint accessible without authentication.
+      responses:
+        '200':
+          description: Successful response with subscription plans
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubscriptionPlansResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: getPricingSubscriptions
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+components:
+  schemas:
+    PricingWithLimitsPayload:
+      type: object
+      properties:
+        actionLimits:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlanActionLimit'
+        subscriptionPlans:
+          type: array
+          items:
+            $ref: '#/components/schemas/SubscriptionPlan'
+      required:
+      - actionLimits
+      - subscriptionPlans
+      additionalProperties: false
+    ApiErrorResponse:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+            context:
+              oneOf:
+              - type: object
+                properties:
+                  errorType:
+                    type: string
+                    enum:
+                    - validation
+                  field:
+                    type: string
+                  fieldErrors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        code:
+                          type: string
+                        expected:
+                          type: string
+                        field:
+                          type: string
+                        message:
+                          type: string
+                        received:
+                          type: string
+                      required:
+                      - field
+                      - message
+                  schemaName:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  attemptedEmail:
+                    type: string
+                    format: email
+                  errorType:
+                    type: string
+                    enum:
+                    - authentication
+                  failureReason:
+                    type: string
+                    enum:
+                    - invalid_credentials
+                    - account_locked
+                    - expired_token
+                    - token_expired
+                    - missing_token
+                    - invalid_token
+                    - session_expired
+                    description: Reason for authentication failure
+                    example: token_expired
+                  ipAddress:
+                    type: string
+                  operation:
+                    type: string
+                  service:
+                    type: string
+                  userAgent:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  actualPermission:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - authorization
+                  requiredPermission:
+                    type: string
+                  resource:
+                    type: string
+                  resourceId:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  constraint:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - database
+                  operation:
+                    type: string
+                    enum:
+                    - insert
+                    - update
+                    - delete
+                    - select
+                    - batch
+                    - transaction
+                    - migration
+                    description: Type of database operation
+                    example: select
+                  resourceId:
+                    type: string
+                  sqlState:
+                    type: string
+                  table:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  endpoint:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - external_service
+                  httpStatus:
+                    type: number
+                  operation:
+                    type: string
+                  resourceId:
+                    type: string
+                  responseTime:
+                    type: number
+                  retryAttempt:
+                    type: integer
+                  service:
+                    type: string
+                  serviceName:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  errorType:
+                    type: string
+                    enum:
+                    - resource
+                  resource:
+                    type: string
+                  resourceId:
+                    type: string
+                  service:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  errorType:
+                    type: string
+                    enum:
+                    - rate_limit
+                  limit:
+                    type: number
+                  resetTime:
+                    type: string
+                  windowMs:
+                    type: number
+                required:
+                - errorType
+              - type: object
+                properties:
+                  configKey:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - configuration
+                  operation:
+                    type: string
+                  service:
+                    type: string
+                required:
+                - errorType
+              description: Type-safe error context information
+              example:
+                errorType: validation
+                fieldErrors:
+                - field: email
+                  message: Invalid email format
+            details:
+              oneOf:
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - validation
+                  validationErrors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        code:
+                          type: string
+                        field:
+                          type: string
+                        message:
+                          type: string
+                      required:
+                      - field
+                      - message
+                required:
+                - detailType
+                - validationErrors
+                additionalProperties: false
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - service_error
+                  originalError:
+                    type: string
+                  serviceName:
+                    type: string
+                required:
+                - detailType
+                - serviceName
+                additionalProperties: false
+              - type: object
+                properties:
+                  currentSize:
+                    type: number
+                  detailType:
+                    type: string
+                    enum:
+                    - batch
+                  originalError:
+                    type: string
+                  statementCount:
+                    type: number
+                required:
+                - detailType
+                additionalProperties: false
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - rate_limit
+                  limit:
+                    type: number
+                  resetTime:
+                    type: string
+                  windowMs:
+                    type: number
+                required:
+                - detailType
+                - limit
+                - resetTime
+                - windowMs
+                additionalProperties: false
+              - type: object
+                properties:
+                  conflictingField:
+                    type: string
+                  detailType:
+                    type: string
+                    enum:
+                    - resource
+                  resourceId:
+                    anyOf:
+                    - type: string
+                    - type: number
+                  resourceType:
+                    type: string
+                required:
+                - detailType
+                additionalProperties: false
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - generic
+                  info:
+                    type: string
+                required:
+                - detailType
+                additionalProperties: false
+              - type: object
+                properties:
+                  currentTokens:
+                    type: integer
+                    minimum: 0
+                  detailType:
+                    type: string
+                    enum:
+                    - insufficient_tokens
+                  requiredTokens:
+                    type: integer
+                    minimum: 0
+                required:
+                - currentTokens
+                - detailType
+                - requiredTokens
+                additionalProperties: false
+            message:
+              type: string
+            validation:
+              type: array
+              items:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  field:
+                    type: string
+                  message:
+                    type: string
+                required:
+                - field
+                - message
+                additionalProperties: false
+          required:
+          - code
+          - message
+          additionalProperties: false
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - false
+      required:
+      - error
+      - success
+      additionalProperties: false
+    SubscriptionPlansResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/SubscriptionPlan'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    PricingResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/PricingWithLimitsPayload'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    SubscriptionPlan:
+      type: object
+      properties:
+        afterSalePrice:
+          type:
+          - string
+          - 'null'
+          description: Price after sale ends
+          example: '29.99'
+        createdAt:
+          type: string
+          description: Creation timestamp
+          example: '2024-01-01T00:00:00Z'
+        currentPrice:
+          type: string
+          description: Current price
+          example: '19.99'
+        id:
+          type: integer
+          description: Plan identifier
+          example: 1
+        initialTokensCount:
+          type: integer
+          description: Initial tokens included with subscription
+          example: 100000
+        isOnSale:
+          type: boolean
+          description: Whether the plan is currently on sale
+          example: false
+        planName:
+          type: string
+          description: Plan display name
+          example: Pro Plan
+        stripePlanId:
+          type: string
+          description: Stripe plan ID
+          example: plan_1234567890
+        stripePriceId:
+          type: string
+          description: 'Stripe price ID. ⚠️ AMBIGUOUS BY SEED: `seed-prod.sql` sets this to the WEEKLY id for both paid plans, on every interval. Never bill from it directly — resolve the interval first via the two fields below.'
+          example: price_1234567890
+        stripePriceIdMonthly:
+          type:
+          - string
+          - 'null'
+          description: Stripe price ID for the MONTHLY interval. Null on rows seeded before the per-interval columns existed.
+          example: price_monthly_1234567890
+        stripePriceIdWeekly:
+          type:
+          - string
+          - 'null'
+          description: Stripe price ID for the WEEKLY interval. Null on rows seeded before the per-interval columns existed.
+          example: price_weekly_1234567890
+        updatedAt:
+          type: string
+          description: Last update timestamp
+          example: '2024-01-01T00:00:00Z'
+      required:
+      - afterSalePrice
+      - createdAt
+      - currentPrice
+      - id
+      - initialTokensCount
+      - isOnSale
+      - planName
+      - stripePlanId
+      - stripePriceId
+      - stripePriceIdMonthly
+      - stripePriceIdWeekly
+      - updatedAt
+      additionalProperties: false
+    PlanActionLimit:
+      type: object
+      properties:
+        actionType:
+          type: string
+          enum:
+          - ats_score
+          - cover_letter
+          - auto_apply
+          - auto_apply_daily
+          - auto_apply_weekly
+          - auto_apply_monthly
+          - interview_prep
+          - job_discovery
+          - resume_tailor
+          - ats_optimize
+          - translate_resume
+          - extract_keywords
+          - parse_job_url
+          - job_match_score
+          - compare_offers
+          - comp_intelligence
+          - match_report_generated
+          - layoff_news_check
+          - latex_export_generated
+          - pattern_recommendation_applied
+          - proof_point_created
+          - relay_reply
+          - relay_receive
+          - relay_storage
+          description: Type of gated feature action
+          example: ats_score
+        limitPeriod:
+          type: string
+          enum:
+          - monthly
+          - daily
+          - weekly
+          - lifetime
+          - none
+          description: Period over which an action limit resets
+          example: monthly
+        limitValue:
+          type: integer
+          description: Limit value for this action (-1 means unlimited)
+          example: 10
+        planTier:
+          type: string
+          enum:
+          - job_seeker
+          - hired_in_30
+          - hired_yesterday
+          description: Subscription plan tier level
+          example: job_seeker
+      required:
+      - actionType
+      - limitPeriod
+      - limitValue
+      - planTier
+      additionalProperties: false
+    ResponseMetadata:
+      type: object
+      properties:
+        duration:
+          type: number
+          description: Request duration in milliseconds
+          example: 150
+          exclusiveMinimum: 0
+        performance:
+          type: object
+          properties:
+            dbQueries:
+              type: integer
+              minimum: 0
+            totalDbTime:
+              type: number
+              minimum: 0
+          description: Performance metrics (preview/local only)
+        requestId:
+          type: string
+          description: Unique request identifier
+          example: req_abc123
+        timestamp:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp
+          example: '2026-09-25T17:29:47.224Z'
+        version:
+          type: string
+          description: API version
+          example: v1
+  securitySchemes:
+    BearerAuth:
+      description: 'Session token from signing in to AI Applyd, sent as `Authorization: Bearer <token>`.'
+      scheme: bearer
+      type: http
+x-refined-from:
+- aiapplyd-openapi.json
+- aiapplyd-openapi.yml

@@ -1,0 +1,854 @@
+openapi: 3.2.0
+info:
+  title: Aiapplyd Locations API
+  version: 115c47ce
+  contact:
+    email: support@aiapplyd.com
+    name: AI Applyd
+    url: https://aiapplyd.com
+  license:
+    name: Proprietary
+    url: https://aiapplyd.com/legal/terms
+  description: 'Operations tagged locations across 2 of this provider''s published API definitions: aiapplyd-openapi.json, aiapplyd-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- description: Current environment
+  url: https://api.aiapplyd.com/api/v1
+security:
+- BearerAuth: []
+tags:
+- name: Locations
+paths:
+  /locations/search:
+    get:
+      tags:
+      - Locations
+      summary: Search Locations
+      description: Search for cities and places by name. When `popular=true` is passed without `q`, returns the most-populous cities globally for empty-state UIs. Results cached for 7 days. Public endpoint, no auth required.
+      parameters:
+      - schema:
+          type: integer
+          minimum: 1
+          maximum: 50
+          default: 10
+          description: Maximum number of results to return (max 50)
+          example: 10
+        required: false
+        description: Maximum number of results to return (max 50)
+        name: limit
+        in: query
+      - schema:
+          anyOf:
+          - type: boolean
+          - type: string
+            enum:
+            - '0'
+            - '1'
+            - 'true'
+            - 'false'
+          description: If true, return the most populous cities globally. Pairs with omitting `q` for the empty-state fallback.
+          example: false
+        required: false
+        description: If true, return the most populous cities globally. Pairs with omitting `q` for the empty-state fallback.
+        name: popular
+        in: query
+      - schema:
+          type: string
+          minLength: 2
+          maxLength: 100
+          description: Search query (2-100 characters). Omit when `popular=true`. Capped so an over-long query is a clean 400, never an oversized D1/KV cache key (512-byte limit) that 500s.
+          example: San Francisco
+        required: false
+        description: Search query (2-100 characters). Omit when `popular=true`. Capped so an over-long query is a clean 400, never an oversized D1/KV cache key (512-byte limit) that 500s.
+        name: q
+        in: query
+      responses:
+        '200':
+          description: Location search results
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LocationSearchResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: getLocationsSearch
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+  /locations/popular:
+    get:
+      tags:
+      - Locations
+      summary: Popular locations (paginated)
+      description: Offset-paginated list of popular cities ranked by population DESC. Backs the infinite-scroll browse mode of the location typeahead. Capped at 500 rows globally (2000 when scoped to a single country via `countryCode`) - beyond that, the client prompts the user to type. Public endpoint, no auth required.
+      parameters:
+      - schema:
+          type:
+          - integer
+          - 'null'
+          minimum: 0
+          maximum: 2000
+          default: 0
+          description: Offset into the popular-cities list. Capped at 500 when countryCode is omitted; 2000 when scoped to a single country (the country-scoped browse is the drill-in pane, which the user can exhaust further than the global browse).
+          example: 0
+        required: false
+        description: Offset into the popular-cities list. Capped at 500 when countryCode is omitted; 2000 when scoped to a single country (the country-scoped browse is the drill-in pane, which the user can exhaust further than the global browse).
+        name: cursor
+        in: query
+      - schema:
+          type: integer
+          minimum: 1
+          maximum: 50
+          default: 50
+          description: Page size (max 50).
+          example: 50
+        required: false
+        description: Page size (max 50).
+        name: limit
+        in: query
+      - schema:
+          type: string
+          minLength: 2
+          maxLength: 2
+          pattern: ^[a-z]{2}$/i
+          description: ISO-3166-1 alpha-2 country code. When provided, cities are filtered to that country and the pagination cap is raised so users can scroll the full city list for that country.
+          example: US
+        required: false
+        description: ISO-3166-1 alpha-2 country code. When provided, cities are filtered to that country and the pagination cap is raised so users can scroll the full city list for that country.
+        name: countryCode
+        in: query
+      responses:
+        '200':
+          description: Page of popular cities + next cursor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PopularLocationsResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: getLocationsPopular
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+  /locations/countries:
+    get:
+      tags:
+      - Locations
+      summary: Popular countries (paginated)
+      description: Offset-paginated list of countries ranked by aggregate city population DESC. Backs the country-first browse mode of the location typeahead - each row drills into `/locations/popular?countryCode=XX` for the city-level infinite scroll. Public endpoint, no auth required.
+      parameters:
+      - schema:
+          type:
+          - integer
+          - 'null'
+          minimum: 0
+          maximum: 500
+          default: 0
+          description: Offset into the countries list. The country catalogue tops out well under 500 so this is effectively a belt-and-braces cap.
+          example: 0
+        required: false
+        description: Offset into the countries list. The country catalogue tops out well under 500 so this is effectively a belt-and-braces cap.
+        name: cursor
+        in: query
+      - schema:
+          type: integer
+          minimum: 1
+          maximum: 50
+          default: 30
+          description: Page size (max 50).
+          example: 30
+        required: false
+        description: Page size (max 50).
+        name: limit
+        in: query
+      responses:
+        '200':
+          description: Page of popular countries + next cursor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PopularCountriesResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: getLocationsCountries
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+  /locations/initial-suggestions:
+    get:
+      tags:
+      - Locations
+      summary: Initial location suggestions
+      description: 'Empty-state seed for the preferred-locations combobox: the user''s IP-inferred country (via CF request.cf.country) and the top-N globally popular cities. Public endpoint, no auth required.'
+      responses:
+        '200':
+          description: IP country + top popular cities
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LocationInitialSuggestionsResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: getLocationsInitialSuggestions
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+components:
+  schemas:
+    ApiErrorResponse:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+            context:
+              oneOf:
+              - type: object
+                properties:
+                  errorType:
+                    type: string
+                    enum:
+                    - validation
+                  field:
+                    type: string
+                  fieldErrors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        code:
+                          type: string
+                        expected:
+                          type: string
+                        field:
+                          type: string
+                        message:
+                          type: string
+                        received:
+                          type: string
+                      required:
+                      - field
+                      - message
+                  schemaName:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  attemptedEmail:
+                    type: string
+                    format: email
+                  errorType:
+                    type: string
+                    enum:
+                    - authentication
+                  failureReason:
+                    type: string
+                    enum:
+                    - invalid_credentials
+                    - account_locked
+                    - expired_token
+                    - token_expired
+                    - missing_token
+                    - invalid_token
+                    - session_expired
+                    description: Reason for authentication failure
+                    example: token_expired
+                  ipAddress:
+                    type: string
+                  operation:
+                    type: string
+                  service:
+                    type: string
+                  userAgent:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  actualPermission:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - authorization
+                  requiredPermission:
+                    type: string
+                  resource:
+                    type: string
+                  resourceId:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  constraint:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - database
+                  operation:
+                    type: string
+                    enum:
+                    - insert
+                    - update
+                    - delete
+                    - select
+                    - batch
+                    - transaction
+                    - migration
+                    description: Type of database operation
+                    example: select
+                  resourceId:
+                    type: string
+                  sqlState:
+                    type: string
+                  table:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  endpoint:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - external_service
+                  httpStatus:
+                    type: number
+                  operation:
+                    type: string
+                  resourceId:
+                    type: string
+                  responseTime:
+                    type: number
+                  retryAttempt:
+                    type: integer
+                  service:
+                    type: string
+                  serviceName:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  errorType:
+                    type: string
+                    enum:
+                    - resource
+                  resource:
+                    type: string
+                  resourceId:
+                    type: string
+                  service:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  errorType:
+                    type: string
+                    enum:
+                    - rate_limit
+                  limit:
+                    type: number
+                  resetTime:
+                    type: string
+                  windowMs:
+                    type: number
+                required:
+                - errorType
+              - type: object
+                properties:
+                  configKey:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - configuration
+                  operation:
+                    type: string
+                  service:
+                    type: string
+                required:
+                - errorType
+              description: Type-safe error context information
+              example:
+                errorType: validation
+                fieldErrors:
+                - field: email
+                  message: Invalid email format
+            details:
+              oneOf:
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - validation
+                  validationErrors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        code:
+                          type: string
+                        field:
+                          type: string
+                        message:
+                          type: string
+                      required:
+                      - field
+                      - message
+                required:
+                - detailType
+                - validationErrors
+                additionalProperties: false
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - service_error
+                  originalError:
+                    type: string
+                  serviceName:
+                    type: string
+                required:
+                - detailType
+                - serviceName
+                additionalProperties: false
+              - type: object
+                properties:
+                  currentSize:
+                    type: number
+                  detailType:
+                    type: string
+                    enum:
+                    - batch
+                  originalError:
+                    type: string
+                  statementCount:
+                    type: number
+                required:
+                - detailType
+                additionalProperties: false
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - rate_limit
+                  limit:
+                    type: number
+                  resetTime:
+                    type: string
+                  windowMs:
+                    type: number
+                required:
+                - detailType
+                - limit
+                - resetTime
+                - windowMs
+                additionalProperties: false
+              - type: object
+                properties:
+                  conflictingField:
+                    type: string
+                  detailType:
+                    type: string
+                    enum:
+                    - resource
+                  resourceId:
+                    anyOf:
+                    - type: string
+                    - type: number
+                  resourceType:
+                    type: string
+                required:
+                - detailType
+                additionalProperties: false
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - generic
+                  info:
+                    type: string
+                required:
+                - detailType
+                additionalProperties: false
+              - type: object
+                properties:
+                  currentTokens:
+                    type: integer
+                    minimum: 0
+                  detailType:
+                    type: string
+                    enum:
+                    - insufficient_tokens
+                  requiredTokens:
+                    type: integer
+                    minimum: 0
+                required:
+                - currentTokens
+                - detailType
+                - requiredTokens
+                additionalProperties: false
+            message:
+              type: string
+            validation:
+              type: array
+              items:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  field:
+                    type: string
+                  message:
+                    type: string
+                required:
+                - field
+                - message
+                additionalProperties: false
+          required:
+          - code
+          - message
+          additionalProperties: false
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - false
+      required:
+      - error
+      - success
+      additionalProperties: false
+    PopularCountriesResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/PopularCountriesPage'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    LocationCountryGroup:
+      type: object
+      properties:
+        countryCode:
+          type: string
+          description: ISO-3166-1 alpha-2 country code (upper-case).
+          example: US
+        countryName:
+          type: string
+          description: Human-readable country name.
+          example: United States
+        cities:
+          type: array
+          items:
+            $ref: '#/components/schemas/Location'
+          description: Cities belonging to this country, ordered by population desc.
+      required:
+      - countryCode
+      - countryName
+      - cities
+      additionalProperties: false
+    PopularLocationsResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/PopularLocationsPage'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    PopularLocationsPage:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Location'
+          description: Cities for this page, ranked by population DESC.
+        nextCursor:
+          type:
+          - integer
+          - 'null'
+          description: Next offset to pass as `cursor`, or `null` when there are no more pages (either long-tail exhausted or 500-row cap hit).
+          example: 50
+      required:
+      - items
+      - nextCursor
+      additionalProperties: false
+    LocationSearchResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Location'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    PopularCountriesPage:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/CountrySummary'
+          description: Countries for this page, ordered by aggregate population DESC.
+        nextCursor:
+          type:
+          - integer
+          - 'null'
+          description: Next offset to pass as `cursor`, or `null` on the final page.
+          example: 30
+      required:
+      - items
+      - nextCursor
+      additionalProperties: false
+    Location:
+      type: object
+      properties:
+        adminName1:
+          type: string
+          description: Primary administrative division (state/province). Empty string for country rows.
+          example: California
+        country:
+          type: string
+          description: Country name
+          example: United States
+        countryCode:
+          type: string
+          description: ISO 3166-1 alpha-2 country code
+          example: US
+        flagEmoji:
+          type:
+          - string
+          - 'null'
+          description: Flag emoji for the country (e.g. 🇺🇸). May be null/absent for legacy rows.
+          example: 🇺🇸
+        lat:
+          type: number
+          description: Latitude coordinate
+          example: 37.7749
+        lng:
+          type: number
+          description: Longitude coordinate
+          example: -122.4194
+        name:
+          type: string
+          description: City/place name
+          example: San Francisco
+        population:
+          type: integer
+          description: Population count (sum of city populations for country rows).
+          example: 884363
+        stateCode:
+          type:
+          - string
+          - 'null'
+          description: 'ISO admin1 code (machine key for the state/province). Populated on `type: "state"` rows and optionally on city rows; null/absent for country rows and legacy entries.'
+          example: CA
+        type:
+          type: string
+          enum:
+          - country
+          - state
+          - city
+          description: 'Row kind: "country" (ISO country row seeded in 0045), "state" (synthesized admin1 row, adminName1 populated, name empty), or "city" (cities15000).'
+          example: city
+      required:
+      - adminName1
+      - country
+      - countryCode
+      - lat
+      - lng
+      - name
+      - population
+      - type
+      additionalProperties: false
+    CountrySummary:
+      type: object
+      properties:
+        countryCode:
+          type: string
+          description: ISO-3166-1 alpha-2 country code.
+          example: US
+        countryName:
+          type: string
+          description: Human-readable country name.
+          example: United States
+        flagEmoji:
+          type:
+          - string
+          - 'null'
+          description: Regional-indicator flag emoji. May be null for legacy rows.
+          example: 🇺🇸
+        cityCount:
+          type: integer
+          description: Number of distinct cities we have catalogued for this country. Surfaces as a hint in the drill-in header.
+          example: 84
+        population:
+          type: integer
+          description: Sum of city populations in this country (ranking signal).
+          example: 175000000
+      required:
+      - countryCode
+      - countryName
+      - cityCount
+      - population
+      additionalProperties: false
+    LocationInitialSuggestions:
+      type: object
+      properties:
+        ipCountry:
+          type:
+          - string
+          - 'null'
+          minLength: 2
+          maxLength: 2
+          description: ISO-3166-1 alpha-2 country code inferred from request IP. Null when CF does not expose cf.country (local dev).
+          example: US
+        popularByCountry:
+          type: array
+          items:
+            $ref: '#/components/schemas/LocationCountryGroup'
+          description: Top popular cities grouped by country, ordered by country population weight. Pre-populated dropdown fallback.
+      required:
+      - ipCountry
+      - popularByCountry
+      additionalProperties: false
+    ResponseMetadata:
+      type: object
+      properties:
+        duration:
+          type: number
+          description: Request duration in milliseconds
+          example: 150
+          exclusiveMinimum: 0
+        performance:
+          type: object
+          properties:
+            dbQueries:
+              type: integer
+              minimum: 0
+            totalDbTime:
+              type: number
+              minimum: 0
+          description: Performance metrics (preview/local only)
+        requestId:
+          type: string
+          description: Unique request identifier
+          example: req_abc123
+        timestamp:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp
+          example: '2026-09-25T17:29:47.224Z'
+        version:
+          type: string
+          description: API version
+          example: v1
+    LocationInitialSuggestionsResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/LocationInitialSuggestions'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+  securitySchemes:
+    BearerAuth:
+      description: 'Session token from signing in to AI Applyd, sent as `Authorization: Bearer <token>`.'
+      scheme: bearer
+      type: http
+x-refined-from:
+- aiapplyd-openapi.json
+- aiapplyd-openapi.yml

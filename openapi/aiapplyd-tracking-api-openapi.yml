@@ -1,0 +1,881 @@
+openapi: 3.2.0
+info:
+  title: Aiapplyd Tracking API
+  version: 115c47ce
+  contact:
+    email: support@aiapplyd.com
+    name: AI Applyd
+    url: https://aiapplyd.com
+  license:
+    name: Proprietary
+    url: https://aiapplyd.com/legal/terms
+  description: 'Operations tagged tracking across 2 of this provider''s published API definitions: aiapplyd-openapi.json, aiapplyd-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- description: Current environment
+  url: https://api.aiapplyd.com/api/v1
+security:
+- BearerAuth: []
+tags:
+- name: Tracking
+paths:
+  /tracking/activity/feed:
+    get:
+      tags:
+      - Tracking
+      summary: Global Activity Feed
+      description: Get a global activity feed across all jobs with job title and company info.
+      parameters:
+      - schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 50
+          description: Number of entries to return (1-100)
+          example: 50
+        required: false
+        description: Number of entries to return (1-100)
+        name: limit
+        in: query
+      - schema:
+          type:
+          - integer
+          - 'null'
+          minimum: 0
+          default: 0
+          description: Number of items to skip
+          example: 0
+        required: false
+        description: Number of items to skip
+        name: offset
+        in: query
+      responses:
+        '200':
+          description: Global activity feed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActivityFeedResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: getTrackingActivityFeed
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+  /tracking/activity/summary:
+    get:
+      tags:
+      - Tracking
+      summary: Activity Summary
+      description: Aggregate activity counts by event type and total events in last 7 days.
+      responses:
+        '200':
+          description: Activity summary aggregates
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActivitySummaryResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: getTrackingActivitySummary
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+  /tracking/activity/{jobListingId}:
+    get:
+      tags:
+      - Tracking
+      summary: Job Activity Timeline
+      description: Get chronological activity timeline for a specific job listing.
+      parameters:
+      - schema:
+          type: string
+          pattern: ^\d+$
+          description: Job listing identifier
+          example: '1'
+        required: true
+        description: Job listing identifier
+        in: path
+        name: jobListingId
+      - schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 50
+          description: Number of entries to return (1-100)
+          example: 50
+        required: false
+        description: Number of entries to return (1-100)
+        name: limit
+        in: query
+      - schema:
+          type:
+          - integer
+          - 'null'
+          minimum: 0
+          default: 0
+          description: Number of items to skip
+          example: 0
+        required: false
+        description: Number of items to skip
+        name: offset
+        in: query
+      responses:
+        '200':
+          description: Activity timeline for the job listing
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActivityTimelineResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: getTrackingActivityByJobListingId
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+components:
+  schemas:
+    ActivityByKind:
+      type: object
+      properties:
+        application_submitted:
+          type: integer
+          minimum: 0
+        document_sent:
+          type: integer
+          minimum: 0
+        draft_created:
+          type: integer
+          minimum: 0
+        email_received:
+          type: integer
+          minimum: 0
+        email_sent:
+          type: integer
+          minimum: 0
+        follow_up_needed:
+          type: integer
+          minimum: 0
+        ghosting_detected:
+          type: integer
+          minimum: 0
+        interview_cancelled:
+          type: integer
+          minimum: 0
+        interview_coaching_sent:
+          type: integer
+          minimum: 0
+        interview_rescheduled:
+          type: integer
+          minimum: 0
+        interview_scheduled:
+          type: integer
+          minimum: 0
+        stage_changed:
+          type: integer
+          minimum: 0
+        withdrawal_sent:
+          type: integer
+          minimum: 0
+      additionalProperties: false
+      description: Count of activity entries per event type (keys mirror ActivityEventType)
+    ActivityTimelineResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ActivityTimelineData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    ActivitySummaryResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ActivitySummaryData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    ApiErrorResponse:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+            context:
+              oneOf:
+              - type: object
+                properties:
+                  errorType:
+                    type: string
+                    enum:
+                    - validation
+                  field:
+                    type: string
+                  fieldErrors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        code:
+                          type: string
+                        expected:
+                          type: string
+                        field:
+                          type: string
+                        message:
+                          type: string
+                        received:
+                          type: string
+                      required:
+                      - field
+                      - message
+                  schemaName:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  attemptedEmail:
+                    type: string
+                    format: email
+                  errorType:
+                    type: string
+                    enum:
+                    - authentication
+                  failureReason:
+                    type: string
+                    enum:
+                    - invalid_credentials
+                    - account_locked
+                    - expired_token
+                    - token_expired
+                    - missing_token
+                    - invalid_token
+                    - session_expired
+                    description: Reason for authentication failure
+                    example: token_expired
+                  ipAddress:
+                    type: string
+                  operation:
+                    type: string
+                  service:
+                    type: string
+                  userAgent:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  actualPermission:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - authorization
+                  requiredPermission:
+                    type: string
+                  resource:
+                    type: string
+                  resourceId:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  constraint:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - database
+                  operation:
+                    type: string
+                    enum:
+                    - insert
+                    - update
+                    - delete
+                    - select
+                    - batch
+                    - transaction
+                    - migration
+                    description: Type of database operation
+                    example: select
+                  resourceId:
+                    type: string
+                  sqlState:
+                    type: string
+                  table:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  endpoint:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - external_service
+                  httpStatus:
+                    type: number
+                  operation:
+                    type: string
+                  resourceId:
+                    type: string
+                  responseTime:
+                    type: number
+                  retryAttempt:
+                    type: integer
+                  service:
+                    type: string
+                  serviceName:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  errorType:
+                    type: string
+                    enum:
+                    - resource
+                  resource:
+                    type: string
+                  resourceId:
+                    type: string
+                  service:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  errorType:
+                    type: string
+                    enum:
+                    - rate_limit
+                  limit:
+                    type: number
+                  resetTime:
+                    type: string
+                  windowMs:
+                    type: number
+                required:
+                - errorType
+              - type: object
+                properties:
+                  configKey:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - configuration
+                  operation:
+                    type: string
+                  service:
+                    type: string
+                required:
+                - errorType
+              description: Type-safe error context information
+              example:
+                errorType: validation
+                fieldErrors:
+                - field: email
+                  message: Invalid email format
+            details:
+              oneOf:
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - validation
+                  validationErrors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        code:
+                          type: string
+                        field:
+                          type: string
+                        message:
+                          type: string
+                      required:
+                      - field
+                      - message
+                required:
+                - detailType
+                - validationErrors
+                additionalProperties: false
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - service_error
+                  originalError:
+                    type: string
+                  serviceName:
+                    type: string
+                required:
+                - detailType
+                - serviceName
+                additionalProperties: false
+              - type: object
+                properties:
+                  currentSize:
+                    type: number
+                  detailType:
+                    type: string
+                    enum:
+                    - batch
+                  originalError:
+                    type: string
+                  statementCount:
+                    type: number
+                required:
+                - detailType
+                additionalProperties: false
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - rate_limit
+                  limit:
+                    type: number
+                  resetTime:
+                    type: string
+                  windowMs:
+                    type: number
+                required:
+                - detailType
+                - limit
+                - resetTime
+                - windowMs
+                additionalProperties: false
+              - type: object
+                properties:
+                  conflictingField:
+                    type: string
+                  detailType:
+                    type: string
+                    enum:
+                    - resource
+                  resourceId:
+                    anyOf:
+                    - type: string
+                    - type: number
+                  resourceType:
+                    type: string
+                required:
+                - detailType
+                additionalProperties: false
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - generic
+                  info:
+                    type: string
+                required:
+                - detailType
+                additionalProperties: false
+              - type: object
+                properties:
+                  currentTokens:
+                    type: integer
+                    minimum: 0
+                  detailType:
+                    type: string
+                    enum:
+                    - insufficient_tokens
+                  requiredTokens:
+                    type: integer
+                    minimum: 0
+                required:
+                - currentTokens
+                - detailType
+                - requiredTokens
+                additionalProperties: false
+            message:
+              type: string
+            validation:
+              type: array
+              items:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  field:
+                    type: string
+                  message:
+                    type: string
+                required:
+                - field
+                - message
+                additionalProperties: false
+          required:
+          - code
+          - message
+          additionalProperties: false
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - false
+      required:
+      - error
+      - success
+      additionalProperties: false
+    ActivitySummaryData:
+      type: object
+      properties:
+        byKind:
+          $ref: '#/components/schemas/ActivityByKind'
+        last7d:
+          type: integer
+          minimum: 0
+          description: Total activity entries in the last 7 days
+          example: 12
+        totalEvents:
+          type: integer
+          minimum: 0
+          description: Total activity entries across all time
+          example: 87
+      required:
+      - byKind
+      - last7d
+      - totalEvents
+      additionalProperties: false
+    ActivityFeedResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ActivityFeedData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    ActivityEntryData:
+      type: object
+      properties:
+        createdAt:
+          type:
+          - string
+          - 'null'
+          description: Record creation timestamp
+        description:
+          type:
+          - string
+          - 'null'
+          description: Activity description
+        eventType:
+          type: string
+          enum:
+          - application_submitted
+          - document_sent
+          - draft_created
+          - email_received
+          - email_sent
+          - follow_up_needed
+          - ghosting_detected
+          - interview_cancelled
+          - interview_coaching_sent
+          - interview_rescheduled
+          - interview_scheduled
+          - stage_changed
+          - withdrawal_sent
+          description: Type of activity event
+          example: email_received
+        id:
+          type: integer
+          description: Activity log entry ID
+        jobListingId:
+          type: integer
+          description: Associated job listing ID
+        metadata:
+          type:
+          - string
+          - 'null'
+          description: JSON-encoded metadata
+        occurredAt:
+          type: string
+          description: When the activity occurred
+        sourceId:
+          type:
+          - string
+          - 'null'
+          description: Source record ID (email, event, etc.)
+        sourceType:
+          type:
+          - string
+          - 'null'
+          enum:
+          - email
+          - calendar
+          - manual
+          - system
+          - null
+          description: Source type
+          example: manual
+        title:
+          type: string
+          description: Activity title
+        userId:
+          type: string
+          description: Owner user ID
+      required:
+      - createdAt
+      - description
+      - eventType
+      - id
+      - jobListingId
+      - metadata
+      - occurredAt
+      - sourceId
+      - sourceType
+      - title
+      - userId
+      additionalProperties: false
+    ActivityFeedEntryData:
+      type: object
+      properties:
+        createdAt:
+          type:
+          - string
+          - 'null'
+          description: Record creation timestamp
+        description:
+          type:
+          - string
+          - 'null'
+          description: Activity description
+        eventType:
+          type: string
+          enum:
+          - application_submitted
+          - document_sent
+          - draft_created
+          - email_received
+          - email_sent
+          - follow_up_needed
+          - ghosting_detected
+          - interview_cancelled
+          - interview_coaching_sent
+          - interview_rescheduled
+          - interview_scheduled
+          - stage_changed
+          - withdrawal_sent
+          description: Type of activity event
+          example: email_received
+        id:
+          type: integer
+          description: Activity log entry ID
+        jobListingId:
+          type: integer
+          description: Associated job listing ID
+        metadata:
+          type:
+          - string
+          - 'null'
+          description: JSON-encoded metadata
+        occurredAt:
+          type: string
+          description: When the activity occurred
+        sourceId:
+          type:
+          - string
+          - 'null'
+          description: Source record ID (email, event, etc.)
+        sourceType:
+          type:
+          - string
+          - 'null'
+          enum:
+          - email
+          - calendar
+          - manual
+          - system
+          - null
+          description: Source type
+          example: manual
+        title:
+          type: string
+          description: Activity title
+        userId:
+          type: string
+          description: Owner user ID
+        company:
+          type:
+          - string
+          - 'null'
+          description: Company name from linked job listing
+        jobTitle:
+          type:
+          - string
+          - 'null'
+          description: Job title from linked job listing
+      required:
+      - createdAt
+      - description
+      - eventType
+      - id
+      - jobListingId
+      - metadata
+      - occurredAt
+      - sourceId
+      - sourceType
+      - title
+      - userId
+      - company
+      - jobTitle
+      additionalProperties: false
+    ActivityFeedData:
+      type: object
+      properties:
+        entries:
+          type: array
+          items:
+            $ref: '#/components/schemas/ActivityFeedEntryData'
+        total:
+          type: integer
+          description: Total number of entries
+      required:
+      - entries
+      - total
+      additionalProperties: false
+    ResponseMetadata:
+      type: object
+      properties:
+        duration:
+          type: number
+          description: Request duration in milliseconds
+          example: 150
+          exclusiveMinimum: 0
+        performance:
+          type: object
+          properties:
+            dbQueries:
+              type: integer
+              minimum: 0
+            totalDbTime:
+              type: number
+              minimum: 0
+          description: Performance metrics (preview/local only)
+        requestId:
+          type: string
+          description: Unique request identifier
+          example: req_abc123
+        timestamp:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp
+          example: '2026-09-25T17:29:47.224Z'
+        version:
+          type: string
+          description: API version
+          example: v1
+    ActivityTimelineData:
+      type: object
+      properties:
+        entries:
+          type: array
+          items:
+            $ref: '#/components/schemas/ActivityEntryData'
+        total:
+          type: integer
+          description: Total number of entries
+      required:
+      - entries
+      - total
+      additionalProperties: false
+  securitySchemes:
+    BearerAuth:
+      description: 'Session token from signing in to AI Applyd, sent as `Authorization: Bearer <token>`.'
+      scheme: bearer
+      type: http
+x-refined-from:
+- aiapplyd-openapi.json
+- aiapplyd-openapi.yml

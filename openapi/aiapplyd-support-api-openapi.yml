@@ -1,0 +1,683 @@
+openapi: 3.2.0
+info:
+  title: Aiapplyd Support API
+  version: 115c47ce
+  contact:
+    email: support@aiapplyd.com
+    name: AI Applyd
+    url: https://aiapplyd.com
+  license:
+    name: Proprietary
+    url: https://aiapplyd.com/legal/terms
+  description: 'Operations tagged support across 2 of this provider''s published API definitions: aiapplyd-openapi.json, aiapplyd-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- description: Current environment
+  url: https://api.aiapplyd.com/api/v1
+security:
+- BearerAuth: []
+tags:
+- name: Support
+paths:
+  /support/public-content-report:
+    post:
+      tags:
+      - Support
+      summary: Report public user-authored content
+      description: Persist a report and immediately quarantine an active public resume or document share. No account required.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubmitPublicContentReport'
+      responses:
+        '200':
+          description: Report persisted and public share quarantined
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubmitPublicContentReportResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '429':
+          description: Too Many Requests
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: postSupportPublicContentReport
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+  /support:
+    post:
+      tags:
+      - Support
+      summary: Submit Support Request
+      description: Submit a support request, feature request, or feedback. Authenticated endpoint.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubmitSupportRequest'
+      responses:
+        '200':
+          description: Support request submitted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubmitSupportResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '429':
+          description: Too Many Requests
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: postSupport
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+components:
+  schemas:
+    ApiErrorResponse:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+            context:
+              oneOf:
+              - type: object
+                properties:
+                  errorType:
+                    type: string
+                    enum:
+                    - validation
+                  field:
+                    type: string
+                  fieldErrors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        code:
+                          type: string
+                        expected:
+                          type: string
+                        field:
+                          type: string
+                        message:
+                          type: string
+                        received:
+                          type: string
+                      required:
+                      - field
+                      - message
+                  schemaName:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  attemptedEmail:
+                    type: string
+                    format: email
+                  errorType:
+                    type: string
+                    enum:
+                    - authentication
+                  failureReason:
+                    type: string
+                    enum:
+                    - invalid_credentials
+                    - account_locked
+                    - expired_token
+                    - token_expired
+                    - missing_token
+                    - invalid_token
+                    - session_expired
+                    description: Reason for authentication failure
+                    example: token_expired
+                  ipAddress:
+                    type: string
+                  operation:
+                    type: string
+                  service:
+                    type: string
+                  userAgent:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  actualPermission:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - authorization
+                  requiredPermission:
+                    type: string
+                  resource:
+                    type: string
+                  resourceId:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  constraint:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - database
+                  operation:
+                    type: string
+                    enum:
+                    - insert
+                    - update
+                    - delete
+                    - select
+                    - batch
+                    - transaction
+                    - migration
+                    description: Type of database operation
+                    example: select
+                  resourceId:
+                    type: string
+                  sqlState:
+                    type: string
+                  table:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  endpoint:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - external_service
+                  httpStatus:
+                    type: number
+                  operation:
+                    type: string
+                  resourceId:
+                    type: string
+                  responseTime:
+                    type: number
+                  retryAttempt:
+                    type: integer
+                  service:
+                    type: string
+                  serviceName:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  errorType:
+                    type: string
+                    enum:
+                    - resource
+                  resource:
+                    type: string
+                  resourceId:
+                    type: string
+                  service:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  errorType:
+                    type: string
+                    enum:
+                    - rate_limit
+                  limit:
+                    type: number
+                  resetTime:
+                    type: string
+                  windowMs:
+                    type: number
+                required:
+                - errorType
+              - type: object
+                properties:
+                  configKey:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - configuration
+                  operation:
+                    type: string
+                  service:
+                    type: string
+                required:
+                - errorType
+              description: Type-safe error context information
+              example:
+                errorType: validation
+                fieldErrors:
+                - field: email
+                  message: Invalid email format
+            details:
+              oneOf:
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - validation
+                  validationErrors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        code:
+                          type: string
+                        field:
+                          type: string
+                        message:
+                          type: string
+                      required:
+                      - field
+                      - message
+                required:
+                - detailType
+                - validationErrors
+                additionalProperties: false
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - service_error
+                  originalError:
+                    type: string
+                  serviceName:
+                    type: string
+                required:
+                - detailType
+                - serviceName
+                additionalProperties: false
+              - type: object
+                properties:
+                  currentSize:
+                    type: number
+                  detailType:
+                    type: string
+                    enum:
+                    - batch
+                  originalError:
+                    type: string
+                  statementCount:
+                    type: number
+                required:
+                - detailType
+                additionalProperties: false
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - rate_limit
+                  limit:
+                    type: number
+                  resetTime:
+                    type: string
+                  windowMs:
+                    type: number
+                required:
+                - detailType
+                - limit
+                - resetTime
+                - windowMs
+                additionalProperties: false
+              - type: object
+                properties:
+                  conflictingField:
+                    type: string
+                  detailType:
+                    type: string
+                    enum:
+                    - resource
+                  resourceId:
+                    anyOf:
+                    - type: string
+                    - type: number
+                  resourceType:
+                    type: string
+                required:
+                - detailType
+                additionalProperties: false
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - generic
+                  info:
+                    type: string
+                required:
+                - detailType
+                additionalProperties: false
+              - type: object
+                properties:
+                  currentTokens:
+                    type: integer
+                    minimum: 0
+                  detailType:
+                    type: string
+                    enum:
+                    - insufficient_tokens
+                  requiredTokens:
+                    type: integer
+                    minimum: 0
+                required:
+                - currentTokens
+                - detailType
+                - requiredTokens
+                additionalProperties: false
+            message:
+              type: string
+            validation:
+              type: array
+              items:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  field:
+                    type: string
+                  message:
+                    type: string
+                required:
+                - field
+                - message
+                additionalProperties: false
+          required:
+          - code
+          - message
+          additionalProperties: false
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - false
+      required:
+      - error
+      - success
+      additionalProperties: false
+    SubmitSupportResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/SubmitSupportData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    SubmitPublicContentReportData:
+      type: object
+      properties:
+        reportId:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum:
+          - quarantined
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - reportId
+      - status
+      - success
+      additionalProperties: false
+    SubmitSupportData:
+      type: object
+      properties:
+        submittedAt:
+          type: string
+          description: Persisted creation time of the support ticket
+          example: '2026-08-30 12:34:56'
+        success:
+          type: boolean
+          enum:
+          - true
+          description: Whether the support request was submitted successfully
+          example: true
+        ticketId:
+          type: string
+          format: uuid
+          description: Stable support ticket identifier for this authored request
+          example: 8a0e5486-7708-41ba-86de-ccfa104a8c52
+      required:
+      - submittedAt
+      - success
+      - ticketId
+      additionalProperties: false
+    SubmitPublicContentReportResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/SubmitPublicContentReportData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    SubmitPublicContentReport:
+      type: object
+      properties:
+        clientReportId:
+          type: string
+          format: uuid
+          description: Stable client-generated UUID used to make manual retries idempotent
+          example: 8a0e5486-7708-41ba-86de-ccfa104a8c52
+        details:
+          type: string
+          minLength: 10
+          maxLength: 2000
+          description: Optional reporter context for the human moderation queue
+          example: This public link includes private contact information that should not be visible.
+        reason:
+          type: string
+          enum:
+          - harassment
+          - hate
+          - sexual_content
+          - violence
+          - privacy
+          - fraud
+          - other
+          description: Why the public content is being reported
+          example: privacy
+        reporterEmail:
+          type: string
+          maxLength: 254
+          format: email
+          description: Optional contact address for a moderation follow-up
+          example: reporter@example.com
+        shareToken:
+          type: string
+          pattern: ^[a-f0-9]{48}$/u
+          description: The revocable public capability token from the current viewer URL
+          example: 0123456789abcdef0123456789abcdef0123456789abcdef
+        targetType:
+          type: string
+          enum:
+          - resume
+          - document
+          description: Kind of public authored content being reported
+          example: resume
+      required:
+      - clientReportId
+      - reason
+      - shareToken
+      - targetType
+      additionalProperties: false
+    SubmitSupportRequest:
+      type: object
+      properties:
+        category:
+          type: string
+          maxLength: 50
+        clientRequestId:
+          type: string
+          format: uuid
+          description: Stable UUID for one canonical authored draft, reused across manual retries
+          example: 8a0e5486-7708-41ba-86de-ccfa104a8c52
+        description:
+          type: string
+          minLength: 10
+          maxLength: 2000
+        rating:
+          type: number
+          minimum: 1
+          maximum: 5
+        title:
+          type: string
+          minLength: 3
+          maxLength: 200
+        type:
+          type: string
+          enum:
+          - issue
+          - feature_request
+          - feedback
+          description: Type of support request submitted by the user
+          example: issue
+        websiteUrl:
+          anyOf:
+          - type: string
+            format: uri
+          - type: string
+            enum:
+            - ''
+        severity:
+          type: string
+          enum:
+          - low
+          - medium
+          - high
+          - critical
+          description: Self-reported severity of the submission
+          example: medium
+        attachmentUrls:
+          type: array
+          items:
+            type: string
+            format: uri
+          maxItems: 10
+          description: Public URLs of screenshots or attachments the user uploaded before submitting
+          example:
+          - https://cdn.example.com/screenshots/abc.png
+      required:
+      - clientRequestId
+      - description
+      - type
+      additionalProperties: false
+    ResponseMetadata:
+      type: object
+      properties:
+        duration:
+          type: number
+          description: Request duration in milliseconds
+          example: 150
+          exclusiveMinimum: 0
+        performance:
+          type: object
+          properties:
+            dbQueries:
+              type: integer
+              minimum: 0
+            totalDbTime:
+              type: number
+              minimum: 0
+          description: Performance metrics (preview/local only)
+        requestId:
+          type: string
+          description: Unique request identifier
+          example: req_abc123
+        timestamp:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp
+          example: '2026-09-25T17:29:47.224Z'
+        version:
+          type: string
+          description: API version
+          example: v1
+  securitySchemes:
+    BearerAuth:
+      description: 'Session token from signing in to AI Applyd, sent as `Authorization: Bearer <token>`.'
+      scheme: bearer
+      type: http
+x-refined-from:
+- aiapplyd-openapi.json
+- aiapplyd-openapi.yml

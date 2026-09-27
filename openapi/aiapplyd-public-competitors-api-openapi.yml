@@ -1,0 +1,851 @@
+openapi: 3.2.0
+info:
+  title: Aiapplyd Public Competitors API
+  version: 115c47ce
+  contact:
+    email: support@aiapplyd.com
+    name: AI Applyd
+    url: https://aiapplyd.com
+  license:
+    name: Proprietary
+    url: https://aiapplyd.com/legal/terms
+  description: 'Operations tagged public-competitors across 2 of this provider''s published API definitions: aiapplyd-openapi.json, aiapplyd-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- description: Current environment
+  url: https://api.aiapplyd.com/api/v1
+security:
+- BearerAuth: []
+tags:
+- name: public-competitors
+paths:
+  /public/competitors:
+    get:
+      description: List all published competitor comparison pages. Returns a lean projection (slug, name, logo, tagline, domain, sortOrder) ordered by `sortOrder` ASC so the web app can render the `/compare` index without a second round-trip. Drafts (rows where `published_at IS NULL`) are excluded.
+      summary: List public competitors
+      tags:
+      - public-competitors
+      responses:
+        '200':
+          description: List of published competitor comparison pages.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompetitorListResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: getPublicCompetitors
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+  /public/competitors/{slug}:
+    get:
+      description: Get full competitor detail by slug, with pillars / comparisonRows / faqs pre-parsed into typed arrays so the SSR loader can hand the payload straight to the renderer. 404s on unknown slugs and on draft rows (`published_at IS NULL`).
+      summary: Get public competitor by slug
+      tags:
+      - public-competitors
+      parameters:
+      - schema:
+          type: string
+          minLength: 1
+          maxLength: 120
+          pattern: ^[a-z0-9][a-z0-9-]*[a-z0-9]$|^[a-z0-9]$
+          description: URL slug for the competitor (e.g. "tsenta", "usesprout").
+          example: tsenta
+        required: true
+        description: URL slug for the competitor (e.g. "tsenta", "usesprout").
+        in: path
+        name: slug
+      responses:
+        '200':
+          description: Published competitor detail.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompetitorDetailResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: getPublicCompetitorsBySlug
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+  /public/competitors/{slug}/alternatives:
+    get:
+      description: List alternative tools for a competitor slug, with pros/cons + comparison links derived from the canonical competitor registry. 404 + noindex when fewer than 5 alternatives exist or when the thin-content gate trips.
+      summary: Get competitor alternatives by slug
+      tags:
+      - public-competitors
+      parameters:
+      - schema:
+          type: string
+          minLength: 1
+          maxLength: 120
+          pattern: ^[a-z0-9][a-z0-9-]*[a-z0-9]$|^[a-z0-9]$
+          description: URL slug for the competitor (e.g. "tsenta", "usesprout").
+          example: tsenta
+        required: true
+        description: URL slug for the competitor (e.g. "tsenta", "usesprout").
+        in: path
+        name: slug
+      responses:
+        '200':
+          description: Alternatives list + source competitor metadata + intro paragraph.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompetitorAlternativesResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: getPublicCompetitorsBySlugAlternatives
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+components:
+  schemas:
+    CompetitorAlternativesPayload:
+      type: object
+      properties:
+        alternatives:
+          $ref: '#/components/schemas/AlternativesEnrichment'
+        introParagraph:
+          type: string
+          default: ''
+        lastUpdatedAt:
+          type:
+          - string
+          - 'null'
+      required:
+      - alternatives
+      - lastUpdatedAt
+      additionalProperties: false
+    CompetitorComparisonRow:
+      type: object
+      properties:
+        aiapplyd:
+          type: string
+          minLength: 1
+        competitor:
+          type: string
+          minLength: 1
+        feature:
+          type: string
+          minLength: 1
+        highlightWinner:
+          type: string
+          enum:
+          - aiapplyd
+          - competitor
+          - tie
+      required:
+      - aiapplyd
+      - competitor
+      - feature
+      - highlightWinner
+      additionalProperties: false
+      description: Single row in the feature-by-feature comparison grid.
+      example:
+        aiapplyd: Included on every plan
+        competitor: Paid add-on ($20/mo)
+        feature: Auto-apply submissions
+        highlightWinner: aiapplyd
+    CompetitorFaq:
+      type: object
+      properties:
+        answer:
+          type: string
+          minLength: 1
+        category:
+          type: string
+          minLength: 1
+        question:
+          type: string
+          minLength: 1
+      required:
+      - answer
+      - category
+      - question
+      additionalProperties: false
+      description: Single FAQ entry surfaced on a competitor comparison page.
+      example:
+        answer: Yes, every paid plan includes unlimited exports of your application history as CSV or JSON.
+        category: migration
+        question: Can I export my data if I cancel?
+    CompetitorListItem:
+      type: object
+      properties:
+        domain:
+          type: string
+        logoUrl:
+          type:
+          - string
+          - 'null'
+        name:
+          type: string
+        slug:
+          type: string
+        sortOrder:
+          type: integer
+        tagline:
+          type: string
+      required:
+      - domain
+      - logoUrl
+      - name
+      - slug
+      - sortOrder
+      - tagline
+      additionalProperties: false
+    AlternativeRow:
+      type: object
+      properties:
+        comparisonHref:
+          type:
+          - string
+          - 'null'
+        description:
+          type: string
+        domain:
+          type: string
+        freeTierSummary:
+          type:
+          - string
+          - 'null'
+        logoUrl:
+          type:
+          - string
+          - 'null'
+        name:
+          type: string
+        pricingSummary:
+          type:
+          - string
+          - 'null'
+        prosCons:
+          $ref: '#/components/schemas/AlternativeProsCons'
+        slug:
+          type: string
+        tagline:
+          type: string
+      required:
+      - comparisonHref
+      - description
+      - domain
+      - freeTierSummary
+      - logoUrl
+      - name
+      - pricingSummary
+      - prosCons
+      - slug
+      - tagline
+      additionalProperties: false
+    CompetitorAlternativesResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/CompetitorAlternativesPayload'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    CompetitorDetail:
+      type: object
+      properties:
+        comparisonRows:
+          type: array
+          items:
+            $ref: '#/components/schemas/CompetitorComparisonRow'
+        domain:
+          type: string
+        faqs:
+          type: array
+          items:
+            $ref: '#/components/schemas/CompetitorFaq'
+        freeTierSummary:
+          type:
+          - string
+          - 'null'
+        headline:
+          type: string
+        introParagraph:
+          type: string
+          default: ''
+        lastUpdatedAt:
+          type:
+          - string
+          - 'null'
+        logoUrl:
+          type:
+          - string
+          - 'null'
+        name:
+          type: string
+        pillars:
+          type: array
+          items:
+            $ref: '#/components/schemas/CompetitorPillar'
+        pricingSummary:
+          type:
+          - string
+          - 'null'
+        slug:
+          type: string
+        subhead:
+          type: string
+        tagline:
+          type: string
+        updatedAt:
+          type:
+          - string
+          - 'null'
+      required:
+      - comparisonRows
+      - domain
+      - faqs
+      - freeTierSummary
+      - headline
+      - lastUpdatedAt
+      - logoUrl
+      - name
+      - pillars
+      - pricingSummary
+      - slug
+      - subhead
+      - tagline
+      - updatedAt
+      additionalProperties: false
+    ApiErrorResponse:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+            context:
+              oneOf:
+              - type: object
+                properties:
+                  errorType:
+                    type: string
+                    enum:
+                    - validation
+                  field:
+                    type: string
+                  fieldErrors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        code:
+                          type: string
+                        expected:
+                          type: string
+                        field:
+                          type: string
+                        message:
+                          type: string
+                        received:
+                          type: string
+                      required:
+                      - field
+                      - message
+                  schemaName:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  attemptedEmail:
+                    type: string
+                    format: email
+                  errorType:
+                    type: string
+                    enum:
+                    - authentication
+                  failureReason:
+                    type: string
+                    enum:
+                    - invalid_credentials
+                    - account_locked
+                    - expired_token
+                    - token_expired
+                    - missing_token
+                    - invalid_token
+                    - session_expired
+                    description: Reason for authentication failure
+                    example: token_expired
+                  ipAddress:
+                    type: string
+                  operation:
+                    type: string
+                  service:
+                    type: string
+                  userAgent:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  actualPermission:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - authorization
+                  requiredPermission:
+                    type: string
+                  resource:
+                    type: string
+                  resourceId:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  constraint:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - database
+                  operation:
+                    type: string
+                    enum:
+                    - insert
+                    - update
+                    - delete
+                    - select
+                    - batch
+                    - transaction
+                    - migration
+                    description: Type of database operation
+                    example: select
+                  resourceId:
+                    type: string
+                  sqlState:
+                    type: string
+                  table:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  endpoint:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - external_service
+                  httpStatus:
+                    type: number
+                  operation:
+                    type: string
+                  resourceId:
+                    type: string
+                  responseTime:
+                    type: number
+                  retryAttempt:
+                    type: integer
+                  service:
+                    type: string
+                  serviceName:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  errorType:
+                    type: string
+                    enum:
+                    - resource
+                  resource:
+                    type: string
+                  resourceId:
+                    type: string
+                  service:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  errorType:
+                    type: string
+                    enum:
+                    - rate_limit
+                  limit:
+                    type: number
+                  resetTime:
+                    type: string
+                  windowMs:
+                    type: number
+                required:
+                - errorType
+              - type: object
+                properties:
+                  configKey:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - configuration
+                  operation:
+                    type: string
+                  service:
+                    type: string
+                required:
+                - errorType
+              description: Type-safe error context information
+              example:
+                errorType: validation
+                fieldErrors:
+                - field: email
+                  message: Invalid email format
+            details:
+              oneOf:
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - validation
+                  validationErrors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        code:
+                          type: string
+                        field:
+                          type: string
+                        message:
+                          type: string
+                      required:
+                      - field
+                      - message
+                required:
+                - detailType
+                - validationErrors
+                additionalProperties: false
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - service_error
+                  originalError:
+                    type: string
+                  serviceName:
+                    type: string
+                required:
+                - detailType
+                - serviceName
+                additionalProperties: false
+              - type: object
+                properties:
+                  currentSize:
+                    type: number
+                  detailType:
+                    type: string
+                    enum:
+                    - batch
+                  originalError:
+                    type: string
+                  statementCount:
+                    type: number
+                required:
+                - detailType
+                additionalProperties: false
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - rate_limit
+                  limit:
+                    type: number
+                  resetTime:
+                    type: string
+                  windowMs:
+                    type: number
+                required:
+                - detailType
+                - limit
+                - resetTime
+                - windowMs
+                additionalProperties: false
+              - type: object
+                properties:
+                  conflictingField:
+                    type: string
+                  detailType:
+                    type: string
+                    enum:
+                    - resource
+                  resourceId:
+                    anyOf:
+                    - type: string
+                    - type: number
+                  resourceType:
+                    type: string
+                required:
+                - detailType
+                additionalProperties: false
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - generic
+                  info:
+                    type: string
+                required:
+                - detailType
+                additionalProperties: false
+              - type: object
+                properties:
+                  currentTokens:
+                    type: integer
+                    minimum: 0
+                  detailType:
+                    type: string
+                    enum:
+                    - insufficient_tokens
+                  requiredTokens:
+                    type: integer
+                    minimum: 0
+                required:
+                - currentTokens
+                - detailType
+                - requiredTokens
+                additionalProperties: false
+            message:
+              type: string
+            validation:
+              type: array
+              items:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  field:
+                    type: string
+                  message:
+                    type: string
+                required:
+                - field
+                - message
+                additionalProperties: false
+          required:
+          - code
+          - message
+          additionalProperties: false
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - false
+      required:
+      - error
+      - success
+      additionalProperties: false
+    AlternativeProsCons:
+      type: object
+      properties:
+        cons:
+          type: array
+          items:
+            type: string
+        pros:
+          type: array
+          items:
+            type: string
+      required:
+      - cons
+      - pros
+      additionalProperties: false
+    CompetitorDetailResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/CompetitorDetail'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    CompetitorListResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/CompetitorListPayload'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    AlternativesEnrichment:
+      type: object
+      properties:
+        alternatives:
+          type: array
+          items:
+            $ref: '#/components/schemas/AlternativeRow'
+        sourceCompetitor:
+          type:
+          - object
+          - 'null'
+          properties:
+            domain:
+              type: string
+            logoUrl:
+              type:
+              - string
+              - 'null'
+            name:
+              type: string
+            slug:
+              type: string
+            tagline:
+              type: string
+          required:
+          - domain
+          - logoUrl
+          - name
+          - slug
+          - tagline
+        totalCount:
+          type: integer
+          minimum: 0
+      required:
+      - alternatives
+      - sourceCompetitor
+      - totalCount
+      additionalProperties: false
+    CompetitorPillar:
+      type: object
+      properties:
+        body:
+          type: string
+          minLength: 1
+        icon:
+          type: string
+          minLength: 1
+        title:
+          type: string
+          minLength: 1
+      required:
+      - body
+      - icon
+      - title
+      additionalProperties: false
+      description: Single pillar card shown on a competitor comparison page.
+      example:
+        body: One AI model picks the right jobs, writes the cover letter, and submits the application without 40 tabs.
+        icon: zap
+        title: One workflow, not forty tabs
+    CompetitorListPayload:
+      type: object
+      properties:
+        competitors:
+          type: array
+          items:
+            $ref: '#/components/schemas/CompetitorListItem'
+      required:
+      - competitors
+      additionalProperties: false
+    ResponseMetadata:
+      type: object
+      properties:
+        duration:
+          type: number
+          description: Request duration in milliseconds
+          example: 150
+          exclusiveMinimum: 0
+        performance:
+          type: object
+          properties:
+            dbQueries:
+              type: integer
+              minimum: 0
+            totalDbTime:
+              type: number
+              minimum: 0
+          description: Performance metrics (preview/local only)
+        requestId:
+          type: string
+          description: Unique request identifier
+          example: req_abc123
+        timestamp:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp
+          example: '2026-09-25T17:29:47.224Z'
+        version:
+          type: string
+          description: API version
+          example: v1
+  securitySchemes:
+    BearerAuth:
+      description: 'Session token from signing in to AI Applyd, sent as `Authorization: Bearer <token>`.'
+      scheme: bearer
+      type: http
+x-refined-from:
+- aiapplyd-openapi.json
+- aiapplyd-openapi.yml

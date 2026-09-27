@@ -1,0 +1,1171 @@
+openapi: 3.2.0
+info:
+  title: Aiapplyd AI Persona API
+  version: 115c47ce
+  contact:
+    email: support@aiapplyd.com
+    name: AI Applyd
+    url: https://aiapplyd.com
+  license:
+    name: Proprietary
+    url: https://aiapplyd.com/legal/terms
+  description: 'Operations tagged ai-persona across 2 of this provider''s published API definitions: aiapplyd-openapi.json, aiapplyd-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- description: Current environment
+  url: https://api.aiapplyd.com/api/v1
+security:
+- BearerAuth: []
+tags:
+- name: ai-persona
+paths:
+  /ai-persona:
+    get:
+      tags:
+      - ai-persona
+      summary: Get AI Persona
+      description: Get the authenticated user's Voice & Tone persona settings.
+      responses:
+        '200':
+          description: AI persona retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AIPersonaResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: getAiPersona
+    put:
+      tags:
+      - ai-persona
+      summary: Create or Update AI Persona
+      description: Create or update the authenticated user's Voice & Tone persona. Controls how AI generates content on their behalf.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpsertAIPersona'
+      responses:
+        '200':
+          description: AI persona created or updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AIPersonaResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: putAiPersona
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+  /ai-persona/scoring-weights:
+    patch:
+      tags:
+      - ai-persona
+      summary: Update Scoring Weights
+      description: Update the authenticated user's per-dimension match scoring weights. Each weight is a multiplier in [0, 2] applied on top of the deterministic match scorer. Defaults are uniform `1` per dimension.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateScoringWeights'
+      responses:
+        '200':
+          description: Scoring weights updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScoringWeightsResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: patchAiPersonaScoringWeights
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+  /ai-persona/suggest-tone:
+    post:
+      tags:
+      - ai-persona
+      summary: Recommend a Voice & Tone preset from the user's resume
+      description: Inspects the user's latest resume and recommends one of the persona presets. Free-tier model; one short rationale string for inline display next to the preset cards.
+      responses:
+        '200':
+          description: Voice & Tone preset recommendation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuggestVoiceToneResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: postAiPersonaSuggestTone
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+  /ai-persona/suggest-narrative:
+    post:
+      tags:
+      - ai-persona
+      summary: Draft a background narrative from the user's resume
+      description: Inspects the user's latest resume and drafts a short starter narrative (≤480 chars) the user can accept or edit. Free-tier model.
+      responses:
+        '200':
+          description: Drafted background narrative
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuggestNarrativeResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: postAiPersonaSuggestNarrative
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+  /ai-persona/derive-custom-tone:
+    post:
+      tags:
+      - ai-persona
+      summary: Derive a custom voice & tone from the user's resume, cover letter, and story
+      description: Reads the user's base resume (+ base cover letter and background narrative when present) and derives a CUSTOM voice & tone (personal description, tone instructions, sample phrases), persisting it to the persona with preset kept at custom. Free-tier model. Idempotent; returns applied=false with a clear reason when no usable resume exists.
+      responses:
+        '200':
+          description: Derived custom voice & tone
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeriveCustomToneResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: postAiPersonaDeriveCustomTone
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+components:
+  schemas:
+    DeriveCustomToneData:
+      type: object
+      properties:
+        kind:
+          type: string
+          enum:
+          - custom-tone
+          description: Discriminator for the derive envelope.
+          example: custom-tone
+        applied:
+          type: boolean
+          description: Whether a custom tone was derived and persisted.
+          example: true
+        reason:
+          type:
+          - string
+          - 'null'
+          description: Why a tone could not be derived (e.g. no base resume). Null on success.
+          example: null
+        personalDescription:
+          type:
+          - string
+          - 'null'
+          maxLength: 500
+          description: Derived personal description (≤500 chars). Null when not applied.
+          example: Senior backend engineer with eight years in fintech and payments.
+        toneInstructions:
+          type:
+          - string
+          - 'null'
+          maxLength: 1000
+          description: Derived tone instructions (≤1000 chars). Null when not applied.
+          example: Write plainly and results-first. Lead with concrete metrics, avoid corporate jargon.
+        samplePhrases:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            maxLength: 200
+          maxItems: 10
+          description: Derived sample phrases (≤10). Null when not applied.
+          example:
+          - Let me walk you through the impact
+          - I owned this end to end
+      required:
+      - kind
+      - applied
+      - reason
+      - personalDescription
+      - toneInstructions
+      - samplePhrases
+      additionalProperties: false
+    ApiErrorResponse:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+            context:
+              oneOf:
+              - type: object
+                properties:
+                  errorType:
+                    type: string
+                    enum:
+                    - validation
+                  field:
+                    type: string
+                  fieldErrors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        code:
+                          type: string
+                        expected:
+                          type: string
+                        field:
+                          type: string
+                        message:
+                          type: string
+                        received:
+                          type: string
+                      required:
+                      - field
+                      - message
+                  schemaName:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  attemptedEmail:
+                    type: string
+                    format: email
+                  errorType:
+                    type: string
+                    enum:
+                    - authentication
+                  failureReason:
+                    type: string
+                    enum:
+                    - invalid_credentials
+                    - account_locked
+                    - expired_token
+                    - token_expired
+                    - missing_token
+                    - invalid_token
+                    - session_expired
+                    description: Reason for authentication failure
+                    example: token_expired
+                  ipAddress:
+                    type: string
+                  operation:
+                    type: string
+                  service:
+                    type: string
+                  userAgent:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  actualPermission:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - authorization
+                  requiredPermission:
+                    type: string
+                  resource:
+                    type: string
+                  resourceId:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  constraint:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - database
+                  operation:
+                    type: string
+                    enum:
+                    - insert
+                    - update
+                    - delete
+                    - select
+                    - batch
+                    - transaction
+                    - migration
+                    description: Type of database operation
+                    example: select
+                  resourceId:
+                    type: string
+                  sqlState:
+                    type: string
+                  table:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  endpoint:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - external_service
+                  httpStatus:
+                    type: number
+                  operation:
+                    type: string
+                  resourceId:
+                    type: string
+                  responseTime:
+                    type: number
+                  retryAttempt:
+                    type: integer
+                  service:
+                    type: string
+                  serviceName:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  errorType:
+                    type: string
+                    enum:
+                    - resource
+                  resource:
+                    type: string
+                  resourceId:
+                    type: string
+                  service:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  errorType:
+                    type: string
+                    enum:
+                    - rate_limit
+                  limit:
+                    type: number
+                  resetTime:
+                    type: string
+                  windowMs:
+                    type: number
+                required:
+                - errorType
+              - type: object
+                properties:
+                  configKey:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - configuration
+                  operation:
+                    type: string
+                  service:
+                    type: string
+                required:
+                - errorType
+              description: Type-safe error context information
+              example:
+                errorType: validation
+                fieldErrors:
+                - field: email
+                  message: Invalid email format
+            details:
+              oneOf:
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - validation
+                  validationErrors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        code:
+                          type: string
+                        field:
+                          type: string
+                        message:
+                          type: string
+                      required:
+                      - field
+                      - message
+                required:
+                - detailType
+                - validationErrors
+                additionalProperties: false
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - service_error
+                  originalError:
+                    type: string
+                  serviceName:
+                    type: string
+                required:
+                - detailType
+                - serviceName
+                additionalProperties: false
+              - type: object
+                properties:
+                  currentSize:
+                    type: number
+                  detailType:
+                    type: string
+                    enum:
+                    - batch
+                  originalError:
+                    type: string
+                  statementCount:
+                    type: number
+                required:
+                - detailType
+                additionalProperties: false
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - rate_limit
+                  limit:
+                    type: number
+                  resetTime:
+                    type: string
+                  windowMs:
+                    type: number
+                required:
+                - detailType
+                - limit
+                - resetTime
+                - windowMs
+                additionalProperties: false
+              - type: object
+                properties:
+                  conflictingField:
+                    type: string
+                  detailType:
+                    type: string
+                    enum:
+                    - resource
+                  resourceId:
+                    anyOf:
+                    - type: string
+                    - type: number
+                  resourceType:
+                    type: string
+                required:
+                - detailType
+                additionalProperties: false
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - generic
+                  info:
+                    type: string
+                required:
+                - detailType
+                additionalProperties: false
+              - type: object
+                properties:
+                  currentTokens:
+                    type: integer
+                    minimum: 0
+                  detailType:
+                    type: string
+                    enum:
+                    - insufficient_tokens
+                  requiredTokens:
+                    type: integer
+                    minimum: 0
+                required:
+                - currentTokens
+                - detailType
+                - requiredTokens
+                additionalProperties: false
+            message:
+              type: string
+            validation:
+              type: array
+              items:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  field:
+                    type: string
+                  message:
+                    type: string
+                required:
+                - field
+                - message
+                additionalProperties: false
+          required:
+          - code
+          - message
+          additionalProperties: false
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - false
+      required:
+      - error
+      - success
+      additionalProperties: false
+    SuggestNarrativeData:
+      type: object
+      properties:
+        kind:
+          type: string
+          enum:
+          - narrative
+          description: Discriminator for the suggestion envelope.
+          example: narrative
+        draft:
+          type: string
+          minLength: 1
+          maxLength: 480
+          description: Starter narrative drafted from the user's latest resume.
+          example: Senior backend engineer with eight years across fintech and payments. Took a year for caregiving in 2024 and returned with fresh cloud certs. Looking for staff roles.
+      required:
+      - kind
+      - draft
+      additionalProperties: false
+    ResponseMetadata:
+      type: object
+      properties:
+        duration:
+          type: number
+          description: Request duration in milliseconds
+          example: 150
+          exclusiveMinimum: 0
+        performance:
+          type: object
+          properties:
+            dbQueries:
+              type: integer
+              minimum: 0
+            totalDbTime:
+              type: number
+              minimum: 0
+          description: Performance metrics (preview/local only)
+        requestId:
+          type: string
+          description: Unique request identifier
+          example: req_abc123
+        timestamp:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp
+          example: '2026-09-25T17:29:47.224Z'
+        version:
+          type: string
+          description: API version
+          example: v1
+    SuggestVoiceToneResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/SuggestVoiceToneData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    SuggestVoiceToneData:
+      type: object
+      properties:
+        kind:
+          type: string
+          enum:
+          - voice-tone
+          description: Discriminator for the suggestion envelope.
+          example: voice-tone
+        presetId:
+          type: string
+          enum:
+          - balanced
+          - the_professional
+          - the_conversationalist
+          - the_storyteller
+          - the_closer
+          - the_enthusiast
+          - custom
+          description: Recommended persona preset.
+          example: balanced
+        rationale:
+          type: string
+          minLength: 1
+          maxLength: 400
+          description: One-line, plain-language reason for the recommendation.
+          example: Resume reads professional with concrete metrics. Try Balanced.
+      required:
+      - kind
+      - presetId
+      - rationale
+      additionalProperties: false
+    UpsertAIPersona:
+      type: object
+      properties:
+        allowFabrication:
+          type: boolean
+          description: 'Allow the apply agent to fill gaps: complete a required field it cannot take from profile facts, sourcing real-data-first (the resume, tailored resume, and cover letter for this application, then job preferences, then profile) and fabricating only as a last resort. Enabled by default; set false to opt out. Contact/identity completion is always-on and not gated by this flag.'
+          example: true
+        coverLetterStrategy:
+          type: string
+          enum:
+          - 'off'
+          - use_base
+          - tailor_base
+          - generate_new
+          description: Cover letter handling strategy
+          example: generate_new
+        dailyLimit:
+          type: integer
+          minimum: 1
+          maximum: 50
+        generateCoverLetterPerJob:
+          type: boolean
+          description: Whether to generate cover letter per job
+          example: true
+        minMatchScore:
+          type: integer
+          minimum: 0
+          maximum: 100
+        mode:
+          type: string
+          enum:
+          - copilot
+          - auto_approve
+          description: Application mode
+          example: copilot
+        personalDescription:
+          type:
+          - string
+          - 'null'
+          maxLength: 500
+          description: Free text about yourself (max 500 chars)
+          example: Senior engineer with 10 years in fintech
+        presetId:
+          type: string
+          enum:
+          - balanced
+          - the_professional
+          - the_conversationalist
+          - the_storyteller
+          - the_closer
+          - the_enthusiast
+          - custom
+          description: Selected persona preset
+          example: balanced
+        resumeStrategy:
+          type: string
+          enum:
+          - base
+          - tailor
+          description: Resume handling strategy
+          example: tailor
+        samplePhrases:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            maxLength: 200
+          maxItems: 10
+          description: Example phrases you naturally use (max 10)
+          example:
+          - Let me walk you through my approach
+        tailorResumePerJob:
+          type: boolean
+          description: Whether to tailor resume per job
+          example: true
+        toneInstructions:
+          type:
+          - string
+          - 'null'
+          maxLength: 1000
+          description: Custom tone rules (max 1000 chars)
+          example: Always mention my passion for open-source
+        translationStrategy:
+          type: string
+          enum:
+          - 'off'
+          - translate
+          - translate_and_tailor
+          description: Translation strategy
+          example: 'off'
+      required:
+      - presetId
+      additionalProperties: false
+    DeriveCustomToneResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/DeriveCustomToneData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    SuggestNarrativeResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/SuggestNarrativeData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    AIPersonaResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/AIPersonaData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    UpdateScoringWeights:
+      type: object
+      properties:
+        weights:
+          type: object
+          properties:
+            location:
+              type: number
+              minimum: 0
+              maximum: 2
+            remote:
+              type: number
+              minimum: 0
+              maximum: 2
+            salary:
+              type: number
+              minimum: 0
+              maximum: 2
+            seniority:
+              type: number
+              minimum: 0
+              maximum: 2
+            skills:
+              type: number
+              minimum: 0
+              maximum: 2
+            visa:
+              type: number
+              minimum: 0
+              maximum: 2
+          required:
+          - location
+          - remote
+          - salary
+          - seniority
+          - skills
+          - visa
+          description: Per-dimension multipliers in [0, 2]. Uniform 1 = baseline.
+          example:
+            skills: 1.5
+            location: 1
+            remote: 1.2
+            seniority: 1
+            salary: 0.8
+            visa: 1
+      required:
+      - weights
+      additionalProperties: false
+    ScoringWeightsResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            weights:
+              type: object
+              properties:
+                location:
+                  type: number
+                  minimum: 0
+                  maximum: 2
+                remote:
+                  type: number
+                  minimum: 0
+                  maximum: 2
+                salary:
+                  type: number
+                  minimum: 0
+                  maximum: 2
+                seniority:
+                  type: number
+                  minimum: 0
+                  maximum: 2
+                skills:
+                  type: number
+                  minimum: 0
+                  maximum: 2
+                visa:
+                  type: number
+                  minimum: 0
+                  maximum: 2
+              required:
+              - location
+              - remote
+              - salary
+              - seniority
+              - skills
+              - visa
+          required:
+          - weights
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    AIPersonaData:
+      type: object
+      properties:
+        id:
+          type: string
+          description: AI persona identifier
+          example: abc-123
+        userId:
+          type: string
+          description: User identifier
+          example: user_abc123
+        presetId:
+          type: string
+          enum:
+          - balanced
+          - the_professional
+          - the_conversationalist
+          - the_storyteller
+          - the_closer
+          - the_enthusiast
+          - custom
+          description: Selected persona preset
+          example: balanced
+        personalDescription:
+          type:
+          - string
+          - 'null'
+          description: Free text about the user for AI personalization
+          example: Senior engineer with 10 years in fintech
+        toneInstructions:
+          type:
+          - string
+          - 'null'
+          description: Custom rules for AI tone and style
+          example: Always mention my passion for open-source
+        samplePhrases:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: Example phrases the user would naturally use
+          example:
+          - Let me walk you through my approach
+          - I thrive in fast-paced environments
+        generateCoverLetterPerJob:
+          type: boolean
+          description: Whether AI generates a cover letter for each job application
+          example: true
+        tailorResumePerJob:
+          type: boolean
+          description: Whether AI tailors resume for each job application
+          example: true
+        resumeStrategy:
+          type: string
+          enum:
+          - base
+          - tailor
+          description: Resume handling strategy
+          example: tailor
+        coverLetterStrategy:
+          type: string
+          enum:
+          - 'off'
+          - use_base
+          - tailor_base
+          - generate_new
+          description: Cover letter handling strategy
+          example: generate_new
+        translationStrategy:
+          type: string
+          enum:
+          - 'off'
+          - translate
+          - translate_and_tailor
+          description: Translation strategy
+          example: 'off'
+        mode:
+          type: string
+          enum:
+          - copilot
+          - auto_approve
+          description: 'Application mode: copilot (review before submitting) or auto_approve (submits automatically)'
+          example: copilot
+        allowFabrication:
+          type: boolean
+          description: Fill-gaps for the apply agent, enabled by default. When true, a required field the agent cannot take directly from profile facts is sourced real-data-first (the resume, tailored resume, and cover letter for this application, then job preferences, then profile) and only fabricated as a last resort, marked as assumed. When false (explicit opt-out), it never fabricates such an answer. Contact/identity completion (phone, city, postal, profile links) always completes required fields and is not governed by this flag.
+          example: true
+        scoringWeights:
+          type:
+          - object
+          - 'null'
+          properties:
+            location:
+              type: number
+              minimum: 0
+              maximum: 2
+            remote:
+              type: number
+              minimum: 0
+              maximum: 2
+            salary:
+              type: number
+              minimum: 0
+              maximum: 2
+            seniority:
+              type: number
+              minimum: 0
+              maximum: 2
+            skills:
+              type: number
+              minimum: 0
+              maximum: 2
+            visa:
+              type: number
+              minimum: 0
+              maximum: 2
+          required:
+          - location
+          - remote
+          - salary
+          - seniority
+          - skills
+          - visa
+          description: Per-dimension match scoring weights. NULL when the user has never customised them (scorer falls back to uniform defaults).
+          example:
+            skills: 1
+            location: 1
+            remote: 1
+            seniority: 1
+            salary: 1
+            visa: 1
+        createdAt:
+          type: string
+          description: Persona creation timestamp
+          example: '2026-01-15T12:00:00Z'
+        updatedAt:
+          type: string
+          description: Persona last update timestamp
+          example: '2026-03-10T08:30:00Z'
+      required:
+      - id
+      - userId
+      - presetId
+      - personalDescription
+      - toneInstructions
+      - samplePhrases
+      - generateCoverLetterPerJob
+      - tailorResumePerJob
+      - resumeStrategy
+      - coverLetterStrategy
+      - translationStrategy
+      - mode
+      - allowFabrication
+      - scoringWeights
+      - createdAt
+      - updatedAt
+  securitySchemes:
+    BearerAuth:
+      description: 'Session token from signing in to AI Applyd, sent as `Authorization: Bearer <token>`.'
+      scheme: bearer
+      type: http
+x-refined-from:
+- aiapplyd-openapi.json
+- aiapplyd-openapi.yml

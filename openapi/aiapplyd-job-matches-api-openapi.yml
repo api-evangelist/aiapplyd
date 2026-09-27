@@ -1,0 +1,4058 @@
+openapi: 3.2.0
+info:
+  title: Aiapplyd Job Matches API
+  version: 115c47ce
+  contact:
+    email: support@aiapplyd.com
+    name: AI Applyd
+    url: https://aiapplyd.com
+  license:
+    name: Proprietary
+    url: https://aiapplyd.com/legal/terms
+  description: 'Operations tagged job-matches across 2 of this provider''s published API definitions: aiapplyd-openapi.json, aiapplyd-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- description: Current environment
+  url: https://api.aiapplyd.com/api/v1
+security:
+- BearerAuth: []
+tags:
+- name: job-matches
+paths:
+  /job-matches/preferences:
+    get:
+      tags:
+      - job-matches
+      summary: Get Match Preferences
+      description: Get the authenticated user's job match preferences.
+      responses:
+        '200':
+          description: User preferences
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PreferencesResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: getJobMatchesPreferences
+    put:
+      tags:
+      - job-matches
+      summary: Update Match Preferences
+      description: Update job match preferences. Creates preferences if none exist.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePreferencesRequest'
+      responses:
+        '200':
+          description: Preferences updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PreferencesResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: putJobMatchesPreferences
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+  /job-matches:
+    get:
+      tags:
+      - job-matches
+      summary: List Job Matches
+      description: List today's AI-curated job matches. Excludes dismissed matches by default.
+      parameters:
+      - schema:
+          type: integer
+          maximum: 100
+          default: 20
+          description: Results per page (max 100)
+          example: 20
+          exclusiveMinimum: 0
+        required: false
+        description: Results per page (max 100)
+        name: limit
+        in: query
+      - schema:
+          type: integer
+          default: 1
+          description: Page number (1-based)
+          example: 1
+          exclusiveMinimum: 0
+        required: false
+        description: Page number (1-based)
+        name: page
+        in: query
+      - schema:
+          type: string
+          description: Opaque keyset-pagination cursor returned by a prior list call as `pagination.nextCursor`. When present, the server runs in keyset mode and ignores `page`. Page-based callers should omit this field.
+        required: false
+        description: Opaque keyset-pagination cursor returned by a prior list call as `pagination.nextCursor`. When present, the server runs in keyset mode and ignores `page`. Page-based callers should omit this field.
+        name: cursor
+        in: query
+      - schema:
+          type:
+          - boolean
+          - 'null'
+          description: Filter saved matches only
+        required: false
+        description: Filter saved matches only
+        name: saved
+        in: query
+      responses:
+        '200':
+          description: Job matches list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MatchListResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: getJobMatches
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+  /job-matches/work-style-supply:
+    get:
+      tags:
+      - job-matches
+      summary: How much supply the user's work-style choice admits, and what it excludes
+      description: 'Answers "400 hospitality jobs in the UK, 1 is remote, including onsite shows you 400" for the caller''s SAVED preferences. MEASURED 2026-09-09: 59% of onboarded users chose remote-only, and for a structurally onsite role family that is near-zero supply - UK hospitality holds 400 live jobs and ONE is remote, so those users saw four jobs and concluded we were broken. This endpoint NEVER widens a search and never touches saved preferences; it only counts, so the user decides with the real number in front of them. The admit-set is `acceptedArrangements`, the same single definition the pool filter and the read filter use, so the number cannot promise jobs the feed will not deliver. One grouped warehouse read served by `idx_scraped_job_is_active_country_role_city`.'
+      responses:
+        '200':
+          description: Supply counts for the caller's saved work styles
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkStyleSupplyResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: getJobMatchesWorkStyleSupply
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+  /job-matches/{id}:
+    get:
+      tags:
+      - job-matches
+      summary: Get a Job Match
+      description: Get one job_match row owned by the authenticated user, using the same response projection as the match list.
+      parameters:
+      - schema:
+          type: string
+          pattern: ^\d+$
+          description: Job match identifier
+          example: '1'
+        required: true
+        description: Job match identifier
+        in: path
+        name: id
+      responses:
+        '200':
+          description: Job match detail
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MatchResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: getJobMatchesById
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+  /job-matches/{id}/save:
+    post:
+      tags:
+      - job-matches
+      summary: Save a Job Match
+      description: Mark a job match as saved and create a job listing entry. Optionally set listing status to "applied" for quick-apply.
+      parameters:
+      - schema:
+          type: string
+          pattern: ^\d+$
+          description: Job match identifier
+          example: '1'
+        required: true
+        description: Job match identifier
+        in: path
+        name: id
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SaveMatchBody'
+      responses:
+        '200':
+          description: Match saved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MatchActionResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: postJobMatchesByIdSave
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+  /job-matches/{id}/dismiss:
+    post:
+      tags:
+      - job-matches
+      summary: Dismiss a Job Match
+      description: Dismiss a job match so it no longer appears in the list. Optionally records a structured dismiss reason for the engagement-feedback loop.
+      parameters:
+      - schema:
+          type: string
+          pattern: ^\d+$
+          description: Job match identifier
+          example: '1'
+        required: true
+        description: Job match identifier
+        in: path
+        name: id
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DismissMatchBody'
+      responses:
+        '200':
+          description: Match dismissed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MatchActionResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: postJobMatchesByIdDismiss
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+  /job-matches/subscribe-cell:
+    post:
+      tags:
+      - job-matches
+      summary: Subscribe to a (role_family, country) SEO cell
+      description: Authenticated "notify me when this SEO cell fills" submission. Writes one row to `user_suggested_role` (deduped by normalized key, source='user') AND one row to `role_search_miss` (append-only telemetry) in a single `db.batch`. The orchestrator picks up the suggestion on its next 2h tick; the role-fulfilled notifier emails the user when the first matching job lands.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubscribeCellBody'
+      responses:
+        '200':
+          description: Subscription recorded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubscribeCellResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: postJobMatchesSubscribeCell
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+  /job-matches/validate-role:
+    post:
+      tags:
+      - job-matches
+      summary: Validate a free-text role title and show its taxonomy mapping
+      description: 'Called by the role picker when a user picks "Add ". Answers whether the text names a real job in ANY language, which `role_family` it is searchable under, an English gloss when it was not typed in English, and - only when the input is a MISSPELLING of a real title - a suggested correction the user may accept. Never rewrites the title: `canonicalTitle` is the user''s own words (preset casing restored only on an exact preset match). Cheap and mostly free: a known preset and structurally-impossible input are answered without a model call, and every model verdict is cached in KV for 30 days keyed on the normalized title.'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ValidateRoleBody'
+      responses:
+        '200':
+          description: Validation verdict + taxonomy mapping
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidateRoleResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: postJobMatchesValidateRole
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+  /job-matches/request-more:
+    post:
+      tags:
+      - job-matches
+      summary: Request More Matches (discover-empty re-fill)
+      description: Called by the Discover empty-state CTA when the user burns through their whole match stack. Enqueues a targeted Indeed + LinkedIn scrape against the user's preferences and fans out a full (role × country) kickoff across every registered scraper. Respects the shared `low-pool-scrape:{userId}` 2h KV cooldown - repeat calls inside the window return `enqueued=false` with `reason='cooldown'`. No body; auth via session cookie.
+      responses:
+        '200':
+          description: Scrape enqueued, already queued within cooldown, or user has no preferences yet.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RequestMoreMatchesResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: postJobMatchesRequestMore
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+  /job-matches/apply-relaxation:
+    post:
+      tags:
+      - job-matches
+      summary: Apply Cascade Relaxation to Saved Preferences
+      description: 'Called by the "Keep these matches coming" button on the relaxation banner. Reads the current `match:relaxation:{userId}` KV signal and persists the matching widening to the user''s `job_match_preference` row so the cascade sticks across sessions. Deletes the KV banner signal on success so the banner does not re-render on the next list GET. Idempotent: repeat calls when the banner is gone return `applied=false, reason=''no-relaxation''`.'
+      responses:
+        '200':
+          description: Relaxation applied (or no-op when banner signal absent).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplyRelaxationResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: postJobMatchesApplyRelaxation
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+  /job-matches/revert-widening:
+    post:
+      tags:
+      - job-matches
+      summary: Undo Cascade Widening (Tighten Feed to Strict)
+      description: Called by the "Undo" button on the relaxation banner. Deletes non-interacted job_match rows whose role_family falls outside the user's strict `preferredRoleFamilies` or whose country falls outside their `canonicalCountries`. Rows the user saved / dismissed / viewed are preserved - their explicit choices stand. Clears the KV banner signal. Does NOT modify the user's saved preferences.
+      responses:
+        '200':
+          description: Feed tightened to strict (may be a no-op when nothing matched the criteria).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RevertWideningResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: postJobMatchesRevertWidening
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+  /job-matches/reset:
+    post:
+      tags:
+      - job-matches
+      summary: Reset All Matches to Discover Feed
+      description: Reset all job matches back to discoverable state. Clears saved/dismissed/seen flags, deletes associated job listings and application results. Intended for dev/testing.
+      responses:
+        '200':
+          description: All matches reset to discover feed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResetMatchesResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: postJobMatchesReset
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+  /job-matches/{id}/evaluate:
+    post:
+      tags:
+      - job-matches
+      summary: Enqueue the A-G Match Evaluation Report
+      description: 'ENQUEUES the 7-block A-G structured evaluator (role summary, CV match, level strategy, comp & demand, personalization plan, interview plan, posting legitimacy) and returns IMMEDIATELY - it never blocks on generation. The client polls `GET /job-matches/{id}/evaluation` until `status` leaves `generating`. The worker persists the assembled markdown to R2 + a `user_document` row with `documentType=match_report` and stamps the doc id on `job_match.match_report_doc_id`. Idempotent by construction: the row is claimed with a compare-and-swap on `job_match.match_report_status` against the PRIMARY before the enqueue, so at-least-once queue delivery cannot bill the user twice for one report. Supply `force=true` to reclaim a `failed`/`completed` row and regenerate. When the user has no token balance NOTHING is claimed or enqueued and the response carries `status: out_of_tokens`.'
+      parameters:
+      - schema:
+          type: string
+          pattern: ^\d+$
+          description: Job match identifier
+          example: '1'
+        required: true
+        description: Job match identifier
+        in: path
+        name: id
+      - schema:
+          anyOf:
+          - type: boolean
+          - type: string
+            enum:
+            - '0'
+            - '1'
+            - 'true'
+            - 'false'
+          default: false
+          description: Bypass the cached document and regenerate from scratch.
+          example: false
+        required: false
+        description: Bypass the cached document and regenerate from scratch.
+        name: force
+        in: query
+      responses:
+        '200':
+          description: Match evaluation generated (or cached)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EvaluateMatchResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: postJobMatchesByIdEvaluate
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+  /job-matches/{id}/evaluation:
+    get:
+      tags:
+      - job-matches
+      summary: Get Persisted A-G Match Evaluation
+      description: Return the structured 7-block A-G evaluation payload persisted on `job_match.evaluation_blocks` plus the linked `user_document.id` for the assembled markdown. Used by the web Evaluation tab on first mount to render per-section cards without re-running the orchestrator. Returns `blocks=null` when no evaluation has been generated yet OR the stored blob fails schema validation; the FE then renders a "Generate evaluation" empty state.
+      parameters:
+      - schema:
+          type: string
+          pattern: ^\d+$
+          description: Job match identifier
+          example: '1'
+        required: true
+        description: Job match identifier
+        in: path
+        name: id
+      responses:
+        '200':
+          description: Persisted evaluation blocks (may be null if not yet generated)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetEvaluationResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: getJobMatchesByIdEvaluation
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+  /job-matches/{id}/verify-live:
+    post:
+      tags:
+      - job-matches
+      summary: Verify a Job Match Is Still Live
+      description: 'Confirm a browser-required aggregator listing (indeed / linkedin / glassdoor) is still live before the user swipes right on it. Short-circuits to live without spending the Browser Rendering budget when the underlying scraped_job is fresh (created or last-checked recently). Otherwise renders the listing through the free-tier Cloudflare Browser Rendering binding and runs the dead-page detectors. A confirmed-dead listing triggers the global removeTerminalJob cascade and returns `removed=true`. Fails open: if the BR cap is exhausted or the binding is absent the endpoint returns `live=true, reason="unverified_cap"` so the user is never blocked.'
+      parameters:
+      - schema:
+          type: string
+          pattern: ^\d+$
+          description: Job match identifier
+          example: '1'
+        required: true
+        description: Job match identifier
+        in: path
+        name: id
+      responses:
+        '200':
+          description: Liveness verdict (live / removed / reason)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VerifyLiveResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: postJobMatchesByIdVerifyLive
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+components:
+  schemas:
+    ResetMatchesResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ResetMatchesData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    ApiErrorResponse:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+            context:
+              oneOf:
+              - type: object
+                properties:
+                  errorType:
+                    type: string
+                    enum:
+                    - validation
+                  field:
+                    type: string
+                  fieldErrors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        code:
+                          type: string
+                        expected:
+                          type: string
+                        field:
+                          type: string
+                        message:
+                          type: string
+                        received:
+                          type: string
+                      required:
+                      - field
+                      - message
+                  schemaName:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  attemptedEmail:
+                    type: string
+                    format: email
+                  errorType:
+                    type: string
+                    enum:
+                    - authentication
+                  failureReason:
+                    type: string
+                    enum:
+                    - invalid_credentials
+                    - account_locked
+                    - expired_token
+                    - token_expired
+                    - missing_token
+                    - invalid_token
+                    - session_expired
+                    description: Reason for authentication failure
+                    example: token_expired
+                  ipAddress:
+                    type: string
+                  operation:
+                    type: string
+                  service:
+                    type: string
+                  userAgent:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  actualPermission:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - authorization
+                  requiredPermission:
+                    type: string
+                  resource:
+                    type: string
+                  resourceId:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  constraint:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - database
+                  operation:
+                    type: string
+                    enum:
+                    - insert
+                    - update
+                    - delete
+                    - select
+                    - batch
+                    - transaction
+                    - migration
+                    description: Type of database operation
+                    example: select
+                  resourceId:
+                    type: string
+                  sqlState:
+                    type: string
+                  table:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  endpoint:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - external_service
+                  httpStatus:
+                    type: number
+                  operation:
+                    type: string
+                  resourceId:
+                    type: string
+                  responseTime:
+                    type: number
+                  retryAttempt:
+                    type: integer
+                  service:
+                    type: string
+                  serviceName:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  errorType:
+                    type: string
+                    enum:
+                    - resource
+                  resource:
+                    type: string
+                  resourceId:
+                    type: string
+                  service:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  errorType:
+                    type: string
+                    enum:
+                    - rate_limit
+                  limit:
+                    type: number
+                  resetTime:
+                    type: string
+                  windowMs:
+                    type: number
+                required:
+                - errorType
+              - type: object
+                properties:
+                  configKey:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - configuration
+                  operation:
+                    type: string
+                  service:
+                    type: string
+                required:
+                - errorType
+              description: Type-safe error context information
+              example:
+                errorType: validation
+                fieldErrors:
+                - field: email
+                  message: Invalid email format
+            details:
+              oneOf:
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - validation
+                  validationErrors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        code:
+                          type: string
+                        field:
+                          type: string
+                        message:
+                          type: string
+                      required:
+                      - field
+                      - message
+                required:
+                - detailType
+                - validationErrors
+                additionalProperties: false
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - service_error
+                  originalError:
+                    type: string
+                  serviceName:
+                    type: string
+                required:
+                - detailType
+                - serviceName
+                additionalProperties: false
+              - type: object
+                properties:
+                  currentSize:
+                    type: number
+                  detailType:
+                    type: string
+                    enum:
+                    - batch
+                  originalError:
+                    type: string
+                  statementCount:
+                    type: number
+                required:
+                - detailType
+                additionalProperties: false
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - rate_limit
+                  limit:
+                    type: number
+                  resetTime:
+                    type: string
+                  windowMs:
+                    type: number
+                required:
+                - detailType
+                - limit
+                - resetTime
+                - windowMs
+                additionalProperties: false
+              - type: object
+                properties:
+                  conflictingField:
+                    type: string
+                  detailType:
+                    type: string
+                    enum:
+                    - resource
+                  resourceId:
+                    anyOf:
+                    - type: string
+                    - type: number
+                  resourceType:
+                    type: string
+                required:
+                - detailType
+                additionalProperties: false
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - generic
+                  info:
+                    type: string
+                required:
+                - detailType
+                additionalProperties: false
+              - type: object
+                properties:
+                  currentTokens:
+                    type: integer
+                    minimum: 0
+                  detailType:
+                    type: string
+                    enum:
+                    - insufficient_tokens
+                  requiredTokens:
+                    type: integer
+                    minimum: 0
+                required:
+                - currentTokens
+                - detailType
+                - requiredTokens
+                additionalProperties: false
+            message:
+              type: string
+            validation:
+              type: array
+              items:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  field:
+                    type: string
+                  message:
+                    type: string
+                required:
+                - field
+                - message
+                additionalProperties: false
+          required:
+          - code
+          - message
+          additionalProperties: false
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - false
+      required:
+      - error
+      - success
+      additionalProperties: false
+    ApplyRelaxationData:
+      type: object
+      properties:
+        applied:
+          type: boolean
+          description: True when at least one preference field was updated. False when the KV banner signal was absent or the user has no prefs row.
+          example: true
+        reason:
+          type: string
+          enum:
+          - applied
+          - no-relaxation
+          - no-preferences
+          description: Why the apply-relaxation endpoint applied or did not apply the widening. Drives the frontend toast copy.
+          example: applied
+        summary:
+          type:
+          - string
+          - 'null'
+          enum:
+          - seniority_plus_two
+          - role_family_neighbors
+          - include_remote_auto
+          - all_relaxations
+          - null
+          description: Cascade bucket that was persisted. Null when the KV banner signal was absent.
+          example: include_remote_auto
+        updatedFields:
+          type: array
+          items:
+            type: string
+          description: List of `job_match_preference` columns that were written. Empty when the prefs already matched the widened state.
+          example:
+          - includeRemote
+          - workStyles
+      required:
+      - applied
+      - reason
+      - summary
+      - updatedFields
+      additionalProperties: false
+    PreferencesResponseData:
+      allOf:
+      - $ref: '#/components/schemas/JobMatchPreferencesData'
+      - type: object
+        properties:
+          prefsChanged:
+            type: boolean
+            description: PUT only. True when this save changed at least one job_match_preference column (always true when it created the row). False means nothing moved. Absent on GET.
+            example: true
+    ValidateRoleResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ValidateRolePayload'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    ValidateRoleBody:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 120
+          description: The role title exactly as the user typed it, in any language. Never pre-normalized by the client.
+          example: Filialleiter
+      required:
+      - title
+      additionalProperties: false
+    MatchListData:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/MatchData'
+        pagination:
+          type: object
+          properties:
+            hasNext:
+              type: boolean
+            hasPrev:
+              type: boolean
+            limit:
+              type: integer
+              exclusiveMinimum: 0
+            page:
+              type: integer
+              exclusiveMinimum: 0
+            totalCount:
+              type: integer
+              minimum: -1
+              description: 'Total matches across all pages. Page-mode: a real count (>=0). Cursor-mode: the sentinel -1 (COUNT(*) skipped for keyset-paging speed); cursor callers read `hasNextPage`/`nextCursor` instead.'
+              example: -1
+            totalPages:
+              type: integer
+              minimum: 0
+            hasNextPage:
+              type: boolean
+              description: True when another page is available. Mirrors `hasNext` for cursor-mode callers; page-mode callers can keep using `hasNext`.
+            nextCursor:
+              type:
+              - string
+              - 'null'
+              description: Opaque cursor for the next keyset page, or null when no further rows. Pass back as `?cursor=` on the next request. Page-mode callers can ignore this.
+          required:
+          - hasNext
+          - hasPrev
+          - limit
+          - page
+          - totalCount
+          - totalPages
+          - hasNextPage
+          - nextCursor
+          additionalProperties: false
+        searchCompleted:
+          type: boolean
+          default: false
+          description: True once a scrape for the user's current criteria has completed at least once. Drives whether the empty state may say "nothing found" vs "still searching".
+          example: false
+        relaxation:
+          type:
+          - string
+          - 'null'
+          enum:
+          - seniority_plus_two
+          - role_family_neighbors
+          - include_remote_auto
+          - all_relaxations
+          - null
+          default: null
+          description: Summary bucket describing how far the matcher widened the user's filters (null = strict match). Drives the Discover relaxation banner.
+          example: null
+        relaxationDetail:
+          type:
+          - object
+          - 'null'
+          properties:
+            deltas:
+              type: array
+              items:
+                type: object
+                properties:
+                  field:
+                    type: string
+                    enum:
+                    - seniority
+                    - workStyle
+                    - city
+                    - roleFamily
+                  from:
+                    anyOf:
+                    - type: string
+                    - type: array
+                      items:
+                        type: string
+                  to:
+                    anyOf:
+                    - type: string
+                    - type: array
+                      items:
+                        type: string
+                required:
+                - field
+                - from
+                - to
+                additionalProperties: false
+            finalCount:
+              type: integer
+              minimum: 0
+            level:
+              type: string
+              enum:
+              - seniority_plus_two
+              - role_family_neighbors
+              - include_remote_auto
+              - all_relaxations
+              description: Summary bucket describing how far the matcher widened the user's filters to fill the Discover feed. Null means strict match (no widening).
+              example: seniority_plus_two
+            strictCount:
+              type: integer
+              minimum: 0
+          default: null
+          required:
+          - deltas
+          - finalCount
+          - level
+          - strictCount
+          additionalProperties: false
+          description: Rich per-delta relaxation payload  -  lists each filter the matcher widened and the specific "from → to" values. Null when no relaxation applied OR when the cascade did not write a detail payload (legacy path). Consumers should prefer this over `relaxation` for banner copy.
+          example: null
+        relaxations:
+          type: array
+          items:
+            type: string
+            enum:
+            - none
+            - seniority_plus_two
+            - role_family_neighbors
+            - include_remote
+            - include_remote_auto
+            - all_relaxations
+            - region
+            - drop_country
+            description: Candidate-pool cascade relaxation code emitted by the job matcher. `none` is telemetry-only; the wire `relaxations[]` only ever carries the subset of tiers that actually filled the feed.
+            example: seniority_plus_two
+          default: []
+          description: Per-tier filter relaxation telemetry labels (cascade detail). Consumers use `relaxation` for UI copy.
+          example: []
+        state:
+          type: string
+          enum:
+          - strict
+          - searching
+          - widened
+          default: strict
+          description: 'Current state of the Discover feed: `strict` (exact matches), `searching` (empty list, first-pass, scrape still running), or `widened` (relaxed matches shown while strict search continues). Drives the Discover banner variant.'
+          example: strict
+        widenedDimension:
+          type:
+          - string
+          - 'null'
+          default: null
+          description: Single human-readable name of the dimension that was widened (e.g. "location radius"). Non-null only when `state` is `widened`. UI shows at most one dimension change to keep the message scannable.
+          example: null
+        widenedDelta:
+          type:
+          - string
+          - 'null'
+          default: null
+          description: Short human-readable description of the single widening change (e.g. "by 25mi"). Non-null only when `state` is `widened`.
+          example: null
+        liveRows:
+          type: array
+          items:
+            $ref: '#/components/schemas/LiveMatchData'
+          default: []
+          description: Supported-ATS jobs fetched live from the user's city during this request because the persisted pool was effectively empty. Not job_match rows - they have no id and cannot be swiped or applied to until the background scrape persists them. Render as a labelled "fresh from <city>" band.
+          example: []
+        liveCity:
+          type:
+          - string
+          - 'null'
+          default: null
+          description: The city `liveRows` were fetched from, for the band label. Null when no live fetch ran.
+          example: null
+        searchProgress:
+          type: object
+          properties:
+            found:
+              type: integer
+              minimum: 0
+              description: Total roles scored and kept for this user, all time.
+              example: 77
+            lastFoundAt:
+              type:
+              - string
+              - 'null'
+              description: When the most recent role was added to this user's feed. Null when the feed has never been populated.
+              example: '2026-08-27T05:51:40.000Z'
+            lastRunAt:
+              type:
+              - string
+              - 'null'
+              description: When the last scoring pass finished. Null when no pass has been recorded in the last 24 hours.
+              example: '2026-08-27T05:51:40.000Z'
+            reviewed:
+              type: integer
+              minimum: 0
+              description: Roles this user has already dismissed or saved.
+              example: 54
+            scanned:
+              type: integer
+              minimum: 0
+              description: Postings the last scoring pass looked at. 0 when no pass is on record.
+              example: 1204
+            scored:
+              type: integer
+              minimum: 0
+              description: Postings from the last pass that cleared the match threshold.
+              example: 31
+            added:
+              type: integer
+              minimum: 0
+              description: Roles the last pass added to the feed (the rest were already there).
+              example: 11
+          default:
+            added: 0
+            found: 0
+            lastFoundAt: null
+            lastRunAt: null
+            reviewed: 0
+            scanned: 0
+            scored: 0
+          required:
+          - found
+          - lastFoundAt
+          - lastRunAt
+          - reviewed
+          - scanned
+          - scored
+          - added
+          additionalProperties: false
+          description: 'Counted facts about this user''s search: roles found all time, how many they have reviewed, and what the last scoring pass looked at. Zeroed on responses that do not compute it.'
+        workModeBlocked:
+          type:
+          - object
+          - 'null'
+          properties:
+            count:
+              type: integer
+              description: Persisted matches that pass every other Discover gate and fail only the work-mode gate. Always above zero; a zero is sent as a null payload.
+              example: 6
+              exclusiveMinimum: 0
+            arrangements:
+              type: object
+              properties:
+                onsite:
+                  type: integer
+                  minimum: 0
+                hybrid:
+                  type: integer
+                  minimum: 0
+                remote:
+                  type: integer
+                  minimum: 0
+              required:
+              - onsite
+              - hybrid
+              - remote
+              description: The same total split by the work style each blocked row needs. The three sum to `count`.
+              example:
+                hybrid: 2
+                onsite: 4
+                remote: 0
+            cities:
+              type: array
+              items:
+                type: string
+              maxItems: 3
+              description: Up to three real city names read off the blocked rows, commonest first.
+              example:
+              - Edmonton
+            roleFamily:
+              type:
+              - string
+              - 'null'
+              enum:
+              - software_engineer_frontend
+              - software_engineer_backend
+              - software_engineer_fullstack
+              - software_engineer_mobile
+              - software_engineer_embedded
+              - software_engineer_games
+              - software_engineer_generic
+              - devops_sre
+              - platform_infra
+              - security_engineer
+              - qa_test
+              - data_engineer
+              - data_scientist
+              - data_analyst
+              - ml_engineer
+              - ai_research
+              - product_manager
+              - project_program_manager
+              - designer_product
+              - designer_ux_research
+              - designer_visual
+              - engineering_manager
+              - technical_writer
+              - developer_advocate
+              - solutions_engineer
+              - support_engineer
+              - sales
+              - marketing
+              - operations
+              - executive
+              - finance
+              - legal
+              - hr_recruiting
+              - customer_success
+              - healthcare
+              - creative-design
+              - trades-manual
+              - education
+              - hospitality
+              - logistics-supply
+              - manufacturing
+              - gov-nonprofit
+              - marketing-sales
+              - consulting
+              - retail
+              - insurance
+              - admin_office
+              - other
+              - robotics_engineer
+              - control_systems_engineer
+              - mechatronics_engineer
+              - firmware_engineer
+              - fpga_engineer
+              - hardware_engineer
+              - electrical_engineer
+              - rf_engineer
+              - analog_engineer
+              - biomedical_engineer
+              - aerospace_engineer
+              - avionics_engineer
+              - simulation_engineer
+              - computer_vision_engineer
+              - autonomous_vehicles_engineer
+              - graphics_engineer
+              - blockchain_engineer
+              - smart_contract_engineer
+              - game_designer
+              - ios_engineer
+              - android_engineer
+              - mlops_engineer
+              - ai_infrastructure_engineer
+              - llm_engineer
+              - prompt_engineer
+              - research_engineer
+              - applied_scientist
+              - cloud_architect
+              - solutions_architect
+              - enterprise_architect
+              - release_engineer
+              - network_engineer
+              - systems_engineer
+              - database_administrator
+              - appsec_engineer
+              - pentest_engineer
+              - soc_analyst
+              - incident_responder
+              - analytics_engineer
+              - data_architect
+              - bioinformatics_engineer
+              - computational_biologist
+              - quant_analyst
+              - quant_developer
+              - trading_systems_engineer
+              - risk_analyst
+              - sdet
+              - automation_engineer
+              - product_manager_growth
+              - ux_writer
+              - content_designer
+              - design_engineer
+              - documentation_engineer
+              - customer_engineer
+              - implementation_engineer
+              - civil_engineer
+              - mechanical_engineer
+              - null
+              description: The commonest role family among the blocked rows. Null when none of them carries one.
+              example: civil_engineer
+            unlockWorkStyles:
+              type: array
+              items:
+                type: string
+                enum:
+                - onsite
+                - hybrid
+                - remote
+                description: User's preferred work style, physical mode only, no geo scoping
+                example: remote
+              description: The work styles the one-tap action adds. Only styles that actually unlock rows appear, so the offer never names a mode worth nothing.
+              example:
+              - onsite
+              - hybrid
+          default: null
+          required:
+          - count
+          - arrangements
+          - cities
+          - roleFamily
+          - unlockWorkStyles
+          description: Counted matches this user's work-mode allow list is holding back, with the arrangement split, up to three real city names and the commonest role family. Null unless a page-1 Discover feed rendered zero cards and the count is above zero.
+          example: null
+      required:
+      - items
+      - pagination
+    CvMatchRequirement:
+      type: object
+      properties:
+        cvReference:
+          type:
+          - string
+          - 'null'
+          description: Specific resume bullet/role/section that satisfies this requirement, or null when no match.
+        requirement:
+          type: string
+          description: A single must-have or nice-to-have line from the JD.
+        status:
+          type: string
+          enum:
+          - pass
+          - partial
+          - gap
+          description: 'pass: clear match; partial: tangential evidence; gap: nothing in resume.'
+      required:
+      - cvReference
+      - requirement
+      - status
+    DownlevelPlan:
+      type:
+      - object
+      - 'null'
+      properties:
+        acceptanceCriteria:
+          $ref: '#/components/schemas/DownlevelAcceptanceCriteria'
+        promotionCriteria:
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 280
+          minItems: 3
+          maxItems: 5
+          description: 3 to 5 clear, measurable promotion criteria to negotiate up front. Each must be a concrete observable, not a vague behavior.
+        walkawayConditions:
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 280
+          minItems: 2
+          maxItems: 3
+          description: 2 to 3 hard conditions under which the candidate should decline the offer outright.
+      required:
+      - acceptanceCriteria
+      - promotionCriteria
+      - walkawayConditions
+      additionalProperties: false
+      description: Non-null only when direction == 'downlevel'.
+    SubscribeCellResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/SubscribeCellPayload'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    MatchListResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/MatchListData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    ResponseMetadata:
+      type: object
+      properties:
+        duration:
+          type: number
+          description: Request duration in milliseconds
+          example: 150
+          exclusiveMinimum: 0
+        performance:
+          type: object
+          properties:
+            dbQueries:
+              type: integer
+              minimum: 0
+            totalDbTime:
+              type: number
+              minimum: 0
+          description: Performance metrics (preview/local only)
+        requestId:
+          type: string
+          description: Unique request identifier
+          example: req_abc123
+        timestamp:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp
+          example: '2026-09-25T17:29:47.224Z'
+        version:
+          type: string
+          description: API version
+          example: v1
+    MatchActionResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            id:
+              type: integer
+            saved:
+              type: boolean
+            dismissed:
+              type: boolean
+          required:
+          - id
+          - saved
+          - dismissed
+          additionalProperties: false
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    LiveMatchData:
+      type: object
+      properties:
+        city:
+          type:
+          - string
+          - 'null'
+          description: Structured city published by the upstream feed.
+          example: Berlin
+        company:
+          type: string
+          description: Employer name.
+          example: Acme GmbH
+        companyLogoUrl:
+          type:
+          - string
+          - 'null'
+          description: Employer logo, when the feed published one.
+          example: null
+        location:
+          type:
+          - string
+          - 'null'
+          description: Free-text location as published.
+          example: Berlin, Germany
+        persistedJobId:
+          type:
+          - integer
+          - 'null'
+          description: 'scraped_job.id once this live row provably exists in the database, else null. Null means "not yet confirmed", never "failed" - persistence is asynchronous. Never optimistic: only written after the id is read back out of the database post-insert.'
+          example: null
+          exclusiveMinimum: 0
+        postedDate:
+          type:
+          - string
+          - 'null'
+          description: ISO date the posting went live.
+          example: '2026-07-21'
+        salary:
+          type:
+          - string
+          - 'null'
+          description: Salary string as published, when present.
+          example: null
+        source:
+          type: string
+          enum:
+          - linkedin
+          - indeed
+          - glassdoor
+          - google
+          - ziprecruiter
+          - remotive
+          - jobicy
+          - arbeitnow
+          - ashby
+          - greenhouse
+          - himalayas
+          - lever
+          - recruitee
+          - smartrecruiters
+          - themuse
+          - workingnomads
+          - join
+          - bayt
+          - naukri
+          - bdjobs
+          - web
+          - company_career_page
+          - manual
+          - pool
+          - workable
+          - remoteok
+          - weworkremotely
+          - reed
+          - wellfound
+          - dice
+          - monster
+          - careerbuilder
+          - simplyhired
+          - builtin
+          - snagajob
+          - seek
+          - totaljobs
+          - stepstone
+          - nofluffjobs
+          - devitjobs
+          - workday
+          - jobspresso
+          - landingjobs
+          - personio
+          - rss
+          - teamtailor
+          - breezy
+          - jazzhr
+          - pinpoint
+          - comeet
+          - bamboohr
+          - icims
+          - polymer
+          - gohire
+          - eddy
+          - recruiterflow
+          - hireology
+          - workstream
+          - bullhorn
+          - rippling
+          - softgarden
+          - jobtech
+          description: The supported direct-ATS provider this row resolved onto. Never an aggregator - those are filtered out before the row reaches this schema.
+          example: greenhouse
+        title:
+          type: string
+          description: Job title.
+          example: Backend Engineer
+        url:
+          type: string
+          description: Direct ATS apply URL.
+          example: https://boards.greenhouse.io/acme/jobs/123
+      required:
+      - city
+      - company
+      - companyLogoUrl
+      - location
+      - persistedJobId
+      - postedDate
+      - salary
+      - source
+      - title
+      - url
+      additionalProperties: false
+    LevelStrategyBlock:
+      type:
+      - object
+      - 'null'
+      properties:
+        direction:
+          type: string
+          enum:
+          - at_level
+          - stretch_up
+          - downlevel
+          description: Direction of the candidate's natural level relative to the JD level. at_level = match, stretch_up = candidate below JD, downlevel = JD below candidate.
+          example: at_level
+        downlevelPlan:
+          $ref: '#/components/schemas/DownlevelPlan'
+        generatedAt:
+          type: string
+          format: date-time
+          description: ISO-8601 timestamp when the strategy was produced. Server-set.
+          example: '2026-05-07T12:34:56.000Z'
+        jdLevel:
+          type: string
+          enum:
+          - junior
+          - mid
+          - senior
+          - staff
+          - principal
+          - lead-manager
+          description: Candidate or job-description career level used by the level-strategy service.
+          example: senior
+        naturalLevel:
+          type: string
+          enum:
+          - junior
+          - mid
+          - senior
+          - staff
+          - principal
+          - lead-manager
+          description: Candidate or job-description career level used by the level-strategy service.
+          example: senior
+        recommendedFraming:
+          type: string
+          minLength: 1
+          maxLength: 800
+          description: 1 to 3 sentence summary the cover letter / interview prep can pull as the canonical framing line.
+        sellSeniorPlan:
+          $ref: '#/components/schemas/SellSeniorPlan'
+      required:
+      - direction
+      - downlevelPlan
+      - generatedAt
+      - jdLevel
+      - naturalLevel
+      - recommendedFraming
+      - sellSeniorPlan
+      additionalProperties: false
+    ApplyRelaxationResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ApplyRelaxationData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    EvaluateMatchData:
+      type: object
+      properties:
+        jobMatchId:
+          type: integer
+          description: job_matches.id the report belongs to.
+          example: 567
+        retryAfterMs:
+          type: integer
+          description: How long the client should wait before its first poll of GET /job-matches/{id}/evaluation. Zero for terminal statuses, where there is nothing to poll for.
+          example: 3000
+        status:
+          type: string
+          enum:
+          - idle
+          - generating
+          - completed
+          - failed
+          - out_of_tokens
+          description: generating = claimed and enqueued (or already in flight in another tab). completed = a valid report already exists, nothing was enqueued. failed = the previous attempt failed and `force` was not set; the client should offer Retry. out_of_tokens = the user has no balance, so NOTHING was claimed or enqueued; the client shows the top-up message plus Retry.
+          example: generating
+      required:
+      - jobMatchId
+      - retryAfterMs
+      - status
+      additionalProperties: false
+    ResetMatchesData:
+      type: object
+      properties:
+        matchesReset:
+          type: integer
+          description: Number of job matches reset to discoverable state
+          example: 42
+        listingsDeleted:
+          type: integer
+          description: Number of job listings deleted
+          example: 15
+        resultsDeleted:
+          type: integer
+          description: Number of application results deleted
+          example: 8
+      required:
+      - matchesReset
+      - listingsDeleted
+      - resultsDeleted
+      additionalProperties: false
+    LinkedinChange:
+      type: object
+      properties:
+        currentState:
+          type: string
+          minLength: 1
+          maxLength: 400
+          description: One-sentence excerpt of what the LinkedIn section likely contains. When the profile is not stored, assume a typical career-ops style profile.
+        priority:
+          type: string
+          enum:
+          - high
+          - medium
+          - low
+          description: How impactful this change is for the targeted role
+          example: high
+        proposedChange:
+          type: string
+          minLength: 1
+          maxLength: 400
+          description: Specific edit to apply, citing JD vocabulary in native tech English
+        rationale:
+          type: string
+          minLength: 1
+          maxLength: 600
+          description: Why this edit closes a gap or amplifies a strength for THIS archetype
+        section:
+          type: string
+          enum:
+          - headline
+          - about
+          - featured
+          - experience
+          - skills
+          description: LinkedIn profile section the proposed change targets
+          example: headline
+      required:
+      - currentState
+      - priority
+      - proposedChange
+      - rationale
+      - section
+      additionalProperties: false
+    CvMatchGap:
+      type: object
+      properties:
+        gap:
+          type: string
+          description: Single concise statement of the missing requirement.
+        mitigation:
+          type: string
+          description: Specific concrete mitigation strategy the candidate can apply for THIS application.
+      required:
+      - gap
+      - mitigation
+    WorkStyleSupplyData:
+      type: object
+      properties:
+        total:
+          type: integer
+          minimum: 0
+          description: Live jobs in this user's role families and countries, ANY work style.
+          example: 400
+        matching:
+          type: integer
+          minimum: 0
+          description: Of those, the jobs their CURRENT work styles admit. Computed from `acceptedArrangements`, the same admit-set the feed uses, so this number cannot promise jobs the feed will not deliver.
+          example: 4
+        unlocked:
+          type: array
+          items:
+            type: object
+            properties:
+              workStyle:
+                type: string
+                enum:
+                - onsite
+                - hybrid
+                - remote
+                description: User's preferred work style, physical mode only, no geo scoping
+                example: remote
+              adds:
+                type: integer
+                minimum: 1
+            required:
+            - workStyle
+            - adds
+          description: What each UNSELECTED work style would add on top of what they already accept, largest first. Empty means their settings are not what is limiting them, and the UI should say nothing.
+          example:
+          - adds: 390
+            workStyle: onsite
+      required:
+      - total
+      - matching
+      - unlocked
+    RevertWideningData:
+      type: object
+      properties:
+        deleted:
+          type: integer
+          minimum: 0
+          description: Number of widened non-interacted job_match rows removed from the user's feed.
+          example: 312
+        reason:
+          type: string
+          enum:
+          - reverted
+          - nothing-to-revert
+          - no-strict-prefs
+          description: Outcome of the revert-widening call. `reverted` means at least one row was removed; `nothing-to-revert` means the feed was already strict-only; `no-strict-prefs` means the user has no strict role/country on their preferences so there is nothing to tighten against.
+          example: reverted
+      required:
+      - deleted
+      - reason
+      additionalProperties: false
+    PersonalizationPlanBlock:
+      type:
+      - object
+      - 'null'
+      properties:
+        archetype:
+          type: string
+          enum:
+          - ai_platform_llmops
+          - agentic_automation
+          - technical_ai_pm
+          - ai_solutions_architect
+          - ai_forward_deployed
+          - ai_transformation_lead
+          - generic_engineering
+          - generic_product
+          - generic_data
+          - other
+          description: Role archetype tag mirrored from the job match analysis (Block A)
+          example: ai_platform_llmops
+        cvChanges:
+          type: array
+          items:
+            $ref: '#/components/schemas/CvChange'
+          description: Exactly 5 CV changes ordered by priority (high first)
+        generatedAt:
+          type: string
+          format: date-time
+          description: ISO-8601 timestamp when the plan was produced (server-set)
+          example: '2026-05-07T12:00:00.000Z'
+        keywords:
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 80
+          minItems: 8
+          maxItems: 15
+          description: 8-15 ATS keywords extracted from the JD
+        linkedinChanges:
+          type: array
+          items:
+            $ref: '#/components/schemas/LinkedinChange'
+          description: Exactly 5 LinkedIn changes ordered by priority (high first)
+      required:
+      - archetype
+      - cvChanges
+      - generatedAt
+      - keywords
+      - linkedinChanges
+      additionalProperties: false
+    JobMatchPreferencesData:
+      type: object
+      properties:
+        benefits:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        companySize:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        createdAt:
+          type:
+          - string
+          - 'null'
+        educationLevel:
+          type:
+          - string
+          - 'null'
+        excludeIndustries:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        experienceLevel:
+          type:
+          - string
+          - 'null'
+        experienceLevels:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        id:
+          type: integer
+        includeRemote:
+          type: boolean
+        industries:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        isActive:
+          type: boolean
+        jobTypes:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        locations:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        remoteGlobal:
+          type: boolean
+        salaryCurrency:
+          type: string
+          enum:
+          - usd
+          - eur
+          - gbp
+          - cad
+          - aud
+          - inr
+          description: Currency for salary values
+          example: usd
+        salaryMax:
+          type:
+          - number
+          - 'null'
+        salaryMin:
+          type:
+          - number
+          - 'null'
+        skills:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        targetRoles:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        updatedAt:
+          type:
+          - string
+          - 'null'
+        visaSponsorship:
+          type:
+          - string
+          - 'null'
+        workStyles:
+          type: array
+          items:
+            type: string
+            enum:
+            - onsite
+            - hybrid
+            - remote
+            description: User's preferred work style, physical mode only, no geo scoping
+            example: remote
+      required:
+      - benefits
+      - companySize
+      - createdAt
+      - educationLevel
+      - excludeIndustries
+      - experienceLevel
+      - experienceLevels
+      - id
+      - includeRemote
+      - industries
+      - isActive
+      - jobTypes
+      - locations
+      - remoteGlobal
+      - salaryCurrency
+      - salaryMax
+      - salaryMin
+      - skills
+      - targetRoles
+      - updatedAt
+      - visaSponsorship
+      - workStyles
+    SaveMatchBody:
+      type: object
+      properties:
+        listingStatus:
+          type: string
+          enum:
+          - saved
+          - preparing
+          default: saved
+          description: Status for the created job listing. Use "preparing" when the user swipes right to trigger the AI preparation pipeline (APPLIED is only written after prepare/submission confirms success). Manual "I applied externally" must go through the updateJobListing endpoint.
+          example: saved
+      additionalProperties: false
+    RequestMoreMatchesData:
+      type: object
+      properties:
+        enqueued:
+          type: boolean
+          description: True when a targeted scrape was enqueued. False when the per-user 2h cooldown is active, the user has no preferences yet, or SCRAPE_QUEUE is not configured.
+          example: true
+        reason:
+          type: string
+          enum:
+          - enqueued
+          - cooldown
+          - no-preferences
+          - no-queue
+          description: Why the request-more-matches call was or was not enqueued. Drives the frontend empty-state copy.
+          example: enqueued
+      required:
+      - enqueued
+      - reason
+      additionalProperties: false
+    WorkStyleSupplyResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/WorkStyleSupplyData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    GetEvaluationResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/GetEvaluationData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    MatchResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/MatchData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    MatchData:
+      type: object
+      properties:
+        appliedAt:
+          type:
+          - string
+          - 'null'
+          description: Timestamp when the application was confirmed submitted. Null until submission completes.
+          example: '2026-04-20T10:15:00Z'
+        applicationStatus:
+          type:
+          - string
+          - 'null'
+          enum:
+          - pending
+          - pending_review
+          - ready_to_submit
+          - applied
+          - applied_unconfirmed
+          - skipped
+          - error
+          - cancelled
+          - null
+          description: Status of the latest applicationResult row for this match (pending / pending_review / ready_to_submit / applied / skipped / error). Null when no application has been started.
+          example: ready_to_submit
+        authPlatform:
+          type:
+          - string
+          - 'null'
+          description: Platform credential key required for auto-apply (e.g. "linkedin", "indeed"), or null if no auth needed
+          example: linkedin
+        requiresAuth:
+          type: boolean
+          description: True when this match's platform requires authenticated apply AND the user has not connected the corresponding integration. Frontend renders a locked card with a "Connect {authPlatform}" CTA when true.
+          example: false
+        platformType:
+          type: string
+          description: Resolved URL platform classifier (e.g. "linkedin", "greenhouse", "lever"). Always present.
+          example: greenhouse
+        benefits:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        company:
+          type:
+          - string
+          - 'null'
+        companyLogoUrl:
+          type:
+          - string
+          - 'null'
+        companyDomain:
+          type:
+          - string
+          - 'null'
+          description: Trusted company-intel domain (company.domain) for the company-jobs page logo fallback. Null when the match has no linked company record or the company has no domain.
+          example: acme.com
+        companySize:
+          type:
+          - string
+          - 'null'
+        createdAt:
+          type:
+          - string
+          - 'null'
+        description:
+          type:
+          - string
+          - 'null'
+        dismissed:
+          type: boolean
+        educationRequired:
+          type:
+          - string
+          - 'null'
+        extractedSkills:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        id:
+          type: integer
+        publicJobId:
+          type:
+          - integer
+          - 'null'
+        jobType:
+          type:
+          - string
+          - 'null'
+        listingStatus:
+          type:
+          - string
+          - 'null'
+          enum:
+          - saved
+          - preparing
+          - applied
+          - interviewing
+          - offered
+          - rejected
+          - archived
+          - null
+          description: Status from the user's jobListings row for this match (saved / preparing / applied / rejected / interviewing / offered / archived). Null when the match has never been saved.
+          example: preparing
+        location:
+          type:
+          - string
+          - 'null'
+        locationMatch:
+          type:
+          - boolean
+          - 'null'
+          description: Job country is in user preferences OR job is remote. Null when both sides lack data.
+        geoTier:
+          type: string
+          enum:
+          - exact_city
+          - within_radius
+          - in_country
+          - remote
+          - off_country
+          - unknown
+          description: Rung this job occupies on the user's location-priority ladder (exact_city > within_radius > in_country > remote > off_country > unknown). `unknown` means the job could not be placed and must NEVER be rendered as a location match.
+          example: within_radius
+        distanceKm:
+          type:
+          - number
+          - 'null'
+          description: Whole-km great-circle distance to the user's NEAREST preferred city. Null means NOT COMPUTABLE (missing coordinates on either side) and must be read as unknown, never as "far" and never as 0.
+          example: 24
+        matchScore:
+          type:
+          - number
+          - 'null'
+        postedAt:
+          type:
+          - string
+          - 'null'
+        preparationStatus:
+          type:
+          - string
+          - 'null'
+          enum:
+          - pending
+          - preparing
+          - ready
+          - submitting
+          - submitted
+          - failed
+          - cancelled
+          - null
+          description: Preparation progress for the latest application (pending / preparing / ready / submitting / submitted / failed). Null when no application has been started.
+          example: preparing
+        remoteMatch:
+          type:
+          - boolean
+          - 'null'
+          description: Job supports any remote arrangement. Null when work arrangement is missing.
+        resolvedApplyUrl:
+          type:
+          - string
+          - 'null'
+          description: Resolved external ATS apply URL (e.g. the Greenhouse/Lever page a LinkedIn-scraped job actually applies on). Null when the job applies on its own page. The apply gate prefers this over `url` for platform detection.
+          example: https://boards.greenhouse.io/acme/jobs/123
+        linkedinApplyMethod:
+          type: string
+          enum:
+          - easy_apply
+          - offsite
+          - unknown
+          description: Resolved LinkedIn apply target. `offsite` → applies on a company ATS (use resolvedApplyUrl for the provider badge); `easy_apply` → in-platform LinkedIn Easy Apply ("LinkedIn Easy Apply" badge); `unknown` → not yet resolved / not a LinkedIn posting (fall back to `source` for the badge).
+          example: offsite
+        salary:
+          type:
+          - string
+          - 'null'
+        salaryMatch:
+          type:
+          - boolean
+          - 'null'
+          description: Job salary meets or exceeds user minimum. Null when either side lacks a salary value.
+        saved:
+          type: boolean
+        seniorityMatch:
+          type:
+          - boolean
+          - 'null'
+          description: Job seniority band equals user preference. Null when either side lacks a band.
+        skillsMatch:
+          type:
+          - boolean
+          - 'null'
+          description: At least one user canonical skill appears on the job. Null when either side lacks a skills list.
+        skillsMatchCount:
+          type:
+          - integer
+          - 'null'
+          minimum: 0
+          description: Count of user canonical skills matched on this job. Null when either side lacks a skills list.
+        source:
+          type: string
+        title:
+          type: string
+        url:
+          type: string
+        visaMatch:
+          type:
+          - boolean
+          - 'null'
+          description: User does not require sponsorship OR job offers sponsorship. Null when sponsorship status is unknown.
+        visaSponsorship:
+          type:
+          - string
+          - 'null'
+        whyGoodFit:
+          type:
+          - string
+          - 'null'
+          description: 'Enrichment-v2: one-paragraph (<=280 chars) neutral third-person blurb describing why a generic candidate might want this role. Null when the description is too thin.'
+          example: Remote-first Series B fintech with strong mentorship, modern TypeScript stack, and paid conference budget. Limited on-call and a small team where individual impact is high.
+        workArrangement:
+          type:
+          - string
+          - 'null'
+          description: Canonical work-arrangement enum (remote_global / remote_country / remote_region / hybrid / onsite / unknown). Drives the "Remote" chip + filter. Null only when enrichment hasn't run yet.
+          example: remote_global
+        city:
+          type:
+          - string
+          - 'null'
+          description: Parsed city component of location.
+        country:
+          type:
+          - string
+          - 'null'
+          description: Canonical country code.
+        legitimacyTier:
+          type:
+          - string
+          - 'null'
+          enum:
+          - high_confidence
+          - proceed_with_caution
+          - suspicious
+          - null
+          description: Deterministic posting-legitimacy verdict. Null when not yet evaluated.
+          example: proceed_with_caution
+        freshnessStatus:
+          type:
+          - string
+          - 'null'
+          enum:
+          - fresh
+          - aging
+          - stale
+          - unknown
+          - null
+          description: Posting age bucket (fresh / aging / stale / unknown).
+          example: fresh
+        repostedCount:
+          type:
+          - integer
+          - 'null'
+          minimum: 0
+          description: Number of prior live scraped_job rows for this URL family. 0 when no repost history.
+          example: 0
+        lastRepostDate:
+          type:
+          - string
+          - 'null'
+          description: posted_date of the most-recent prior repost. Null when no prior posting exists.
+          example: '2026-03-04'
+        legitimacySignals:
+          type:
+          - string
+          - 'null'
+          description: Serialized LegitimacySignals payload (score + signals[] + tier). Null when not yet evaluated.
+        seniorityBand:
+          type:
+          - string
+          - 'null'
+          enum:
+          - intern
+          - entry
+          - junior
+          - mid
+          - senior
+          - staff
+          - principal
+          - lead
+          - manager
+          - director
+          - vp
+          - cxo
+          - null
+          description: Canonical seniority band parsed from the listing (intern / entry / junior / mid / senior / staff / principal / lead / manager / director / vp / cxo). Null when the band could not be inferred.
+          example: senior
+        salaryMinUsd:
+          type:
+          - integer
+          - 'null'
+          description: Lower bound of the listing salary range normalized to USD/year. Null when no parseable salary range exists.
+          example: 120000
+        salaryMaxUsd:
+          type:
+          - integer
+          - 'null'
+          description: Upper bound of the listing salary range normalized to USD/year. Null when no parseable salary range exists.
+          example: 180000
+        salaryCurrency:
+          type:
+          - string
+          - 'null'
+          description: ISO-4217 currency code of the original (pre-normalization) salary range (USD, EUR, GBP, ...). Null when no salary was reported.
+          example: USD
+        needsLivenessCheck:
+          type: boolean
+          description: True when the match is a stale-candidate on a browser-required aggregator (indeed/linkedin/glassdoor) and the frontend should call POST /job-matches/{id}/verify-live before allowing swipe-right. False means the listing is fresh enough to swipe directly.
+          example: false
+      required:
+      - appliedAt
+      - applicationStatus
+      - authPlatform
+      - requiresAuth
+      - platformType
+      - benefits
+      - company
+      - companyLogoUrl
+      - companySize
+      - createdAt
+      - description
+      - dismissed
+      - educationRequired
+      - extractedSkills
+      - id
+      - publicJobId
+      - jobType
+      - listingStatus
+      - location
+      - locationMatch
+      - geoTier
+      - distanceKm
+      - matchScore
+      - postedAt
+      - preparationStatus
+      - remoteMatch
+      - resolvedApplyUrl
+      - linkedinApplyMethod
+      - salary
+      - salaryMatch
+      - saved
+      - seniorityMatch
+      - skillsMatch
+      - skillsMatchCount
+      - source
+      - title
+      - url
+      - visaMatch
+      - visaSponsorship
+      - whyGoodFit
+      - workArrangement
+      - city
+      - country
+      - legitimacyTier
+      - freshnessStatus
+      - repostedCount
+      - lastRepostDate
+      - legitimacySignals
+      - seniorityBand
+      - salaryMinUsd
+      - salaryMaxUsd
+      - salaryCurrency
+      - needsLivenessCheck
+      additionalProperties: false
+    SellSeniorPlan:
+      type:
+      - object
+      - 'null'
+      properties:
+        founderAdvantage:
+          type:
+          - string
+          - 'null'
+          minLength: 1
+          maxLength: 500
+          description: Ownership-signal framing when the candidate has founder/builder background; null when no such proof point exists in the resume.
+        framingPhrases:
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 200
+          minItems: 3
+          maxItems: 5
+          description: 3 to 5 short phrases the candidate can use verbatim to frame seniority claims.
+        leadAchievements:
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 280
+          minItems: 3
+          maxItems: 5
+          description: 3 to 5 short bullets of achievements to lead with. MUST cite proof points actually present in the candidate's resume; never invent metrics.
+      required:
+      - founderAdvantage
+      - framingPhrases
+      - leadAchievements
+      additionalProperties: false
+      description: Non-null only when direction is 'at_level' or 'stretch_up'.
+    RequestMoreMatchesResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/RequestMoreMatchesData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    ValidateRolePayload:
+      type: object
+      properties:
+        canonicalTitle:
+          type: string
+        englishTitle:
+          type:
+          - string
+          - 'null'
+        familyLabel:
+          type: string
+        reason:
+          type:
+          - string
+          - 'null'
+        roleFamily:
+          type: string
+          enum:
+          - software_engineer_frontend
+          - software_engineer_backend
+          - software_engineer_fullstack
+          - software_engineer_mobile
+          - software_engineer_embedded
+          - software_engineer_games
+          - software_engineer_generic
+          - devops_sre
+          - platform_infra
+          - security_engineer
+          - qa_test
+          - data_engineer
+          - data_scientist
+          - data_analyst
+          - ml_engineer
+          - ai_research
+          - product_manager
+          - project_program_manager
+          - designer_product
+          - designer_ux_research
+          - designer_visual
+          - engineering_manager
+          - technical_writer
+          - developer_advocate
+          - solutions_engineer
+          - support_engineer
+          - sales
+          - marketing
+          - operations
+          - executive
+          - finance
+          - legal
+          - hr_recruiting
+          - customer_success
+          - healthcare
+          - creative-design
+          - trades-manual
+          - education
+          - hospitality
+          - logistics-supply
+          - manufacturing
+          - gov-nonprofit
+          - marketing-sales
+          - consulting
+          - retail
+          - insurance
+          - admin_office
+          - other
+          - robotics_engineer
+          - control_systems_engineer
+          - mechatronics_engineer
+          - firmware_engineer
+          - fpga_engineer
+          - hardware_engineer
+          - electrical_engineer
+          - rf_engineer
+          - analog_engineer
+          - biomedical_engineer
+          - aerospace_engineer
+          - avionics_engineer
+          - simulation_engineer
+          - computer_vision_engineer
+          - autonomous_vehicles_engineer
+          - graphics_engineer
+          - blockchain_engineer
+          - smart_contract_engineer
+          - game_designer
+          - ios_engineer
+          - android_engineer
+          - mlops_engineer
+          - ai_infrastructure_engineer
+          - llm_engineer
+          - prompt_engineer
+          - research_engineer
+          - applied_scientist
+          - cloud_architect
+          - solutions_architect
+          - enterprise_architect
+          - release_engineer
+          - network_engineer
+          - systems_engineer
+          - database_administrator
+          - appsec_engineer
+          - pentest_engineer
+          - soc_analyst
+          - incident_responder
+          - analytics_engineer
+          - data_architect
+          - bioinformatics_engineer
+          - computational_biologist
+          - quant_analyst
+          - quant_developer
+          - trading_systems_engineer
+          - risk_analyst
+          - sdet
+          - automation_engineer
+          - product_manager_growth
+          - ux_writer
+          - content_designer
+          - design_engineer
+          - documentation_engineer
+          - customer_engineer
+          - implementation_engineer
+          - civil_engineer
+          - mechanical_engineer
+          description: Canonical role family for matching
+          example: software_engineer_frontend
+        scrapeKeywords:
+          type: array
+          items:
+            type: string
+        suggestion:
+          type:
+          - string
+          - 'null'
+        verdict:
+          type: string
+          enum:
+          - valid
+          - typo
+          - rejected
+      required:
+      - canonicalTitle
+      - englishTitle
+      - familyLabel
+      - reason
+      - roleFamily
+      - scrapeKeywords
+      - suggestion
+      - verdict
+    EvaluateMatchResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/EvaluateMatchData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    CvChange:
+      type: object
+      properties:
+        currentState:
+          type: string
+          minLength: 1
+          maxLength: 400
+          description: One-sentence excerpt of what the CV currently has in this section
+        priority:
+          type: string
+          enum:
+          - high
+          - medium
+          - low
+          description: How impactful this change is for the targeted role
+          example: high
+        proposedChange:
+          type: string
+          minLength: 1
+          maxLength: 400
+          description: Specific edit to apply, citing JD vocabulary in native tech English
+        rationale:
+          type: string
+          minLength: 1
+          maxLength: 600
+          description: Why this edit closes a gap or amplifies a strength for THIS archetype
+        section:
+          type: string
+          enum:
+          - summary
+          - experience
+          - skills
+          - projects
+          - education
+          description: Resume section the proposed change targets
+          example: summary
+      required:
+      - currentState
+      - priority
+      - proposedChange
+      - rationale
+      - section
+      additionalProperties: false
+    SubscribeCellBody:
+      type: object
+      properties:
+        country:
+          type: string
+          enum:
+          - ae
+          - ar
+          - at
+          - au
+          - be
+          - bo
+          - br
+          - ca
+          - ch
+          - cl
+          - cn
+          - co
+          - cr
+          - cu
+          - cz
+          - de
+          - dk
+          - do
+          - ec
+          - es
+          - fi
+          - fr
+          - gr
+          - gt
+          - hk
+          - hn
+          - hu
+          - id
+          - ie
+          - il
+          - in
+          - ir
+          - it
+          - jp
+          - kr
+          - lu
+          - mx
+          - my
+          - ni
+          - nl
+          - 'no'
+          - nz
+          - pa
+          - pe
+          - ph
+          - pl
+          - pr
+          - pt
+          - py
+          - ro
+          - ru
+          - se
+          - sg
+          - sv
+          - tr
+          - ua
+          - uk
+          - us
+          - uy
+          - ve
+          - vn
+          - za
+          - xx
+          description: Canonical ISO alpha-2 country code for the SEO cell the user is subscribing to.
+          example: us
+        roleFamily:
+          type: string
+          enum:
+          - software_engineer_frontend
+          - software_engineer_backend
+          - software_engineer_fullstack
+          - software_engineer_mobile
+          - software_engineer_embedded
+          - software_engineer_games
+          - software_engineer_generic
+          - devops_sre
+          - platform_infra
+          - security_engineer
+          - qa_test
+          - data_engineer
+          - data_scientist
+          - data_analyst
+          - ml_engineer
+          - ai_research
+          - product_manager
+          - project_program_manager
+          - designer_product
+          - designer_ux_research
+          - designer_visual
+          - engineering_manager
+          - technical_writer
+          - developer_advocate
+          - solutions_engineer
+          - support_engineer
+          - sales
+          - marketing
+          - operations
+          - executive
+          - finance
+          - legal
+          - hr_recruiting
+          - customer_success
+          - healthcare
+          - creative-design
+          - trades-manual
+          - education
+          - hospitality
+          - logistics-supply
+          - manufacturing
+          - gov-nonprofit
+          - marketing-sales
+          - consulting
+          - retail
+          - insurance
+          - admin_office
+          - other
+          - robotics_engineer
+          - control_systems_engineer
+          - mechatronics_engineer
+          - firmware_engineer
+          - fpga_engineer
+          - hardware_engineer
+          - electrical_engineer
+          - rf_engineer
+          - analog_engineer
+          - biomedical_engineer
+          - aerospace_engineer
+          - avionics_engineer
+          - simulation_engineer
+          - computer_vision_engineer
+          - autonomous_vehicles_engineer
+          - graphics_engineer
+          - blockchain_engineer
+          - smart_contract_engineer
+          - game_designer
+          - ios_engineer
+          - android_engineer
+          - mlops_engineer
+          - ai_infrastructure_engineer
+          - llm_engineer
+          - prompt_engineer
+          - research_engineer
+          - applied_scientist
+          - cloud_architect
+          - solutions_architect
+          - enterprise_architect
+          - release_engineer
+          - network_engineer
+          - systems_engineer
+          - database_administrator
+          - appsec_engineer
+          - pentest_engineer
+          - soc_analyst
+          - incident_responder
+          - analytics_engineer
+          - data_architect
+          - bioinformatics_engineer
+          - computational_biologist
+          - quant_analyst
+          - quant_developer
+          - trading_systems_engineer
+          - risk_analyst
+          - sdet
+          - automation_engineer
+          - product_manager_growth
+          - ux_writer
+          - content_designer
+          - design_engineer
+          - documentation_engineer
+          - customer_engineer
+          - implementation_engineer
+          - civil_engineer
+          - mechanical_engineer
+          description: Canonical role family for the SEO cell the user is subscribing to.
+          example: software_engineer_frontend
+      required:
+      - country
+      - roleFamily
+      additionalProperties: false
+    RevertWideningResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/RevertWideningData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    RoleSummaryBlock:
+      type:
+      - object
+      - 'null'
+      properties:
+        archetype:
+          type: string
+          enum:
+          - ai_platform_llmops
+          - agentic_automation
+          - technical_ai_pm
+          - ai_solutions_architect
+          - ai_forward_deployed
+          - ai_transformation_lead
+          - generic_engineering
+          - generic_product
+          - generic_data
+          - other
+          description: Coarse archetype classification of a job posting (Block A of the structured evaluation).
+          example: ai_platform_llmops
+        keyResponsibilities:
+          type: array
+          items:
+            type: string
+          minItems: 1
+          maxItems: 10
+          description: 2-6 bullets summarizing the role's top responsibilities.
+        oneLineSummary:
+          type: string
+          description: 1-line TL;DR of the role from the candidate's perspective.
+        reportingStructure:
+          type:
+          - string
+          - 'null'
+          description: Who the role reports to / who reports to it. Null when JD is silent.
+        scopeNotes:
+          type:
+          - string
+          - 'null'
+          description: Free-form scope notes (team size, ownership, geographic remit). Null when JD is silent.
+      required:
+      - archetype
+      - keyResponsibilities
+      - oneLineSummary
+      - reportingStructure
+      - scopeNotes
+    LegitimacyBlock:
+      type:
+      - object
+      - 'null'
+      properties:
+        signals:
+          type: object
+          properties:
+            score:
+              type: integer
+            signals:
+              type: array
+              items:
+                type: object
+                properties:
+                  explanation:
+                    type: string
+                    minLength: 1
+                    maxLength: 280
+                  type:
+                    type: string
+                    enum:
+                    - freshness_fresh
+                    - freshness_aging
+                    - freshness_stale
+                    - freshness_unknown
+                    - reposted_recently
+                    - no_repost_history
+                    - jd_specific
+                    - jd_generic
+                    - salary_disclosed
+                    - salary_undisclosed
+                    - requirements_realistic
+                    - requirements_contradictory
+                    - hiring_velocity_healthy
+                    - hiring_velocity_concerning
+                    - role_change_frequent
+                    - ats_treadmill_fast
+                    - ats_treadmill_high_rejection
+                    - layoff_news
+                    description: Discrete posting-legitimacy evidence type
+                    example: freshness_fresh
+                  value:
+                    type: string
+                    maxLength: 120
+                  weight:
+                    type: integer
+                    minimum: -3
+                    maximum: 3
+                required:
+                - explanation
+                - type
+                - value
+                - weight
+                description: One discrete piece of posting-legitimacy evidence
+              maxItems: 18
+            tier:
+              type: string
+              enum:
+              - high_confidence
+              - proceed_with_caution
+              - suspicious
+              description: Posting-legitimacy classification (Block G of the structured evaluation).
+              example: high_confidence
+          required:
+          - score
+          - signals
+          - tier
+          description: Posting-legitimacy verdict + cited evidence rows
+        tier:
+          type: string
+          enum:
+          - high_confidence
+          - proceed_with_caution
+          - suspicious
+          description: Posting-legitimacy classification (Block G of the structured evaluation).
+          example: high_confidence
+      required:
+      - signals
+      - tier
+      additionalProperties: false
+    UpdatePreferencesRequest:
+      type: object
+      properties:
+        benefits:
+          type: array
+          items:
+            type: string
+          description: Must-have job benefits
+          example:
+          - health_insurance
+          - remote_work
+        companySize:
+          type: array
+          items:
+            type: string
+          description: Preferred company sizes
+          example:
+          - startup
+          - small
+        educationLevel:
+          type: string
+          description: Minimum education level filter
+          example: bachelor
+        excludeIndustries:
+          type: array
+          items:
+            type: string
+          description: Industries to exclude from matches
+          example:
+          - Government & Public Sector
+        experienceLevel:
+          type: string
+          enum:
+          - entry
+          - mid
+          - senior
+          - lead
+          - executive
+          description: Target experience level (DEPRECATED scalar  -  prefer `experienceLevels`). When `experienceLevels` is present it wins; this scalar is kept so legacy mobile binaries keep working.
+          example: senior
+        experienceLevels:
+          type: array
+          items:
+            type: string
+            enum:
+            - entry
+            - mid
+            - senior
+            - lead
+            - executive
+            description: Professional experience level
+            example: mid
+          description: Target experience levels (multi-select, new source of truth). Empty/omitted = no seniority constraint. The first element is mirrored into the deprecated scalar `experienceLevel`.
+          example:
+          - mid
+          - senior
+        includeRemote:
+          type: boolean
+          description: Include region-restricted remote jobs (workStyles "remote") even when specific locations are set. Does NOT control worldwide remote  -  see `remoteGlobal`.
+          example: true
+        remoteGlobal:
+          type: boolean
+          description: Accept worldwide "Remote  -  Anywhere (Global)" jobs from any region. Independent of `includeRemote`/workStyles "remote" (which stay region-restricted). Set via the "Remote  -  Anywhere (Global)" option in the location picker.
+          example: false
+        industries:
+          type: array
+          items:
+            type: string
+          description: Target industries
+          example:
+          - Technology
+          - Finance
+        isActive:
+          type: boolean
+          description: Enable or disable daily matches
+          example: true
+        jobTypes:
+          type: array
+          items:
+            type: string
+          description: Preferred job types
+          example:
+          - full_time
+          - contract
+        locations:
+          type: array
+          items:
+            type: string
+          maxItems: 5
+          description: Preferred locations as "City, Country" or "Country" (max 5). Middle admin segments (state/province) are stripped on ingest. Placeholder values ("anywhere", "any", ...) are rejected for security (they disable location scoping and let clients harvest the full job pool). An empty array is accepted ONLY for a caller opted into `remoteGlobal` - worldwide remote is itself the location answer.
+          example:
+          - San Francisco, United States
+          - Berlin, Germany
+        salaryCurrency:
+          type: string
+          enum:
+          - usd
+          - eur
+          - gbp
+          - cad
+          - aud
+          - inr
+          description: Currency for the salary band (converted to USD for matching). Defaults to usd.
+          example: eur
+        salaryMax:
+          type: number
+          minimum: 0
+          description: Maximum salary requirement
+          example: 200000
+        salaryMin:
+          type: number
+          minimum: 0
+          description: Minimum salary requirement
+          example: 100000
+        skills:
+          type: array
+          items:
+            type: string
+          description: User skills (from resume or manual entry)
+          example:
+          - TypeScript
+          - React
+          - Node.js
+          - PostgreSQL
+        targetRoles:
+          type: array
+          items:
+            type: string
+          minItems: 1
+          maxItems: 5
+          description: Target role titles (max 5). When present, at least one specific title is required  -  empty arrays and placeholder values ("anywhere", "any", ...) are rejected for security (they disable role scoping and let clients harvest the full job pool).
+          example:
+          - Software Engineer
+          - Full Stack Developer
+        visaSponsorship:
+          type: string
+          description: Visa sponsorship preference
+          example: required
+        workStyles:
+          type: array
+          items:
+            type: string
+            enum:
+            - onsite
+            - hybrid
+            - remote
+            description: User's preferred work style, physical mode only, no geo scoping
+            example: remote
+          minItems: 1
+          description: Preferred work styles (onsite/hybrid/remote)  -  multi-select, at least 1 required. Geo scoping is inferred from `locations`, NOT this field.
+          example:
+          - remote
+          - hybrid
+      additionalProperties: false
+    VerifyLiveResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/VerifyLiveData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    DownlevelAcceptanceCriteria:
+      type: object
+      properties:
+        compFloor:
+          type: string
+          minLength: 1
+          maxLength: 280
+          description: Compensation threshold below which the candidate should walk away.
+        reviewMonths:
+          type: string
+          minLength: 1
+          maxLength: 280
+          description: Specific 6-month (or similar) review clause text the candidate negotiates up front so a level bump is contractually anchored.
+        scopeExpansion:
+          type: string
+          minLength: 1
+          maxLength: 280
+          description: Concrete scope-expansion path the candidate negotiates as part of accepting the lower level.
+      required:
+      - compFloor
+      - reviewMonths
+      - scopeExpansion
+      additionalProperties: false
+    InterviewPlanBlock:
+      type:
+      - object
+      - 'null'
+      properties:
+        questionCategories:
+          type: array
+          items:
+            type: object
+            properties:
+              category:
+                type: string
+              questions:
+                type: array
+                items:
+                  type: string
+                default: []
+            required:
+            - category
+            additionalProperties: false
+          default: []
+          description: Likely interview questions grouped by category (behavioral / technical / role-specific).
+        recommendedCaseStudy:
+          type:
+          - string
+          - 'null'
+          minLength: 1
+          maxLength: 800
+          description: 1-paragraph recommended case-study or take-home framing, or null.
+        starStories:
+          type: array
+          items:
+            type: object
+            properties:
+              action:
+                type: string
+              id:
+                type:
+                - string
+                - 'null'
+              reflection:
+                type:
+                - string
+                - 'null'
+              result:
+                type: string
+              situation:
+                type: string
+              task:
+                type: string
+              title:
+                type: string
+            required:
+            - action
+            - id
+            - reflection
+            - result
+            - situation
+            - task
+            - title
+            additionalProperties: false
+          default: []
+          description: STAR+R stories (typically 3-6) the candidate can pull on for behavioral questions.
+      required:
+      - recommendedCaseStudy
+      additionalProperties: false
+    CompDemandBlock:
+      type:
+      - object
+      - 'null'
+      properties:
+        companyCompReputation:
+          type: object
+          properties:
+            signals:
+              type: array
+              items:
+                type: string
+              description: Signals that indicate comp positioning (funding, size, industry, benefits mentioned)
+            tier:
+              type: string
+          required:
+          - signals
+          - tier
+          additionalProperties: false
+        geographicFactors:
+          type: object
+          properties:
+            costOfLivingAdjustment:
+              type:
+              - string
+              - 'null'
+              description: How location affects comp, or null if remote
+            locationTier:
+              type: string
+            remotePolicy:
+              type:
+              - string
+              - 'null'
+          required:
+          - costOfLivingAdjustment
+          - locationTier
+          - remotePolicy
+          additionalProperties: false
+        levelAnalysis:
+          type: object
+          properties:
+            compBand:
+              type: string
+              description: Typical comp band for this level in this industry
+            detectedLevel:
+              type: string
+              description: Seniority level detected from JD (Junior, Mid, Senior, Staff, Principal, etc.)
+            levelJustification:
+              type: string
+              description: Why this level was detected (years req, scope, reporting structure)
+          required:
+          - compBand
+          - detectedLevel
+          - levelJustification
+          additionalProperties: false
+        marketDemand:
+          type: object
+          properties:
+            level:
+              type: string
+            reasoning:
+              type: string
+            trendDirection:
+              type: string
+          required:
+          - level
+          - reasoning
+          - trendDirection
+          additionalProperties: false
+        negotiationInsights:
+          type: object
+          properties:
+            counterOfferScript:
+              type: string
+              description: How to respond to a below-target offer
+            initialResponseScript:
+              type: string
+              description: How to answer "what are your salary expectations?"
+            leveragePoints:
+              type: array
+              items:
+                type: string
+              description: Specific advantages the candidate has for negotiation
+            riskFactors:
+              type: array
+              items:
+                type: string
+              description: Things that might limit negotiation leverage
+          required:
+          - counterOfferScript
+          - initialResponseScript
+          - leveragePoints
+          - riskFactors
+          additionalProperties: false
+        salaryRange:
+          type: object
+          properties:
+            currency:
+              type: string
+            high:
+              type:
+              - number
+              - 'null'
+            low:
+              type:
+              - number
+              - 'null'
+            median:
+              type:
+              - number
+              - 'null'
+            source:
+              type: string
+              description: How this range was estimated (JD signals, role level, industry benchmarks)
+          required:
+          - currency
+          - high
+          - low
+          - median
+          - source
+          additionalProperties: false
+      required:
+      - companyCompReputation
+      - geographicFactors
+      - levelAnalysis
+      - marketDemand
+      - negotiationInsights
+      - salaryRange
+    CvMatchBlock:
+      type:
+      - object
+      - 'null'
+      properties:
+        gaps:
+          type: array
+          items:
+            $ref: '#/components/schemas/CvMatchGap'
+          maxItems: 12
+          description: 0-8 gaps with mitigation strategies.
+        overallFitNote:
+          type: string
+          description: 1-3 sentence summary of how well the candidate matches.
+        requirements:
+          type: array
+          items:
+            $ref: '#/components/schemas/CvMatchRequirement'
+          maxItems: 20
+          description: 3-15 requirement-by-requirement match rows.
+      required:
+      - gaps
+      - overallFitNote
+      - requirements
+    GetEvaluationData:
+      type: object
+      properties:
+        blocks:
+          $ref: '#/components/schemas/EvaluationBlocks'
+        documentId:
+          type:
+          - integer
+          - 'null'
+          description: user_documents.id of the persisted markdown body, or null when no evaluation document exists.
+          example: 1234
+        generatedAt:
+          type:
+          - string
+          - 'null'
+          description: ISO timestamp of when the persisted match-report was last written. Null when no document exists.
+          example: '2026-05-10T12:34:56Z'
+        jobMatchId:
+          type: integer
+          description: job_matches.id the evaluation belongs to.
+          example: 567
+        matchScore:
+          type:
+          - number
+          - 'null'
+          description: Stored job_match.match_score (0-100). The match report leads on this figure, so it ships with the evaluation rather than being scraped out of the job-matches list query cache - which is empty on a direct page load and made a scored job render as "Not scored". Null only when the match genuinely carries no score.
+          example: 74
+        status:
+          type: string
+          enum:
+          - idle
+          - generating
+          - completed
+          - failed
+          - out_of_tokens
+          description: 'Persisted generation state, read from the PRIMARY so the client never sees a stale `generating` after the queue consumer has finished. Never `out_of_tokens` here - that is decided by POST /evaluate against the live balance and is not persisted. Rows written before migration 0223 have no stored status and are derived: a linked document means `completed`, otherwise `idle`.'
+          example: completed
+      required:
+      - blocks
+      - documentId
+      - generatedAt
+      - jobMatchId
+      - matchScore
+      - status
+      additionalProperties: false
+    VerifyLiveData:
+      type: object
+      properties:
+        live:
+          type: boolean
+          description: True when the listing is still live (fresh, verified-live by a browser render, or could-not-be-checked so we fail open). False only when a browser render confirmed the listing is dead.
+          example: true
+        removed:
+          type: boolean
+          description: True when a dead listing was detected and the global removeTerminalJob cascade ran (scraped_job deleted, all matching job_match rows dismissed, pending application_result rows failed). The frontend should drop the card and advance the deck when true.
+          example: false
+        reason:
+          type: string
+          description: 'Why this verdict was reached: "fresh" (short-circuited, recently scraped/checked), "verified_live" (browser render found a live page), "unverified_cap" (BR cap hit or no binding, failed open), "http_404" / "dead_page_detector" / "expired_body" (browser render confirmed dead).'
+          example: fresh
+      required:
+      - live
+      - removed
+      - reason
+      additionalProperties: false
+    SubscribeCellPayload:
+      type: object
+      properties:
+        missId:
+          type: integer
+        status:
+          type: string
+          enum:
+          - pending
+          - normalized
+          - fulfilled
+          - rejected
+          - remapped
+          description: Lifecycle state of a user-submitted role or location suggestion
+          example: pending
+        submissionCount:
+          type: integer
+          minimum: 1
+        suggestionId:
+          type: integer
+      required:
+      - missId
+      - status
+      - submissionCount
+      - suggestionId
+      additionalProperties: false
+    EvaluationBlocks:
+      type:
+      - object
+      - 'null'
+      properties:
+        compDemand:
+          type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/CompDemandBlock'
+            ok:
+              type: boolean
+            reason:
+              type:
+              - string
+              - 'null'
+          required:
+          - data
+          - ok
+          - reason
+          additionalProperties: false
+        cvMatch:
+          type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/CvMatchBlock'
+            ok:
+              type: boolean
+            reason:
+              type:
+              - string
+              - 'null'
+          required:
+          - data
+          - ok
+          - reason
+          additionalProperties: false
+        generatedAt:
+          type: string
+          format: date-time
+        interviewPlan:
+          type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/InterviewPlanBlock'
+            ok:
+              type: boolean
+            reason:
+              type:
+              - string
+              - 'null'
+          required:
+          - data
+          - ok
+          - reason
+          additionalProperties: false
+        jobMatchId:
+          type: integer
+          exclusiveMinimum: 0
+        legitimacy:
+          type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/LegitimacyBlock'
+            ok:
+              type: boolean
+            reason:
+              type:
+              - string
+              - 'null'
+          required:
+          - data
+          - ok
+          - reason
+          additionalProperties: false
+        levelStrategy:
+          type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/LevelStrategyBlock'
+            ok:
+              type: boolean
+            reason:
+              type:
+              - string
+              - 'null'
+          required:
+          - data
+          - ok
+          - reason
+          additionalProperties: false
+        personalizationPlan:
+          type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/PersonalizationPlanBlock'
+            ok:
+              type: boolean
+            reason:
+              type:
+              - string
+              - 'null'
+          required:
+          - data
+          - ok
+          - reason
+          additionalProperties: false
+        roleSummary:
+          type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/RoleSummaryBlock'
+            ok:
+              type: boolean
+            reason:
+              type:
+              - string
+              - 'null'
+          required:
+          - data
+          - ok
+          - reason
+          additionalProperties: false
+      required:
+      - compDemand
+      - cvMatch
+      - generatedAt
+      - interviewPlan
+      - jobMatchId
+      - legitimacy
+      - levelStrategy
+      - personalizationPlan
+      - roleSummary
+      additionalProperties: false
+      description: Persisted structured 7-block payload (Blocks A-G). Null when no evaluation has been generated yet OR the stored blob failed schema validation.
+    PreferencesResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/PreferencesResponseData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    DismissMatchBody:
+      type: object
+      properties:
+        dismissReason:
+          type: string
+          enum:
+          - not_interested
+          - wrong_location
+          - too_senior
+          - too_junior
+          - salary_too_low
+          - wrong_role
+          - company_mismatch
+          - already_applied
+          - other
+          description: Optional structured reason the user picked when dismissing the match. Persisted to job_match.dismiss_reason so the engagement-feedback loop can learn which matches get rejected and why.
+          example: not_interested
+      additionalProperties: false
+  securitySchemes:
+    BearerAuth:
+      description: 'Session token from signing in to AI Applyd, sent as `Authorization: Bearer <token>`.'
+      scheme: bearer
+      type: http
+x-refined-from:
+- aiapplyd-openapi.json
+- aiapplyd-openapi.yml

@@ -1,0 +1,2253 @@
+openapi: 3.2.0
+info:
+  title: Aiapplyd Relay Inbox API
+  version: 115c47ce
+  contact:
+    email: support@aiapplyd.com
+    name: AI Applyd
+    url: https://aiapplyd.com
+  license:
+    name: Proprietary
+    url: https://aiapplyd.com/legal/terms
+  description: 'Operations tagged relay-inbox across 2 of this provider''s published API definitions: aiapplyd-openapi.json, aiapplyd-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- description: Current environment
+  url: https://api.aiapplyd.com/api/v1
+security:
+- BearerAuth: []
+tags:
+- name: relay-inbox
+paths:
+  /relay-inbox:
+    get:
+      tags:
+      - relay-inbox
+      summary: List Inbox Emails
+      description: List the authenticated user's synced inbound emails (gmail + relay), most recent first. Optionally filter by applicationResultId or jobListingId.
+      parameters:
+      - schema:
+          type: integer
+          description: Filter to emails linked to this application result row
+          example: 1234
+          exclusiveMinimum: 0
+        required: false
+        description: Filter to emails linked to this application result row
+        name: applicationResultId
+        in: query
+      - schema:
+          anyOf:
+          - type: boolean
+          - type: string
+            enum:
+            - '0'
+            - '1'
+            - 'true'
+            - 'false'
+          description: When true, return ARCHIVED emails (archivedAt set); when false, the active inbox. Omitted on a read scoped to one application or job listing, which returns both.
+          example: false
+        required: false
+        description: When true, return ARCHIVED emails (archivedAt set); when false, the active inbox. Omitted on a read scoped to one application or job listing, which returns both.
+        name: archived
+        in: query
+      - schema:
+          type: string
+          enum:
+          - action_required
+          - application_confirmation
+          - assessment_request
+          - cancellation
+          - follow_up_request
+          - general
+          - interview_invite
+          - offer_letter
+          - outbound
+          - promotional
+          - recruiter_outreach
+          - rejection
+          - reschedule
+          - scheduling
+          - spam
+          - unrelated
+          - verification
+          description: Filter to a single effective category (coalesce(override, signalType)). Allowlist-gated - a hidden category returns nothing.
+          example: interview_invite
+        required: false
+        description: Filter to a single effective category (coalesce(override, signalType)). Allowlist-gated - a hidden category returns nothing.
+        name: category
+        in: query
+      - schema:
+          type: integer
+          description: Filter to emails linked to this job listing row
+          example: 5678
+          exclusiveMinimum: 0
+        required: false
+        description: Filter to emails linked to this job listing row
+        name: jobListingId
+        in: query
+      - schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 50
+          description: Max rows to return (most recent first)
+          example: 50
+        required: false
+        description: Max rows to return (most recent first)
+        name: limit
+        in: query
+      - schema:
+          type:
+          - integer
+          - 'null'
+          minimum: 0
+          default: 0
+          description: Number of rows to skip (pagination), applied after filters/sort.
+          example: 0
+        required: false
+        description: Number of rows to skip (pagination), applied after filters/sort.
+        name: offset
+        in: query
+      - schema:
+          type: string
+          minLength: 1
+          maxLength: 200
+          description: Case-insensitive substring match across subject, sender name, sender email, and snippet.
+          example: interview
+        required: false
+        description: Case-insensitive substring match across subject, sender name, sender email, and snippet.
+        name: search
+        in: query
+      - schema:
+          type: string
+          enum:
+          - received_desc
+          - received_asc
+          default: received_desc
+          description: Sort order for the inbox feed by received time (newest or oldest first).
+          example: received_desc
+        required: false
+        description: Sort order for the inbox feed by received time (newest or oldest first).
+        name: sort
+        in: query
+      - schema:
+          anyOf:
+          - type: boolean
+          - type: string
+            enum:
+            - '0'
+            - '1'
+            - 'true'
+            - 'false'
+          description: When true, return only STARRED emails (starredAt set).
+          example: true
+        required: false
+        description: When true, return only STARRED emails (starredAt set).
+        name: starred
+        in: query
+      - schema:
+          anyOf:
+          - type: boolean
+          - type: string
+            enum:
+            - '0'
+            - '1'
+            - 'true'
+            - 'false'
+          description: When true, only UNREAD emails (readAt null); when false, only READ; absent returns both.
+          example: true
+        required: false
+        description: When true, only UNREAD emails (readAt null); when false, only READ; absent returns both.
+        name: unread
+        in: query
+      responses:
+        '200':
+          description: Inbox emails retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RelayInboxListResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: getRelayInbox
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+  /relay-inbox/counts:
+    get:
+      tags:
+      - relay-inbox
+      summary: Inbox Counts
+      description: 'Return the authenticated user''s active-inbox tallies: the unread count and a per-effective-category breakdown (every visible category key present, 0 when none). Computed over the ACTIVE inbox only (archivedAt IS NULL) and gated by the same recruiter-relevant allowlist as the list. Powers the cross-surface inbox status (tracking / overview / single-application) without re-fetching the full list.'
+      responses:
+        '200':
+          description: Inbox counts retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RelayInboxCountsResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: getRelayInboxCounts
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+  /relay-inbox/bulk:
+    post:
+      tags:
+      - relay-inbox
+      summary: Bulk Inbox Action
+      description: Apply a single action (read / unread / archive / unarchive / star / unstar) to up to 200 owned inbox emails in one atomic D1 batch. Only the user's own relay rows among the requested ids are touched; returns the number actually updated.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RelayBulkRequest'
+      responses:
+        '200':
+          description: Bulk action applied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RelayBulkResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: postRelayInboxBulk
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+  /relay-inbox/{id}:
+    get:
+      tags:
+      - relay-inbox
+      summary: Get Inbox Email Detail
+      description: Return the FULL contents of a single inbox email owned by the authenticated user - full body (bodyText), persisted outbound HTML or recovered inbound HTML, the recruiter's real sender address, classifier signal + confidence, and the matched company/job.
+      parameters:
+      - schema:
+          type: string
+          pattern: ^\d+$
+          description: synced_email row id (the inbox message)
+          example: '1'
+        required: true
+        description: synced_email row id (the inbox message)
+        in: path
+        name: id
+      responses:
+        '200':
+          description: Full email retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RelayInboxDetailResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: getRelayInboxById
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+  /relay-inbox/{id}/thread:
+    get:
+      tags:
+      - relay-inbox
+      summary: Get Inbox Email Thread
+      description: Return EVERY owned relay message in the same conversation as the given email - inbound recruiter mail AND the user's own outbound replies (signalType `outbound`) - oldest first, so the UI renders the two-way thread top-down. Messages share the target's threadId; a threadId-less email returns just itself. Each message carries its full bodyText plus persisted outbound HTML or best-effort inbound HTML recovered from raw MIME.
+      parameters:
+      - schema:
+          type: string
+          pattern: ^\d+$
+          description: synced_email row id (the inbox message)
+          example: '1'
+        required: true
+        description: synced_email row id (the inbox message)
+        in: path
+        name: id
+      responses:
+        '200':
+          description: Thread messages retrieved (oldest first)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RelayInboxThreadResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: getRelayInboxByIdThread
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+  /relay-inbox/{id}/attachments/{partId}:
+    get:
+      tags:
+      - relay-inbox
+      summary: Download Inbox Attachment
+      description: 'Stream one file a sender attached to an owned inbox email, addressed by the `partId` from the detail read''s `attachments` list. The file is decoded live from the stored raw MIME (nothing is persisted per attachment), scoped to the authenticated owner of the message. Always served as a download (Content-Disposition: attachment, nosniff), and HTML/SVG/XML parts are typed as application/octet-stream so an attachment can never execute on the API origin. Returns 404 when the message is not the user''s, when no part carries that id, or when the raw message is no longer stored (older messages are evicted once a user passes their stored-mail cap).'
+      parameters:
+      - schema:
+          type: string
+          pattern: ^\d+$
+          description: synced_email row id (the inbox message)
+          example: '1'
+        required: true
+        description: synced_email row id (the inbox message)
+        in: path
+        name: id
+      - schema:
+          type: string
+          maxLength: 64
+          pattern: ^\d[\d.]{0,62}$
+          description: MIME part index path from the detail read's `attachments[].partId` ("2", "1.3").
+          example: '2'
+        required: true
+        description: MIME part index path from the detail read's `attachments[].partId` ("2", "1.3").
+        in: path
+        name: partId
+      responses:
+        '200':
+          description: Attachment file bytes
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: getRelayInboxByIdAttachmentsByPartId
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+  /relay-inbox/{id}/category:
+    patch:
+      tags:
+      - relay-inbox
+      summary: Re-categorize Inbox Email
+      description: Set the user's manual category override for an owned inbox email (fixes classifier false positives). Stores `userCategoryOverride` so the corrected category becomes the `effectiveSignalType` everywhere, AND re-applies the application-stage outcome for the corrected category (interview / offer / rejection), guarded against downgrading a more-advanced stage exactly like the email-detected path. Spam/promotional corrections never advance a stage.
+      parameters:
+      - schema:
+          type: string
+          pattern: ^\d+$
+          description: synced_email row id (the inbox message)
+          example: '1'
+        required: true
+        description: synced_email row id (the inbox message)
+        in: path
+        name: id
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RelayCategoryUpdateRequest'
+      responses:
+        '200':
+          description: Category override saved and outcome re-applied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RelayCategoryUpdateResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: patchRelayInboxByIdCategory
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+  /relay-inbox/{id}/read:
+    patch:
+      tags:
+      - relay-inbox
+      summary: Mark Inbox Email Read/Unread
+      description: 'Set the read state of an owned inbox email. `read: true` stamps `readAt = now`; `read: false` clears it (mark unread). Scoped to the authenticated user''s own relay rows.'
+      parameters:
+      - schema:
+          type: string
+          pattern: ^\d+$
+          description: synced_email row id (the inbox message)
+          example: '1'
+        required: true
+        description: synced_email row id (the inbox message)
+        in: path
+        name: id
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RelayReadRequest'
+      responses:
+        '200':
+          description: Read state updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RelayInboxStateResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: patchRelayInboxByIdRead
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+  /relay-inbox/{id}/archive:
+    patch:
+      tags:
+      - relay-inbox
+      summary: Archive/Unarchive Inbox Email
+      description: 'Set the archived state of an owned inbox email. `archived: true` stamps `archivedAt = now` (moves it to the Archived view); `archived: false` clears it (restores to the active inbox). Scoped to the user''s own relay rows.'
+      parameters:
+      - schema:
+          type: string
+          pattern: ^\d+$
+          description: synced_email row id (the inbox message)
+          example: '1'
+        required: true
+        description: synced_email row id (the inbox message)
+        in: path
+        name: id
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RelayArchiveRequest'
+      responses:
+        '200':
+          description: Archive state updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RelayInboxStateResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: patchRelayInboxByIdArchive
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+  /relay-inbox/{id}/star:
+    patch:
+      tags:
+      - relay-inbox
+      summary: Star/Unstar Inbox Email
+      description: 'Set the starred (pin) state of an owned inbox email. `starred: true` stamps `starredAt = now`; `starred: false` clears it. Scoped to the user''s own relay rows.'
+      parameters:
+      - schema:
+          type: string
+          pattern: ^\d+$
+          description: synced_email row id (the inbox message)
+          example: '1'
+        required: true
+        description: synced_email row id (the inbox message)
+        in: path
+        name: id
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RelayStarRequest'
+      responses:
+        '200':
+          description: Star state updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RelayInboxStateResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: patchRelayInboxByIdStar
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+  /relay-inbox/{id}/reply:
+    post:
+      tags:
+      - relay-inbox
+      summary: Reply to Inbox Email
+      description: 'Send the user''s reply OUT to the original recruiter from the user''s relay alias, so the recruiter only ever sees the alias and the user''s real address stays private. Accepts canonical plaintext plus optional rich HTML; the server sanitizes the HTML and derives the guarded plaintext from it before SES. The reply carries RFC822 threading headers (In-Reply-To / References / fresh Message-ID) + an `Re:` subject so it lands inside the recruiter''s original thread, and both sent parts are persisted on a relay synced_email row (signalType `outbound`, shared threadId) so both directions appear in the Inbox thread. ABUSE-GATED (fail-closed): recipient validity, body-size cap, per-user hourly burst bucket, and a plan-gated daily cap - over-limit returns 429; an invalid/bulk/suppressed recipient or oversized body returns 400. Gated on RELAY_EMAIL_DOMAIN alone (the sole relay kill-switch) - when the domain is unset, returns 200 with status `relay_disabled` (nothing sent) so the UI can show it is pending go-live.'
+      parameters:
+      - schema:
+          type: string
+          pattern: ^\d+$
+          description: synced_email row id (the inbox message)
+          example: '1'
+        required: true
+        description: synced_email row id (the inbox message)
+        in: path
+        name: id
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RelayReplyRequest'
+      responses:
+        '200':
+          description: Reply sent (or skipped with status when relay disabled)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RelayReplyResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '429':
+          description: Too Many Requests
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: postRelayInboxByIdReply
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+  /relay-inbox/forwarding/stop:
+    get:
+      tags:
+      - relay-inbox
+      summary: Mute Non-Essential Emails (confirm page)
+      description: 'SAFE (RFC 9110): performs ZERO writes. Public link from the forwarded relay email footer. Verifies the signed email-preferences token and returns a self-contained HTML confirmation page whose button POSTs to this same path to actually mute. Automated GETs from mail-security scanners (Gmail link proxy, Apple MPP, Outlook SafeLinks, Proofpoint/Barracuda detonation) therefore change nothing. An invalid/expired token redirects (302) to the web inbox with `forwarding=invalid`.'
+      parameters:
+      - schema:
+          type: string
+          minLength: 1
+          description: Signed email-preferences token (userId + email) identifying whose relay alias to stop forwarding.
+          example: eyJ1c2VySWQiOiJ1c2VyXzEyMyJ9.abc123
+        required: true
+        description: Signed email-preferences token (userId + email) identifying whose relay alias to stop forwarding.
+        name: token
+        in: query
+      responses:
+        '200':
+          description: Confirmation page rendered. Nothing was changed.
+          content:
+            text/html:
+              schema:
+                type: string
+                description: Self-contained HTML confirmation page (no external assets).
+        '302':
+          description: Redirect (302) to the web inbox when the token is invalid or expired.
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: getRelayInboxForwardingStop
+    post:
+      tags:
+      - relay-inbox
+      summary: Mute Non-Essential Emails (confirm)
+      description: 'The ONLY mutating half of the mute flow: submitted by the button on the GET confirmation page (same signed token, carried in the query string). Verifies the token, then mutes non-essential forwarding for that user''s relay alias (sets status=disabled). Essential mail (interview invites, assessment requests, offers, application confirmations) is still forwarded; every inbound message is still captured + classified into the AI Applyd inbox. Redirects (302) to the web inbox with `forwarding=stopped` (or `forwarding=invalid` on a bad token).'
+      parameters:
+      - schema:
+          type: string
+          minLength: 1
+          description: Signed email-preferences token (userId + email) identifying whose relay alias to stop forwarding.
+          example: eyJ1c2VySWQiOiJ1c2VyXzEyMyJ9.abc123
+        required: true
+        description: Signed email-preferences token (userId + email) identifying whose relay alias to stop forwarding.
+        name: token
+        in: query
+      responses:
+        '302':
+          description: Redirect (302) to the web inbox after muting (or on an invalid/expired token).
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: postRelayInboxForwardingStop
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+components:
+  schemas:
+    ApiErrorResponse:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+            context:
+              oneOf:
+              - type: object
+                properties:
+                  errorType:
+                    type: string
+                    enum:
+                    - validation
+                  field:
+                    type: string
+                  fieldErrors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        code:
+                          type: string
+                        expected:
+                          type: string
+                        field:
+                          type: string
+                        message:
+                          type: string
+                        received:
+                          type: string
+                      required:
+                      - field
+                      - message
+                  schemaName:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  attemptedEmail:
+                    type: string
+                    format: email
+                  errorType:
+                    type: string
+                    enum:
+                    - authentication
+                  failureReason:
+                    type: string
+                    enum:
+                    - invalid_credentials
+                    - account_locked
+                    - expired_token
+                    - token_expired
+                    - missing_token
+                    - invalid_token
+                    - session_expired
+                    description: Reason for authentication failure
+                    example: token_expired
+                  ipAddress:
+                    type: string
+                  operation:
+                    type: string
+                  service:
+                    type: string
+                  userAgent:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  actualPermission:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - authorization
+                  requiredPermission:
+                    type: string
+                  resource:
+                    type: string
+                  resourceId:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  constraint:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - database
+                  operation:
+                    type: string
+                    enum:
+                    - insert
+                    - update
+                    - delete
+                    - select
+                    - batch
+                    - transaction
+                    - migration
+                    description: Type of database operation
+                    example: select
+                  resourceId:
+                    type: string
+                  sqlState:
+                    type: string
+                  table:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  endpoint:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - external_service
+                  httpStatus:
+                    type: number
+                  operation:
+                    type: string
+                  resourceId:
+                    type: string
+                  responseTime:
+                    type: number
+                  retryAttempt:
+                    type: integer
+                  service:
+                    type: string
+                  serviceName:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  errorType:
+                    type: string
+                    enum:
+                    - resource
+                  resource:
+                    type: string
+                  resourceId:
+                    type: string
+                  service:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  errorType:
+                    type: string
+                    enum:
+                    - rate_limit
+                  limit:
+                    type: number
+                  resetTime:
+                    type: string
+                  windowMs:
+                    type: number
+                required:
+                - errorType
+              - type: object
+                properties:
+                  configKey:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - configuration
+                  operation:
+                    type: string
+                  service:
+                    type: string
+                required:
+                - errorType
+              description: Type-safe error context information
+              example:
+                errorType: validation
+                fieldErrors:
+                - field: email
+                  message: Invalid email format
+            details:
+              oneOf:
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - validation
+                  validationErrors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        code:
+                          type: string
+                        field:
+                          type: string
+                        message:
+                          type: string
+                      required:
+                      - field
+                      - message
+                required:
+                - detailType
+                - validationErrors
+                additionalProperties: false
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - service_error
+                  originalError:
+                    type: string
+                  serviceName:
+                    type: string
+                required:
+                - detailType
+                - serviceName
+                additionalProperties: false
+              - type: object
+                properties:
+                  currentSize:
+                    type: number
+                  detailType:
+                    type: string
+                    enum:
+                    - batch
+                  originalError:
+                    type: string
+                  statementCount:
+                    type: number
+                required:
+                - detailType
+                additionalProperties: false
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - rate_limit
+                  limit:
+                    type: number
+                  resetTime:
+                    type: string
+                  windowMs:
+                    type: number
+                required:
+                - detailType
+                - limit
+                - resetTime
+                - windowMs
+                additionalProperties: false
+              - type: object
+                properties:
+                  conflictingField:
+                    type: string
+                  detailType:
+                    type: string
+                    enum:
+                    - resource
+                  resourceId:
+                    anyOf:
+                    - type: string
+                    - type: number
+                  resourceType:
+                    type: string
+                required:
+                - detailType
+                additionalProperties: false
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - generic
+                  info:
+                    type: string
+                required:
+                - detailType
+                additionalProperties: false
+              - type: object
+                properties:
+                  currentTokens:
+                    type: integer
+                    minimum: 0
+                  detailType:
+                    type: string
+                    enum:
+                    - insufficient_tokens
+                  requiredTokens:
+                    type: integer
+                    minimum: 0
+                required:
+                - currentTokens
+                - detailType
+                - requiredTokens
+                additionalProperties: false
+            message:
+              type: string
+            validation:
+              type: array
+              items:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  field:
+                    type: string
+                  message:
+                    type: string
+                required:
+                - field
+                - message
+                additionalProperties: false
+          required:
+          - code
+          - message
+          additionalProperties: false
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - false
+      required:
+      - error
+      - success
+      additionalProperties: false
+    RelayCategoryUpdateRequest:
+      type: object
+      properties:
+        signalType:
+          type: string
+          enum:
+          - action_required
+          - application_confirmation
+          - assessment_request
+          - cancellation
+          - follow_up_request
+          - general
+          - interview_invite
+          - offer_letter
+          - outbound
+          - promotional
+          - recruiter_outreach
+          - rejection
+          - reschedule
+          - scheduling
+          - spam
+          - unrelated
+          - verification
+          description: The corrected category for this email. Stored as `userCategoryOverride` and becomes the `effectiveSignalType`. Re-applies the application-stage outcome for the corrected category (downgrade-guarded).
+          example: interview_invite
+      required:
+      - signalType
+      additionalProperties: false
+    RelayCategoryUpdateResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/RelayCategoryUpdateResult'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    RelayInboxByCategory:
+      type: object
+      properties:
+        action_required:
+          type: integer
+          minimum: 0
+        application_confirmation:
+          type: integer
+          minimum: 0
+        assessment_request:
+          type: integer
+          minimum: 0
+        cancellation:
+          type: integer
+          minimum: 0
+        follow_up_request:
+          type: integer
+          minimum: 0
+        general:
+          type: integer
+          minimum: 0
+        interview_invite:
+          type: integer
+          minimum: 0
+        offer_letter:
+          type: integer
+          minimum: 0
+        outbound:
+          type: integer
+          minimum: 0
+        promotional:
+          type: integer
+          minimum: 0
+        recruiter_outreach:
+          type: integer
+          minimum: 0
+        rejection:
+          type: integer
+          minimum: 0
+        reschedule:
+          type: integer
+          minimum: 0
+        scheduling:
+          type: integer
+          minimum: 0
+        spam:
+          type: integer
+          minimum: 0
+        unrelated:
+          type: integer
+          minimum: 0
+        verification:
+          type: integer
+          minimum: 0
+      required:
+      - action_required
+      - application_confirmation
+      - assessment_request
+      - cancellation
+      - follow_up_request
+      - general
+      - interview_invite
+      - offer_letter
+      - outbound
+      - promotional
+      - recruiter_outreach
+      - rejection
+      - reschedule
+      - scheduling
+      - spam
+      - unrelated
+      - verification
+      additionalProperties: false
+      description: Active-inbox counts per visible effective category (every key present, 0 when none).
+    RelayInboxCounts:
+      type: object
+      properties:
+        byCategory:
+          $ref: '#/components/schemas/RelayInboxByCategory'
+        unread:
+          type: integer
+          minimum: 0
+          description: Number of unread (readAt null) emails in the active inbox (archivedAt null).
+          example: 3
+        unreadEmployerOutcomes:
+          type: integer
+          minimum: 0
+          description: Unread active relay emails in effective employer lifecycle categories, including receipts and recruiter replies. Excludes general, outbound, account verification and junk categories. Category count, not proof of a landed application. Missing on older responses means unobserved, not zero.
+          example: 2
+      required:
+      - byCategory
+      - unread
+      additionalProperties: false
+    RelayBulkResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/RelayBulkResult'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    ResponseMetadata:
+      type: object
+      properties:
+        duration:
+          type: number
+          description: Request duration in milliseconds
+          example: 150
+          exclusiveMinimum: 0
+        performance:
+          type: object
+          properties:
+            dbQueries:
+              type: integer
+              minimum: 0
+            totalDbTime:
+              type: number
+              minimum: 0
+          description: Performance metrics (preview/local only)
+        requestId:
+          type: string
+          description: Unique request identifier
+          example: req_abc123
+        timestamp:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp
+          example: '2026-09-25T17:29:47.224Z'
+        version:
+          type: string
+          description: API version
+          example: v1
+    RelayCategoryUpdateResult:
+      type: object
+      properties:
+        effectiveSignalType:
+          type: string
+          enum:
+          - action_required
+          - application_confirmation
+          - assessment_request
+          - cancellation
+          - follow_up_request
+          - general
+          - interview_invite
+          - offer_letter
+          - outbound
+          - promotional
+          - recruiter_outreach
+          - rejection
+          - reschedule
+          - scheduling
+          - spam
+          - unrelated
+          - verification
+          description: The authoritative category after the correction (equals the new override).
+          example: interview_invite
+        id:
+          type: integer
+          description: synced_email row id that was re-categorized
+          example: 9001
+          exclusiveMinimum: 0
+        userCategoryOverride:
+          type: string
+          enum:
+          - action_required
+          - application_confirmation
+          - assessment_request
+          - cancellation
+          - follow_up_request
+          - general
+          - interview_invite
+          - offer_letter
+          - outbound
+          - promotional
+          - recruiter_outreach
+          - rejection
+          - reschedule
+          - scheduling
+          - spam
+          - unrelated
+          - verification
+          description: The stored user category override (the corrected category).
+          example: interview_invite
+      required:
+      - effectiveSignalType
+      - id
+      - userCategoryOverride
+      additionalProperties: false
+    RelayInboxStateResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/RelayInboxStateResult'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    RelayStarRequest:
+      type: object
+      properties:
+        starred:
+          type: boolean
+          description: true → star/pin (stamp starredAt = now); false → unstar (clear starredAt).
+          example: true
+      required:
+      - starred
+      additionalProperties: false
+    RelayInboxStateResult:
+      type: object
+      properties:
+        archivedAt:
+          type:
+          - string
+          - 'null'
+          description: ISO timestamp the email is archived, or null.
+        id:
+          type: integer
+          description: synced_email row id that was updated.
+          example: 9001
+          exclusiveMinimum: 0
+        readAt:
+          type:
+          - string
+          - 'null'
+          description: ISO timestamp the email is read, or null.
+        starredAt:
+          type:
+          - string
+          - 'null'
+          description: ISO timestamp the email is starred, or null.
+      required:
+      - archivedAt
+      - id
+      - readAt
+      - starredAt
+      additionalProperties: false
+    RelayInboxAttachment:
+      type: object
+      properties:
+        filename:
+          type: string
+          description: The sender's filename, RFC 2047/2231 decoded. Falls back to `attachment-<partId>` when the part declares none.
+          example: offer-letter.pdf
+        mimeType:
+          type: string
+          description: The part's declared MIME type (type/subtype only).
+          example: application/pdf
+        partId:
+          type: string
+          description: Index path of the MIME part inside the message ("2", "1.3"). Pass it to GET /relay-inbox/{id}/attachments/{partId} to download.
+          example: '2'
+        sizeBytes:
+          type: integer
+          minimum: 0
+          description: Decoded size of the file in bytes.
+          example: 184320
+      required:
+      - filename
+      - mimeType
+      - partId
+      - sizeBytes
+      additionalProperties: false
+    RelayArchiveRequest:
+      type: object
+      properties:
+        archived:
+          type: boolean
+          description: true → archive (stamp archivedAt = now); false → restore to inbox (clear archivedAt).
+          example: true
+      required:
+      - archived
+      additionalProperties: false
+    RelayInboxItem:
+      type: object
+      properties:
+        applicationResultId:
+          type:
+          - integer
+          - 'null'
+          description: Linked application result id, or null when unlinked
+          example: 1234
+          exclusiveMinimum: 0
+        applicationStage:
+          type:
+          - string
+          - 'null'
+          enum:
+          - applied
+          - callback
+          - phone_screen
+          - interview
+          - offered
+          - rejected
+          - no_response
+          - null
+          description: Application stage of the linked application_result, or null when unlinked.
+          example: interview
+        archivedAt:
+          type:
+          - string
+          - 'null'
+          description: ISO timestamp the email was archived, or null when active in the inbox.
+        categoryGroup:
+          type: string
+          enum:
+          - interview
+          - offer
+          - rejection
+          - application_update
+          - recruiter_outreach
+          - sent
+          - verification
+          - other
+          description: High-level inbox bucket derived deterministically from effectiveSignalType.
+          example: interview
+        companyLogoUrl:
+          type:
+          - string
+          - 'null'
+          description: Logo URL of the linked job listing's company, or null.
+        companyName:
+          type:
+          - string
+          - 'null'
+          description: Company name of the linked job listing, or null.
+          example: Acme
+        effectiveSignalType:
+          type: string
+          enum:
+          - action_required
+          - application_confirmation
+          - assessment_request
+          - cancellation
+          - follow_up_request
+          - general
+          - interview_invite
+          - offer_letter
+          - outbound
+          - promotional
+          - recruiter_outreach
+          - rejection
+          - reschedule
+          - scheduling
+          - spam
+          - unrelated
+          - verification
+          description: 'The authoritative category the UI shows everywhere: `userCategoryOverride ?? signalType`. Spam/promotional fold into a Spam folder by this field.'
+          example: interview_invite
+        forwardedToUserAt:
+          type:
+          - string
+          - 'null'
+          description: ISO timestamp the relay message was forwarded to the user, or null
+        id:
+          type: integer
+          description: synced_email row id
+          example: 9001
+          exclusiveMinimum: 0
+        jobListingId:
+          type:
+          - integer
+          - 'null'
+          description: Linked job listing id, or null when unlinked
+          example: 5678
+          exclusiveMinimum: 0
+        jobTitle:
+          type:
+          - string
+          - 'null'
+          description: Title of the linked job listing, or null.
+          example: Frontend Engineer
+        jobUrl:
+          type:
+          - string
+          - 'null'
+          description: Source URL of the linked job posting, or null.
+        readAt:
+          type:
+          - string
+          - 'null'
+          description: ISO timestamp the email was marked read, or null when unread.
+        receivedAt:
+          type: string
+          description: ISO timestamp the email was received
+        senderEmail:
+          type:
+          - string
+          - 'null'
+          description: Sender email address, or null when unparsed
+          example: recruiter@acme.com
+        senderName:
+          type:
+          - string
+          - 'null'
+          description: Sender display name, or null when unparsed
+          example: Alex Recruiter
+        signalType:
+          type: string
+          enum:
+          - action_required
+          - application_confirmation
+          - assessment_request
+          - cancellation
+          - follow_up_request
+          - general
+          - interview_invite
+          - offer_letter
+          - outbound
+          - promotional
+          - recruiter_outreach
+          - rejection
+          - reschedule
+          - scheduling
+          - spam
+          - unrelated
+          - verification
+          description: Raw classifier outcome for the email (interview / rejection / ...). Prefer `effectiveSignalType` for display.
+          example: interview_invite
+        snippet:
+          type:
+          - string
+          - 'null'
+          description: Short plain-text preview of the email body
+          example: Thanks for applying - we would love to schedule a call...
+        source:
+          type: string
+          enum:
+          - gmail
+          - relay
+          description: Origin of the email (gmail or relay)
+          example: relay
+        starredAt:
+          type:
+          - string
+          - 'null'
+          description: ISO timestamp the email was starred/pinned, or null when unstarred.
+        subject:
+          type:
+          - string
+          - 'null'
+          description: Email subject, or null
+          example: Your application to Acme
+      required:
+      - applicationResultId
+      - applicationStage
+      - archivedAt
+      - categoryGroup
+      - companyLogoUrl
+      - companyName
+      - effectiveSignalType
+      - forwardedToUserAt
+      - id
+      - jobListingId
+      - jobTitle
+      - jobUrl
+      - readAt
+      - receivedAt
+      - senderEmail
+      - senderName
+      - signalType
+      - snippet
+      - source
+      - starredAt
+      - subject
+      additionalProperties: false
+    RelayReplyResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/RelayReplyResult'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    RelayReadRequest:
+      type: object
+      properties:
+        read:
+          type: boolean
+          description: true → mark read (stamp readAt = now); false → mark unread (clear readAt).
+          example: true
+      required:
+      - read
+      additionalProperties: false
+    RelayInboxCountsResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/RelayInboxCounts'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    RelayInboxThreadMessage:
+      type: object
+      properties:
+        bodyText:
+          type:
+          - string
+          - 'null'
+          description: FULL plain-text body of the message (not truncated), or null
+          example: 'Hi Sarah,
+
+
+            Thanks for applying. We would love to schedule a call...'
+        htmlBody:
+          type:
+          - string
+          - 'null'
+          description: 'Full HTML body: persisted server-sanitized content for outbound replies, otherwise recovered from stored raw MIME. Null when unavailable. Render safely because recovered inbound HTML is untrusted.'
+        id:
+          type: integer
+          description: synced_email row id
+          example: 9001
+          exclusiveMinimum: 0
+        isInbound:
+          type: boolean
+          description: true = received from the recruiter; false = the user's own outbound reply.
+          example: true
+        receivedAt:
+          type: string
+          description: ISO timestamp the message was received (or sent, for outbound replies)
+        senderEmail:
+          type:
+          - string
+          - 'null'
+          description: Sender email address, or null when unparsed
+          example: recruiter@acme.com
+        senderName:
+          type:
+          - string
+          - 'null'
+          description: Sender display name, or null when unparsed
+          example: Alex Recruiter
+        signalType:
+          type: string
+          enum:
+          - action_required
+          - application_confirmation
+          - assessment_request
+          - cancellation
+          - follow_up_request
+          - general
+          - interview_invite
+          - offer_letter
+          - outbound
+          - promotional
+          - recruiter_outreach
+          - rejection
+          - reschedule
+          - scheduling
+          - spam
+          - unrelated
+          - verification
+          description: Raw classifier outcome for the message (`outbound` for the user's own replies).
+          example: interview_invite
+        snippet:
+          type:
+          - string
+          - 'null'
+          description: Short plain-text preview of the message body
+          example: Thanks for applying - we would love to schedule a call...
+      required:
+      - bodyText
+      - htmlBody
+      - id
+      - isInbound
+      - receivedAt
+      - senderEmail
+      - senderName
+      - signalType
+      - snippet
+      additionalProperties: false
+    RelayBulkRequest:
+      type: object
+      properties:
+        action:
+          type: string
+          enum:
+          - read
+          - unread
+          - archive
+          - unarchive
+          - star
+          - unstar
+          description: Bulk inbox action applied to every id in the request (read/unread, archive/unarchive, star/unstar).
+          example: read
+        ids:
+          type: array
+          items:
+            type: integer
+            exclusiveMinimum: 0
+          minItems: 1
+          maxItems: 200
+          description: The synced_email row ids to apply the action to (1..200). Only owned relay rows are touched.
+          example:
+          - 9001
+          - 9002
+          - 9003
+      required:
+      - action
+      - ids
+      additionalProperties: false
+    RelayInboxListResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            aliasEmail:
+              type:
+              - string
+              - 'null'
+              description: The user's active relay alias address (lazy-minted on first inbox view when RELAY_EMAIL_DOMAIN is set). This is the address recruiters reply to; recruiter mail to it lands in `items`. Null when the relay domain is not configured.
+              example: sarah-a1b2c3d@inboxquiet.com
+            counts:
+              $ref: '#/components/schemas/RelayInboxCounts'
+            items:
+              type: array
+              items:
+                $ref: '#/components/schemas/RelayInboxItem'
+            total:
+              type: integer
+              minimum: 0
+              description: Total rows matching the active filters (ignoring limit/offset), for pagination.
+              example: 42
+          required:
+          - aliasEmail
+          - counts
+          - items
+          - total
+          additionalProperties: false
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    RelayInboxThreadResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            messages:
+              type: array
+              items:
+                $ref: '#/components/schemas/RelayInboxThreadMessage'
+              description: Every owned relay message in the conversation, oldest first.
+          required:
+          - messages
+          additionalProperties: false
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    RelayBulkResult:
+      type: object
+      properties:
+        updated:
+          type: integer
+          minimum: 0
+          description: Number of rows actually updated (owned relay rows among the requested ids).
+          example: 3
+      required:
+      - updated
+      additionalProperties: false
+    RelayReplyRequest:
+      type: object
+      properties:
+        clientRequestId:
+          type: string
+          format: uuid
+          description: Stable client-generated UUID for this authored reply. Native clients reuse it across a manual Retry so the server can atomically dedupe an ambiguous prior delivery. Optional only for legacy clients.
+          example: 894540e0-1066-4a24-9fc4-0ece5cda3e6f
+        message:
+          type: string
+          minLength: 1
+          maxLength: 50000
+          description: Canonical plain-text reply body. Required for legacy clients and the text email part; when messageHtml is present, the server derives this value again from the sanitized HTML before every guard and send.
+          example: Thanks for reaching out - Tuesday at 2pm works for me.
+        messageHtml:
+          type:
+          - string
+          - 'null'
+          description: Optional rich reply body. The client sends allowlisted HTML, but the server always sanitizes it again and derives the guarded canonical plaintext from the sanitized result. Null or omission sends the plain message only.
+          example: <p>Thanks for reaching out - <strong>Tuesday at 2pm</strong> works for me.</p>
+      required:
+      - message
+      additionalProperties: false
+    RelayInboxDetailResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/RelayInboxDetail'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    RelayInboxDetail:
+      type: object
+      properties:
+        applicationResultId:
+          type:
+          - integer
+          - 'null'
+          description: Linked application result id, or null when unlinked
+          example: 1234
+          exclusiveMinimum: 0
+        applicationStage:
+          type:
+          - string
+          - 'null'
+          enum:
+          - applied
+          - callback
+          - phone_screen
+          - interview
+          - offered
+          - rejected
+          - no_response
+          - null
+          description: Application stage of the linked application_result, or null when unlinked.
+          example: interview
+        archivedAt:
+          type:
+          - string
+          - 'null'
+          description: ISO timestamp the email was archived, or null when active in the inbox.
+        categoryGroup:
+          type: string
+          enum:
+          - interview
+          - offer
+          - rejection
+          - application_update
+          - recruiter_outreach
+          - sent
+          - verification
+          - other
+          description: High-level inbox bucket derived deterministically from effectiveSignalType.
+          example: interview
+        companyLogoUrl:
+          type:
+          - string
+          - 'null'
+          description: Logo URL of the linked job listing's company, or null.
+        companyName:
+          type:
+          - string
+          - 'null'
+          description: Company name of the linked job listing, or null.
+          example: Acme
+        effectiveSignalType:
+          type: string
+          enum:
+          - action_required
+          - application_confirmation
+          - assessment_request
+          - cancellation
+          - follow_up_request
+          - general
+          - interview_invite
+          - offer_letter
+          - outbound
+          - promotional
+          - recruiter_outreach
+          - rejection
+          - reschedule
+          - scheduling
+          - spam
+          - unrelated
+          - verification
+          description: 'The authoritative category the UI shows everywhere: `userCategoryOverride ?? signalType`. Spam/promotional fold into a Spam folder by this field.'
+          example: interview_invite
+        forwardedToUserAt:
+          type:
+          - string
+          - 'null'
+          description: ISO timestamp the relay message was forwarded to the user, or null
+        id:
+          type: integer
+          description: synced_email row id
+          example: 9001
+          exclusiveMinimum: 0
+        jobListingId:
+          type:
+          - integer
+          - 'null'
+          description: Linked job listing id, or null when unlinked
+          example: 5678
+          exclusiveMinimum: 0
+        jobTitle:
+          type:
+          - string
+          - 'null'
+          description: Title of the linked job listing, or null.
+          example: Frontend Engineer
+        jobUrl:
+          type:
+          - string
+          - 'null'
+          description: Source URL of the linked job posting, or null.
+        readAt:
+          type:
+          - string
+          - 'null'
+          description: ISO timestamp the email was marked read, or null when unread.
+        receivedAt:
+          type: string
+          description: ISO timestamp the email was received
+        senderEmail:
+          type:
+          - string
+          - 'null'
+          description: Sender email address, or null when unparsed
+          example: recruiter@acme.com
+        senderName:
+          type:
+          - string
+          - 'null'
+          description: Sender display name, or null when unparsed
+          example: Alex Recruiter
+        signalType:
+          type: string
+          enum:
+          - action_required
+          - application_confirmation
+          - assessment_request
+          - cancellation
+          - follow_up_request
+          - general
+          - interview_invite
+          - offer_letter
+          - outbound
+          - promotional
+          - recruiter_outreach
+          - rejection
+          - reschedule
+          - scheduling
+          - spam
+          - unrelated
+          - verification
+          description: Raw classifier outcome for the email (interview / rejection / ...). Prefer `effectiveSignalType` for display.
+          example: interview_invite
+        snippet:
+          type:
+          - string
+          - 'null'
+          description: Short plain-text preview of the email body
+          example: Thanks for applying - we would love to schedule a call...
+        source:
+          type: string
+          enum:
+          - gmail
+          - relay
+          description: Origin of the email (gmail or relay)
+          example: relay
+        starredAt:
+          type:
+          - string
+          - 'null'
+          description: ISO timestamp the email was starred/pinned, or null when unstarred.
+        subject:
+          type:
+          - string
+          - 'null'
+          description: Email subject, or null
+          example: Your application to Acme
+        aiConfidence:
+          type:
+          - integer
+          - 'null'
+          minimum: 0
+          maximum: 100
+          description: Classifier confidence (0-100) for signalType, or null
+          example: 92
+        attachments:
+          type: array
+          items:
+            $ref: '#/components/schemas/RelayInboxAttachment'
+          description: Files the sender attached, recovered from the stored raw MIME. Empty when the message has none or the raw blob is no longer stored.
+        userCategoryOverride:
+          type:
+          - string
+          - 'null'
+          enum:
+          - action_required
+          - application_confirmation
+          - assessment_request
+          - cancellation
+          - follow_up_request
+          - general
+          - interview_invite
+          - offer_letter
+          - outbound
+          - promotional
+          - recruiter_outreach
+          - rejection
+          - reschedule
+          - scheduling
+          - spam
+          - unrelated
+          - verification
+          - null
+          description: The user's manual category correction, or null when the classifier signal is unchanged. When set, it overrides `signalType` (see `effectiveSignalType`).
+          example: interview_invite
+        bodyText:
+          type:
+          - string
+          - 'null'
+          description: FULL plain-text body of the email (not truncated), or null
+          example: 'Hi Sarah,
+
+
+            Thanks for applying. We would love to schedule a call...'
+        htmlBody:
+          type:
+          - string
+          - 'null'
+          description: 'Full HTML body: persisted server-sanitized content for outbound replies, otherwise recovered from stored raw MIME. Null when unavailable. Render safely because recovered inbound HTML is untrusted.'
+        inReplyTo:
+          type:
+          - string
+          - 'null'
+          description: RFC822 In-Reply-To header, for thread stitching, or null
+        matchedCompany:
+          type:
+          - string
+          - 'null'
+          description: Company the email was matched to, or null
+          example: Acme
+        matchedJobTitle:
+          type:
+          - string
+          - 'null'
+          description: Job title the email was matched to, or null
+          example: Frontend Engineer
+        companyDomain:
+          type:
+          - string
+          - 'null'
+          description: Trusted marketing domain of the linked job's company (companies.domain), used to key the DuckDuckGo favicon fallback for the logo. Null when unknown.
+          example: acme.com
+      required:
+      - applicationResultId
+      - applicationStage
+      - archivedAt
+      - categoryGroup
+      - companyLogoUrl
+      - companyName
+      - effectiveSignalType
+      - forwardedToUserAt
+      - id
+      - jobListingId
+      - jobTitle
+      - jobUrl
+      - readAt
+      - receivedAt
+      - senderEmail
+      - senderName
+      - signalType
+      - snippet
+      - source
+      - starredAt
+      - subject
+      - aiConfidence
+      - attachments
+      - userCategoryOverride
+      - bodyText
+      - htmlBody
+      - inReplyTo
+      - matchedCompany
+      - matchedJobTitle
+      - companyDomain
+      additionalProperties: false
+    RelayReplyResult:
+      oneOf:
+      - type: object
+        properties:
+          fromAlias:
+            type: string
+            description: The relay alias the reply was sent FROM.
+            example: sarah-a1b2c3d@relay.aiapplyd.com
+          outboundEmailId:
+            type: integer
+            description: synced_email row id of the persisted outbound reply.
+            example: 9002
+            exclusiveMinimum: 0
+          sentAt:
+            type: string
+            format: date-time
+            description: Persisted server timestamp of the outbound reply.
+            example: '2026-08-30T12:00:00.000Z'
+          status:
+            type: string
+            enum:
+            - sent
+          toEmail:
+            type: string
+            description: The recruiter address the reply went to.
+            example: recruiter@acme.com
+        required:
+        - fromAlias
+        - outboundEmailId
+        - sentAt
+        - status
+        - toEmail
+        additionalProperties: false
+      - type: object
+        properties:
+          fromAlias:
+            description: No relay alias was used because reply delivery is disabled.
+          outboundEmailId:
+            description: No outbound row exists because reply delivery is disabled.
+          sentAt:
+            description: No send timestamp exists because reply delivery is disabled.
+          status:
+            type: string
+            enum:
+            - relay_disabled
+          toEmail:
+            description: No recruiter delivery occurred because reply delivery is disabled.
+        required:
+        - fromAlias
+        - outboundEmailId
+        - sentAt
+        - status
+        - toEmail
+        additionalProperties: false
+  securitySchemes:
+    BearerAuth:
+      description: 'Session token from signing in to AI Applyd, sent as `Authorization: Bearer <token>`.'
+      scheme: bearer
+      type: http
+x-refined-from:
+- aiapplyd-openapi.json
+- aiapplyd-openapi.yml

@@ -1,0 +1,705 @@
+openapi: 3.2.0
+info:
+  title: Aiapplyd Overview API
+  version: 115c47ce
+  contact:
+    email: support@aiapplyd.com
+    name: AI Applyd
+    url: https://aiapplyd.com
+  license:
+    name: Proprietary
+    url: https://aiapplyd.com/legal/terms
+  description: 'Operations tagged overview across 2 of this provider''s published API definitions: aiapplyd-openapi.json, aiapplyd-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- description: Current environment
+  url: https://api.aiapplyd.com/api/v1
+security:
+- BearerAuth: []
+tags:
+- name: Overview
+paths:
+  /overview:
+    get:
+      tags:
+      - Overview
+      summary: Get Dashboard Overview
+      description: Get dashboard statistics and analytics for the authenticated user.
+      responses:
+        '200':
+          description: Dashboard overview data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OverviewResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: getOverview
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+  /overview/suggestions:
+    get:
+      tags:
+      - Overview
+      summary: Get Dashboard Suggestions
+      description: Get personalized next-step suggestions based on user data.
+      responses:
+        '200':
+          description: Personalized suggestions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuggestionsResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: getOverviewSuggestions
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+components:
+  schemas:
+    ApiErrorResponse:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+            context:
+              oneOf:
+              - type: object
+                properties:
+                  errorType:
+                    type: string
+                    enum:
+                    - validation
+                  field:
+                    type: string
+                  fieldErrors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        code:
+                          type: string
+                        expected:
+                          type: string
+                        field:
+                          type: string
+                        message:
+                          type: string
+                        received:
+                          type: string
+                      required:
+                      - field
+                      - message
+                  schemaName:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  attemptedEmail:
+                    type: string
+                    format: email
+                  errorType:
+                    type: string
+                    enum:
+                    - authentication
+                  failureReason:
+                    type: string
+                    enum:
+                    - invalid_credentials
+                    - account_locked
+                    - expired_token
+                    - token_expired
+                    - missing_token
+                    - invalid_token
+                    - session_expired
+                    description: Reason for authentication failure
+                    example: token_expired
+                  ipAddress:
+                    type: string
+                  operation:
+                    type: string
+                  service:
+                    type: string
+                  userAgent:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  actualPermission:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - authorization
+                  requiredPermission:
+                    type: string
+                  resource:
+                    type: string
+                  resourceId:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  constraint:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - database
+                  operation:
+                    type: string
+                    enum:
+                    - insert
+                    - update
+                    - delete
+                    - select
+                    - batch
+                    - transaction
+                    - migration
+                    description: Type of database operation
+                    example: select
+                  resourceId:
+                    type: string
+                  sqlState:
+                    type: string
+                  table:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  endpoint:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - external_service
+                  httpStatus:
+                    type: number
+                  operation:
+                    type: string
+                  resourceId:
+                    type: string
+                  responseTime:
+                    type: number
+                  retryAttempt:
+                    type: integer
+                  service:
+                    type: string
+                  serviceName:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  errorType:
+                    type: string
+                    enum:
+                    - resource
+                  resource:
+                    type: string
+                  resourceId:
+                    type: string
+                  service:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  errorType:
+                    type: string
+                    enum:
+                    - rate_limit
+                  limit:
+                    type: number
+                  resetTime:
+                    type: string
+                  windowMs:
+                    type: number
+                required:
+                - errorType
+              - type: object
+                properties:
+                  configKey:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - configuration
+                  operation:
+                    type: string
+                  service:
+                    type: string
+                required:
+                - errorType
+              description: Type-safe error context information
+              example:
+                errorType: validation
+                fieldErrors:
+                - field: email
+                  message: Invalid email format
+            details:
+              oneOf:
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - validation
+                  validationErrors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        code:
+                          type: string
+                        field:
+                          type: string
+                        message:
+                          type: string
+                      required:
+                      - field
+                      - message
+                required:
+                - detailType
+                - validationErrors
+                additionalProperties: false
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - service_error
+                  originalError:
+                    type: string
+                  serviceName:
+                    type: string
+                required:
+                - detailType
+                - serviceName
+                additionalProperties: false
+              - type: object
+                properties:
+                  currentSize:
+                    type: number
+                  detailType:
+                    type: string
+                    enum:
+                    - batch
+                  originalError:
+                    type: string
+                  statementCount:
+                    type: number
+                required:
+                - detailType
+                additionalProperties: false
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - rate_limit
+                  limit:
+                    type: number
+                  resetTime:
+                    type: string
+                  windowMs:
+                    type: number
+                required:
+                - detailType
+                - limit
+                - resetTime
+                - windowMs
+                additionalProperties: false
+              - type: object
+                properties:
+                  conflictingField:
+                    type: string
+                  detailType:
+                    type: string
+                    enum:
+                    - resource
+                  resourceId:
+                    anyOf:
+                    - type: string
+                    - type: number
+                  resourceType:
+                    type: string
+                required:
+                - detailType
+                additionalProperties: false
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - generic
+                  info:
+                    type: string
+                required:
+                - detailType
+                additionalProperties: false
+              - type: object
+                properties:
+                  currentTokens:
+                    type: integer
+                    minimum: 0
+                  detailType:
+                    type: string
+                    enum:
+                    - insufficient_tokens
+                  requiredTokens:
+                    type: integer
+                    minimum: 0
+                required:
+                - currentTokens
+                - detailType
+                - requiredTokens
+                additionalProperties: false
+            message:
+              type: string
+            validation:
+              type: array
+              items:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  field:
+                    type: string
+                  message:
+                    type: string
+                required:
+                - field
+                - message
+                additionalProperties: false
+          required:
+          - code
+          - message
+          additionalProperties: false
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - false
+      required:
+      - error
+      - success
+      additionalProperties: false
+    OutcomeMetrics:
+      type: object
+      properties:
+        emailResponseRate:
+          type: number
+          description: Share of classified inbound job emails that carry a positive signal (interview / scheduling / offer), as a percentage. 0 when no emails are classified.
+          example: 42.5
+        interviewsBooked:
+          type: integer
+          description: Applications that reached an interview-booked outcome (stage phone_screen/interview, or interview_booked_at set).
+          example: 3
+        nextInterviewResultId:
+          type:
+          - integer
+          - 'null'
+          description: Application-result id behind the SOONEST upcoming interview event, for the applications deep-link. Null when that event has no application behind it; absent on payloads that do not resolve it.
+          example: 1481
+        offers:
+          type: integer
+          description: Applications with an offer outcome (applicationStage = offered).
+          example: 1
+        positiveEmailSignals:
+          type: integer
+          description: Count of inbound emails classified as a positive signal (interview_invite / scheduling / reschedule / offer_letter).
+          example: 5
+        upcomingInterviews:
+          type: integer
+          description: Synced calendar events flagged as interviews whose start time is in the future.
+          example: 2
+      required:
+      - emailResponseRate
+      - interviewsBooked
+      - offers
+      - positiveEmailSignals
+      - upcomingInterviews
+      additionalProperties: false
+      description: Real-outcome success metrics from the email + calendar pipeline (interviews booked, offers, upcoming interviews, email response rate).
+    TimeSeriesData:
+      type: object
+      properties:
+        date:
+          type: string
+          description: Date in YYYY-MM-DD format
+          example: '2024-01-01'
+        count:
+          type: integer
+          description: Count for this date
+          example: 5
+      required:
+      - date
+      - count
+      additionalProperties: false
+    OverviewResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/OverviewData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    FormsLeftData:
+      type: object
+      properties:
+        count:
+          type: integer
+          description: Estimated AI operations remaining
+          example: 100
+        percent:
+          type: number
+          description: Percentage of tokens remaining
+          example: 75
+      required:
+      - count
+      - percent
+      additionalProperties: false
+    SuggestionsData:
+      type: object
+      properties:
+        suggestions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Suggestion'
+          description: Personalized next-step suggestions
+      required:
+      - suggestions
+      additionalProperties: false
+    OverviewData:
+      type: object
+      properties:
+        aiHistoryCount:
+          type: integer
+          description: Total number of AI operations
+          example: 200
+        formsLeftData:
+          $ref: '#/components/schemas/FormsLeftData'
+        fillsOverTime:
+          type: array
+          items:
+            $ref: '#/components/schemas/TimeSeriesData'
+          description: AI operation counts over time
+        averageTokensPerFill:
+          type: number
+          description: Average tokens used per operation
+          example: 1500
+        totalTokensUsed:
+          type: number
+          description: Total tokens used
+          example: 300000
+        successRate:
+          $ref: '#/components/schemas/SuccessRateData'
+        periodChange:
+          type: number
+          description: Period-over-period change percentage
+          example: 15.5
+        jobListingsCount:
+          type: integer
+          description: Total number of active job listings
+          example: 12
+        averageAtsScore:
+          type: number
+          description: Average ATS score across all scored jobs
+          example: 72
+        outcomes:
+          $ref: '#/components/schemas/OutcomeMetrics'
+      required:
+      - aiHistoryCount
+      - formsLeftData
+      - fillsOverTime
+      - averageTokensPerFill
+      - totalTokensUsed
+      - successRate
+      - periodChange
+      - jobListingsCount
+      - averageAtsScore
+      - outcomes
+    SuggestionsResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/SuggestionsData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    SuccessRateData:
+      type: object
+      properties:
+        successRate:
+          type: number
+          description: Overall success rate percentage
+          example: 92.5
+        successCount:
+          type: integer
+          description: Number of successful operations
+          example: 185
+        failureCount:
+          type: integer
+          description: Number of failed operations
+          example: 10
+        pendingCount:
+          type: integer
+          description: Number of pending/aborted operations
+          example: 5
+        totalCount:
+          type: integer
+          description: Total number of operation attempts
+          example: 200
+      required:
+      - successRate
+      - successCount
+      - failureCount
+      - pendingCount
+      - totalCount
+      additionalProperties: false
+    ResponseMetadata:
+      type: object
+      properties:
+        duration:
+          type: number
+          description: Request duration in milliseconds
+          example: 150
+          exclusiveMinimum: 0
+        performance:
+          type: object
+          properties:
+            dbQueries:
+              type: integer
+              minimum: 0
+            totalDbTime:
+              type: number
+              minimum: 0
+          description: Performance metrics (preview/local only)
+        requestId:
+          type: string
+          description: Unique request identifier
+          example: req_abc123
+        timestamp:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp
+          example: '2026-09-25T17:29:47.224Z'
+        version:
+          type: string
+          description: API version
+          example: v1
+    Suggestion:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+          - upload_resume
+          - score_resume
+          - add_job
+          description: Suggestion type identifier
+          example: upload_resume
+        title:
+          type: string
+          description: Short action title
+          example: Upload your resume
+        description:
+          type: string
+          description: Helpful description
+          example: Upload your resume to unlock ATS scoring
+        icon:
+          type: string
+          description: Icon name for UI
+          example: file-up
+        priority:
+          type: number
+          description: Priority (1=highest)
+          example: 1
+        meta:
+          type: object
+          additionalProperties:
+            anyOf:
+            - type: string
+            - type: number
+          description: Additional metadata
+      required:
+      - type
+      - title
+      - description
+      - icon
+      - priority
+      additionalProperties: false
+  securitySchemes:
+    BearerAuth:
+      description: 'Session token from signing in to AI Applyd, sent as `Authorization: Bearer <token>`.'
+      scheme: bearer
+      type: http
+x-refined-from:
+- aiapplyd-openapi.json
+- aiapplyd-openapi.yml

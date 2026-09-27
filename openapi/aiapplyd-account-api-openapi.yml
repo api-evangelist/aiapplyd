@@ -1,0 +1,1068 @@
+openapi: 3.2.0
+info:
+  title: Aiapplyd Account API
+  version: 115c47ce
+  contact:
+    email: support@aiapplyd.com
+    name: AI Applyd
+    url: https://aiapplyd.com
+  license:
+    name: Proprietary
+    url: https://aiapplyd.com/legal/terms
+  description: 'Operations tagged account across 2 of this provider''s published API definitions: aiapplyd-openapi.json, aiapplyd-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- description: Current environment
+  url: https://api.aiapplyd.com/api/v1
+security:
+- BearerAuth: []
+tags:
+- name: Account
+paths:
+  /account:
+    get:
+      tags:
+      - Account
+      summary: Get Account
+      description: Get the authenticated user account details.
+      responses:
+        '200':
+          description: Account details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: getAccount
+    put:
+      tags:
+      - Account
+      summary: Update Account
+      description: Update the authenticated user account details.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateAccountRequest'
+      responses:
+        '200':
+          description: Account updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountUpdatedResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: putAccount
+    delete:
+      tags:
+      - Account
+      summary: Delete Account
+      description: Permanently delete the authenticated user account and all associated data.
+      responses:
+        '200':
+          description: Account deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountDeletedResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: deleteAccount
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+  /account/export:
+    get:
+      tags:
+      - Account
+      summary: Download Account Export
+      description: Stream the authenticated user's account data as a private JSON attachment. The terminal manifest reports collection, file, omission, and completeness state. The request accepts no account identifier.
+      responses:
+        '200':
+          description: Private JSON account export attachment
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  entries:
+                    type: array
+                    items:
+                      oneOf:
+                      - type: object
+                        properties:
+                          collection:
+                            type: string
+                          data:
+                            type: object
+                            additionalProperties:
+                              anyOf:
+                              - type: string
+                              - type: number
+                              - type: boolean
+                              - {}
+                          type:
+                            type: string
+                            enum:
+                            - record
+                        required:
+                        - collection
+                        - data
+                        - type
+                        additionalProperties: false
+                      - type: object
+                        properties:
+                          contentType:
+                            type: string
+                          expectedBytes:
+                            type: integer
+                          id:
+                            type: string
+                          path:
+                            type: string
+                          reference:
+                            type: object
+                            properties:
+                              collection:
+                                type: string
+                              field:
+                                type: string
+                              recordId:
+                                anyOf:
+                                - type: string
+                                  maxLength: 200
+                                - type: number
+                            required:
+                            - collection
+                            - field
+                            - recordId
+                            additionalProperties: false
+                          type:
+                            type: string
+                            enum:
+                            - file_start
+                        required:
+                        - contentType
+                        - expectedBytes
+                        - id
+                        - path
+                        - type
+                        additionalProperties: false
+                      - type: object
+                        properties:
+                          data:
+                            type: string
+                          id:
+                            type: string
+                          index:
+                            type: integer
+                          type:
+                            type: string
+                            enum:
+                            - file_chunk
+                        required:
+                        - data
+                        - id
+                        - index
+                        - type
+                        additionalProperties: false
+                      - type: object
+                        properties:
+                          bytes:
+                            type: integer
+                          complete:
+                            type: boolean
+                          id:
+                            type: string
+                          type:
+                            type: string
+                            enum:
+                            - file_end
+                        required:
+                        - bytes
+                        - complete
+                        - id
+                        - type
+                        additionalProperties: false
+                  format:
+                    type: string
+                    enum:
+                    - aiapplyd-account-export
+                  manifest:
+                    type: object
+                    properties:
+                      collections:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            complete:
+                              type: boolean
+                            name:
+                              type: string
+                            records:
+                              type: integer
+                          required:
+                          - complete
+                          - name
+                          - records
+                          additionalProperties: false
+                      complete:
+                        type: boolean
+                      completedAt:
+                        type: string
+                      files:
+                        type: object
+                        properties:
+                          complete:
+                            type: integer
+                          incomplete:
+                            type: integer
+                        required:
+                        - complete
+                        - incomplete
+                        additionalProperties: false
+                      issueDetailsOmitted:
+                        type: integer
+                      issues:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            code:
+                              type: string
+                            collection:
+                              type: string
+                            recordId:
+                              anyOf:
+                              - type: string
+                                maxLength: 200
+                              - type: number
+                          required:
+                          - code
+                          - collection
+                          additionalProperties: false
+                      omitted:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            family:
+                              type: string
+                            reason:
+                              type: string
+                          required:
+                          - family
+                          - reason
+                          additionalProperties: false
+                      records:
+                        type: integer
+                      securityExclusions:
+                        type: array
+                        items:
+                          type: string
+                    required:
+                    - collections
+                    - complete
+                    - completedAt
+                    - files
+                    - issueDetailsOmitted
+                    - issues
+                    - omitted
+                    - records
+                    - securityExclusions
+                    additionalProperties: false
+                  metadata:
+                    type: object
+                    properties:
+                      consistency:
+                        type: string
+                        enum:
+                        - live-keyset-read-not-transactional-snapshot
+                      fileEncoding:
+                        type: string
+                        enum:
+                        - base64-independent-chunks-concatenate-decoded-bytes
+                      rowEncoding:
+                        type: string
+                        enum:
+                        - sqlite-column-values-json-columns-retain-json-text
+                      startedAt:
+                        type: string
+                      userId:
+                        type: string
+                    required:
+                    - consistency
+                    - fileEncoding
+                    - rowEncoding
+                    - startedAt
+                    - userId
+                    additionalProperties: false
+                  version:
+                    type: number
+                    enum:
+                    - 1
+                required:
+                - entries
+                - format
+                - manifest
+                - metadata
+                - version
+                additionalProperties: false
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: getAccountExport
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+  /account/apple-authorization:
+    post:
+      tags:
+      - Account
+      summary: Store Apple Authorization Grant
+      description: Exchange the authenticated native Apple authorization code and store encrypted revocation evidence on the linked account.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StoreAppleAuthorizationRequest'
+      responses:
+        '200':
+          description: Apple revocation evidence stored
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppleAuthorizationStoredResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: postAccountAppleAuthorization
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+components:
+  schemas:
+    AccountResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/Account'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    AccountUpdatedResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            success:
+              type: boolean
+              enum:
+              - true
+            message:
+              type: string
+              description: Update confirmation message
+              example: Account updated successfully
+          required:
+          - success
+          - message
+          additionalProperties: false
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    ApiErrorResponse:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+            context:
+              oneOf:
+              - type: object
+                properties:
+                  errorType:
+                    type: string
+                    enum:
+                    - validation
+                  field:
+                    type: string
+                  fieldErrors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        code:
+                          type: string
+                        expected:
+                          type: string
+                        field:
+                          type: string
+                        message:
+                          type: string
+                        received:
+                          type: string
+                      required:
+                      - field
+                      - message
+                  schemaName:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  attemptedEmail:
+                    type: string
+                    format: email
+                  errorType:
+                    type: string
+                    enum:
+                    - authentication
+                  failureReason:
+                    type: string
+                    enum:
+                    - invalid_credentials
+                    - account_locked
+                    - expired_token
+                    - token_expired
+                    - missing_token
+                    - invalid_token
+                    - session_expired
+                    description: Reason for authentication failure
+                    example: token_expired
+                  ipAddress:
+                    type: string
+                  operation:
+                    type: string
+                  service:
+                    type: string
+                  userAgent:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  actualPermission:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - authorization
+                  requiredPermission:
+                    type: string
+                  resource:
+                    type: string
+                  resourceId:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  constraint:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - database
+                  operation:
+                    type: string
+                    enum:
+                    - insert
+                    - update
+                    - delete
+                    - select
+                    - batch
+                    - transaction
+                    - migration
+                    description: Type of database operation
+                    example: select
+                  resourceId:
+                    type: string
+                  sqlState:
+                    type: string
+                  table:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  endpoint:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - external_service
+                  httpStatus:
+                    type: number
+                  operation:
+                    type: string
+                  resourceId:
+                    type: string
+                  responseTime:
+                    type: number
+                  retryAttempt:
+                    type: integer
+                  service:
+                    type: string
+                  serviceName:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  errorType:
+                    type: string
+                    enum:
+                    - resource
+                  resource:
+                    type: string
+                  resourceId:
+                    type: string
+                  service:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  errorType:
+                    type: string
+                    enum:
+                    - rate_limit
+                  limit:
+                    type: number
+                  resetTime:
+                    type: string
+                  windowMs:
+                    type: number
+                required:
+                - errorType
+              - type: object
+                properties:
+                  configKey:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - configuration
+                  operation:
+                    type: string
+                  service:
+                    type: string
+                required:
+                - errorType
+              description: Type-safe error context information
+              example:
+                errorType: validation
+                fieldErrors:
+                - field: email
+                  message: Invalid email format
+            details:
+              oneOf:
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - validation
+                  validationErrors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        code:
+                          type: string
+                        field:
+                          type: string
+                        message:
+                          type: string
+                      required:
+                      - field
+                      - message
+                required:
+                - detailType
+                - validationErrors
+                additionalProperties: false
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - service_error
+                  originalError:
+                    type: string
+                  serviceName:
+                    type: string
+                required:
+                - detailType
+                - serviceName
+                additionalProperties: false
+              - type: object
+                properties:
+                  currentSize:
+                    type: number
+                  detailType:
+                    type: string
+                    enum:
+                    - batch
+                  originalError:
+                    type: string
+                  statementCount:
+                    type: number
+                required:
+                - detailType
+                additionalProperties: false
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - rate_limit
+                  limit:
+                    type: number
+                  resetTime:
+                    type: string
+                  windowMs:
+                    type: number
+                required:
+                - detailType
+                - limit
+                - resetTime
+                - windowMs
+                additionalProperties: false
+              - type: object
+                properties:
+                  conflictingField:
+                    type: string
+                  detailType:
+                    type: string
+                    enum:
+                    - resource
+                  resourceId:
+                    anyOf:
+                    - type: string
+                    - type: number
+                  resourceType:
+                    type: string
+                required:
+                - detailType
+                additionalProperties: false
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - generic
+                  info:
+                    type: string
+                required:
+                - detailType
+                additionalProperties: false
+              - type: object
+                properties:
+                  currentTokens:
+                    type: integer
+                    minimum: 0
+                  detailType:
+                    type: string
+                    enum:
+                    - insufficient_tokens
+                  requiredTokens:
+                    type: integer
+                    minimum: 0
+                required:
+                - currentTokens
+                - detailType
+                - requiredTokens
+                additionalProperties: false
+            message:
+              type: string
+            validation:
+              type: array
+              items:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  field:
+                    type: string
+                  message:
+                    type: string
+                required:
+                - field
+                - message
+                additionalProperties: false
+          required:
+          - code
+          - message
+          additionalProperties: false
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - false
+      required:
+      - error
+      - success
+      additionalProperties: false
+    AppleAuthorizationStoredResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            stored:
+              type: boolean
+              enum:
+              - true
+          required:
+          - stored
+          additionalProperties: false
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    StoreAppleAuthorizationRequest:
+      type: object
+      properties:
+        appleUserId:
+          type: string
+          minLength: 1
+          maxLength: 255
+          description: Stable Apple user identifier returned by the native credential
+        authorizationCode:
+          type: string
+          minLength: 1
+          maxLength: 4096
+          description: Single-use native Apple authorization code
+      required:
+      - appleUserId
+      - authorizationCode
+      additionalProperties: false
+    Account:
+      type: object
+      properties:
+        id:
+          type: string
+          description: User identifier
+          example: user_123
+        email:
+          type: string
+          format: email
+          description: User email address
+          example: user@example.com
+        name:
+          type:
+          - string
+          - 'null'
+          description: User display name
+          example: John Doe
+        image:
+          type:
+          - string
+          - 'null'
+          description: User avatar URL
+          example: https://example.com/avatar.jpg
+        phone:
+          type:
+          - string
+          - 'null'
+          description: User phone number
+          example: '+1234567890'
+        emailVerified:
+          type:
+          - string
+          - 'null'
+          description: Email verification timestamp
+          example: '2024-01-01T00:00:00Z'
+        marketingEmailsOptOut:
+          type: boolean
+          description: Whether user opted out of marketing emails
+        stripeCustomerId:
+          type:
+          - string
+          - 'null'
+          description: Stripe customer ID
+          example: cus_1234567890
+        company:
+          type:
+          - string
+          - 'null'
+          description: User-supplied current employer (B2B segmentation).
+          example: Acme Corp
+        companySlug:
+          type:
+          - string
+          - 'null'
+          description: Server-derived slug used as PostHog group identifier.
+          example: acme-corp
+        locale:
+          type:
+          - string
+          - 'null'
+          enum:
+          - en
+          - es
+          - de
+          - fr
+          - pt-BR
+          - null
+          description: Saved language preference. NULL means the language is negotiated per request from the URL prefix, the aiapplyd_locale cookie and Accept-Language.
+          example: de
+        createdAt:
+          type: string
+          description: Account creation timestamp
+          example: '2024-01-01T00:00:00Z'
+        updatedAt:
+          type: string
+          description: Last update timestamp
+          example: '2024-01-01T00:00:00Z'
+      required:
+      - id
+      - email
+      - name
+      - image
+      - phone
+      - emailVerified
+      - marketingEmailsOptOut
+      - stripeCustomerId
+      - company
+      - companySlug
+      - locale
+      - createdAt
+      - updatedAt
+      additionalProperties: false
+    AccountDeletedResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            cleanupPending:
+              type: boolean
+              description: Account access is removed; provider or stored-file erasure is still being recovered.
+            message:
+              type: string
+              description: Deletion confirmation message
+              example: Account deleted successfully
+          required:
+          - cleanupPending
+          - message
+          additionalProperties: false
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    UpdateAccountRequest:
+      type: object
+      properties:
+        company:
+          type: string
+          maxLength: 120
+          description: User-supplied employer name. Pass an empty string to clear.
+          example: Acme Corp
+        locale:
+          type:
+          - string
+          - 'null'
+          enum:
+          - en
+          - es
+          - de
+          - fr
+          - pt-BR
+          - null
+          description: Language preference. Send null to clear it and negotiate per request.
+          example: de
+        marketingEmailsOptOut:
+          type: boolean
+          description: Opt out of marketing emails
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: User display name
+          example: John Doe
+        phone:
+          type: string
+          maxLength: 20
+          description: User phone number
+          example: '+1234567890'
+      additionalProperties: false
+    ResponseMetadata:
+      type: object
+      properties:
+        duration:
+          type: number
+          description: Request duration in milliseconds
+          example: 150
+          exclusiveMinimum: 0
+        performance:
+          type: object
+          properties:
+            dbQueries:
+              type: integer
+              minimum: 0
+            totalDbTime:
+              type: number
+              minimum: 0
+          description: Performance metrics (preview/local only)
+        requestId:
+          type: string
+          description: Unique request identifier
+          example: req_abc123
+        timestamp:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp
+          example: '2026-09-25T17:29:47.224Z'
+        version:
+          type: string
+          description: API version
+          example: v1
+  securitySchemes:
+    BearerAuth:
+      description: 'Session token from signing in to AI Applyd, sent as `Authorization: Bearer <token>`.'
+      scheme: bearer
+      type: http
+x-refined-from:
+- aiapplyd-openapi.json
+- aiapplyd-openapi.yml

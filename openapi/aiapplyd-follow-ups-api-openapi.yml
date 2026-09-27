@@ -1,0 +1,1111 @@
+openapi: 3.2.0
+info:
+  title: Aiapplyd Follow Ups API
+  version: 115c47ce
+  contact:
+    email: support@aiapplyd.com
+    name: AI Applyd
+    url: https://aiapplyd.com
+  license:
+    name: Proprietary
+    url: https://aiapplyd.com/legal/terms
+  description: 'Operations tagged follow-ups across 2 of this provider''s published API definitions: aiapplyd-openapi.json, aiapplyd-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- description: Current environment
+  url: https://api.aiapplyd.com/api/v1
+security:
+- BearerAuth: []
+tags:
+- name: follow-ups
+paths:
+  /follow-ups/history:
+    get:
+      tags:
+      - follow-ups
+      summary: List Sent Follow-Up History
+      description: Offset-paginated, infinite-scroll log of the authenticated user's recorded follow-up sends, ordered by sent-at DESC. Reads the append-only `follow_up_event` table.
+      parameters:
+      - schema:
+          type:
+          - integer
+          - 'null'
+          minimum: 0
+          default: 0
+          description: Offset into the sent-follow-up log. Pass back the `nextCursor` from the previous page.
+          example: 0
+        required: false
+        description: Offset into the sent-follow-up log. Pass back the `nextCursor` from the previous page.
+        name: cursor
+        in: query
+      - schema:
+          type: integer
+          minimum: 1
+          maximum: 50
+          default: 20
+          description: Page size (max 50).
+          example: 20
+        required: false
+        description: Page size (max 50).
+        name: limit
+        in: query
+      responses:
+        '200':
+          description: Page of sent follow-ups + next cursor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FollowUpHistoryResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: getFollowUpsHistory
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+  /follow-ups:
+    get:
+      tags:
+      - follow-ups
+      summary: List Actionable Follow-Ups
+      description: List the authenticated user's actionable follow-ups, sorted by urgency.
+      responses:
+        '200':
+          description: Follow-ups retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FollowUpListResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: getFollowUps
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+  /follow-ups/{applicationId}/draft:
+    get:
+      tags:
+      - follow-ups
+      summary: Generate Follow-Up Draft
+      description: Generate (or fetch a freshly-computed) follow-up email draft for one application.
+      parameters:
+      - schema:
+          type: integer
+          description: Application result row id
+          example: 1234
+          exclusiveMinimum: 0
+        required: true
+        description: Application result row id
+        name: applicationId
+        in: path
+      responses:
+        '200':
+          description: Draft generated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FollowUpDraftResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: getFollowUpsByApplicationIdDraft
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+  /follow-ups/{applicationId}/sent:
+    post:
+      tags:
+      - follow-ups
+      summary: Record Follow-Up Sent
+      description: Record that the user sent the follow-up, bump cadence counters.
+      parameters:
+      - schema:
+          type: integer
+          description: Application result row id
+          example: 1234
+          exclusiveMinimum: 0
+        required: true
+        description: Application result row id
+        name: applicationId
+        in: path
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MarkFollowUpSentBody'
+      responses:
+        '200':
+          description: Follow-up recorded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MarkFollowUpSentResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: postFollowUpsByApplicationIdSent
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+  /follow-ups/{applicationId}/send-gmail:
+    post:
+      tags:
+      - follow-ups
+      summary: Send Follow-Up via Gmail
+      description: Send the provided follow-up email through the user's connected Gmail (gmail.users.messages.send), then record the send and bump cadence counters. Returns 400 with a reconnect hint when Gmail is not connected.
+      parameters:
+      - schema:
+          type: integer
+          description: Application result row id
+          example: 1234
+          exclusiveMinimum: 0
+        required: true
+        description: Application result row id
+        name: applicationId
+        in: path
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SendFollowUpGmailBody'
+      responses:
+        '200':
+          description: Email sent + follow-up recorded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SendFollowUpGmailResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: postFollowUpsByApplicationIdSendGmail
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+components:
+  schemas:
+    SendFollowUpGmailResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/SendFollowUpGmailData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    FollowUpHistoryItem:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: follow_up_event row id
+          example: 4321
+          exclusiveMinimum: 0
+        applicationResultId:
+          type: integer
+          description: Application result the follow-up belongs to
+          example: 1234
+          exclusiveMinimum: 0
+        attemptNumber:
+          type: integer
+          minimum: 1
+          description: 1-indexed cadence attempt this send was
+          example: 1
+        body:
+          type: string
+          description: The message body that was sent
+          example: Hi Alex, ...
+        channel:
+          type: string
+          enum:
+          - email
+          - linkedin
+          - other
+          description: Channel used to send
+          example: email
+        company:
+          type:
+          - string
+          - 'null'
+          description: Company name of the application, joined for display
+          example: Acme Inc.
+        jobTitle:
+          type:
+          - string
+          - 'null'
+          description: Job title of the application, joined for display
+          example: Senior Backend Engineer
+        recipient:
+          type:
+          - string
+          - 'null'
+          description: Recipient email or LinkedIn handle, when captured
+          example: alex@acme.com
+        sentAt:
+          type: string
+          description: ISO timestamp of when the send was recorded
+        subject:
+          type:
+          - string
+          - 'null'
+          description: Subject line (email channel) or null
+          example: Following up on the Senior Backend Engineer role
+      required:
+      - id
+      - applicationResultId
+      - attemptNumber
+      - body
+      - channel
+      - company
+      - jobTitle
+      - recipient
+      - sentAt
+      - subject
+      additionalProperties: false
+    FollowUpDraftResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/FollowUpDraftData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    MarkFollowUpSentBody:
+      type: object
+      properties:
+        body:
+          type: string
+          minLength: 20
+          maxLength: 4000
+          description: The body the user actually sent
+          example: Hi Alex, ...
+        channel:
+          type: string
+          enum:
+          - email
+          - linkedin
+          - other
+          description: Channel used to send
+          example: email
+        recipient:
+          type:
+          - string
+          - 'null'
+          minLength: 1
+          maxLength: 320
+          description: Recipient email or LinkedIn handle
+          example: alex@acme.com
+        subject:
+          type:
+          - string
+          - 'null'
+          minLength: 1
+          maxLength: 200
+          description: Subject line (email channel)
+          example: Following up on the Senior Backend Engineer role
+      required:
+      - body
+      - channel
+      additionalProperties: false
+    ApiErrorResponse:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+            context:
+              oneOf:
+              - type: object
+                properties:
+                  errorType:
+                    type: string
+                    enum:
+                    - validation
+                  field:
+                    type: string
+                  fieldErrors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        code:
+                          type: string
+                        expected:
+                          type: string
+                        field:
+                          type: string
+                        message:
+                          type: string
+                        received:
+                          type: string
+                      required:
+                      - field
+                      - message
+                  schemaName:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  attemptedEmail:
+                    type: string
+                    format: email
+                  errorType:
+                    type: string
+                    enum:
+                    - authentication
+                  failureReason:
+                    type: string
+                    enum:
+                    - invalid_credentials
+                    - account_locked
+                    - expired_token
+                    - token_expired
+                    - missing_token
+                    - invalid_token
+                    - session_expired
+                    description: Reason for authentication failure
+                    example: token_expired
+                  ipAddress:
+                    type: string
+                  operation:
+                    type: string
+                  service:
+                    type: string
+                  userAgent:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  actualPermission:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - authorization
+                  requiredPermission:
+                    type: string
+                  resource:
+                    type: string
+                  resourceId:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  constraint:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - database
+                  operation:
+                    type: string
+                    enum:
+                    - insert
+                    - update
+                    - delete
+                    - select
+                    - batch
+                    - transaction
+                    - migration
+                    description: Type of database operation
+                    example: select
+                  resourceId:
+                    type: string
+                  sqlState:
+                    type: string
+                  table:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  endpoint:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - external_service
+                  httpStatus:
+                    type: number
+                  operation:
+                    type: string
+                  resourceId:
+                    type: string
+                  responseTime:
+                    type: number
+                  retryAttempt:
+                    type: integer
+                  service:
+                    type: string
+                  serviceName:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  errorType:
+                    type: string
+                    enum:
+                    - resource
+                  resource:
+                    type: string
+                  resourceId:
+                    type: string
+                  service:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  errorType:
+                    type: string
+                    enum:
+                    - rate_limit
+                  limit:
+                    type: number
+                  resetTime:
+                    type: string
+                  windowMs:
+                    type: number
+                required:
+                - errorType
+              - type: object
+                properties:
+                  configKey:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - configuration
+                  operation:
+                    type: string
+                  service:
+                    type: string
+                required:
+                - errorType
+              description: Type-safe error context information
+              example:
+                errorType: validation
+                fieldErrors:
+                - field: email
+                  message: Invalid email format
+            details:
+              oneOf:
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - validation
+                  validationErrors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        code:
+                          type: string
+                        field:
+                          type: string
+                        message:
+                          type: string
+                      required:
+                      - field
+                      - message
+                required:
+                - detailType
+                - validationErrors
+                additionalProperties: false
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - service_error
+                  originalError:
+                    type: string
+                  serviceName:
+                    type: string
+                required:
+                - detailType
+                - serviceName
+                additionalProperties: false
+              - type: object
+                properties:
+                  currentSize:
+                    type: number
+                  detailType:
+                    type: string
+                    enum:
+                    - batch
+                  originalError:
+                    type: string
+                  statementCount:
+                    type: number
+                required:
+                - detailType
+                additionalProperties: false
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - rate_limit
+                  limit:
+                    type: number
+                  resetTime:
+                    type: string
+                  windowMs:
+                    type: number
+                required:
+                - detailType
+                - limit
+                - resetTime
+                - windowMs
+                additionalProperties: false
+              - type: object
+                properties:
+                  conflictingField:
+                    type: string
+                  detailType:
+                    type: string
+                    enum:
+                    - resource
+                  resourceId:
+                    anyOf:
+                    - type: string
+                    - type: number
+                  resourceType:
+                    type: string
+                required:
+                - detailType
+                additionalProperties: false
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - generic
+                  info:
+                    type: string
+                required:
+                - detailType
+                additionalProperties: false
+              - type: object
+                properties:
+                  currentTokens:
+                    type: integer
+                    minimum: 0
+                  detailType:
+                    type: string
+                    enum:
+                    - insufficient_tokens
+                  requiredTokens:
+                    type: integer
+                    minimum: 0
+                required:
+                - currentTokens
+                - detailType
+                - requiredTokens
+                additionalProperties: false
+            message:
+              type: string
+            validation:
+              type: array
+              items:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  field:
+                    type: string
+                  message:
+                    type: string
+                required:
+                - field
+                - message
+                additionalProperties: false
+          required:
+          - code
+          - message
+          additionalProperties: false
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - false
+      required:
+      - error
+      - success
+      additionalProperties: false
+    MarkFollowUpSentResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/MarkFollowUpSentData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    FollowUpHistoryPage:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/FollowUpHistoryItem'
+        nextCursor:
+          type:
+          - integer
+          - 'null'
+          description: Next offset to pass as `cursor`, or `null` on the final page.
+          example: 20
+      required:
+      - items
+      - nextCursor
+      additionalProperties: false
+    SendFollowUpGmailBody:
+      type: object
+      properties:
+        body:
+          type: string
+          minLength: 20
+          maxLength: 4000
+          description: Plain-text email body to send
+          example: Hi Alex, ...
+        subject:
+          type: string
+          minLength: 1
+          maxLength: 200
+          description: Email subject line
+          example: Following up on the Senior Backend Engineer role
+        to:
+          type: string
+          maxLength: 320
+          format: email
+          description: Recipient email address
+          example: alex@acme.com
+      required:
+      - body
+      - subject
+      - to
+      additionalProperties: false
+    FollowUpHistoryResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/FollowUpHistoryPage'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    FollowUpDraftData:
+      type: object
+      properties:
+        applicationResultId:
+          type: integer
+          description: Application result id
+          example: 1234
+          exclusiveMinimum: 0
+        attemptNumber:
+          type: integer
+          minimum: 1
+          description: 1-indexed cadence attempt the draft is for
+          example: 1
+        body:
+          type: string
+          description: Draft body. For LinkedIn channel, capped at 300 chars.
+          example: 'Hi Alex,
+
+
+            ...'
+        channel:
+          type: string
+          enum:
+          - email
+          - linkedin
+          - other
+          description: Auto-detected outreach channel (email or linkedin). Drives draft format and the destination of the row-click action in the UI.
+          example: email
+        recipientLinkedinUrl:
+          type:
+          - string
+          - 'null'
+          description: LinkedIn URL associated with the recipient, when one is set on the application. Used by the UI to deep-link the row when channel=linkedin.
+          example: https://www.linkedin.com/in/alex-recruiter
+        subject:
+          type: string
+          description: Email subject line. Empty string when channel=linkedin.
+          example: Following up on the Senior Backend Engineer role
+        qualityWarnings:
+          type: array
+          items:
+            type: object
+            properties:
+              location:
+                type: string
+                enum:
+                - subject
+                - body
+                description: Where an anti-cliché filter warning was raised on a follow-up draft (email subject line or message body).
+                example: body
+              phrase:
+                type: string
+            required:
+            - location
+            - phrase
+          description: Anti-cliché filter warnings. Empty when the draft passed cleanly. Populated when the AI slipped a banned phrase past the retry; the user can choose to send-as-is or re-roll.
+          example: []
+      required:
+      - applicationResultId
+      - attemptNumber
+      - body
+      - channel
+      - recipientLinkedinUrl
+      - subject
+      - qualityWarnings
+      additionalProperties: false
+    MarkFollowUpSentData:
+      type: object
+      properties:
+        applicationResultId:
+          type: integer
+          exclusiveMinimum: 0
+        followUpCount:
+          type: integer
+          minimum: 0
+        followUpEventId:
+          type: integer
+          exclusiveMinimum: 0
+        lastFollowUpAt:
+          type: string
+        nextFollowUpDueAt:
+          type:
+          - string
+          - 'null'
+        urgency:
+          type: string
+          enum:
+          - urgent
+          - overdue
+          - waiting
+          - cold
+          - none
+          description: Urgency tier for the next follow-up nudge on an application
+          example: waiting
+      required:
+      - applicationResultId
+      - followUpCount
+      - followUpEventId
+      - lastFollowUpAt
+      - nextFollowUpDueAt
+      - urgency
+      additionalProperties: false
+    SendFollowUpGmailData:
+      type: object
+      properties:
+        applicationResultId:
+          type: integer
+          exclusiveMinimum: 0
+        followUpCount:
+          type: integer
+          minimum: 0
+        followUpEventId:
+          type: integer
+          exclusiveMinimum: 0
+        lastFollowUpAt:
+          type: string
+        messageId:
+          type: string
+          description: Gmail message id of the sent email
+          example: 18f...c9
+        nextFollowUpDueAt:
+          type:
+          - string
+          - 'null'
+        urgency:
+          type: string
+          enum:
+          - urgent
+          - overdue
+          - waiting
+          - cold
+          - none
+          description: Urgency tier for the next follow-up nudge on an application
+          example: waiting
+      required:
+      - applicationResultId
+      - followUpCount
+      - followUpEventId
+      - lastFollowUpAt
+      - messageId
+      - nextFollowUpDueAt
+      - urgency
+      additionalProperties: false
+    FollowUpListItem:
+      type: object
+      properties:
+        applicationResultId:
+          type: integer
+          description: Application result id
+          example: 1234
+          exclusiveMinimum: 0
+        applicationStage:
+          type:
+          - string
+          - 'null'
+          enum:
+          - applied
+          - callback
+          - phone_screen
+          - interview
+          - offered
+          - rejected
+          - no_response
+          - null
+          description: Current stage of the application
+          example: applied
+        company:
+          type:
+          - string
+          - 'null'
+          description: Company name
+          example: Acme Inc.
+        followUpCount:
+          type: integer
+          minimum: 0
+          description: Number of follow-ups already sent on this application
+          example: 1
+        jobTitle:
+          type:
+          - string
+          - 'null'
+          description: Job title
+          example: Senior Backend Engineer
+        jobUrl:
+          type: string
+          description: Original job URL
+          example: https://example.com/jobs/abc
+        lastFollowUpAt:
+          type:
+          - string
+          - 'null'
+          description: ISO timestamp of last recorded follow-up, or null
+        nextFollowUpDueAt:
+          type:
+          - string
+          - 'null'
+          description: ISO timestamp of when next follow-up is due, or null
+        urgency:
+          type: string
+          enum:
+          - urgent
+          - overdue
+          - waiting
+          - cold
+          - none
+          description: Computed urgency tier
+          example: waiting
+      required:
+      - applicationResultId
+      - applicationStage
+      - company
+      - followUpCount
+      - jobTitle
+      - jobUrl
+      - lastFollowUpAt
+      - nextFollowUpDueAt
+      - urgency
+      additionalProperties: false
+    ResponseMetadata:
+      type: object
+      properties:
+        duration:
+          type: number
+          description: Request duration in milliseconds
+          example: 150
+          exclusiveMinimum: 0
+        performance:
+          type: object
+          properties:
+            dbQueries:
+              type: integer
+              minimum: 0
+            totalDbTime:
+              type: number
+              minimum: 0
+          description: Performance metrics (preview/local only)
+        requestId:
+          type: string
+          description: Unique request identifier
+          example: req_abc123
+        timestamp:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp
+          example: '2026-09-25T17:29:47.224Z'
+        version:
+          type: string
+          description: API version
+          example: v1
+    FollowUpListResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: '#/components/schemas/FollowUpListItem'
+          required:
+          - items
+          additionalProperties: false
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+  securitySchemes:
+    BearerAuth:
+      description: 'Session token from signing in to AI Applyd, sent as `Authorization: Bearer <token>`.'
+      scheme: bearer
+      type: http
+x-refined-from:
+- aiapplyd-openapi.json
+- aiapplyd-openapi.yml

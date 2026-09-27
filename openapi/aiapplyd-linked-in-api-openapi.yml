@@ -1,0 +1,1124 @@
+openapi: 3.2.0
+info:
+  title: Aiapplyd LinkedIn API
+  version: 115c47ce
+  contact:
+    email: support@aiapplyd.com
+    name: AI Applyd
+    url: https://aiapplyd.com
+  license:
+    name: Proprietary
+    url: https://aiapplyd.com/legal/terms
+  description: 'Operations tagged linkedin across 2 of this provider''s published API definitions: aiapplyd-openapi.json, aiapplyd-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- description: Current environment
+  url: https://api.aiapplyd.com/api/v1
+security:
+- BearerAuth: []
+tags:
+- name: Linked In
+paths:
+  /linkedin/import-export:
+    post:
+      tags:
+      - Linked In
+      summary: Import LinkedIn Profile from PDF or Data Export
+      description: Upload a LinkedIn profile PDF ("More → Save to PDF") or a LinkedIn data-export ZIP. The file is rendered to resume markdown and parsed by the existing onboarding pipeline, returning the same structured data the resume-parse endpoint produces. A resume_build and application-profile prefill are seeded in the background.
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+              required:
+              - file
+      responses:
+        '200':
+          description: Parsed LinkedIn profile data for frontend review
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LinkedinImportResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: postLinkedinImportExport
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+  /linkedin/import-profile:
+    post:
+      tags:
+      - Linked In
+      summary: Import LinkedIn Profile from Public URL
+      description: 'Best-effort import from a public LinkedIn profile URL via a single capped browser render. On success the profile is parsed into the same structured data the resume-parse endpoint produces. On block/failure, returns { blocked: true } (the URL is still persisted on the application profile) so the frontend can prompt the user to upload their PDF / export instead.'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LinkedinImportUrlRequest'
+      responses:
+        '200':
+          description: Parsed LinkedIn profile data, or a blocked marker prompting file upload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LinkedinImportResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: postLinkedinImportProfile
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+  /linkedin/import-profile-html:
+    post:
+      tags:
+      - Linked In
+      summary: Import LinkedIn Profile from extension-fetched HTML
+      description: 'Accept the raw HTML of the user''s own LinkedIn profile page, fetched by the Chrome extension on the user''s residential, authed session (so LinkedIn serves the real page rather than the auth-wall a datacenter egress hits). The HTML is classified + parsed through the existing onboarding pipeline, returning the same structured data the resume-parse endpoint produces. On an auth-wall / thin page, returns { blocked: true } so the frontend can prompt a PDF upload instead.'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LinkedinImportProfileHtmlRequest'
+      responses:
+        '200':
+          description: Parsed LinkedIn profile data, or a blocked marker prompting file upload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LinkedinImportResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: postLinkedinImportProfileHtml
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+components:
+  schemas:
+    ApiErrorResponse:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+            context:
+              oneOf:
+              - type: object
+                properties:
+                  errorType:
+                    type: string
+                    enum:
+                    - validation
+                  field:
+                    type: string
+                  fieldErrors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        code:
+                          type: string
+                        expected:
+                          type: string
+                        field:
+                          type: string
+                        message:
+                          type: string
+                        received:
+                          type: string
+                      required:
+                      - field
+                      - message
+                  schemaName:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  attemptedEmail:
+                    type: string
+                    format: email
+                  errorType:
+                    type: string
+                    enum:
+                    - authentication
+                  failureReason:
+                    type: string
+                    enum:
+                    - invalid_credentials
+                    - account_locked
+                    - expired_token
+                    - token_expired
+                    - missing_token
+                    - invalid_token
+                    - session_expired
+                    description: Reason for authentication failure
+                    example: token_expired
+                  ipAddress:
+                    type: string
+                  operation:
+                    type: string
+                  service:
+                    type: string
+                  userAgent:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  actualPermission:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - authorization
+                  requiredPermission:
+                    type: string
+                  resource:
+                    type: string
+                  resourceId:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  constraint:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - database
+                  operation:
+                    type: string
+                    enum:
+                    - insert
+                    - update
+                    - delete
+                    - select
+                    - batch
+                    - transaction
+                    - migration
+                    description: Type of database operation
+                    example: select
+                  resourceId:
+                    type: string
+                  sqlState:
+                    type: string
+                  table:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  endpoint:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - external_service
+                  httpStatus:
+                    type: number
+                  operation:
+                    type: string
+                  resourceId:
+                    type: string
+                  responseTime:
+                    type: number
+                  retryAttempt:
+                    type: integer
+                  service:
+                    type: string
+                  serviceName:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  errorType:
+                    type: string
+                    enum:
+                    - resource
+                  resource:
+                    type: string
+                  resourceId:
+                    type: string
+                  service:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  errorType:
+                    type: string
+                    enum:
+                    - rate_limit
+                  limit:
+                    type: number
+                  resetTime:
+                    type: string
+                  windowMs:
+                    type: number
+                required:
+                - errorType
+              - type: object
+                properties:
+                  configKey:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - configuration
+                  operation:
+                    type: string
+                  service:
+                    type: string
+                required:
+                - errorType
+              description: Type-safe error context information
+              example:
+                errorType: validation
+                fieldErrors:
+                - field: email
+                  message: Invalid email format
+            details:
+              oneOf:
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - validation
+                  validationErrors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        code:
+                          type: string
+                        field:
+                          type: string
+                        message:
+                          type: string
+                      required:
+                      - field
+                      - message
+                required:
+                - detailType
+                - validationErrors
+                additionalProperties: false
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - service_error
+                  originalError:
+                    type: string
+                  serviceName:
+                    type: string
+                required:
+                - detailType
+                - serviceName
+                additionalProperties: false
+              - type: object
+                properties:
+                  currentSize:
+                    type: number
+                  detailType:
+                    type: string
+                    enum:
+                    - batch
+                  originalError:
+                    type: string
+                  statementCount:
+                    type: number
+                required:
+                - detailType
+                additionalProperties: false
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - rate_limit
+                  limit:
+                    type: number
+                  resetTime:
+                    type: string
+                  windowMs:
+                    type: number
+                required:
+                - detailType
+                - limit
+                - resetTime
+                - windowMs
+                additionalProperties: false
+              - type: object
+                properties:
+                  conflictingField:
+                    type: string
+                  detailType:
+                    type: string
+                    enum:
+                    - resource
+                  resourceId:
+                    anyOf:
+                    - type: string
+                    - type: number
+                  resourceType:
+                    type: string
+                required:
+                - detailType
+                additionalProperties: false
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - generic
+                  info:
+                    type: string
+                required:
+                - detailType
+                additionalProperties: false
+              - type: object
+                properties:
+                  currentTokens:
+                    type: integer
+                    minimum: 0
+                  detailType:
+                    type: string
+                    enum:
+                    - insufficient_tokens
+                  requiredTokens:
+                    type: integer
+                    minimum: 0
+                required:
+                - currentTokens
+                - detailType
+                - requiredTokens
+                additionalProperties: false
+            message:
+              type: string
+            validation:
+              type: array
+              items:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  field:
+                    type: string
+                  message:
+                    type: string
+                required:
+                - field
+                - message
+                additionalProperties: false
+          required:
+          - code
+          - message
+          additionalProperties: false
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - false
+      required:
+      - error
+      - success
+      additionalProperties: false
+    ResumePrefill:
+      type: object
+      properties:
+        addressLine1:
+          type:
+          - string
+          - 'null'
+        city:
+          type:
+          - string
+          - 'null'
+        country:
+          type:
+          - string
+          - 'null'
+        currentEmployer:
+          type:
+          - string
+          - 'null'
+        githubUrl:
+          type:
+          - string
+          - 'null'
+        highestEducation:
+          type:
+          - string
+          - 'null'
+          enum:
+          - high_school
+          - associate
+          - bachelor
+          - master
+          - doctorate
+          - any
+          - null
+          description: Education level requirement
+          example: any
+        homeLocation:
+          type:
+          - string
+          - 'null'
+        linkedinUrl:
+          type:
+          - string
+          - 'null'
+        ownTitles:
+          type: array
+          items:
+            type: string
+        phone:
+          type:
+          - string
+          - 'null'
+        portfolioUrl:
+          type:
+          - string
+          - 'null'
+        seeded:
+          type: object
+          properties:
+            jobPreferences:
+              type: object
+              properties:
+                locations:
+                  type: boolean
+                  enum:
+                  - true
+                experienceLevels:
+                  type: boolean
+                  enum:
+                  - true
+                skills:
+                  type: boolean
+                  enum:
+                  - true
+                targetRoles:
+                  type: boolean
+                  enum:
+                  - true
+            profile:
+              type: object
+              properties:
+                addressLine1:
+                  type: boolean
+                  enum:
+                  - true
+                city:
+                  type: boolean
+                  enum:
+                  - true
+                state:
+                  type: boolean
+                  enum:
+                  - true
+                country:
+                  type: boolean
+                  enum:
+                  - true
+                zipCode:
+                  type: boolean
+                  enum:
+                  - true
+                phone:
+                  type: boolean
+                  enum:
+                  - true
+                linkedinUrl:
+                  type: boolean
+                  enum:
+                  - true
+                githubUrl:
+                  type: boolean
+                  enum:
+                  - true
+                portfolioUrl:
+                  type: boolean
+                  enum:
+                  - true
+                currentEmployer:
+                  type: boolean
+                  enum:
+                  - true
+                highestEducation:
+                  type: boolean
+                  enum:
+                  - true
+                yearsOfExperience:
+                  type: boolean
+                  enum:
+                  - true
+          additionalProperties: false
+        state:
+          type:
+          - string
+          - 'null'
+        workHistoryLocations:
+          type: array
+          items:
+            type: string
+        yearsOfExperience:
+          type:
+          - integer
+          - 'null'
+        zipCode:
+          type:
+          - string
+          - 'null'
+      required:
+      - addressLine1
+      - city
+      - country
+      - currentEmployer
+      - githubUrl
+      - highestEducation
+      - homeLocation
+      - linkedinUrl
+      - ownTitles
+      - phone
+      - portfolioUrl
+      - state
+      - workHistoryLocations
+      - yearsOfExperience
+      - zipCode
+      additionalProperties: false
+    LinkedinImportUrlRequest:
+      type: object
+      properties:
+        url:
+          type: string
+          minLength: 1
+          maxLength: 500
+          description: Public LinkedIn member profile URL (linkedin.com/in/<slug>). Only the signed-in user's own profile is supported.
+          example: https://www.linkedin.com/in/jane-doe
+      required:
+      - url
+      additionalProperties: false
+    LinkedinImportResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/LinkedinImportData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    ResumeFieldEvidence:
+      type: object
+      properties:
+        confidence:
+          type: string
+          enum:
+          - high
+          - medium
+          - low
+          description: 'How the value was read: high/medium when printed in the resume, low when inferred'
+          example: high
+        field:
+          type: string
+          enum:
+          - addressLine1
+          - city
+          - state
+          - country
+          - zipCode
+          - phone
+          - email
+          - linkedinUrl
+          - githubUrl
+          - portfolioUrl
+          - currentEmployer
+          - educationLevel
+          description: A parsed resume fact the model must back with a verbatim quote from the resume
+          example: city
+        quote:
+          type:
+          - string
+          - 'null'
+          description: The exact contiguous resume text that contains the value (<=160 chars), or null
+          example: Berlin, Germany | +49 176 1234 5678
+      required:
+      - confidence
+      - field
+      - quote
+      additionalProperties: false
+    WorkExperienceItem:
+      type: object
+      properties:
+        company:
+          type: string
+          description: Company name
+          example: Acme Corp
+        current:
+          type: boolean
+          description: Whether this is the current position
+          example: false
+        description:
+          type:
+          - string
+          - 'null'
+          description: Role description or achievements
+          example: Led a team of 5 engineers building microservices
+        endDate:
+          type:
+          - string
+          - 'null'
+          description: End date (free-form from resume)
+          example: Dec 2023
+        location:
+          type:
+          - string
+          - 'null'
+          description: City of this role exactly as printed on the resume
+          example: Berlin
+        startDate:
+          type:
+          - string
+          - 'null'
+          description: Start date (free-form from resume)
+          example: Jan 2020
+        title:
+          type: string
+          description: Job title
+          example: Senior Software Engineer
+      required:
+      - company
+      - current
+      - description
+      - endDate
+      - startDate
+      - title
+      additionalProperties: false
+    LinkedinImportData:
+      oneOf:
+      - type: object
+        properties:
+          blocked:
+            type: boolean
+            enum:
+            - true
+            description: Public-profile fetch was blocked or failed. The user must upload their LinkedIn PDF / export instead.
+            example: true
+          linkedinUrl:
+            type: string
+            description: The LinkedIn profile URL we persisted on the user's application profile despite the blocked fetch.
+            example: https://www.linkedin.com/in/jane-doe
+        required:
+        - blocked
+        - linkedinUrl
+        additionalProperties: false
+      - type: object
+        properties:
+          blocked:
+            type: boolean
+            enum:
+            - false
+            description: Ingestion succeeded; structured resume data was extracted.
+            example: false
+          parsed:
+            $ref: '#/components/schemas/ParsedResumeData'
+        required:
+        - blocked
+        - parsed
+        additionalProperties: false
+    ParsedResumeData:
+      type: object
+      properties:
+        addressLine1:
+          type:
+          - string
+          - 'null'
+          description: Street + number exactly as printed, or null
+          example: Hauptstrasse 12
+        city:
+          type:
+          - string
+          - 'null'
+          description: City from resume
+          example: San Francisco
+        companySize:
+          type: array
+          items:
+            type: string
+          description: 'AI-inferred company size preferences: startup, small, medium, large, enterprise'
+          example:
+          - startup
+          - medium
+        country:
+          type:
+          - string
+          - 'null'
+          description: Country from resume
+          example: United States
+        currentJobTitle:
+          type:
+          - string
+          - 'null'
+          description: Current or most recent job title
+          example: Senior Software Engineer
+        documentId:
+          type: integer
+          description: ID of the saved user document
+          example: 42
+        education:
+          type: array
+          items:
+            $ref: '#/components/schemas/EducationItem'
+          description: Education history extracted from resume
+        educationLevel:
+          type:
+          - string
+          - 'null'
+          description: 'AI-inferred education level: high_school, associate, bachelor, master, doctorate'
+          example: bachelor
+        email:
+          type:
+          - string
+          - 'null'
+          description: Email address from resume
+          example: john.doe@example.com
+        experienceLevel:
+          type:
+          - string
+          - 'null'
+          description: 'AI-inferred experience level: entry, mid, senior, lead, executive'
+          example: senior
+        fieldEvidence:
+          type: array
+          items:
+            $ref: '#/components/schemas/ResumeFieldEvidence'
+          description: Verbatim quotes the model offers for contact and level facts
+        firstName:
+          type:
+          - string
+          - 'null'
+          description: First name parsed from full name
+          example: John
+        fullName:
+          type:
+          - string
+          - 'null'
+          description: Full name from resume
+          example: John Doe
+        githubUrl:
+          type:
+          - string
+          - 'null'
+          description: GitHub profile URL exactly as printed, or null
+          example: https://github.com/johndoe
+        industries:
+          type: array
+          items:
+            type: string
+          description: AI-inferred industries from work history
+          example:
+          - Software & SaaS
+          - AI & Machine Learning
+        jobTypes:
+          type: array
+          items:
+            type: string
+          description: 'AI-inferred job types: full_time, part_time, contract, freelance, internship, temporary'
+          example:
+          - full_time
+        lastName:
+          type:
+          - string
+          - 'null'
+          description: Last name parsed from full name
+          example: Doe
+        linkedinUrl:
+          type:
+          - string
+          - 'null'
+          description: LinkedIn profile URL exactly as printed, or null
+          example: https://www.linkedin.com/in/johndoe
+        phone:
+          type:
+          - string
+          - 'null'
+          description: Phone number from resume
+          example: +1-555-123-4567
+        portfolioUrl:
+          type:
+          - string
+          - 'null'
+          description: Personal website / portfolio URL exactly as printed, or null
+          example: https://johndoe.dev
+        prefill:
+          $ref: '#/components/schemas/ResumePrefill'
+        professionalSummary:
+          type:
+          - string
+          - 'null'
+          description: Professional summary or objective
+          example: Experienced full-stack engineer with 8 years building scalable web applications.
+        skills:
+          type: array
+          items:
+            type: string
+          description: Skills extracted from resume
+          example:
+          - TypeScript
+          - React
+          - Node.js
+          - PostgreSQL
+        state:
+          type:
+          - string
+          - 'null'
+          description: State/province from resume
+          example: California
+        suggestedJobTitles:
+          type: array
+          items:
+            type: string
+          description: Suggested job titles based on experience
+          example:
+          - Senior Software Engineer
+          - Full Stack Developer
+          - Tech Lead
+        suggestedLocations:
+          type: array
+          items:
+            type: string
+          description: Suggested job search locations based on resume
+          example:
+          - San Francisco, CA
+          - Remote
+        workExperience:
+          type: array
+          items:
+            $ref: '#/components/schemas/WorkExperienceItem'
+          description: Work experience history extracted from resume
+        yearsOfExperience:
+          type:
+          - integer
+          - 'null'
+          description: Estimated total years of experience (whole number)
+          example: 8
+        zipCode:
+          type:
+          - string
+          - 'null'
+          description: ZIP/postal code from resume
+          example: '94105'
+      required:
+      - city
+      - companySize
+      - country
+      - currentJobTitle
+      - documentId
+      - education
+      - educationLevel
+      - email
+      - experienceLevel
+      - firstName
+      - fullName
+      - industries
+      - jobTypes
+      - lastName
+      - phone
+      - professionalSummary
+      - skills
+      - state
+      - suggestedJobTitles
+      - suggestedLocations
+      - workExperience
+      - yearsOfExperience
+      - zipCode
+      additionalProperties: false
+    EducationItem:
+      type: object
+      properties:
+        degree:
+          type: string
+          description: Degree or certification name
+          example: B.S. Computer Science
+        institution:
+          type: string
+          description: School or institution name
+          example: MIT
+        year:
+          type:
+          - string
+          - 'null'
+          description: Graduation year or date range
+          example: '2018'
+      required:
+      - degree
+      - institution
+      - year
+      additionalProperties: false
+    ResponseMetadata:
+      type: object
+      properties:
+        duration:
+          type: number
+          description: Request duration in milliseconds
+          example: 150
+          exclusiveMinimum: 0
+        performance:
+          type: object
+          properties:
+            dbQueries:
+              type: integer
+              minimum: 0
+            totalDbTime:
+              type: number
+              minimum: 0
+          description: Performance metrics (preview/local only)
+        requestId:
+          type: string
+          description: Unique request identifier
+          example: req_abc123
+        timestamp:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp
+          example: '2026-09-25T17:29:47.224Z'
+        version:
+          type: string
+          description: API version
+          example: v1
+    LinkedinImportProfileHtmlRequest:
+      type: object
+      properties:
+        rawBody:
+          type: string
+          minLength: 1
+          maxLength: 5000000
+          description: Raw HTML of the LinkedIn member profile page, fetched on the user's residential, authed session by the extension.
+        url:
+          type: string
+          minLength: 1
+          maxLength: 500
+          description: Public LinkedIn member profile URL (linkedin.com/in/<slug>). Only the signed-in user's own profile is supported.
+          example: https://www.linkedin.com/in/jane-doe
+      required:
+      - rawBody
+      - url
+      additionalProperties: false
+  securitySchemes:
+    BearerAuth:
+      description: 'Session token from signing in to AI Applyd, sent as `Authorization: Bearer <token>`.'
+      scheme: bearer
+      type: http
+x-refined-from:
+- aiapplyd-openapi.json
+- aiapplyd-openapi.yml

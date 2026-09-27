@@ -1,0 +1,1361 @@
+openapi: 3.2.0
+info:
+  title: Aiapplyd Blog API
+  version: 115c47ce
+  contact:
+    email: support@aiapplyd.com
+    name: AI Applyd
+    url: https://aiapplyd.com
+  license:
+    name: Proprietary
+    url: https://aiapplyd.com/legal/terms
+  description: 'Operations tagged blog across 2 of this provider''s published API definitions: aiapplyd-openapi.json, aiapplyd-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- description: Current environment
+  url: https://api.aiapplyd.com/api/v1
+security:
+- BearerAuth: []
+tags:
+- name: blog
+paths:
+  /blog/all-content:
+    get:
+      description: Get every published blog post with full content in a single payload (build-time prerender snapshot source).
+      summary: Get All Posts With Content
+      tags:
+      - blog
+      responses:
+        '200':
+          description: All published blog posts with full content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AllPostsWithContentResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: getBlogAllContent
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+  /blog/posts:
+    get:
+      description: Get paginated blog posts (summaries only, without content).
+      summary: List Blog Posts
+      tags:
+      - blog
+      parameters:
+      - schema:
+          type: integer
+          minimum: 1
+          maximum: 50
+          default: 12
+          description: Posts per page (max 50).
+          example: 12
+        required: false
+        description: Posts per page (max 50).
+        name: limit
+        in: query
+      - schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 1
+          description: 1-based page index (max 100).
+          example: 1
+        required: false
+        description: 1-based page index (max 100).
+        name: page
+        in: query
+      responses:
+        '200':
+          description: Paginated list of blog posts
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedBlogPostsListResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: getBlogPosts
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+  /blog/featured:
+    get:
+      description: Get all featured blog posts (summaries only).
+      summary: Get Featured Posts
+      tags:
+      - blog
+      responses:
+        '200':
+          description: List of featured blog posts
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BlogPostsListResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: getBlogFeatured
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+  /blog/tags:
+    get:
+      description: Get all categories (tags) with their post counts.
+      summary: List Categories
+      tags:
+      - blog
+      responses:
+        '200':
+          description: List of categories with counts
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoriesListResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: getBlogTags
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+  /blog/tag/{tag}:
+    get:
+      description: Get paginated blog posts with a specific category.
+      summary: Get Posts by Category
+      tags:
+      - blog
+      parameters:
+      - schema:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: Category slug
+          example: job-search
+        required: true
+        description: Category slug
+        name: tag
+        in: path
+      - schema:
+          type: integer
+          minimum: 1
+          maximum: 50
+          default: 12
+          description: Posts per page (max 50).
+          example: 12
+        required: false
+        description: Posts per page (max 50).
+        name: limit
+        in: query
+      - schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 1
+          description: 1-based page index (max 100).
+          example: 1
+        required: false
+        description: 1-based page index (max 100).
+        name: page
+        in: query
+      responses:
+        '200':
+          description: Paginated list of blog posts with the specified category
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedBlogPostsListResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: getBlogTagByTag
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+  /blog/authors/{slug}:
+    get:
+      description: Get a single blog author profile and their published post summaries by URL slug.
+      summary: Get Blog Author
+      tags:
+      - blog
+      parameters:
+      - schema:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: Blog author URL slug
+          example: ava-bagherzadeh
+        required: true
+        description: Blog author URL slug
+        name: slug
+        in: path
+      responses:
+        '200':
+          description: Author profile with their published posts
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BlogAuthorWithPostsResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: getBlogAuthorsBySlug
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+  /blog/posts/{slug}:
+    get:
+      description: Get a single blog post by its URL slug.
+      summary: Get Blog Post
+      tags:
+      - blog
+      parameters:
+      - schema:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: Blog post URL slug
+          example: getting-started-with-ai-applyd
+        required: true
+        description: Blog post URL slug
+        name: slug
+        in: path
+      responses:
+        '200':
+          description: Blog post details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BlogPostResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: getBlogPostsBySlug
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+  /blog/posts/{slug}/related:
+    get:
+      description: Get related posts based on shared tags.
+      summary: Get Related Posts
+      tags:
+      - blog
+      parameters:
+      - schema:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: Blog post URL slug
+          example: getting-started-with-ai-applyd
+        required: true
+        description: Blog post URL slug
+        name: slug
+        in: path
+      - schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+          description: Maximum number of related posts to return
+          example: 3
+        required: false
+        description: Maximum number of related posts to return
+        name: limit
+        in: query
+      responses:
+        '200':
+          description: Related blog posts with relevance scores
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RelatedPostsResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: getBlogPostsBySlugRelated
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+components:
+  schemas:
+    BlogPostSummary:
+      type: object
+      properties:
+        _status:
+          type: string
+          enum:
+          - draft
+          - published
+          - archived
+          description: Publication status of a blog post
+          example: draft
+        author:
+          $ref: '#/components/schemas/BlogAuthor'
+        categories:
+          type: array
+          items:
+            type: object
+            properties:
+              description:
+                type:
+                - string
+                - 'null'
+              id:
+                type: integer
+                exclusiveMinimum: 0
+              name:
+                type: string
+              slug:
+                type: string
+            required:
+            - id
+            - name
+            - slug
+            additionalProperties: false
+        createdAt:
+          type: string
+          format: date-time
+        description:
+          type: string
+        excerpt:
+          type: string
+        featured:
+          type: boolean
+        featuredImage:
+          type:
+          - object
+          - 'null'
+          properties:
+            alt:
+              type: string
+            caption:
+              type:
+              - string
+              - 'null'
+            height:
+              type: integer
+              exclusiveMinimum: 0
+            id:
+              type: string
+            sizes:
+              type:
+              - object
+              - 'null'
+              properties:
+                card:
+                  type: object
+                  properties:
+                    filesize:
+                      type: integer
+                    height:
+                      type: integer
+                      exclusiveMinimum: 0
+                    url:
+                      type: string
+                      format: uri
+                    width:
+                      type: integer
+                      exclusiveMinimum: 0
+                  required:
+                  - height
+                  - url
+                  - width
+                  additionalProperties: false
+                hero:
+                  type: object
+                  properties:
+                    filesize:
+                      type: integer
+                    height:
+                      type: integer
+                      exclusiveMinimum: 0
+                    url:
+                      type: string
+                      format: uri
+                    width:
+                      type: integer
+                      exclusiveMinimum: 0
+                  required:
+                  - height
+                  - url
+                  - width
+                  additionalProperties: false
+                thumbnail:
+                  type: object
+                  properties:
+                    filesize:
+                      type: integer
+                    height:
+                      type: integer
+                      exclusiveMinimum: 0
+                    url:
+                      type: string
+                      format: uri
+                    width:
+                      type: integer
+                      exclusiveMinimum: 0
+                  required:
+                  - height
+                  - url
+                  - width
+                  additionalProperties: false
+              additionalProperties: false
+            url:
+              type: string
+              format: uri
+            width:
+              type: integer
+              exclusiveMinimum: 0
+          required:
+          - alt
+          - id
+          - url
+          additionalProperties: false
+        id:
+          type: string
+        meta:
+          type:
+          - object
+          - 'null'
+          properties:
+            canonicalUrl:
+              type: string
+              format: uri
+            metaDescription:
+              type: string
+            metaImage:
+              type: string
+            metaTitle:
+              type: string
+            noIndex:
+              type: boolean
+          additionalProperties: false
+        publishedAt:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        readingTime:
+          type: integer
+          minimum: 0
+        scheduledPublishAt:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        slug:
+          type: string
+        title:
+          type: string
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+      - _status
+      - author
+      - createdAt
+      - description
+      - excerpt
+      - featured
+      - id
+      - readingTime
+      - slug
+      - title
+      - updatedAt
+      additionalProperties: false
+    PaginatedBlogPostsPayload:
+      type: object
+      properties:
+        category:
+          type:
+          - object
+          - 'null'
+          properties:
+            name:
+              type: string
+            slug:
+              type: string
+          required:
+          - name
+          - slug
+          description: Matched category (present on tag-filtered results only)
+        pagination:
+          type: object
+          properties:
+            hasNext:
+              type: boolean
+            hasPrev:
+              type: boolean
+            limit:
+              type: integer
+              exclusiveMinimum: 0
+            page:
+              type: integer
+              exclusiveMinimum: 0
+            totalCount:
+              type: integer
+              minimum: 0
+            totalPages:
+              type: integer
+              minimum: 0
+          required:
+          - hasNext
+          - hasPrev
+          - limit
+          - page
+          - totalCount
+          - totalPages
+          additionalProperties: false
+        posts:
+          type: array
+          items:
+            $ref: '#/components/schemas/BlogPostSummary'
+      required:
+      - category
+      - pagination
+      - posts
+      additionalProperties: false
+    ApiErrorResponse:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+            context:
+              oneOf:
+              - type: object
+                properties:
+                  errorType:
+                    type: string
+                    enum:
+                    - validation
+                  field:
+                    type: string
+                  fieldErrors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        code:
+                          type: string
+                        expected:
+                          type: string
+                        field:
+                          type: string
+                        message:
+                          type: string
+                        received:
+                          type: string
+                      required:
+                      - field
+                      - message
+                  schemaName:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  attemptedEmail:
+                    type: string
+                    format: email
+                  errorType:
+                    type: string
+                    enum:
+                    - authentication
+                  failureReason:
+                    type: string
+                    enum:
+                    - invalid_credentials
+                    - account_locked
+                    - expired_token
+                    - token_expired
+                    - missing_token
+                    - invalid_token
+                    - session_expired
+                    description: Reason for authentication failure
+                    example: token_expired
+                  ipAddress:
+                    type: string
+                  operation:
+                    type: string
+                  service:
+                    type: string
+                  userAgent:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  actualPermission:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - authorization
+                  requiredPermission:
+                    type: string
+                  resource:
+                    type: string
+                  resourceId:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  constraint:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - database
+                  operation:
+                    type: string
+                    enum:
+                    - insert
+                    - update
+                    - delete
+                    - select
+                    - batch
+                    - transaction
+                    - migration
+                    description: Type of database operation
+                    example: select
+                  resourceId:
+                    type: string
+                  sqlState:
+                    type: string
+                  table:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  endpoint:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - external_service
+                  httpStatus:
+                    type: number
+                  operation:
+                    type: string
+                  resourceId:
+                    type: string
+                  responseTime:
+                    type: number
+                  retryAttempt:
+                    type: integer
+                  service:
+                    type: string
+                  serviceName:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  errorType:
+                    type: string
+                    enum:
+                    - resource
+                  resource:
+                    type: string
+                  resourceId:
+                    type: string
+                  service:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  errorType:
+                    type: string
+                    enum:
+                    - rate_limit
+                  limit:
+                    type: number
+                  resetTime:
+                    type: string
+                  windowMs:
+                    type: number
+                required:
+                - errorType
+              - type: object
+                properties:
+                  configKey:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - configuration
+                  operation:
+                    type: string
+                  service:
+                    type: string
+                required:
+                - errorType
+              description: Type-safe error context information
+              example:
+                errorType: validation
+                fieldErrors:
+                - field: email
+                  message: Invalid email format
+            details:
+              oneOf:
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - validation
+                  validationErrors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        code:
+                          type: string
+                        field:
+                          type: string
+                        message:
+                          type: string
+                      required:
+                      - field
+                      - message
+                required:
+                - detailType
+                - validationErrors
+                additionalProperties: false
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - service_error
+                  originalError:
+                    type: string
+                  serviceName:
+                    type: string
+                required:
+                - detailType
+                - serviceName
+                additionalProperties: false
+              - type: object
+                properties:
+                  currentSize:
+                    type: number
+                  detailType:
+                    type: string
+                    enum:
+                    - batch
+                  originalError:
+                    type: string
+                  statementCount:
+                    type: number
+                required:
+                - detailType
+                additionalProperties: false
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - rate_limit
+                  limit:
+                    type: number
+                  resetTime:
+                    type: string
+                  windowMs:
+                    type: number
+                required:
+                - detailType
+                - limit
+                - resetTime
+                - windowMs
+                additionalProperties: false
+              - type: object
+                properties:
+                  conflictingField:
+                    type: string
+                  detailType:
+                    type: string
+                    enum:
+                    - resource
+                  resourceId:
+                    anyOf:
+                    - type: string
+                    - type: number
+                  resourceType:
+                    type: string
+                required:
+                - detailType
+                additionalProperties: false
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - generic
+                  info:
+                    type: string
+                required:
+                - detailType
+                additionalProperties: false
+              - type: object
+                properties:
+                  currentTokens:
+                    type: integer
+                    minimum: 0
+                  detailType:
+                    type: string
+                    enum:
+                    - insufficient_tokens
+                  requiredTokens:
+                    type: integer
+                    minimum: 0
+                required:
+                - currentTokens
+                - detailType
+                - requiredTokens
+                additionalProperties: false
+            message:
+              type: string
+            validation:
+              type: array
+              items:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  field:
+                    type: string
+                  message:
+                    type: string
+                required:
+                - field
+                - message
+                additionalProperties: false
+          required:
+          - code
+          - message
+          additionalProperties: false
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - false
+      required:
+      - error
+      - success
+      additionalProperties: false
+    BlogPost:
+      type: object
+      properties:
+        _status:
+          type: string
+          enum:
+          - draft
+          - published
+          - archived
+          description: Publication status of a blog post
+          example: draft
+        author:
+          $ref: '#/components/schemas/BlogAuthor'
+        categories:
+          type: array
+          items:
+            type: object
+            properties:
+              description:
+                type:
+                - string
+                - 'null'
+              id:
+                type: integer
+                exclusiveMinimum: 0
+              name:
+                type: string
+              slug:
+                type: string
+            required:
+            - id
+            - name
+            - slug
+            additionalProperties: false
+        content:
+          $ref: '#/components/schemas/LexicalContent'
+        createdAt:
+          type: string
+          format: date-time
+        description:
+          type: string
+        excerpt:
+          type: string
+        featured:
+          type: boolean
+        featuredImage:
+          type:
+          - object
+          - 'null'
+          properties:
+            alt:
+              type: string
+            caption:
+              type:
+              - string
+              - 'null'
+            height:
+              type: integer
+              exclusiveMinimum: 0
+            id:
+              type: string
+            sizes:
+              type:
+              - object
+              - 'null'
+              properties:
+                card:
+                  type: object
+                  properties:
+                    filesize:
+                      type: integer
+                    height:
+                      type: integer
+                      exclusiveMinimum: 0
+                    url:
+                      type: string
+                      format: uri
+                    width:
+                      type: integer
+                      exclusiveMinimum: 0
+                  required:
+                  - height
+                  - url
+                  - width
+                  additionalProperties: false
+                hero:
+                  type: object
+                  properties:
+                    filesize:
+                      type: integer
+                    height:
+                      type: integer
+                      exclusiveMinimum: 0
+                    url:
+                      type: string
+                      format: uri
+                    width:
+                      type: integer
+                      exclusiveMinimum: 0
+                  required:
+                  - height
+                  - url
+                  - width
+                  additionalProperties: false
+                thumbnail:
+                  type: object
+                  properties:
+                    filesize:
+                      type: integer
+                    height:
+                      type: integer
+                      exclusiveMinimum: 0
+                    url:
+                      type: string
+                      format: uri
+                    width:
+                      type: integer
+                      exclusiveMinimum: 0
+                  required:
+                  - height
+                  - url
+                  - width
+                  additionalProperties: false
+              additionalProperties: false
+            url:
+              type: string
+              format: uri
+            width:
+              type: integer
+              exclusiveMinimum: 0
+          required:
+          - alt
+          - id
+          - url
+          additionalProperties: false
+        id:
+          type: string
+        meta:
+          type:
+          - object
+          - 'null'
+          properties:
+            canonicalUrl:
+              type: string
+              format: uri
+            metaDescription:
+              type: string
+            metaImage:
+              type: string
+            metaTitle:
+              type: string
+            noIndex:
+              type: boolean
+          additionalProperties: false
+        publishedAt:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        readingTime:
+          type: integer
+          minimum: 0
+        scheduledPublishAt:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        slug:
+          type: string
+        title:
+          type: string
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+      - _status
+      - author
+      - content
+      - createdAt
+      - description
+      - excerpt
+      - featured
+      - id
+      - readingTime
+      - slug
+      - title
+      - updatedAt
+      additionalProperties: false
+    RelatedPostsResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/BlogPostWithRelevance'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    AllPostsWithContentResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/BlogPost'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    BlogAuthorWithPostsPayload:
+      type: object
+      properties:
+        author:
+          $ref: '#/components/schemas/BlogAuthor'
+        posts:
+          type: array
+          items:
+            $ref: '#/components/schemas/BlogPostSummary'
+      required:
+      - author
+      - posts
+      additionalProperties: false
+    BlogPostResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/BlogPost'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    LexicalContent:
+      type: object
+      additionalProperties: true
+      description: Lexical document tree. Opaque in the OpenAPI surface; see Payload CMS Lexical docs for the recursive node shape.
+    CategoryCount:
+      type: object
+      properties:
+        count:
+          type: integer
+          minimum: 0
+        id:
+          type: integer
+          exclusiveMinimum: 0
+        name:
+          type: string
+        slug:
+          type: string
+      required:
+      - count
+      - id
+      - name
+      - slug
+      additionalProperties: false
+    PaginatedBlogPostsListResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/PaginatedBlogPostsPayload'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    BlogPostWithRelevance:
+      allOf:
+      - $ref: '#/components/schemas/BlogPostSummary'
+      - type: object
+        properties:
+          relevance:
+            type: number
+        required:
+        - relevance
+        additionalProperties: false
+    BlogAuthorWithPostsResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/BlogAuthorWithPostsPayload'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    CategoriesListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/CategoryCount'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    BlogPostsListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/BlogPostSummary'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    ResponseMetadata:
+      type: object
+      properties:
+        duration:
+          type: number
+          description: Request duration in milliseconds
+          example: 150
+          exclusiveMinimum: 0
+        performance:
+          type: object
+          properties:
+            dbQueries:
+              type: integer
+              minimum: 0
+            totalDbTime:
+              type: number
+              minimum: 0
+          description: Performance metrics (preview/local only)
+        requestId:
+          type: string
+          description: Unique request identifier
+          example: req_abc123
+        timestamp:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp
+          example: '2026-09-25T17:29:47.224Z'
+        version:
+          type: string
+          description: API version
+          example: v1
+    BlogAuthor:
+      type: object
+      properties:
+        avatarUrl:
+          type:
+          - string
+          - 'null'
+          format: uri
+        bio:
+          type:
+          - string
+          - 'null'
+        id:
+          type: string
+        name:
+          type: string
+        slug:
+          type:
+          - string
+          - 'null'
+        socialLinks:
+          type:
+          - object
+          - 'null'
+          additionalProperties:
+            type: string
+        title:
+          type: string
+      required:
+      - id
+      - name
+      - title
+      additionalProperties: false
+  securitySchemes:
+    BearerAuth:
+      description: 'Session token from signing in to AI Applyd, sent as `Authorization: Bearer <token>`.'
+      scheme: bearer
+      type: http
+x-refined-from:
+- aiapplyd-openapi.json
+- aiapplyd-openapi.yml

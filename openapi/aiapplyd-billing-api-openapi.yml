@@ -1,0 +1,2313 @@
+openapi: 3.2.0
+info:
+  title: Aiapplyd Billing API
+  version: 115c47ce
+  contact:
+    email: support@aiapplyd.com
+    name: AI Applyd
+    url: https://aiapplyd.com
+  license:
+    name: Proprietary
+    url: https://aiapplyd.com/legal/terms
+  description: 'Operations tagged billing across 2 of this provider''s published API definitions: aiapplyd-openapi.json, aiapplyd-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- description: Current environment
+  url: https://api.aiapplyd.com/api/v1
+security:
+- BearerAuth: []
+tags:
+- description: Subscription and billing management
+  name: Billing
+paths:
+  /billing/create-checkout-session:
+    post:
+      description: Create a Stripe checkout session for subscription or token purchase. Customer is created if not exists and cached in KV.
+      summary: Create Checkout Session
+      tags:
+      - Billing
+      requestBody:
+        description: Checkout session parameters
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCheckoutSessionRequest'
+      responses:
+        '200':
+          description: Checkout session created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateCheckoutSessionResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: postBillingCreateCheckoutSession
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+  /billing/create-portal-session:
+    post:
+      description: Create a Stripe billing portal session for managing subscriptions and payment methods.
+      summary: Create Billing Portal Session
+      tags:
+      - Billing
+      requestBody:
+        description: Portal session parameters
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePortalSessionRequest'
+      responses:
+        '200':
+          description: Portal session created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreatePortalSessionResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: postBillingCreatePortalSession
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+  /billing/sync-after-checkout:
+    post:
+      description: Sync subscription data after successful checkout. Call this from the success page.
+      summary: Sync After Checkout
+      tags:
+      - Billing
+      responses:
+        '200':
+          description: Sync completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SyncAfterCheckoutResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: postBillingSyncAfterCheckout
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+  /billing/subscription:
+    get:
+      description: Get the current user subscription details and token balance.
+      summary: Get Subscription
+      tags:
+      - Billing
+      responses:
+        '200':
+          description: Subscription details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetSubscriptionResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: getBillingSubscription
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+  /billing/cancel-subscription:
+    post:
+      description: Cancel the current user subscription. Can cancel immediately or at the end of the billing period.
+      summary: Cancel Subscription
+      tags:
+      - Billing
+      requestBody:
+        description: Cancellation options
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CancelSubscriptionRequest'
+      responses:
+        '200':
+          description: Subscription cancelled successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CancelSubscriptionResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: postBillingCancelSubscription
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+  /billing/subscription/switch:
+    post:
+      description: Switch to a different subscription plan. Upgrades are applied immediately with proration, downgrades are scheduled for period end.
+      summary: Switch Subscription Plan
+      tags:
+      - Billing
+      requestBody:
+        description: New price ID to switch to
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SwitchSubscriptionRequest'
+      responses:
+        '200':
+          description: Subscription switched successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SwitchSubscriptionResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: postBillingSubscriptionSwitch
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+  /billing/invoices:
+    get:
+      description: Get the current user invoice history with pagination support.
+      summary: Get Invoices
+      tags:
+      - Billing
+      parameters:
+      - schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 10
+          description: Maximum number of invoices to return (max 100)
+          example: 10
+        required: false
+        description: Maximum number of invoices to return (max 100)
+        name: limit
+        in: query
+      - schema:
+          type: string
+          description: Cursor for pagination (invoice ID to start after)
+          example: in_1234567890
+        required: false
+        description: Cursor for pagination (invoice ID to start after)
+        name: startingAfter
+        in: query
+      responses:
+        '200':
+          description: Invoices retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetInvoicesResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: getBillingInvoices
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+  /billing/usage:
+    get:
+      description: Returns per-action usage, limits, and remaining quota for the authenticated user. Enables frontend pre-flight limit checks.
+      summary: Get Action Usage and Limits
+      tags:
+      - Billing
+      responses:
+        '200':
+          description: Action usage data retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetUsageResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: getBillingUsage
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+  /billing/action-costs:
+    get:
+      description: Returns the estimated min/typical/max billed-token cost for every AI action. Safe for CDN caching.
+      summary: Get Per-Action Token Cost Estimates
+      tags:
+      - Billing
+      responses:
+        '200':
+          description: Action cost estimates retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetActionCostsResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: getBillingActionCosts
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+  /native-billing/bootstrap:
+    post:
+      description: Return the opaque store-account binding and canonical native product catalog.
+      summary: Get native billing bootstrap
+      tags:
+      - Billing
+      responses:
+        '200':
+          description: Native billing bootstrap data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NativeBillingBootstrapResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: postNativeBillingBootstrap
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+  /billing/native/verify:
+    post:
+      description: Verify one native-store purchase against its provider and persist its entitlement.
+      summary: Verify native billing purchase
+      tags:
+      - Billing
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NativeBillingVerifyRequest'
+      responses:
+        '200':
+          description: Native purchase verified and persisted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NativeBillingVerifyResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '503':
+          description: Service Unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: postBillingNativeVerify
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+  /native-billing/purchases/accept:
+    post:
+      description: Accept one verified native-store token-pack purchase and settle its tokens exactly once.
+      summary: Accept native token-pack purchase
+      tags:
+      - Billing
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NativeStoreConsumableVerifyRequest'
+      responses:
+        '200':
+          description: Native token-pack purchase accepted and settled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NativeStoreConsumableVerifyResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '503':
+          description: Service Unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: postNativeBillingPurchasesAccept
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+components:
+  schemas:
+    PortalSessionPayload:
+      type: object
+      properties:
+        url:
+          type: string
+          format: uri
+          description: URL to redirect user to for billing portal
+          example: https://billing.stripe.com/session/1234567890
+      required:
+      - url
+      additionalProperties: false
+    ApiErrorResponse:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+            context:
+              oneOf:
+              - type: object
+                properties:
+                  errorType:
+                    type: string
+                    enum:
+                    - validation
+                  field:
+                    type: string
+                  fieldErrors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        code:
+                          type: string
+                        expected:
+                          type: string
+                        field:
+                          type: string
+                        message:
+                          type: string
+                        received:
+                          type: string
+                      required:
+                      - field
+                      - message
+                  schemaName:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  attemptedEmail:
+                    type: string
+                    format: email
+                  errorType:
+                    type: string
+                    enum:
+                    - authentication
+                  failureReason:
+                    type: string
+                    enum:
+                    - invalid_credentials
+                    - account_locked
+                    - expired_token
+                    - token_expired
+                    - missing_token
+                    - invalid_token
+                    - session_expired
+                    description: Reason for authentication failure
+                    example: token_expired
+                  ipAddress:
+                    type: string
+                  operation:
+                    type: string
+                  service:
+                    type: string
+                  userAgent:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  actualPermission:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - authorization
+                  requiredPermission:
+                    type: string
+                  resource:
+                    type: string
+                  resourceId:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  constraint:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - database
+                  operation:
+                    type: string
+                    enum:
+                    - insert
+                    - update
+                    - delete
+                    - select
+                    - batch
+                    - transaction
+                    - migration
+                    description: Type of database operation
+                    example: select
+                  resourceId:
+                    type: string
+                  sqlState:
+                    type: string
+                  table:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  endpoint:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - external_service
+                  httpStatus:
+                    type: number
+                  operation:
+                    type: string
+                  resourceId:
+                    type: string
+                  responseTime:
+                    type: number
+                  retryAttempt:
+                    type: integer
+                  service:
+                    type: string
+                  serviceName:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  errorType:
+                    type: string
+                    enum:
+                    - resource
+                  resource:
+                    type: string
+                  resourceId:
+                    type: string
+                  service:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  errorType:
+                    type: string
+                    enum:
+                    - rate_limit
+                  limit:
+                    type: number
+                  resetTime:
+                    type: string
+                  windowMs:
+                    type: number
+                required:
+                - errorType
+              - type: object
+                properties:
+                  configKey:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - configuration
+                  operation:
+                    type: string
+                  service:
+                    type: string
+                required:
+                - errorType
+              description: Type-safe error context information
+              example:
+                errorType: validation
+                fieldErrors:
+                - field: email
+                  message: Invalid email format
+            details:
+              oneOf:
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - validation
+                  validationErrors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        code:
+                          type: string
+                        field:
+                          type: string
+                        message:
+                          type: string
+                      required:
+                      - field
+                      - message
+                required:
+                - detailType
+                - validationErrors
+                additionalProperties: false
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - service_error
+                  originalError:
+                    type: string
+                  serviceName:
+                    type: string
+                required:
+                - detailType
+                - serviceName
+                additionalProperties: false
+              - type: object
+                properties:
+                  currentSize:
+                    type: number
+                  detailType:
+                    type: string
+                    enum:
+                    - batch
+                  originalError:
+                    type: string
+                  statementCount:
+                    type: number
+                required:
+                - detailType
+                additionalProperties: false
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - rate_limit
+                  limit:
+                    type: number
+                  resetTime:
+                    type: string
+                  windowMs:
+                    type: number
+                required:
+                - detailType
+                - limit
+                - resetTime
+                - windowMs
+                additionalProperties: false
+              - type: object
+                properties:
+                  conflictingField:
+                    type: string
+                  detailType:
+                    type: string
+                    enum:
+                    - resource
+                  resourceId:
+                    anyOf:
+                    - type: string
+                    - type: number
+                  resourceType:
+                    type: string
+                required:
+                - detailType
+                additionalProperties: false
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - generic
+                  info:
+                    type: string
+                required:
+                - detailType
+                additionalProperties: false
+              - type: object
+                properties:
+                  currentTokens:
+                    type: integer
+                    minimum: 0
+                  detailType:
+                    type: string
+                    enum:
+                    - insufficient_tokens
+                  requiredTokens:
+                    type: integer
+                    minimum: 0
+                required:
+                - currentTokens
+                - detailType
+                - requiredTokens
+                additionalProperties: false
+            message:
+              type: string
+            validation:
+              type: array
+              items:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  field:
+                    type: string
+                  message:
+                    type: string
+                required:
+                - field
+                - message
+                additionalProperties: false
+          required:
+          - code
+          - message
+          additionalProperties: false
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - false
+      required:
+      - error
+      - success
+      additionalProperties: false
+    NativeBillingVerifyResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/NativeBillingVerifyPayload'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    NativeBillingVerifyRequest:
+      oneOf:
+      - $ref: '#/components/schemas/AppleNativeBillingVerifyRequest'
+      - $ref: '#/components/schemas/GoogleNativeBillingVerifyRequest'
+      discriminator:
+        propertyName: provider
+        mapping:
+          apple_app_store: '#/components/schemas/AppleNativeBillingVerifyRequest'
+          google_play: '#/components/schemas/GoogleNativeBillingVerifyRequest'
+    NativeStoreConsumableVerifyRequest:
+      oneOf:
+      - $ref: '#/components/schemas/AppleNativeStoreConsumableVerifyRequest'
+      - $ref: '#/components/schemas/GoogleNativeStoreConsumableVerifyRequest'
+      discriminator:
+        propertyName: provider
+        mapping:
+          apple_app_store: '#/components/schemas/AppleNativeStoreConsumableVerifyRequest'
+          google_play: '#/components/schemas/GoogleNativeStoreConsumableVerifyRequest'
+    CancelSubscriptionPayload:
+      type: object
+      properties:
+        cancelAt:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: When the subscription is scheduled to end, or null when it ended immediately
+          example: '2025-02-01T00:00:00.000Z'
+        cancelAtPeriodEnd:
+          type: boolean
+          description: Provider flag for "will not renew". Read alongside cancelAt, never alone
+          example: true
+        canceledAt:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Timestamp when the subscription was cancelled
+          example: '2025-01-15T12:00:00.000Z'
+        status:
+          type: string
+          enum:
+          - active
+          - trialing
+          - past_due
+          - unpaid
+          - canceled
+          - incomplete
+          - incomplete_expired
+          - paused
+          description: Updated subscription status
+          example: active
+        subscriptionId:
+          type: string
+          description: Stripe subscription ID
+          example: sub_1234567890
+      required:
+      - cancelAt
+      - cancelAtPeriodEnd
+      - canceledAt
+      - status
+      - subscriptionId
+      additionalProperties: false
+    CreatePortalSessionRequest:
+      type: object
+      properties:
+        returnUrl:
+          type: string
+          format: uri
+          description: URL to return to after portal session
+          example: https://aiapplyd.com/dashboard
+      additionalProperties: false
+    GetInvoicesResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/GetInvoicesPayload'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    ActionUsageItem:
+      type: object
+      properties:
+        allowed:
+          type: boolean
+          description: Whether the user can perform this action
+          example: true
+        limit:
+          type: number
+          description: Max allowed per period (-1 = unlimited)
+          example: 5
+        period:
+          type: string
+          enum:
+          - monthly
+          - daily
+          - weekly
+          - lifetime
+          - none
+          description: Reset period (daily, weekly, monthly, lifetime, none)
+          example: monthly
+        remaining:
+          type: number
+          description: Remaining actions in current period (-1 = unlimited)
+          example: 3
+        used:
+          type: number
+          description: Actions used in current period
+          example: 2
+      required:
+      - allowed
+      - limit
+      - period
+      - remaining
+      - used
+      additionalProperties: false
+    SyncAfterCheckoutPayload:
+      type: object
+      properties:
+        amountCents:
+          type:
+          - integer
+          - 'null'
+          minimum: 0
+          description: Amount of the most recent one-time payment in cents (token purchases only)
+          example: 999
+        subscription:
+          $ref: '#/components/schemas/SubscriptionPayload'
+        synced:
+          type: boolean
+          description: Whether the sync was successful
+          example: true
+        tokensAdded:
+          type:
+          - integer
+          - 'null'
+          minimum: 0
+          description: Tokens added by the most recent top-up purchase (null for subscription checkouts)
+          example: 50000
+        tokensBalance:
+          type: integer
+          minimum: 0
+          description: Current token balance
+          example: 100000
+      required:
+      - amountCents
+      - subscription
+      - synced
+      - tokensAdded
+      - tokensBalance
+      additionalProperties: false
+    GetUsageResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/GetUsagePayload'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    CreateCheckoutSessionResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/CheckoutSessionPayload'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    ResponseMetadata:
+      type: object
+      properties:
+        duration:
+          type: number
+          description: Request duration in milliseconds
+          example: 150
+          exclusiveMinimum: 0
+        performance:
+          type: object
+          properties:
+            dbQueries:
+              type: integer
+              minimum: 0
+            totalDbTime:
+              type: number
+              minimum: 0
+          description: Performance metrics (preview/local only)
+        requestId:
+          type: string
+          description: Unique request identifier
+          example: req_abc123
+        timestamp:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp
+          example: '2026-09-25T17:29:47.224Z'
+        version:
+          type: string
+          description: API version
+          example: v1
+    AppleNativeStoreConsumableVerifyRequest:
+      type: object
+      properties:
+        provider:
+          type: string
+          enum:
+          - apple_app_store
+        transactionId:
+          type: string
+          minLength: 1
+      required:
+      - provider
+      - transactionId
+      additionalProperties: false
+    CreatePortalSessionResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/PortalSessionPayload'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    CheckoutAlreadySubscribed:
+      type: object
+      properties:
+        alreadySubscribed:
+          type: boolean
+          enum:
+          - true
+          description: True when the user already has an active non-free subscription.
+          example: true
+        currentPlan:
+          type: string
+          enum:
+          - job_seeker
+          - hired_in_30
+          - hired_yesterday
+          description: The user's current paid plan tier.
+          example: hired_in_30
+        portalUrl:
+          type: string
+          format: uri
+          description: Stripe billing portal URL  -  redirect the user here to manage the existing subscription.
+          example: https://billing.stripe.com/session/1234567890
+      required:
+      - alreadySubscribed
+      - currentPlan
+      - portalUrl
+      additionalProperties: false
+    SwitchSubscriptionResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/SwitchSubscriptionPayload'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    NativeStoreConsumableVerifyPayload:
+      oneOf:
+      - type: object
+        properties:
+          account:
+            type: object
+            properties:
+              planTokensRemaining:
+                type: integer
+              purchasedTokensRemaining:
+                type: integer
+                minimum: 0
+              totalTokensRemaining:
+                type: integer
+                minimum: 0
+            required:
+            - planTokensRemaining
+            - purchasedTokensRemaining
+            - totalTokensRemaining
+            additionalProperties: false
+          finish:
+            type: boolean
+            description: Apple finishes on-device. Google Play is consumed by the server.
+            example: false
+          outcome:
+            type: string
+            enum:
+            - accepted
+            - already_accepted
+          productKind:
+            type: string
+            enum:
+            - consumable
+        required:
+        - account
+        - finish
+        - outcome
+        - productKind
+        additionalProperties: false
+      - type: object
+        properties:
+          finish:
+            type: boolean
+            enum:
+            - false
+          outcome:
+            type: string
+            enum:
+            - pending
+          productKind:
+            type: string
+            enum:
+            - consumable
+        required:
+        - finish
+        - outcome
+        - productKind
+        additionalProperties: false
+      - type: object
+        properties:
+          code:
+            type: string
+            enum:
+            - account_binding_mismatch
+            - environment_mismatch
+            - paid_plan_required
+            - product_not_supported
+            - provider_not_configured
+            - provider_proof_rejected
+            - provider_unavailable
+            - purchase_not_found
+            - receipt_incomplete
+            - receipt_mismatch
+          finish:
+            type: boolean
+            enum:
+            - false
+          outcome:
+            type: string
+            enum:
+            - rejected
+          productKind:
+            type: string
+            enum:
+            - consumable
+          retryable:
+            type: boolean
+        required:
+        - code
+        - finish
+        - outcome
+        - productKind
+        - retryable
+        additionalProperties: false
+    SubscriptionChangeDetails:
+      type: object
+      properties:
+        isDowngrade:
+          type: boolean
+          description: Whether this change is a downgrade
+          example: false
+        isUpgrade:
+          type: boolean
+          description: Whether this change is an upgrade
+          example: true
+        newPrice:
+          $ref: '#/components/schemas/SwitchPriceDetails'
+        oldPrice:
+          allOf:
+          - $ref: '#/components/schemas/SwitchPriceDetails'
+          - description: Previous price details before the change
+      required:
+      - isDowngrade
+      - isUpgrade
+      - newPrice
+      - oldPrice
+      additionalProperties: false
+      description: Details about the subscription change for showing before/after comparison
+    SwitchPriceDetails:
+      type: object
+      properties:
+        currency:
+          type: string
+          description: Price currency
+          example: usd
+        id:
+          type: string
+          description: Stripe price ID
+          example: price_1234567890
+        interval:
+          type:
+          - string
+          - 'null'
+          enum:
+          - month
+          - year
+          - week
+          - day
+          - null
+          description: Billing interval
+          example: month
+        productId:
+          type: string
+          description: Associated product ID
+          example: prod_1234567890
+        unitAmount:
+          type:
+          - number
+          - 'null'
+          description: Price in smallest currency unit (cents)
+          example: 2999
+      required:
+      - currency
+      - id
+      - interval
+      - productId
+      - unitAmount
+      additionalProperties: false
+      description: New price details after the change
+    CheckoutSessionCreated:
+      type: object
+      properties:
+        alreadySubscribed:
+          type: boolean
+          enum:
+          - false
+          description: False when a checkout session was created.
+          example: false
+        amountCents:
+          type:
+          - integer
+          - 'null'
+          minimum: 0
+          description: Stripe session `amount_total` in minor units, or null when Stripe omitted it.
+          example: 3899
+        currency:
+          type:
+          - string
+          - 'null'
+          description: ISO currency of the created session, upper-cased. Null when Stripe omitted it.
+          example: USD
+        sessionId:
+          type: string
+          description: Stripe checkout session ID
+          example: cs_test_1234567890
+        url:
+          type: string
+          format: uri
+          description: URL to redirect user to for checkout
+          example: https://checkout.stripe.com/pay/cs_test_1234567890
+      required:
+      - alreadySubscribed
+      - amountCents
+      - currency
+      - sessionId
+      - url
+      additionalProperties: false
+    AppleNativeBillingVerifyRequest:
+      type: object
+      properties:
+        provider:
+          type: string
+          enum:
+          - apple_app_store
+        transactionId:
+          type: string
+          minLength: 1
+      required:
+      - provider
+      - transactionId
+      additionalProperties: false
+    NativeBillingVerifyPayload:
+      type: object
+      properties:
+        currentPeriodEnd:
+          type: string
+          format: date-time
+          description: Verified end of the current native-store billing period
+          example: '2026-09-30T08:00:00.000Z'
+        finishTransaction:
+          type: boolean
+          enum:
+          - true
+          description: The native client may finish this exact purchase only after this response
+          example: true
+        outcome:
+          type: string
+          enum:
+          - applied
+          - duplicate
+          - stale
+          - superseded
+          description: Persistence result for the provider-verified billing snapshot
+          example: applied
+        planTier:
+          type: string
+          enum:
+          - hired_in_30
+          - hired_yesterday
+          description: Paid subscription plan tier (excludes free job_seeker tier)
+          example: hired_in_30
+        provider:
+          type: string
+          enum:
+          - apple_app_store
+          - google_play
+        status:
+          type: string
+          enum:
+          - active
+          - grace_period
+          - expired
+          - revoked
+          description: Normalized paid-access state for a verified billing entitlement
+          example: active
+        storeProductId:
+          type: string
+          minLength: 1
+      required:
+      - currentPeriodEnd
+      - finishTransaction
+      - outcome
+      - planTier
+      - provider
+      - status
+      - storeProductId
+      additionalProperties: false
+    QuotaPeriodInfo:
+      type: object
+      properties:
+        limit:
+          type: number
+          description: Max allowed per period
+          example: 5
+        remaining:
+          type: number
+          description: Remaining in current period
+          example: 3
+        resetAt:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: When the period resets (null if not exhausted)
+          example: '2026-04-01T00:00:00.000Z'
+        used:
+          type: number
+          description: Used in current period
+          example: 2
+      required:
+      - limit
+      - remaining
+      - resetAt
+      - used
+      additionalProperties: false
+    NativeBillingRenewingSubscription:
+      type: object
+      properties:
+        provider:
+          type: string
+          enum:
+          - apple_app_store
+          - google_play
+        providerEnvironment:
+          type: string
+          enum:
+          - production
+          - sandbox
+          description: Provider commerce environment attached to a verified billing record
+          example: sandbox
+        status:
+          type: string
+          enum:
+          - active
+          - grace_period
+        storeProductId:
+          type: string
+          minLength: 1
+        currentPeriodEnd:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp
+          example: '2026-09-25T17:29:47.224Z'
+      required:
+      - provider
+      - providerEnvironment
+      - status
+      - storeProductId
+      - currentPeriodEnd
+      additionalProperties: false
+    NativeBillingBootstrapResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/NativeBillingBootstrapPayload'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    GetSubscriptionResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/GetSubscriptionPayload'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    SyncAfterCheckoutResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/SyncAfterCheckoutPayload'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    ApplicationQuota:
+      type: object
+      properties:
+        allowed:
+          type: boolean
+          description: Whether any application action is allowed right now
+          example: true
+        daily:
+          allOf:
+          - $ref: '#/components/schemas/QuotaPeriodInfo'
+          - description: Daily application quota
+        monthly:
+          allOf:
+          - $ref: '#/components/schemas/QuotaPeriodInfo'
+          - description: Monthly application quota
+        weekly:
+          allOf:
+          - $ref: '#/components/schemas/QuotaPeriodInfo'
+          - description: Weekly application quota
+      required:
+      - allowed
+      - daily
+      - monthly
+      - weekly
+      additionalProperties: false
+      description: Application multi-period quota
+    GoogleNativeBillingVerifyRequest:
+      type: object
+      properties:
+        provider:
+          type: string
+          enum:
+          - google_play
+        purchaseToken:
+          type: string
+          minLength: 1
+      required:
+      - provider
+      - purchaseToken
+      additionalProperties: false
+    ActionCostItem:
+      type: object
+      properties:
+        actionName:
+          type: string
+          enum:
+          - application_preparer
+          - auto_apply_submit
+          - ai_browser_agent
+          - ai_edit_message
+          - enrichment
+          - company_intel
+          - quality_gate
+          - translate
+          - translate_resume
+          - tailor_resume
+          - cover_letter
+          - score_resume
+          - ats_score
+          - ats_optimize
+          - resume_import
+          - interview_prep
+          - offer_comparison
+          - parse_job_url
+          - job_match
+          - extract_keywords
+          - document_chat
+          - eval_run
+          - refine_application
+          - outreach_draft
+          - job_listing_extract
+          - application_answer
+          - job_evaluator
+          - negotiation_coach
+          - level_strategy
+          - search_describe
+          description: Canonical AI action identifier
+          example: ats_score
+        description:
+          type: string
+          description: Human-readable description of what the action does
+          example: Scores your resume against a single job description.
+        estimatedTokens:
+          $ref: '#/components/schemas/ActionCostEstimate'
+        label:
+          type: string
+          description: Short UI-facing label for the action
+          example: ATS Score
+      required:
+      - actionName
+      - description
+      - estimatedTokens
+      - label
+      additionalProperties: false
+    CreateCheckoutSessionRequest:
+      type: object
+      properties:
+        cancelUrl:
+          type: string
+          format: uri
+          description: URL to redirect to if checkout is cancelled
+          example: https://aiapplyd.com/pricing
+        interval:
+          type: string
+          enum:
+          - week
+          - month
+          - year
+          default: week
+          description: Subscription billing interval. Defaults to "month". When set to "year" the handler swaps to the plan's annual Stripe price id if one is registered.
+          example: month
+        priceId:
+          type: string
+          minLength: 1
+          description: Stripe price ID for the product (monthly price id for subscription plans; the handler swaps to annual when interval="year").
+          example: price_1234567890
+        successUrl:
+          type: string
+          format: uri
+          description: URL to redirect to after successful checkout
+          example: https://aiapplyd.com/billing/success
+        type:
+          type: string
+          enum:
+          - subscription
+          - token
+          default: subscription
+          description: Type of checkout session (subscription or token purchase)
+          example: subscription
+      required:
+      - priceId
+      additionalProperties: false
+    NativeStoreConsumableVerifyResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/NativeStoreConsumableVerifyPayload'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    SwitchSubscriptionRequest:
+      type: object
+      properties:
+        interval:
+          type: string
+          enum:
+          - week
+          - month
+          - year
+          description: Intended billing interval. When supplied, the server re-resolves `newPriceId` to the plan's price for this interval, so the cadence actually billed always matches the cadence the user was quoted.
+          example: month
+        newPriceId:
+          type: string
+          minLength: 1
+          description: New Stripe price ID to switch to (handles both upgrades and downgrades automatically). Prefer sending `interval` alongside it — this id may be the plan's ambiguous weekly primary.
+          example: price_1234567890
+      required:
+      - newPriceId
+      additionalProperties: false
+    CheckoutSessionPayload:
+      oneOf:
+      - $ref: '#/components/schemas/CheckoutSessionCreated'
+      - $ref: '#/components/schemas/CheckoutAlreadySubscribed'
+      discriminator:
+        propertyName: alreadySubscribed
+        mapping:
+          'false': '#/components/schemas/CheckoutSessionCreated'
+          'true': '#/components/schemas/CheckoutAlreadySubscribed'
+    SubscriptionPayload:
+      type:
+      - object
+      - 'null'
+      properties:
+        cancelAt:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: When the subscription is scheduled to end, or null when it is not scheduled to end
+          example: '2025-02-01T00:00:00.000Z'
+        cancelAtPeriodEnd:
+          type: boolean
+          description: Provider flag for "will not renew". FALSE on a Stripe portal cancellation - read cancelAt as well
+          example: false
+        canceledAt:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: When the customer requested the cancellation, or null when they have not
+          example: '2025-01-15T00:00:00.000Z'
+        currentPeriodEnd:
+          type: string
+          format: date-time
+          description: End of the current billing period
+          example: '2025-02-01T00:00:00.000Z'
+        currentPeriodStart:
+          type: string
+          format: date-time
+          description: Start of the current billing period
+          example: '2025-01-01T00:00:00.000Z'
+        interval:
+          type:
+          - string
+          - 'null'
+          enum:
+          - month
+          - year
+          - week
+          - day
+          - null
+          description: Billing interval for the subscription
+          example: month
+        planName:
+          type:
+          - string
+          - 'null'
+          description: Display name of the plan the billed price belongs to, from the synced plan row
+          example: Hired in 30
+        planTier:
+          type:
+          - string
+          - 'null'
+          enum:
+          - job_seeker
+          - hired_in_30
+          - hired_yesterday
+          - null
+          description: Tier of the plan the billed price belongs to
+          example: hired_in_30
+        priceId:
+          type: string
+          description: Stripe price ID
+          example: price_1234567890
+        productName:
+          type:
+          - string
+          - 'null'
+          description: Name of the subscribed product
+          example: Hired in 30
+        status:
+          type: string
+          enum:
+          - active
+          - trialing
+          - past_due
+          - unpaid
+          - canceled
+          - incomplete
+          - incomplete_expired
+          - paused
+          description: Current subscription status
+          example: active
+        subscriptionId:
+          type: string
+          description: Stripe subscription ID
+          example: sub_1234567890
+        tokensPerPeriod:
+          type:
+          - integer
+          - 'null'
+          minimum: 0
+          description: Tokens granted per billing cycle for this plan at this interval
+          example: 2800000
+      required:
+      - cancelAt
+      - cancelAtPeriodEnd
+      - canceledAt
+      - currentPeriodEnd
+      - currentPeriodStart
+      - interval
+      - planName
+      - planTier
+      - priceId
+      - productName
+      - status
+      - subscriptionId
+      - tokensPerPeriod
+      additionalProperties: false
+      description: Subscription details if synced
+    CancelSubscriptionResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/CancelSubscriptionPayload'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    NativeBillingCurrentEntitlement:
+      type:
+      - object
+      - 'null'
+      properties:
+        billingInterval:
+          type: string
+          enum:
+          - week
+          - month
+          - year
+          description: Billing interval offered at checkout. Defaults to "week" (the two paid plans bill weekly). "month"/"year" retained for back-compat. Subset of the broader Stripe BillingInterval enum.
+          example: week
+        cancelAtPeriodEnd:
+          type: boolean
+        currentPeriodEnd:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp
+          example: '2026-09-25T17:29:47.224Z'
+        planTier:
+          type: string
+          enum:
+          - hired_in_30
+          - hired_yesterday
+          description: Paid subscription plan tier (excludes free job_seeker tier)
+          example: hired_in_30
+        provider:
+          type: string
+          enum:
+          - stripe
+          - apple_app_store
+          - google_play
+          description: External billing system that owns a subscription entitlement
+          example: apple_app_store
+        status:
+          type: string
+          enum:
+          - active
+          - grace_period
+          - expired
+          - revoked
+          description: Normalized paid-access state for a verified billing entitlement
+          example: active
+        storeProductId:
+          type: string
+          minLength: 1
+      required:
+      - billingInterval
+      - cancelAtPeriodEnd
+      - currentPeriodEnd
+      - planTier
+      - provider
+      - status
+      - storeProductId
+      additionalProperties: false
+    GetUsagePayload:
+      type: object
+      properties:
+        actions:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/ActionUsageItem'
+          description: Per-action usage keyed by action type (partial  -  only populated actions present)
+        autoApply:
+          $ref: '#/components/schemas/ApplicationQuota'
+        documentQuota:
+          allOf:
+          - $ref: '#/components/schemas/ActionUsageItem'
+          - description: Document quota based on actual document count (not action counters)
+        planTier:
+          type: string
+          enum:
+          - job_seeker
+          - hired_in_30
+          - hired_yesterday
+          description: Current plan tier
+          example: job_seeker
+        tokensRemaining:
+          type: integer
+          description: Current token balance (may be negative after an apply-path reservation)
+          example: 50000
+      required:
+      - actions
+      - autoApply
+      - documentQuota
+      - planTier
+      - tokensRemaining
+    GetActionCostsPayload:
+      type: object
+      properties:
+        costs:
+          type: array
+          items:
+            $ref: '#/components/schemas/ActionCostItem'
+          description: Estimated cost per AI action  -  used for pre-flight UI hints
+      required:
+      - costs
+      additionalProperties: false
+    NativeBillingBootstrapPayload:
+      type: object
+      properties:
+        accountToken:
+          type: string
+          format: uuid
+          description: Opaque account binding for Apple appAccountToken and Google obfuscatedAccountId
+          example: 4fd0d7bb-4d11-4423-9c2f-2c4b1638bf38
+        consumables:
+          type: array
+          items:
+            type: object
+            properties:
+              packId:
+                type: string
+                enum:
+                - starter
+                - popular
+                - power
+              productId:
+                type: string
+                minLength: 1
+              provider:
+                anyOf:
+                - type: string
+                  enum:
+                  - apple_app_store
+                - type: string
+                  enum:
+                  - google_play
+              tokens:
+                type: integer
+                exclusiveMinimum: 0
+            required:
+            - packId
+            - productId
+            - provider
+            - tokens
+            additionalProperties: false
+        currentEntitlement:
+          $ref: '#/components/schemas/NativeBillingCurrentEntitlement'
+        products:
+          type: array
+          items:
+            type: object
+            properties:
+              billingInterval:
+                anyOf:
+                - type: string
+                  enum:
+                  - week
+                - type: string
+                  enum:
+                  - month
+              planTier:
+                anyOf:
+                - type: string
+                  enum:
+                  - hired_in_30
+                - type: string
+                  enum:
+                  - hired_yesterday
+              productId:
+                type: string
+                minLength: 1
+              provider:
+                anyOf:
+                - type: string
+                  enum:
+                  - apple_app_store
+                - type: string
+                  enum:
+                  - google_play
+            required:
+            - billingInterval
+            - planTier
+            - productId
+            - provider
+            additionalProperties: false
+        renewingSubscriptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/NativeBillingRenewingSubscription'
+        tokenBalances:
+          type: object
+          properties:
+            planTokensRemaining:
+              type: integer
+            purchasedTokensRemaining:
+              type: integer
+              minimum: 0
+            totalTokensRemaining:
+              type: integer
+              minimum: 0
+          required:
+          - planTokensRemaining
+          - purchasedTokensRemaining
+          - totalTokensRemaining
+          additionalProperties: false
+      required:
+      - accountToken
+      - consumables
+      - currentEntitlement
+      - products
+      - renewingSubscriptions
+      - tokenBalances
+      additionalProperties: false
+    CancelSubscriptionRequest:
+      type: object
+      properties:
+        cancelImmediately:
+          type: boolean
+          default: false
+          description: Whether to cancel immediately or at the end of the billing period
+          example: false
+        reason:
+          type: string
+          maxLength: 500
+          description: User-provided reason for cancelling the subscription
+          example: Too expensive
+      additionalProperties: false
+    GetSubscriptionPayload:
+      type: object
+      properties:
+        subscription:
+          allOf:
+          - $ref: '#/components/schemas/SubscriptionPayload'
+          - description: Subscription details if user has an active subscription
+        tokensBalance:
+          type: integer
+          minimum: 0
+          description: Current token balance
+          example: 100000
+      required:
+      - subscription
+      - tokensBalance
+    GoogleNativeStoreConsumableVerifyRequest:
+      type: object
+      properties:
+        packageName:
+          type: string
+          minLength: 1
+          description: Fixed application package name, authenticated against provider configuration
+          example: com.aiapplyd.app
+        provider:
+          type: string
+          enum:
+          - google_play
+        productId:
+          type: string
+          minLength: 1
+        purchaseToken:
+          type: string
+          minLength: 1
+      required:
+      - packageName
+      - provider
+      - productId
+      - purchaseToken
+      additionalProperties: false
+    ActionCostEstimate:
+      type: object
+      properties:
+        max:
+          type: integer
+          minimum: 0
+          description: Upper-bound token estimate (long inputs + retries + big completions)
+          example: 4500
+        min:
+          type: integer
+          minimum: 0
+          description: Lower-bound token estimate (tight prompts + minimal output)
+          example: 1500
+        typical:
+          type: integer
+          minimum: 0
+          description: Typical token estimate  -  shown as the primary hint in the UI
+          example: 2500
+      required:
+      - max
+      - min
+      - typical
+      additionalProperties: false
+      description: Min / typical / max billed-token estimate
+    GetInvoicesPayload:
+      type: object
+      properties:
+        hasMore:
+          type: boolean
+          description: Whether there are more invoices to fetch
+          example: false
+        invoices:
+          type: array
+          items:
+            $ref: '#/components/schemas/InvoiceItemPayload'
+          description: List of invoices
+      required:
+      - hasMore
+      - invoices
+      additionalProperties: false
+    InvoiceItemPayload:
+      type: object
+      properties:
+        amountDue:
+          type: integer
+          minimum: 0
+          description: Amount due in smallest currency unit (cents)
+          example: 2999
+        amountPaid:
+          type: integer
+          minimum: 0
+          description: Amount paid in smallest currency unit (cents)
+          example: 2999
+        currency:
+          type: string
+          description: ISO currency code
+          example: usd
+        hostedInvoiceUrl:
+          type:
+          - string
+          - 'null'
+          format: uri
+          description: URL to view the invoice on Stripe
+          example: https://invoice.stripe.com/i/acct_xxx/inv_xxx
+        id:
+          type: string
+          description: Stripe invoice ID
+          example: in_1234567890
+        invoicePdf:
+          type:
+          - string
+          - 'null'
+          format: uri
+          description: URL to download the invoice PDF
+          example: https://invoice.stripe.com/i/acct_xxx/inv_xxx/pdf
+        paid:
+          type: boolean
+          description: Whether the invoice has been paid
+          example: true
+        periodEnd:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: End of the billing period
+          example: '2025-02-01T00:00:00.000Z'
+        periodStart:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Start of the billing period
+          example: '2025-01-01T00:00:00.000Z'
+        status:
+          type: string
+          enum:
+          - draft
+          - open
+          - paid
+          - uncollectible
+          - void
+          description: Invoice status
+          example: paid
+      required:
+      - amountDue
+      - amountPaid
+      - currency
+      - hostedInvoiceUrl
+      - id
+      - invoicePdf
+      - paid
+      - periodEnd
+      - periodStart
+      - status
+      additionalProperties: false
+    SwitchSubscriptionPayload:
+      type: object
+      properties:
+        changeDetails:
+          $ref: '#/components/schemas/SubscriptionChangeDetails'
+        message:
+          type: string
+          description: Success message describing the change
+          example: Subscription upgraded successfully
+        subscription:
+          allOf:
+          - $ref: '#/components/schemas/SubscriptionPayload'
+          - description: Updated subscription details
+      required:
+      - changeDetails
+      - message
+      - subscription
+      additionalProperties: false
+    GetActionCostsResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/GetActionCostsPayload'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+  securitySchemes:
+    BearerAuth:
+      description: 'Session token from signing in to AI Applyd, sent as `Authorization: Bearer <token>`.'
+      scheme: bearer
+      type: http
+x-refined-from:
+- aiapplyd-openapi.json
+- aiapplyd-openapi.yml

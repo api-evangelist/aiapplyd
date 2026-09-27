@@ -166,52 +166,17 @@ common:
   url: https://aiapplyd.com/legal/security
 
 apis:
-- name: AI Applyd API
-  description: 'The REST backend of the AI Applyd application, published as OpenAPI 3.0 with a Scalar reference
-    and an operationId on every operation (265 operations on 237 paths on 2026-09-25): accounts, job matches and
-    preferences, ATS scoring and optimization, resume builder, user documents, cover letters, interview prep,
-    applications, billing and usage, notifications and the other routes the web app uses. Authenticated with a
-    session Bearer token (BearerAuth).'
-  humanURL: https://api.aiapplyd.com/api/v1/scalar
-  baseURL: https://api.aiapplyd.com/api/v1
-  tags:
-  - Job Search
-  - Resume
-  - Applicant Tracking Systems
-  - Recruiting
-  - Automation
-  tags_raw:
-  - Job Search
-  - Resumes
-  - Applicant Tracking Systems
-  - Recruiting
-  - Automation
-  properties:
-  - type: OpenAPI
-    url: openapi/aiapplyd-openapi.yml
-  - type: OpenAPI
-    name: OpenAPI (provider-hosted)
-    url: https://api.aiapplyd.com/api/v1/openapi.json
-  - type: APIReference
-    url: https://api.aiapplyd.com/api/v1/scalar
-  - type: JSONSchema
-    url: json-schema/aiapplyd-patch-user-preferences-schema.json
-  - type: JSONSchema
-    url: json-schema/aiapplyd-upsert-application-profile-schema.json
-  - type: JSONSchema
-    url: json-schema/aiapplyd-auto-setup-request-schema.json
-  - type: JSONSchema
-    url: json-schema/aiapplyd-update-preferences-request-schema.json
-  aid: aiapplyd:ai-applyd-api
 - name: AI Applyd MCP Server
-  description: 'Hosted remote MCP server (streamable HTTP, with a legacy SSE endpoint; OAuth 2.1 with PKCE,
-    dynamic client registration and Client ID Metadata Documents), version 1.8.0, exposing 17 tools, 4 prompts and 3
-    resources. The main loop: get job matches, apply to a match or a job URL (automatically or held for review), track
-    applications with employer-confirmed receipts, approve, reject, cancel or refine held applications, read account
-    readiness, set the resume and save or skip matches; plus ATS resume scoring, job-description analysis, resume
-    optimization and translation, interview preparation, job search and preferences, cover letters and PDF builds.
-    Every tool carries a title, annotation hints and an outputSchema; five provider-published Agent Skills drive it.
-    Tool catalog localizable via ?lang= (en, es, de, fr, pt-BR).'
+  description: >-
+    Hosted remote MCP server (streamable HTTP, with a legacy SSE endpoint; OAuth 2.1 with PKCE, dynamic
+    client registration and Client ID Metadata Documents), version 1.8.0, exposing 17 tools, 4 prompts
+    and 3 resources. The main loop: get job matches, apply to a match or a job URL (automatically or held
+    for review), track applications with employer-confirmed receipts, approve, reject, cancel or refine
+    held applications, read account readiness, set the resume and save or skip matches; plus ATS resume
+    scoring, job-description analysis, resume optimization and translation, interview preparation, job
+    search and preferences, cover letters and PDF builds. Every tool carries a title, annotation hints
+    and an outputSchema; five provider-published Agent Skills drive it. Tool catalog localizable via ?lang=
+    (en, es, de, fr, pt-BR).
   humanURL: https://aiapplyd.com/mcps
   baseURL: https://mcp.aiapplyd.com/mcp
   tags:
@@ -232,7 +197,906 @@ apis:
   - type: SourceCode
     url: https://github.com/aiapplyd/aiapplyd-mcp
   aid: aiapplyd:ai-applyd-mcp-server
-
+- aid: aiapplyd:aiapplyd-account-api
+  name: AI Applyd Account API
+  description: The account API from AI Applyd — 3 operation(s) for account.
+  humanURL: https://api.aiapplyd.com/api/v1/scalar
+  baseURL: https://api.aiapplyd.com/api/v1
+  tags:
+  - account
+  properties:
+  - type: OpenAPI
+    url: openapi/aiapplyd-account-api-openapi.yml
+  - type: APIReference
+    url: https://api.aiapplyd.com/api/v1/scalar
+  - type: JSONSchema
+    url: json-schema/aiapplyd-patch-user-preferences-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-upsert-application-profile-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-auto-setup-request-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-update-preferences-request-schema.json
+- aid: aiapplyd:aiapplyd-achievements-api
+  name: AI Applyd Achievements API
+  description: The achievements API from AI Applyd — 1 operation(s) for achievements.
+  humanURL: https://api.aiapplyd.com/api/v1/scalar
+  baseURL: https://api.aiapplyd.com/api/v1
+  tags:
+  - achievements
+  properties:
+  - type: OpenAPI
+    url: openapi/aiapplyd-achievements-api-openapi.yml
+  - type: APIReference
+    url: https://api.aiapplyd.com/api/v1/scalar
+  - type: JSONSchema
+    url: json-schema/aiapplyd-patch-user-preferences-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-upsert-application-profile-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-auto-setup-request-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-update-preferences-request-schema.json
+- aid: aiapplyd:aiapplyd-ai-api
+  name: AI Applyd AI API
+  description: The ai API from AI Applyd — 6 operation(s) for ai.
+  humanURL: https://api.aiapplyd.com/api/v1/scalar
+  baseURL: https://api.aiapplyd.com/api/v1
+  tags:
+  - ai
+  properties:
+  - type: OpenAPI
+    url: openapi/aiapplyd-ai-api-openapi.yml
+  - type: APIReference
+    url: https://api.aiapplyd.com/api/v1/scalar
+  - type: JSONSchema
+    url: json-schema/aiapplyd-patch-user-preferences-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-upsert-application-profile-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-auto-setup-request-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-update-preferences-request-schema.json
+- aid: aiapplyd:aiapplyd-ai-persona-api
+  name: AI Applyd AI Persona API
+  description: The ai-persona API from AI Applyd — 5 operation(s) for ai-persona.
+  humanURL: https://api.aiapplyd.com/api/v1/scalar
+  baseURL: https://api.aiapplyd.com/api/v1
+  tags:
+  - ai-persona
+  properties:
+  - type: OpenAPI
+    url: openapi/aiapplyd-ai-persona-api-openapi.yml
+  - type: APIReference
+    url: https://api.aiapplyd.com/api/v1/scalar
+  - type: JSONSchema
+    url: json-schema/aiapplyd-patch-user-preferences-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-upsert-application-profile-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-auto-setup-request-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-update-preferences-request-schema.json
+- aid: aiapplyd:aiapplyd-analytics-api
+  name: AI Applyd Analytics API
+  description: The analytics API from AI Applyd — 3 operation(s) for analytics.
+  humanURL: https://api.aiapplyd.com/api/v1/scalar
+  baseURL: https://api.aiapplyd.com/api/v1
+  tags:
+  - analytics
+  properties:
+  - type: OpenAPI
+    url: openapi/aiapplyd-analytics-api-openapi.yml
+  - type: APIReference
+    url: https://api.aiapplyd.com/api/v1/scalar
+  - type: JSONSchema
+    url: json-schema/aiapplyd-patch-user-preferences-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-upsert-application-profile-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-auto-setup-request-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-update-preferences-request-schema.json
+- aid: aiapplyd:aiapplyd-application-profile-api
+  name: AI Applyd Application Profile API
+  description: The application-profile API from AI Applyd — 2 operation(s) for application-profile.
+  humanURL: https://api.aiapplyd.com/api/v1/scalar
+  baseURL: https://api.aiapplyd.com/api/v1
+  tags:
+  - application-profile
+  properties:
+  - type: OpenAPI
+    url: openapi/aiapplyd-application-profile-api-openapi.yml
+  - type: APIReference
+    url: https://api.aiapplyd.com/api/v1/scalar
+  - type: JSONSchema
+    url: json-schema/aiapplyd-patch-user-preferences-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-upsert-application-profile-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-auto-setup-request-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-update-preferences-request-schema.json
+- aid: aiapplyd:aiapplyd-applications-api
+  name: AI Applyd Applications API
+  description: The applications API from AI Applyd — 39 operation(s) for applications.
+  humanURL: https://api.aiapplyd.com/api/v1/scalar
+  baseURL: https://api.aiapplyd.com/api/v1
+  tags:
+  - applications
+  properties:
+  - type: OpenAPI
+    url: openapi/aiapplyd-applications-api-openapi.yml
+  - type: APIReference
+    url: https://api.aiapplyd.com/api/v1/scalar
+  - type: JSONSchema
+    url: json-schema/aiapplyd-patch-user-preferences-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-upsert-application-profile-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-auto-setup-request-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-update-preferences-request-schema.json
+- aid: aiapplyd:aiapplyd-ats-api
+  name: AI Applyd Ats API
+  description: The ats API from AI Applyd — 2 operation(s) for ats.
+  humanURL: https://api.aiapplyd.com/api/v1/scalar
+  baseURL: https://api.aiapplyd.com/api/v1
+  tags:
+  - ats
+  properties:
+  - type: OpenAPI
+    url: openapi/aiapplyd-ats-api-openapi.yml
+  - type: APIReference
+    url: https://api.aiapplyd.com/api/v1/scalar
+  - type: JSONSchema
+    url: json-schema/aiapplyd-patch-user-preferences-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-upsert-application-profile-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-auto-setup-request-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-update-preferences-request-schema.json
+- aid: aiapplyd:aiapplyd-auth-api
+  name: AI Applyd Auth API
+  description: Authentication and authorization
+  humanURL: https://api.aiapplyd.com/api/v1/scalar
+  baseURL: https://api.aiapplyd.com/api/v1
+  tags:
+  - auth
+  properties:
+  - type: OpenAPI
+    url: openapi/aiapplyd-auth-api-openapi.yml
+  - type: APIReference
+    url: https://api.aiapplyd.com/api/v1/scalar
+  - type: JSONSchema
+    url: json-schema/aiapplyd-patch-user-preferences-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-upsert-application-profile-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-auto-setup-request-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-update-preferences-request-schema.json
+- aid: aiapplyd:aiapplyd-billing-api
+  name: AI Applyd Billing API
+  description: Subscription and billing management
+  humanURL: https://api.aiapplyd.com/api/v1/scalar
+  baseURL: https://api.aiapplyd.com/api/v1
+  tags:
+  - billing
+  properties:
+  - type: OpenAPI
+    url: openapi/aiapplyd-billing-api-openapi.yml
+  - type: APIReference
+    url: https://api.aiapplyd.com/api/v1/scalar
+  - type: JSONSchema
+    url: json-schema/aiapplyd-patch-user-preferences-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-upsert-application-profile-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-auto-setup-request-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-update-preferences-request-schema.json
+- aid: aiapplyd:aiapplyd-blog-api
+  name: AI Applyd Blog API
+  description: The blog API from AI Applyd — 8 operation(s) for blog.
+  humanURL: https://api.aiapplyd.com/api/v1/scalar
+  baseURL: https://api.aiapplyd.com/api/v1
+  tags:
+  - blog
+  properties:
+  - type: OpenAPI
+    url: openapi/aiapplyd-blog-api-openapi.yml
+  - type: APIReference
+    url: https://api.aiapplyd.com/api/v1/scalar
+  - type: JSONSchema
+    url: json-schema/aiapplyd-patch-user-preferences-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-upsert-application-profile-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-auto-setup-request-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-update-preferences-request-schema.json
+- aid: aiapplyd:aiapplyd-companies-api
+  name: AI Applyd Companies API
+  description: The companies API from AI Applyd — 2 operation(s) for companies.
+  humanURL: https://api.aiapplyd.com/api/v1/scalar
+  baseURL: https://api.aiapplyd.com/api/v1
+  tags:
+  - companies
+  properties:
+  - type: OpenAPI
+    url: openapi/aiapplyd-companies-api-openapi.yml
+  - type: APIReference
+    url: https://api.aiapplyd.com/api/v1/scalar
+  - type: JSONSchema
+    url: json-schema/aiapplyd-patch-user-preferences-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-upsert-application-profile-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-auto-setup-request-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-update-preferences-request-schema.json
+- aid: aiapplyd:aiapplyd-dashboard-api
+  name: AI Applyd Dashboard API
+  description: The dashboard API from AI Applyd — 1 operation(s) for dashboard.
+  humanURL: https://api.aiapplyd.com/api/v1/scalar
+  baseURL: https://api.aiapplyd.com/api/v1
+  tags:
+  - dashboard
+  properties:
+  - type: OpenAPI
+    url: openapi/aiapplyd-dashboard-api-openapi.yml
+  - type: APIReference
+    url: https://api.aiapplyd.com/api/v1/scalar
+  - type: JSONSchema
+    url: json-schema/aiapplyd-patch-user-preferences-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-upsert-application-profile-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-auto-setup-request-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-update-preferences-request-schema.json
+- aid: aiapplyd:aiapplyd-email-preferences-api
+  name: AI Applyd Email Preferences API
+  description: The email-preferences API from AI Applyd — 3 operation(s) for email-preferences.
+  humanURL: https://api.aiapplyd.com/api/v1/scalar
+  baseURL: https://api.aiapplyd.com/api/v1
+  tags:
+  - email-preferences
+  properties:
+  - type: OpenAPI
+    url: openapi/aiapplyd-email-preferences-api-openapi.yml
+  - type: APIReference
+    url: https://api.aiapplyd.com/api/v1/scalar
+  - type: JSONSchema
+    url: json-schema/aiapplyd-patch-user-preferences-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-upsert-application-profile-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-auto-setup-request-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-update-preferences-request-schema.json
+- aid: aiapplyd:aiapplyd-follow-ups-api
+  name: AI Applyd Follow Ups API
+  description: The follow-ups API from AI Applyd — 5 operation(s) for follow-ups.
+  humanURL: https://api.aiapplyd.com/api/v1/scalar
+  baseURL: https://api.aiapplyd.com/api/v1
+  tags:
+  - follow-ups
+  properties:
+  - type: OpenAPI
+    url: openapi/aiapplyd-follow-ups-api-openapi.yml
+  - type: APIReference
+    url: https://api.aiapplyd.com/api/v1/scalar
+  - type: JSONSchema
+    url: json-schema/aiapplyd-patch-user-preferences-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-upsert-application-profile-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-auto-setup-request-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-update-preferences-request-schema.json
+- aid: aiapplyd:aiapplyd-integrations-api
+  name: AI Applyd Integrations API
+  description: The integrations API from AI Applyd — 4 operation(s) for integrations.
+  humanURL: https://api.aiapplyd.com/api/v1/scalar
+  baseURL: https://api.aiapplyd.com/api/v1
+  tags:
+  - integrations
+  properties:
+  - type: OpenAPI
+    url: openapi/aiapplyd-integrations-api-openapi.yml
+  - type: APIReference
+    url: https://api.aiapplyd.com/api/v1/scalar
+  - type: JSONSchema
+    url: json-schema/aiapplyd-patch-user-preferences-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-upsert-application-profile-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-auto-setup-request-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-update-preferences-request-schema.json
+- aid: aiapplyd:aiapplyd-job-matches-api
+  name: AI Applyd Job Matches API
+  description: The job-matches API from AI Applyd — 15 operation(s) for job-matches.
+  humanURL: https://api.aiapplyd.com/api/v1/scalar
+  baseURL: https://api.aiapplyd.com/api/v1
+  tags:
+  - job-matches
+  properties:
+  - type: OpenAPI
+    url: openapi/aiapplyd-job-matches-api-openapi.yml
+  - type: APIReference
+    url: https://api.aiapplyd.com/api/v1/scalar
+  - type: JSONSchema
+    url: json-schema/aiapplyd-patch-user-preferences-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-upsert-application-profile-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-auto-setup-request-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-update-preferences-request-schema.json
+- aid: aiapplyd:aiapplyd-jobs-api
+  name: AI Applyd Jobs API
+  description: The jobs API from AI Applyd — 15 operation(s) for jobs.
+  humanURL: https://api.aiapplyd.com/api/v1/scalar
+  baseURL: https://api.aiapplyd.com/api/v1
+  tags:
+  - jobs
+  properties:
+  - type: OpenAPI
+    url: openapi/aiapplyd-jobs-api-openapi.yml
+  - type: APIReference
+    url: https://api.aiapplyd.com/api/v1/scalar
+  - type: JSONSchema
+    url: json-schema/aiapplyd-patch-user-preferences-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-upsert-application-profile-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-auto-setup-request-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-update-preferences-request-schema.json
+- aid: aiapplyd:aiapplyd-locations-api
+  name: AI Applyd Locations API
+  description: The locations API from AI Applyd — 4 operation(s) for locations.
+  humanURL: https://api.aiapplyd.com/api/v1/scalar
+  baseURL: https://api.aiapplyd.com/api/v1
+  tags:
+  - locations
+  properties:
+  - type: OpenAPI
+    url: openapi/aiapplyd-locations-api-openapi.yml
+  - type: APIReference
+    url: https://api.aiapplyd.com/api/v1/scalar
+  - type: JSONSchema
+    url: json-schema/aiapplyd-patch-user-preferences-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-upsert-application-profile-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-auto-setup-request-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-update-preferences-request-schema.json
+- aid: aiapplyd:aiapplyd-mcp-api
+  name: AI Applyd MCP API
+  description: The mcp API from AI Applyd — 1 operation(s) for mcp.
+  humanURL: https://api.aiapplyd.com/api/v1/scalar
+  baseURL: https://api.aiapplyd.com/api/v1
+  tags:
+  - mcp
+  properties:
+  - type: OpenAPI
+    url: openapi/aiapplyd-mcp-api-openapi.yml
+  - type: APIReference
+    url: https://api.aiapplyd.com/api/v1/scalar
+  - type: JSONSchema
+    url: json-schema/aiapplyd-patch-user-preferences-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-upsert-application-profile-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-auto-setup-request-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-update-preferences-request-schema.json
+- aid: aiapplyd:aiapplyd-notifications-api
+  name: AI Applyd Notifications API
+  description: The notifications API from AI Applyd — 5 operation(s) for notifications.
+  humanURL: https://api.aiapplyd.com/api/v1/scalar
+  baseURL: https://api.aiapplyd.com/api/v1
+  tags:
+  - notifications
+  properties:
+  - type: OpenAPI
+    url: openapi/aiapplyd-notifications-api-openapi.yml
+  - type: APIReference
+    url: https://api.aiapplyd.com/api/v1/scalar
+  - type: JSONSchema
+    url: json-schema/aiapplyd-patch-user-preferences-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-upsert-application-profile-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-auto-setup-request-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-update-preferences-request-schema.json
+- aid: aiapplyd:aiapplyd-observability-api
+  name: AI Applyd Observability API
+  description: The observability API from AI Applyd — 1 operation(s) for observability.
+  humanURL: https://api.aiapplyd.com/api/v1/scalar
+  baseURL: https://api.aiapplyd.com/api/v1
+  tags:
+  - observability
+  properties:
+  - type: OpenAPI
+    url: openapi/aiapplyd-observability-api-openapi.yml
+  - type: APIReference
+    url: https://api.aiapplyd.com/api/v1/scalar
+  - type: JSONSchema
+    url: json-schema/aiapplyd-patch-user-preferences-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-upsert-application-profile-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-auto-setup-request-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-update-preferences-request-schema.json
+- aid: aiapplyd:aiapplyd-onboarding-api
+  name: AI Applyd Onboarding API
+  description: The onboarding API from AI Applyd — 8 operation(s) for onboarding.
+  humanURL: https://api.aiapplyd.com/api/v1/scalar
+  baseURL: https://api.aiapplyd.com/api/v1
+  tags:
+  - onboarding
+  properties:
+  - type: OpenAPI
+    url: openapi/aiapplyd-onboarding-api-openapi.yml
+  - type: APIReference
+    url: https://api.aiapplyd.com/api/v1/scalar
+  - type: JSONSchema
+    url: json-schema/aiapplyd-patch-user-preferences-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-upsert-application-profile-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-auto-setup-request-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-update-preferences-request-schema.json
+- aid: aiapplyd:aiapplyd-outreach-api
+  name: AI Applyd Outreach API
+  description: The outreach API from AI Applyd — 4 operation(s) for outreach.
+  humanURL: https://api.aiapplyd.com/api/v1/scalar
+  baseURL: https://api.aiapplyd.com/api/v1
+  tags:
+  - outreach
+  properties:
+  - type: OpenAPI
+    url: openapi/aiapplyd-outreach-api-openapi.yml
+  - type: APIReference
+    url: https://api.aiapplyd.com/api/v1/scalar
+  - type: JSONSchema
+    url: json-schema/aiapplyd-patch-user-preferences-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-upsert-application-profile-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-auto-setup-request-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-update-preferences-request-schema.json
+- aid: aiapplyd:aiapplyd-overview-api
+  name: AI Applyd Overview API
+  description: The overview API from AI Applyd — 2 operation(s) for overview.
+  humanURL: https://api.aiapplyd.com/api/v1/scalar
+  baseURL: https://api.aiapplyd.com/api/v1
+  tags:
+  - overview
+  properties:
+  - type: OpenAPI
+    url: openapi/aiapplyd-overview-api-openapi.yml
+  - type: APIReference
+    url: https://api.aiapplyd.com/api/v1/scalar
+  - type: JSONSchema
+    url: json-schema/aiapplyd-patch-user-preferences-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-upsert-application-profile-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-auto-setup-request-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-update-preferences-request-schema.json
+- aid: aiapplyd:aiapplyd-pricing-api
+  name: AI Applyd Pricing API
+  description: The pricing API from AI Applyd — 2 operation(s) for pricing.
+  humanURL: https://api.aiapplyd.com/api/v1/scalar
+  baseURL: https://api.aiapplyd.com/api/v1
+  tags:
+  - pricing
+  properties:
+  - type: OpenAPI
+    url: openapi/aiapplyd-pricing-api-openapi.yml
+  - type: APIReference
+    url: https://api.aiapplyd.com/api/v1/scalar
+  - type: JSONSchema
+    url: json-schema/aiapplyd-patch-user-preferences-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-upsert-application-profile-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-auto-setup-request-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-update-preferences-request-schema.json
+- aid: aiapplyd:aiapplyd-proof-points-api
+  name: AI Applyd Proof Points API
+  description: The proof-points API from AI Applyd — 3 operation(s) for proof-points.
+  humanURL: https://api.aiapplyd.com/api/v1/scalar
+  baseURL: https://api.aiapplyd.com/api/v1
+  tags:
+  - proof-points
+  properties:
+  - type: OpenAPI
+    url: openapi/aiapplyd-proof-points-api-openapi.yml
+  - type: APIReference
+    url: https://api.aiapplyd.com/api/v1/scalar
+  - type: JSONSchema
+    url: json-schema/aiapplyd-patch-user-preferences-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-upsert-application-profile-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-auto-setup-request-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-update-preferences-request-schema.json
+- aid: aiapplyd:aiapplyd-public-ats-score-api
+  name: AI Applyd Public Ats Score API
+  description: The public-ats-score API from AI Applyd — 2 operation(s) for public-ats-score.
+  humanURL: https://api.aiapplyd.com/api/v1/scalar
+  baseURL: https://api.aiapplyd.com/api/v1
+  tags:
+  - public-ats-score
+  properties:
+  - type: OpenAPI
+    url: openapi/aiapplyd-public-ats-score-api-openapi.yml
+  - type: APIReference
+    url: https://api.aiapplyd.com/api/v1/scalar
+  - type: JSONSchema
+    url: json-schema/aiapplyd-patch-user-preferences-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-upsert-application-profile-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-auto-setup-request-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-update-preferences-request-schema.json
+- aid: aiapplyd:aiapplyd-public-cancellation-api
+  name: AI Applyd Public Cancellation API
+  description: The public-cancellation API from AI Applyd — 2 operation(s) for public-cancellation.
+  humanURL: https://api.aiapplyd.com/api/v1/scalar
+  baseURL: https://api.aiapplyd.com/api/v1
+  tags:
+  - public-cancellation
+  properties:
+  - type: OpenAPI
+    url: openapi/aiapplyd-public-cancellation-api-openapi.yml
+  - type: APIReference
+    url: https://api.aiapplyd.com/api/v1/scalar
+  - type: JSONSchema
+    url: json-schema/aiapplyd-patch-user-preferences-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-upsert-application-profile-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-auto-setup-request-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-update-preferences-request-schema.json
+- aid: aiapplyd:aiapplyd-public-competitors-api
+  name: AI Applyd Public Competitors API
+  description: The public-competitors API from AI Applyd — 3 operation(s) for public-competitors.
+  humanURL: https://api.aiapplyd.com/api/v1/scalar
+  baseURL: https://api.aiapplyd.com/api/v1
+  tags:
+  - public-competitors
+  properties:
+  - type: OpenAPI
+    url: openapi/aiapplyd-public-competitors-api-openapi.yml
+  - type: APIReference
+    url: https://api.aiapplyd.com/api/v1/scalar
+  - type: JSONSchema
+    url: json-schema/aiapplyd-patch-user-preferences-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-upsert-application-profile-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-auto-setup-request-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-update-preferences-request-schema.json
+- aid: aiapplyd:aiapplyd-public-deletion-api
+  name: AI Applyd Public Deletion API
+  description: The public-deletion API from AI Applyd — 2 operation(s) for public-deletion.
+  humanURL: https://api.aiapplyd.com/api/v1/scalar
+  baseURL: https://api.aiapplyd.com/api/v1
+  tags:
+  - public-deletion
+  properties:
+  - type: OpenAPI
+    url: openapi/aiapplyd-public-deletion-api-openapi.yml
+  - type: APIReference
+    url: https://api.aiapplyd.com/api/v1/scalar
+  - type: JSONSchema
+    url: json-schema/aiapplyd-patch-user-preferences-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-upsert-application-profile-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-auto-setup-request-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-update-preferences-request-schema.json
+- aid: aiapplyd:aiapplyd-public-reviews-api
+  name: AI Applyd Public Reviews API
+  description: The public-reviews API from AI Applyd — 1 operation(s) for public-reviews.
+  humanURL: https://api.aiapplyd.com/api/v1/scalar
+  baseURL: https://api.aiapplyd.com/api/v1
+  tags:
+  - public-reviews
+  properties:
+  - type: OpenAPI
+    url: openapi/aiapplyd-public-reviews-api-openapi.yml
+  - type: APIReference
+    url: https://api.aiapplyd.com/api/v1/scalar
+  - type: JSONSchema
+    url: json-schema/aiapplyd-patch-user-preferences-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-upsert-application-profile-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-auto-setup-request-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-update-preferences-request-schema.json
+- aid: aiapplyd:aiapplyd-referrals-api
+  name: AI Applyd Referrals API
+  description: The referrals API from AI Applyd — 3 operation(s) for referrals.
+  humanURL: https://api.aiapplyd.com/api/v1/scalar
+  baseURL: https://api.aiapplyd.com/api/v1
+  tags:
+  - referrals
+  properties:
+  - type: OpenAPI
+    url: openapi/aiapplyd-referrals-api-openapi.yml
+  - type: APIReference
+    url: https://api.aiapplyd.com/api/v1/scalar
+  - type: JSONSchema
+    url: json-schema/aiapplyd-patch-user-preferences-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-upsert-application-profile-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-auto-setup-request-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-update-preferences-request-schema.json
+- aid: aiapplyd:aiapplyd-relay-inbox-api
+  name: AI Applyd Relay Inbox API
+  description: The relay-inbox API from AI Applyd — 12 operation(s) for relay-inbox.
+  humanURL: https://api.aiapplyd.com/api/v1/scalar
+  baseURL: https://api.aiapplyd.com/api/v1
+  tags:
+  - relay-inbox
+  properties:
+  - type: OpenAPI
+    url: openapi/aiapplyd-relay-inbox-api-openapi.yml
+  - type: APIReference
+    url: https://api.aiapplyd.com/api/v1/scalar
+  - type: JSONSchema
+    url: json-schema/aiapplyd-patch-user-preferences-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-upsert-application-profile-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-auto-setup-request-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-update-preferences-request-schema.json
+- aid: aiapplyd:aiapplyd-resume-builder-api
+  name: AI Applyd Resume Builder API
+  description: The resume-builder API from AI Applyd — 17 operation(s) for resume-builder.
+  humanURL: https://api.aiapplyd.com/api/v1/scalar
+  baseURL: https://api.aiapplyd.com/api/v1
+  tags:
+  - resume-builder
+  properties:
+  - type: OpenAPI
+    url: openapi/aiapplyd-resume-builder-api-openapi.yml
+  - type: APIReference
+    url: https://api.aiapplyd.com/api/v1/scalar
+  - type: JSONSchema
+    url: json-schema/aiapplyd-patch-user-preferences-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-upsert-application-profile-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-auto-setup-request-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-update-preferences-request-schema.json
+- aid: aiapplyd:aiapplyd-reviews-api
+  name: AI Applyd Reviews API
+  description: The reviews API from AI Applyd — 1 operation(s) for reviews.
+  humanURL: https://api.aiapplyd.com/api/v1/scalar
+  baseURL: https://api.aiapplyd.com/api/v1
+  tags:
+  - reviews
+  properties:
+  - type: OpenAPI
+    url: openapi/aiapplyd-reviews-api-openapi.yml
+  - type: APIReference
+    url: https://api.aiapplyd.com/api/v1/scalar
+  - type: JSONSchema
+    url: json-schema/aiapplyd-patch-user-preferences-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-upsert-application-profile-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-auto-setup-request-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-update-preferences-request-schema.json
+- aid: aiapplyd:aiapplyd-saved-searches-api
+  name: AI Applyd Saved Searches API
+  description: The saved-searches API from AI Applyd — 2 operation(s) for saved-searches.
+  humanURL: https://api.aiapplyd.com/api/v1/scalar
+  baseURL: https://api.aiapplyd.com/api/v1
+  tags:
+  - saved-searches
+  properties:
+  - type: OpenAPI
+    url: openapi/aiapplyd-saved-searches-api-openapi.yml
+  - type: APIReference
+    url: https://api.aiapplyd.com/api/v1/scalar
+  - type: JSONSchema
+    url: json-schema/aiapplyd-patch-user-preferences-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-upsert-application-profile-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-auto-setup-request-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-update-preferences-request-schema.json
+- aid: aiapplyd:aiapplyd-search-api
+  name: AI Applyd Search API
+  description: The search API from AI Applyd — 2 operation(s) for search.
+  humanURL: https://api.aiapplyd.com/api/v1/scalar
+  baseURL: https://api.aiapplyd.com/api/v1
+  tags:
+  - search
+  properties:
+  - type: OpenAPI
+    url: openapi/aiapplyd-search-api-openapi.yml
+  - type: APIReference
+    url: https://api.aiapplyd.com/api/v1/scalar
+  - type: JSONSchema
+    url: json-schema/aiapplyd-patch-user-preferences-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-upsert-application-profile-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-auto-setup-request-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-update-preferences-request-schema.json
+- aid: aiapplyd:aiapplyd-star-stories-api
+  name: AI Applyd Star Stories API
+  description: The star-stories API from AI Applyd — 5 operation(s) for star-stories.
+  humanURL: https://api.aiapplyd.com/api/v1/scalar
+  baseURL: https://api.aiapplyd.com/api/v1
+  tags:
+  - star-stories
+  properties:
+  - type: OpenAPI
+    url: openapi/aiapplyd-star-stories-api-openapi.yml
+  - type: APIReference
+    url: https://api.aiapplyd.com/api/v1/scalar
+  - type: JSONSchema
+    url: json-schema/aiapplyd-patch-user-preferences-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-upsert-application-profile-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-auto-setup-request-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-update-preferences-request-schema.json
+- aid: aiapplyd:aiapplyd-support-api
+  name: AI Applyd Support API
+  description: The support API from AI Applyd — 2 operation(s) for support.
+  humanURL: https://api.aiapplyd.com/api/v1/scalar
+  baseURL: https://api.aiapplyd.com/api/v1
+  tags:
+  - support
+  properties:
+  - type: OpenAPI
+    url: openapi/aiapplyd-support-api-openapi.yml
+  - type: APIReference
+    url: https://api.aiapplyd.com/api/v1/scalar
+  - type: JSONSchema
+    url: json-schema/aiapplyd-patch-user-preferences-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-upsert-application-profile-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-auto-setup-request-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-update-preferences-request-schema.json
+- aid: aiapplyd:aiapplyd-system-api
+  name: AI Applyd System API
+  description: System health and diagnostics
+  humanURL: https://api.aiapplyd.com/api/v1/scalar
+  baseURL: https://api.aiapplyd.com/api/v1
+  tags:
+  - system
+  properties:
+  - type: OpenAPI
+    url: openapi/aiapplyd-system-api-openapi.yml
+  - type: APIReference
+    url: https://api.aiapplyd.com/api/v1/scalar
+  - type: JSONSchema
+    url: json-schema/aiapplyd-patch-user-preferences-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-upsert-application-profile-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-auto-setup-request-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-update-preferences-request-schema.json
+- aid: aiapplyd:aiapplyd-tracking-api
+  name: AI Applyd Tracking API
+  description: The tracking API from AI Applyd — 3 operation(s) for tracking.
+  humanURL: https://api.aiapplyd.com/api/v1/scalar
+  baseURL: https://api.aiapplyd.com/api/v1
+  tags:
+  - tracking
+  properties:
+  - type: OpenAPI
+    url: openapi/aiapplyd-tracking-api-openapi.yml
+  - type: APIReference
+    url: https://api.aiapplyd.com/api/v1/scalar
+  - type: JSONSchema
+    url: json-schema/aiapplyd-patch-user-preferences-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-upsert-application-profile-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-auto-setup-request-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-update-preferences-request-schema.json
+- aid: aiapplyd:aiapplyd-user-documents-api
+  name: AI Applyd User Documents API
+  description: The user-documents API from AI Applyd — 16 operation(s) for user-documents.
+  humanURL: https://api.aiapplyd.com/api/v1/scalar
+  baseURL: https://api.aiapplyd.com/api/v1
+  tags:
+  - user-documents
+  properties:
+  - type: OpenAPI
+    url: openapi/aiapplyd-user-documents-api-openapi.yml
+  - type: APIReference
+    url: https://api.aiapplyd.com/api/v1/scalar
+  - type: JSONSchema
+    url: json-schema/aiapplyd-patch-user-preferences-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-upsert-application-profile-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-auto-setup-request-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-update-preferences-request-schema.json
+- aid: aiapplyd:aiapplyd-user-preferences-api
+  name: AI Applyd User Preferences API
+  description: The user-preferences API from AI Applyd — 1 operation(s) for user-preferences.
+  humanURL: https://api.aiapplyd.com/api/v1/scalar
+  baseURL: https://api.aiapplyd.com/api/v1
+  tags:
+  - user-preferences
+  properties:
+  - type: OpenAPI
+    url: openapi/aiapplyd-user-preferences-api-openapi.yml
+  - type: APIReference
+    url: https://api.aiapplyd.com/api/v1/scalar
+  - type: JSONSchema
+    url: json-schema/aiapplyd-patch-user-preferences-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-upsert-application-profile-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-auto-setup-request-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-update-preferences-request-schema.json
+- aid: aiapplyd:aiapplyd-linked-in-api
+  name: AI Applyd Linked In API
+  description: The Linked In API from AI Applyd — 3 operation(s) for linked in.
+  humanURL: https://aiapplyd.com/mcps
+  baseURL: https://mcp.aiapplyd.com/mcp
+  tags:
+  - Linked In
+  properties:
+  - type: OpenAPI
+    url: openapi/aiapplyd-linked-in-api-openapi.yml
+  - type: APIReference
+    url: https://api.aiapplyd.com/api/v1/scalar
+  - type: JSONSchema
+    url: json-schema/aiapplyd-patch-user-preferences-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-upsert-application-profile-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-auto-setup-request-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-update-preferences-request-schema.json
 x-enrichment:
   date: '2026-09-25'
   status: enriched

@@ -1,0 +1,898 @@
+openapi: 3.2.0
+info:
+  title: Aiapplyd Saved Searches API
+  version: 115c47ce
+  contact:
+    email: support@aiapplyd.com
+    name: AI Applyd
+    url: https://aiapplyd.com
+  license:
+    name: Proprietary
+    url: https://aiapplyd.com/legal/terms
+  description: 'Operations tagged saved-searches across 2 of this provider''s published API definitions: aiapplyd-openapi.json, aiapplyd-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- description: Current environment
+  url: https://api.aiapplyd.com/api/v1
+security:
+- BearerAuth: []
+tags:
+- name: saved-searches
+paths:
+  /saved-searches:
+    get:
+      tags:
+      - saved-searches
+      summary: List Saved Searches
+      description: List the authenticated user's saved searches (job alerts), newest first.
+      responses:
+        '200':
+          description: Saved searches retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SavedSearchListResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: getSavedSearches
+    post:
+      tags:
+      - saved-searches
+      summary: Create Saved Search
+      description: Save the current job-match filter set as a named search with optional email alerts.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSavedSearch'
+      responses:
+        '201':
+          description: Saved search created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SavedSearchResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: postSavedSearches
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+  /saved-searches/{id}:
+    patch:
+      tags:
+      - saved-searches
+      summary: Update Saved Search
+      description: Rename a saved search, toggle its email alerts, or replace its filter criteria.
+      parameters:
+      - schema:
+          type: string
+          pattern: ^\d+$
+          description: Saved search identifier (auto-increment integer)
+          example: '1'
+        required: true
+        description: Saved search identifier (auto-increment integer)
+        in: path
+        name: id
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateSavedSearch'
+      responses:
+        '200':
+          description: Saved search updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SavedSearchResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: patchSavedSearchesById
+    delete:
+      tags:
+      - saved-searches
+      summary: Delete Saved Search
+      description: Hard-delete a saved search. No soft-archive / no rollback window.
+      parameters:
+      - schema:
+          type: string
+          pattern: ^\d+$
+          description: Saved search identifier (auto-increment integer)
+          example: '1'
+        required: true
+        description: Saved search identifier (auto-increment integer)
+        in: path
+        name: id
+      responses:
+        '200':
+          description: Saved search deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SavedSearchDeletedResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: deleteSavedSearchesById
+    servers:
+    - description: Current environment
+      url: https://api.aiapplyd.com/api/v1
+components:
+  schemas:
+    UpdateSavedSearch:
+      type: object
+      properties:
+        alertsEnabled:
+          type: boolean
+          description: Toggle email alerts
+          example: false
+        criteria:
+          allOf:
+          - $ref: '#/components/schemas/SavedSearchCriteria'
+          - description: Replacement filter criteria snapshot
+        name:
+          type: string
+          minLength: 1
+          maxLength: 120
+          description: New label for the saved search
+          example: Remote staff backend
+      additionalProperties: false
+    ApiErrorResponse:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+            context:
+              oneOf:
+              - type: object
+                properties:
+                  errorType:
+                    type: string
+                    enum:
+                    - validation
+                  field:
+                    type: string
+                  fieldErrors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        code:
+                          type: string
+                        expected:
+                          type: string
+                        field:
+                          type: string
+                        message:
+                          type: string
+                        received:
+                          type: string
+                      required:
+                      - field
+                      - message
+                  schemaName:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  attemptedEmail:
+                    type: string
+                    format: email
+                  errorType:
+                    type: string
+                    enum:
+                    - authentication
+                  failureReason:
+                    type: string
+                    enum:
+                    - invalid_credentials
+                    - account_locked
+                    - expired_token
+                    - token_expired
+                    - missing_token
+                    - invalid_token
+                    - session_expired
+                    description: Reason for authentication failure
+                    example: token_expired
+                  ipAddress:
+                    type: string
+                  operation:
+                    type: string
+                  service:
+                    type: string
+                  userAgent:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  actualPermission:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - authorization
+                  requiredPermission:
+                    type: string
+                  resource:
+                    type: string
+                  resourceId:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  constraint:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - database
+                  operation:
+                    type: string
+                    enum:
+                    - insert
+                    - update
+                    - delete
+                    - select
+                    - batch
+                    - transaction
+                    - migration
+                    description: Type of database operation
+                    example: select
+                  resourceId:
+                    type: string
+                  sqlState:
+                    type: string
+                  table:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  endpoint:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - external_service
+                  httpStatus:
+                    type: number
+                  operation:
+                    type: string
+                  resourceId:
+                    type: string
+                  responseTime:
+                    type: number
+                  retryAttempt:
+                    type: integer
+                  service:
+                    type: string
+                  serviceName:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  errorType:
+                    type: string
+                    enum:
+                    - resource
+                  resource:
+                    type: string
+                  resourceId:
+                    type: string
+                  service:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  errorType:
+                    type: string
+                    enum:
+                    - rate_limit
+                  limit:
+                    type: number
+                  resetTime:
+                    type: string
+                  windowMs:
+                    type: number
+                required:
+                - errorType
+              - type: object
+                properties:
+                  configKey:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - configuration
+                  operation:
+                    type: string
+                  service:
+                    type: string
+                required:
+                - errorType
+              description: Type-safe error context information
+              example:
+                errorType: validation
+                fieldErrors:
+                - field: email
+                  message: Invalid email format
+            details:
+              oneOf:
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - validation
+                  validationErrors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        code:
+                          type: string
+                        field:
+                          type: string
+                        message:
+                          type: string
+                      required:
+                      - field
+                      - message
+                required:
+                - detailType
+                - validationErrors
+                additionalProperties: false
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - service_error
+                  originalError:
+                    type: string
+                  serviceName:
+                    type: string
+                required:
+                - detailType
+                - serviceName
+                additionalProperties: false
+              - type: object
+                properties:
+                  currentSize:
+                    type: number
+                  detailType:
+                    type: string
+                    enum:
+                    - batch
+                  originalError:
+                    type: string
+                  statementCount:
+                    type: number
+                required:
+                - detailType
+                additionalProperties: false
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - rate_limit
+                  limit:
+                    type: number
+                  resetTime:
+                    type: string
+                  windowMs:
+                    type: number
+                required:
+                - detailType
+                - limit
+                - resetTime
+                - windowMs
+                additionalProperties: false
+              - type: object
+                properties:
+                  conflictingField:
+                    type: string
+                  detailType:
+                    type: string
+                    enum:
+                    - resource
+                  resourceId:
+                    anyOf:
+                    - type: string
+                    - type: number
+                  resourceType:
+                    type: string
+                required:
+                - detailType
+                additionalProperties: false
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - generic
+                  info:
+                    type: string
+                required:
+                - detailType
+                additionalProperties: false
+              - type: object
+                properties:
+                  currentTokens:
+                    type: integer
+                    minimum: 0
+                  detailType:
+                    type: string
+                    enum:
+                    - insufficient_tokens
+                  requiredTokens:
+                    type: integer
+                    minimum: 0
+                required:
+                - currentTokens
+                - detailType
+                - requiredTokens
+                additionalProperties: false
+            message:
+              type: string
+            validation:
+              type: array
+              items:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  field:
+                    type: string
+                  message:
+                    type: string
+                required:
+                - field
+                - message
+                additionalProperties: false
+          required:
+          - code
+          - message
+          additionalProperties: false
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - false
+      required:
+      - error
+      - success
+      additionalProperties: false
+    SavedSearchDeletedResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            success:
+              type: boolean
+              enum:
+              - true
+          required:
+          - success
+          additionalProperties: false
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    ResponseMetadata:
+      type: object
+      properties:
+        duration:
+          type: number
+          description: Request duration in milliseconds
+          example: 150
+          exclusiveMinimum: 0
+        performance:
+          type: object
+          properties:
+            dbQueries:
+              type: integer
+              minimum: 0
+            totalDbTime:
+              type: number
+              minimum: 0
+          description: Performance metrics (preview/local only)
+        requestId:
+          type: string
+          description: Unique request identifier
+          example: req_abc123
+        timestamp:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp
+          example: '2026-09-25T17:29:47.224Z'
+        version:
+          type: string
+          description: API version
+          example: v1
+    SavedSearchCriteria:
+      type: object
+      properties:
+        benefits:
+          type: array
+          items:
+            type: string
+            maxLength: 120
+          maxItems: 100
+          description: Must-have job benefits
+          example:
+          - health_insurance
+          - remote_work
+        companySize:
+          type: array
+          items:
+            type: string
+            maxLength: 60
+          maxItems: 100
+          description: Preferred company sizes
+          example:
+          - startup
+          - small
+        educationLevel:
+          type: string
+          maxLength: 60
+          description: Minimum education level filter
+          example: bachelor
+        excludeIndustries:
+          type: array
+          items:
+            type: string
+            maxLength: 120
+          maxItems: 100
+          description: Industries to exclude from matches
+          example:
+          - Government & Public Sector
+        experienceLevel:
+          type: string
+          enum:
+          - entry
+          - mid
+          - senior
+          - lead
+          - executive
+          description: Target experience level (DEPRECATED scalar  -  prefer `experienceLevels`). Kept so older saved-search blobs keep parsing under `.strict()`.
+          example: senior
+        experienceLevels:
+          type: array
+          items:
+            type: string
+            enum:
+            - entry
+            - mid
+            - senior
+            - lead
+            - executive
+            description: Professional experience level
+            example: mid
+          description: Target experience levels (multi-select). Readers fall back to wrapping the legacy `experienceLevel` scalar when absent.
+          example:
+          - mid
+          - senior
+        includeRemote:
+          type: boolean
+          description: Include remote/anywhere jobs even when specific locations are set
+          example: true
+        industries:
+          type: array
+          items:
+            type: string
+            maxLength: 120
+          maxItems: 100
+          description: Target industries
+          example:
+          - Technology
+          - Finance
+        jobTypes:
+          type: array
+          items:
+            type: string
+            maxLength: 60
+          maxItems: 100
+          description: Preferred job types
+          example:
+          - full_time
+          - contract
+        locations:
+          type: array
+          items:
+            type: string
+            maxLength: 200
+          maxItems: 100
+          description: Preferred locations as "City, Country" or "Country"
+          example:
+          - San Francisco, United States
+          - Berlin, Germany
+        remoteGlobal:
+          type: boolean
+          description: Accept worldwide "Remote - Anywhere (Global)" jobs. Absent on searches saved before 2026-09-24.
+          example: false
+        salaryCurrency:
+          type: string
+          enum:
+          - usd
+          - eur
+          - gbp
+          - cad
+          - aud
+          - inr
+          description: Currency the salary band is expressed in. Absent on searches saved before 2026-09-24.
+          example: eur
+        salaryMax:
+          type: number
+          minimum: 0
+          description: Maximum salary requirement
+          example: 200000
+        salaryMin:
+          type: number
+          minimum: 0
+          description: Minimum salary requirement (USD/year)
+          example: 100000
+        skills:
+          type: array
+          items:
+            type: string
+            maxLength: 120
+          maxItems: 100
+          description: User skills (from resume or manual entry)
+          example:
+          - TypeScript
+          - React
+          - Node.js
+        targetRoles:
+          type: array
+          items:
+            type: string
+            maxLength: 200
+          maxItems: 100
+          description: Target role titles
+          example:
+          - Software Engineer
+          - Full Stack Developer
+        visaSponsorship:
+          type: string
+          maxLength: 60
+          description: Visa sponsorship preference
+          example: required
+        workStyles:
+          type: array
+          items:
+            type: string
+            enum:
+            - onsite
+            - hybrid
+            - remote
+            description: User's preferred work style, physical mode only, no geo scoping
+            example: remote
+          maxItems: 8
+          description: Preferred work styles (onsite/hybrid/remote)
+          example:
+          - remote
+          - hybrid
+      additionalProperties: false
+      description: Filter criteria snapshot (mirrors job match preference filters)
+    SavedSearchData:
+      type: object
+      properties:
+        alertsEnabled:
+          type: boolean
+          description: Whether email alerts fire for this saved search
+          example: true
+        createdAt:
+          type: string
+          description: Creation timestamp (ISO-8601)
+          example: '2026-01-15T12:00:00Z'
+        criteria:
+          $ref: '#/components/schemas/SavedSearchCriteria'
+        id:
+          type: integer
+          description: Saved search identifier
+          example: 12
+        lastAlertedAt:
+          type:
+          - string
+          - 'null'
+          description: Timestamp of the last alert email sent (null until first alert)
+          example: '2026-03-10T08:30:00Z'
+        name:
+          type: string
+          description: User-facing label for the saved search
+          example: Remote senior backend
+        updatedAt:
+          type: string
+          description: Last update timestamp (ISO-8601)
+          example: '2026-03-10T08:30:00Z'
+        userId:
+          type: string
+          description: Owner user identifier
+          example: user_123
+      required:
+      - alertsEnabled
+      - createdAt
+      - criteria
+      - id
+      - lastAlertedAt
+      - name
+      - updatedAt
+      - userId
+      additionalProperties: false
+    SavedSearchListResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: '#/components/schemas/SavedSearchData'
+          required:
+          - items
+          additionalProperties: false
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    CreateSavedSearch:
+      type: object
+      properties:
+        alertsEnabled:
+          type: boolean
+          description: Enable email alerts for this search (default true)
+          example: true
+        criteria:
+          allOf:
+          - $ref: '#/components/schemas/SavedSearchCriteria'
+          - description: Filter criteria snapshot to save
+        name:
+          type: string
+          minLength: 1
+          maxLength: 120
+          description: User-facing label for the saved search
+          example: Remote senior backend
+      required:
+      - criteria
+      - name
+      additionalProperties: false
+    SavedSearchResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/SavedSearchData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+  securitySchemes:
+    BearerAuth:
+      description: 'Session token from signing in to AI Applyd, sent as `Authorization: Bearer <token>`.'
+      scheme: bearer
+      type: http
+x-refined-from:
+- aiapplyd-openapi.json
+- aiapplyd-openapi.yml
