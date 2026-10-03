@@ -1,15 +1,15 @@
 openapi: 3.2.0
 info:
-  title: Aiapplyd Blog API
-  version: 115c47ce
   contact:
     email: support@aiapplyd.com
     name: AI Applyd
     url: https://aiapplyd.com
+  description: 'The AI Applyd API runs the whole job hunt for you: it matches you to roles that fit your profile, rewrites your resume for each posting, writes the cover letter the form asks for, and auto-applies across the major applicant tracking systems.'
   license:
     name: Proprietary
     url: https://aiapplyd.com/legal/terms
-  description: 'Operations tagged blog across 2 of this provider''s published API definitions: aiapplyd-openapi.json, aiapplyd-openapi.yml. Each path carries the servers of the definition it was published in.'
+  title: AI Applyd Blog API
+  version: 115c47ce
 servers:
 - description: Current environment
   url: https://api.aiapplyd.com/api/v1
@@ -44,9 +44,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: getBlogAllContent
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /blog/posts:
     get:
       description: Get paginated blog posts (summaries only, without content).
@@ -96,9 +93,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: getBlogPosts
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /blog/featured:
     get:
       description: Get all featured blog posts (summaries only).
@@ -125,9 +119,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: getBlogFeatured
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /blog/tags:
     get:
       description: Get all categories (tags) with their post counts.
@@ -154,9 +145,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: getBlogTags
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /blog/tag/{tag}:
     get:
       description: Get paginated blog posts with a specific category.
@@ -216,9 +204,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: getBlogTagByTag
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /blog/authors/{slug}:
     get:
       description: Get a single blog author profile and their published post summaries by URL slug.
@@ -256,9 +241,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: getBlogAuthorsBySlug
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /blog/posts/{slug}:
     get:
       description: Get a single blog post by its URL slug.
@@ -296,9 +278,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: getBlogPostsBySlug
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /blog/posts/{slug}/related:
     get:
       description: Get related posts based on shared tags.
@@ -347,11 +326,34 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: getBlogPostsBySlugRelated
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
 components:
   schemas:
+    BlogPostWithRelevance:
+      allOf:
+      - $ref: '#/components/schemas/BlogPostSummary'
+      - type: object
+        properties:
+          relevance:
+            type: number
+        required:
+        - relevance
+        additionalProperties: false
+    PaginatedBlogPostsListResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/PaginatedBlogPostsPayload'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
     BlogPostSummary:
       type: object
       properties:
@@ -537,57 +539,173 @@ components:
       - title
       - updatedAt
       additionalProperties: false
-    PaginatedBlogPostsPayload:
+    BlogAuthorWithPostsPayload:
       type: object
       properties:
-        category:
-          type:
-          - object
-          - 'null'
-          properties:
-            name:
-              type: string
-            slug:
-              type: string
-          required:
-          - name
-          - slug
-          description: Matched category (present on tag-filtered results only)
-        pagination:
-          type: object
-          properties:
-            hasNext:
-              type: boolean
-            hasPrev:
-              type: boolean
-            limit:
-              type: integer
-              exclusiveMinimum: 0
-            page:
-              type: integer
-              exclusiveMinimum: 0
-            totalCount:
-              type: integer
-              minimum: 0
-            totalPages:
-              type: integer
-              minimum: 0
-          required:
-          - hasNext
-          - hasPrev
-          - limit
-          - page
-          - totalCount
-          - totalPages
-          additionalProperties: false
+        author:
+          $ref: '#/components/schemas/BlogAuthor'
         posts:
           type: array
           items:
             $ref: '#/components/schemas/BlogPostSummary'
       required:
-      - category
-      - pagination
+      - author
       - posts
+      additionalProperties: false
+    RelatedPostsResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/BlogPostWithRelevance'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    ResponseMetadata:
+      type: object
+      properties:
+        duration:
+          type: number
+          description: Request duration in milliseconds
+          example: 150
+          exclusiveMinimum: 0
+        performance:
+          type: object
+          properties:
+            dbQueries:
+              type: integer
+              minimum: 0
+            totalDbTime:
+              type: number
+              minimum: 0
+          description: Performance metrics (preview/local only)
+        requestId:
+          type: string
+          description: Unique request identifier
+          example: req_abc123
+        timestamp:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp
+          example: '2026-09-25T17:29:47.224Z'
+        version:
+          type: string
+          description: API version
+          example: v1
+    AllPostsWithContentResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/BlogPost'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    LexicalContent:
+      type: object
+      additionalProperties: true
+      description: Lexical document tree. Opaque in the OpenAPI surface; see Payload CMS Lexical docs for the recursive node shape.
+    BlogAuthorWithPostsResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/BlogAuthorWithPostsPayload'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    BlogPostResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/BlogPost'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    BlogAuthor:
+      type: object
+      properties:
+        avatarUrl:
+          type:
+          - string
+          - 'null'
+          format: uri
+        bio:
+          type:
+          - string
+          - 'null'
+        id:
+          type: string
+        name:
+          type: string
+        slug:
+          type:
+          - string
+          - 'null'
+        socialLinks:
+          type:
+          - object
+          - 'null'
+          additionalProperties:
+            type: string
+        title:
+          type: string
+      required:
+      - id
+      - name
+      - title
+      additionalProperties: false
+    CategoryCount:
+      type: object
+      properties:
+        count:
+          type: integer
+          minimum: 0
+        id:
+          type: integer
+          exclusiveMinimum: 0
+        name:
+          type: string
+        slug:
+          type: string
+      required:
+      - count
+      - id
+      - name
+      - slug
       additionalProperties: false
     ApiErrorResponse:
       type: object
@@ -933,6 +1051,24 @@ components:
       - error
       - success
       additionalProperties: false
+    CategoriesListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/CategoryCount'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
     BlogPost:
       type: object
       properties:
@@ -1121,154 +1257,6 @@ components:
       - title
       - updatedAt
       additionalProperties: false
-    RelatedPostsResponse:
-      type: object
-      properties:
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/BlogPostWithRelevance'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    AllPostsWithContentResponse:
-      type: object
-      properties:
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/BlogPost'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    BlogAuthorWithPostsPayload:
-      type: object
-      properties:
-        author:
-          $ref: '#/components/schemas/BlogAuthor'
-        posts:
-          type: array
-          items:
-            $ref: '#/components/schemas/BlogPostSummary'
-      required:
-      - author
-      - posts
-      additionalProperties: false
-    BlogPostResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/BlogPost'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    LexicalContent:
-      type: object
-      additionalProperties: true
-      description: Lexical document tree. Opaque in the OpenAPI surface; see Payload CMS Lexical docs for the recursive node shape.
-    CategoryCount:
-      type: object
-      properties:
-        count:
-          type: integer
-          minimum: 0
-        id:
-          type: integer
-          exclusiveMinimum: 0
-        name:
-          type: string
-        slug:
-          type: string
-      required:
-      - count
-      - id
-      - name
-      - slug
-      additionalProperties: false
-    PaginatedBlogPostsListResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/PaginatedBlogPostsPayload'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    BlogPostWithRelevance:
-      allOf:
-      - $ref: '#/components/schemas/BlogPostSummary'
-      - type: object
-        properties:
-          relevance:
-            type: number
-        required:
-        - relevance
-        additionalProperties: false
-    BlogAuthorWithPostsResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/BlogAuthorWithPostsPayload'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    CategoriesListResponse:
-      type: object
-      properties:
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/CategoryCount'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
     BlogPostsListResponse:
       type: object
       properties:
@@ -1287,75 +1275,60 @@ components:
       - success
       additionalProperties: false
       description: Successful API response
-    ResponseMetadata:
+    PaginatedBlogPostsPayload:
       type: object
       properties:
-        duration:
-          type: number
-          description: Request duration in milliseconds
-          example: 150
-          exclusiveMinimum: 0
-        performance:
-          type: object
-          properties:
-            dbQueries:
-              type: integer
-              minimum: 0
-            totalDbTime:
-              type: number
-              minimum: 0
-          description: Performance metrics (preview/local only)
-        requestId:
-          type: string
-          description: Unique request identifier
-          example: req_abc123
-        timestamp:
-          type: string
-          format: date-time
-          description: ISO 8601 timestamp
-          example: '2026-09-25T17:29:47.224Z'
-        version:
-          type: string
-          description: API version
-          example: v1
-    BlogAuthor:
-      type: object
-      properties:
-        avatarUrl:
-          type:
-          - string
-          - 'null'
-          format: uri
-        bio:
-          type:
-          - string
-          - 'null'
-        id:
-          type: string
-        name:
-          type: string
-        slug:
-          type:
-          - string
-          - 'null'
-        socialLinks:
+        category:
           type:
           - object
           - 'null'
-          additionalProperties:
-            type: string
-        title:
-          type: string
+          properties:
+            name:
+              type: string
+            slug:
+              type: string
+          required:
+          - name
+          - slug
+          description: Matched category (present on tag-filtered results only)
+        pagination:
+          type: object
+          properties:
+            hasNext:
+              type: boolean
+            hasPrev:
+              type: boolean
+            limit:
+              type: integer
+              exclusiveMinimum: 0
+            page:
+              type: integer
+              exclusiveMinimum: 0
+            totalCount:
+              type: integer
+              minimum: 0
+            totalPages:
+              type: integer
+              minimum: 0
+          required:
+          - hasNext
+          - hasPrev
+          - limit
+          - page
+          - totalCount
+          - totalPages
+          additionalProperties: false
+        posts:
+          type: array
+          items:
+            $ref: '#/components/schemas/BlogPostSummary'
       required:
-      - id
-      - name
-      - title
+      - category
+      - pagination
+      - posts
       additionalProperties: false
   securitySchemes:
     BearerAuth:
       description: 'Session token from signing in to AI Applyd, sent as `Authorization: Bearer <token>`.'
       scheme: bearer
       type: http
-x-refined-from:
-- aiapplyd-openapi.json
-- aiapplyd-openapi.yml

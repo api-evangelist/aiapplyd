@@ -1,15 +1,15 @@
 openapi: 3.2.0
 info:
-  title: Aiapplyd AI API
-  version: 115c47ce
   contact:
     email: support@aiapplyd.com
     name: AI Applyd
     url: https://aiapplyd.com
+  description: 'The AI Applyd API runs the whole job hunt for you: it matches you to roles that fit your profile, rewrites your resume for each posting, writes the cover letter the form asks for, and auto-applies across the major applicant tracking systems.'
   license:
     name: Proprietary
     url: https://aiapplyd.com/legal/terms
-  description: 'Operations tagged ai across 2 of this provider''s published API definitions: aiapplyd-openapi.json, aiapplyd-openapi.yml. Each path carries the servers of the definition it was published in.'
+  title: Applyd AI API
+  version: 115c47ce
 servers:
 - description: Current environment
   url: https://api.aiapplyd.com/api/v1
@@ -84,9 +84,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: getAiStatus
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /ai/activate:
     post:
       tags:
@@ -130,9 +127,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: postAiActivate
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /ai/quality-check:
     post:
       tags:
@@ -176,9 +170,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: postAiQualityCheck
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /ai/quality-stats:
     get:
       tags:
@@ -211,9 +202,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: getAiQualityStats
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /ai/run:
     post:
       tags:
@@ -252,9 +240,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: postAiRun
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /ai/quota:
     get:
       tags:
@@ -287,39 +272,75 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: getAiQuota
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
 components:
   schemas:
-    FreeApplicationsAllowance:
+    QualityCheckResponse:
       type: object
       properties:
-        limit:
-          type: integer
-          minimum: 0
-          description: Preparations a free account may run inside the rolling window.
-          example: 3
-        remaining:
-          type: integer
-          minimum: 0
-          description: Preparations left. Zero means the swipe must be refused before it fires.
-          example: 0
-        resetAt:
-          type: string
-          description: ISO timestamp the oldest consumed attempt ages out.
-          example: '2026-10-01T00:00:00.000Z'
-        used:
-          type: integer
-          minimum: 0
-          description: Preparations already consumed. Failed preparations are NOT counted.
-          example: 3
+        data:
+          $ref: '#/components/schemas/QualityCheckData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
       required:
-      - limit
-      - remaining
-      - resetAt
-      - used
+      - data
+      - success
       additionalProperties: false
+      description: Successful API response
+    QualityCheckRequest:
+      type: object
+      properties:
+        jobDescription:
+          type: string
+          minLength: 1
+          maxLength: 5000
+          description: Job description text to evaluate
+          example: We are looking for a Senior Software Engineer with 5+ years of experience...
+        resumeContent:
+          type: string
+          maxLength: 10000
+          description: Resume content to match against the job description
+      required:
+      - jobDescription
+      additionalProperties: false
+    EnsureConfigRequest:
+      type: object
+      properties: {}
+      additionalProperties: false
+    ResponseMetadata:
+      type: object
+      properties:
+        duration:
+          type: number
+          description: Request duration in milliseconds
+          example: 150
+          exclusiveMinimum: 0
+        performance:
+          type: object
+          properties:
+            dbQueries:
+              type: integer
+              minimum: 0
+            totalDbTime:
+              type: number
+              minimum: 0
+          description: Performance metrics (preview/local only)
+        requestId:
+          type: string
+          description: Unique request identifier
+          example: req_abc123
+        timestamp:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp
+          example: '2026-09-25T17:29:47.224Z'
+        version:
+          type: string
+          description: API version
+          example: v1
     ApplicationConfigData:
       type: object
       properties:
@@ -371,6 +392,228 @@ components:
       - totalSubmitConfirmed
       - totalSubmitClicked
       additionalProperties: false
+    QuotaPeriodInfo:
+      type: object
+      properties:
+        limit:
+          type: number
+          description: Max allowed per period
+          example: 5
+        remaining:
+          type: number
+          description: Remaining in current period
+          example: 3
+        resetAt:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: When the period resets (null if not exhausted)
+          example: '2026-04-01T00:00:00.000Z'
+        used:
+          type: number
+          description: Used in current period
+          example: 2
+      required:
+      - limit
+      - remaining
+      - resetAt
+      - used
+      additionalProperties: false
+    ApplicationQuotaResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            allowed:
+              type: boolean
+              description: Whether user can submit applications right now
+            blockingPeriod:
+              type:
+              - string
+              - 'null'
+              enum:
+              - monthly
+              - daily
+              - weekly
+              - lifetime
+              - none
+              - null
+              description: Which period is blocking, if any
+              example: monthly
+            daily:
+              $ref: '#/components/schemas/QuotaPeriodInfo'
+            earnedAppliesRemaining:
+              type: integer
+              minimum: 0
+              description: Earned applications available to an unpaid user after a converting referral signup
+            freeApplications:
+              $ref: '#/components/schemas/FreeApplicationsAllowance'
+            hasAppliedBefore:
+              type: boolean
+              description: Whether this account already has at least one application result. False means the next apply is their first ever.
+              example: true
+            monthly:
+              $ref: '#/components/schemas/QuotaPeriodInfo'
+            planDailyMax:
+              type: number
+              description: Plan daily limit for capping persona dailyLimit
+              example: 10
+            weekly:
+              $ref: '#/components/schemas/QuotaPeriodInfo'
+          required:
+          - allowed
+          - blockingPeriod
+          - daily
+          - earnedAppliesRemaining
+          - freeApplications
+          - hasAppliedBefore
+          - monthly
+          - planDailyMax
+          - weekly
+          additionalProperties: false
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    FreeApplicationsAllowance:
+      type: object
+      properties:
+        limit:
+          type: integer
+          minimum: 0
+          description: Preparations a free account may run inside the rolling window.
+          example: 3
+        remaining:
+          type: integer
+          minimum: 0
+          description: Preparations left. Zero means the swipe must be refused before it fires.
+          example: 0
+        resetAt:
+          type: string
+          description: ISO timestamp the oldest consumed attempt ages out.
+          example: '2026-10-01T00:00:00.000Z'
+        used:
+          type: integer
+          minimum: 0
+          description: Preparations already consumed. Failed preparations are NOT counted.
+          example: 3
+      required:
+      - limit
+      - remaining
+      - resetAt
+      - used
+      additionalProperties: false
+    RunApplicationsResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/RunApplicationsData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    EnsureConfigResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            status:
+              type: string
+              enum:
+              - active
+              - paused
+              - completed
+              description: Status of an AI agent config
+              example: paused
+            totalApplications:
+              type: integer
+              description: Postings the user has applications against, one unit each. Every other counter except totalEmployerReceipts is a slice of it and they sum to it exactly. Absent means not computed, which is NOT the same as zero.
+              example: 49
+            totalApplied:
+              type: integer
+              description: 'Applications with retained employer proof: a linked employer receipt or a retained post-submit screenshot audited as employer confirmation. A legacy applied status or landing confidence grade alone does not count.'
+              example: 3
+            totalErrors:
+              type: integer
+            totalSkipped:
+              type: integer
+            totalSubmitConfirmed:
+              type: integer
+            totalSubmitClicked:
+              type: integer
+            totalDeadPostings:
+              type: integer
+              description: Applications whose posting no longer exists (job_closed / job_removed). Excluded from every other counter and from every rate, in both numerator and denominator. Absent means not computed, which is NOT the same as zero.
+              example: 2
+            totalEmployerReceipts:
+              type: integer
+              description: Distinct linked employer or ATS confirmation emails. OVERLAPS totalApplied and must not be summed with the partitioning counters. Absent means not computed, which is NOT the same as zero.
+              example: 0
+            totalPendingReview:
+              type: integer
+              description: Postings whose newest row the USER parked for review (pending_review with a copilot apply mode). Never a row our own worker parked. Absent means not computed, which is NOT the same as zero.
+              example: 1
+            totalQueuedToApply:
+              type: integer
+              description: 'Postings we will submit or retry without the user: newest row pending / ready_to_submit, or a pending_review row our worker parked and the backstop retries. Absent means not computed, which is NOT the same as zero.'
+              example: 2
+            created:
+              type: boolean
+              description: Whether the application configuration was newly created (true) or already existed (false)
+              example: false
+          required:
+          - status
+          - totalApplied
+          - totalErrors
+          - totalSkipped
+          - totalSubmitConfirmed
+          - totalSubmitClicked
+          - created
+          additionalProperties: false
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    QualityStatsResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/QualityStatsData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
     ApiErrorResponse:
       type: object
       properties:
@@ -715,65 +958,6 @@ components:
       - error
       - success
       additionalProperties: false
-    QuotaPeriodInfo:
-      type: object
-      properties:
-        limit:
-          type: number
-          description: Max allowed per period
-          example: 5
-        remaining:
-          type: number
-          description: Remaining in current period
-          example: 3
-        resetAt:
-          type:
-          - string
-          - 'null'
-          format: date-time
-          description: When the period resets (null if not exhausted)
-          example: '2026-04-01T00:00:00.000Z'
-        used:
-          type: number
-          description: Used in current period
-          example: 2
-      required:
-      - limit
-      - remaining
-      - resetAt
-      - used
-      additionalProperties: false
-    ResponseMetadata:
-      type: object
-      properties:
-        duration:
-          type: number
-          description: Request duration in milliseconds
-          example: 150
-          exclusiveMinimum: 0
-        performance:
-          type: object
-          properties:
-            dbQueries:
-              type: integer
-              minimum: 0
-            totalDbTime:
-              type: number
-              minimum: 0
-          description: Performance metrics (preview/local only)
-        requestId:
-          type: string
-          description: Unique request identifier
-          example: req_abc123
-        timestamp:
-          type: string
-          format: date-time
-          description: ISO 8601 timestamp
-          example: '2026-09-25T17:29:47.224Z'
-        version:
-          type: string
-          description: API version
-          example: v1
     ConfigListResponse:
       type: object
       properties:
@@ -834,22 +1018,6 @@ components:
       - success
       additionalProperties: false
       description: Paginated response with items and pagination metadata
-    QualityStatsResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/QualityStatsData'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
     QualityStatsData:
       type: object
       properties:
@@ -872,156 +1040,6 @@ components:
       - flagged
       - totalChecked
       additionalProperties: false
-    EnsureConfigResponse:
-      type: object
-      properties:
-        data:
-          type: object
-          properties:
-            status:
-              type: string
-              enum:
-              - active
-              - paused
-              - completed
-              description: Status of an AI agent config
-              example: paused
-            totalApplications:
-              type: integer
-              description: Postings the user has applications against, one unit each. Every other counter except totalEmployerReceipts is a slice of it and they sum to it exactly. Absent means not computed, which is NOT the same as zero.
-              example: 49
-            totalApplied:
-              type: integer
-              description: 'Applications with retained employer proof: a linked employer receipt or a retained post-submit screenshot audited as employer confirmation. A legacy applied status or landing confidence grade alone does not count.'
-              example: 3
-            totalErrors:
-              type: integer
-            totalSkipped:
-              type: integer
-            totalSubmitConfirmed:
-              type: integer
-            totalSubmitClicked:
-              type: integer
-            totalDeadPostings:
-              type: integer
-              description: Applications whose posting no longer exists (job_closed / job_removed). Excluded from every other counter and from every rate, in both numerator and denominator. Absent means not computed, which is NOT the same as zero.
-              example: 2
-            totalEmployerReceipts:
-              type: integer
-              description: Distinct linked employer or ATS confirmation emails. OVERLAPS totalApplied and must not be summed with the partitioning counters. Absent means not computed, which is NOT the same as zero.
-              example: 0
-            totalPendingReview:
-              type: integer
-              description: Postings whose newest row the USER parked for review (pending_review with a copilot apply mode). Never a row our own worker parked. Absent means not computed, which is NOT the same as zero.
-              example: 1
-            totalQueuedToApply:
-              type: integer
-              description: 'Postings we will submit or retry without the user: newest row pending / ready_to_submit, or a pending_review row our worker parked and the backstop retries. Absent means not computed, which is NOT the same as zero.'
-              example: 2
-            created:
-              type: boolean
-              description: Whether the application configuration was newly created (true) or already existed (false)
-              example: false
-          required:
-          - status
-          - totalApplied
-          - totalErrors
-          - totalSkipped
-          - totalSubmitConfirmed
-          - totalSubmitClicked
-          - created
-          additionalProperties: false
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    ApplicationQuotaResponse:
-      type: object
-      properties:
-        data:
-          type: object
-          properties:
-            allowed:
-              type: boolean
-              description: Whether user can submit applications right now
-            blockingPeriod:
-              type:
-              - string
-              - 'null'
-              enum:
-              - monthly
-              - daily
-              - weekly
-              - lifetime
-              - none
-              - null
-              description: Which period is blocking, if any
-              example: monthly
-            daily:
-              $ref: '#/components/schemas/QuotaPeriodInfo'
-            earnedAppliesRemaining:
-              type: integer
-              minimum: 0
-              description: Earned applications available to an unpaid user after a converting referral signup
-            freeApplications:
-              $ref: '#/components/schemas/FreeApplicationsAllowance'
-            hasAppliedBefore:
-              type: boolean
-              description: Whether this account already has at least one application result. False means the next apply is their first ever.
-              example: true
-            monthly:
-              $ref: '#/components/schemas/QuotaPeriodInfo'
-            planDailyMax:
-              type: number
-              description: Plan daily limit for capping persona dailyLimit
-              example: 10
-            weekly:
-              $ref: '#/components/schemas/QuotaPeriodInfo'
-          required:
-          - allowed
-          - blockingPeriod
-          - daily
-          - earnedAppliesRemaining
-          - freeApplications
-          - hasAppliedBefore
-          - monthly
-          - planDailyMax
-          - weekly
-          additionalProperties: false
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    QualityCheckResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/QualityCheckData'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
     QualityCheckData:
       type: object
       properties:
@@ -1056,26 +1074,6 @@ components:
       - recommendation
       - suggestions
       additionalProperties: false
-    EnsureConfigRequest:
-      type: object
-      properties: {}
-      additionalProperties: false
-    RunApplicationsResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/RunApplicationsData'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
     RunApplicationsData:
       type: object
       properties:
@@ -1104,27 +1102,8 @@ components:
       - errors
       - pendingReview
       additionalProperties: false
-    QualityCheckRequest:
-      type: object
-      properties:
-        jobDescription:
-          type: string
-          minLength: 1
-          maxLength: 5000
-          description: Job description text to evaluate
-          example: We are looking for a Senior Software Engineer with 5+ years of experience...
-        resumeContent:
-          type: string
-          maxLength: 10000
-          description: Resume content to match against the job description
-      required:
-      - jobDescription
-      additionalProperties: false
   securitySchemes:
     BearerAuth:
       description: 'Session token from signing in to AI Applyd, sent as `Authorization: Bearer <token>`.'
       scheme: bearer
       type: http
-x-refined-from:
-- aiapplyd-openapi.json
-- aiapplyd-openapi.yml

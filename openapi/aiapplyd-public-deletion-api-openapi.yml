@@ -1,15 +1,15 @@
 openapi: 3.2.0
 info:
-  title: Aiapplyd Public Deletion API
-  version: 115c47ce
   contact:
     email: support@aiapplyd.com
     name: AI Applyd
     url: https://aiapplyd.com
+  description: 'The AI Applyd API runs the whole job hunt for you: it matches you to roles that fit your profile, rewrites your resume for each posting, writes the cover letter the form asks for, and auto-applies across the major applicant tracking systems.'
   license:
     name: Proprietary
     url: https://aiapplyd.com/legal/terms
-  description: 'Operations tagged public-deletion across 2 of this provider''s published API definitions: aiapplyd-openapi.json, aiapplyd-openapi.yml. Each path carries the servers of the definition it was published in.'
+  title: AI Applyd Public Deletion API
+  version: 115c47ce
 servers:
 - description: Current environment
   url: https://api.aiapplyd.com/api/v1
@@ -49,9 +49,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: postPublicDeletionRequest
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /public-deletion/confirm:
     post:
       tags:
@@ -88,11 +85,69 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: postPublicDeletionConfirm
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
 components:
   schemas:
+    ResponseMetadata:
+      type: object
+      properties:
+        duration:
+          type: number
+          description: Request duration in milliseconds
+          example: 150
+          exclusiveMinimum: 0
+        performance:
+          type: object
+          properties:
+            dbQueries:
+              type: integer
+              minimum: 0
+            totalDbTime:
+              type: number
+              minimum: 0
+          description: Performance metrics (preview/local only)
+        requestId:
+          type: string
+          description: Unique request identifier
+          example: req_abc123
+        timestamp:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp
+          example: '2026-09-25T17:29:47.224Z'
+        version:
+          type: string
+          description: API version
+          example: v1
+    ConfirmDeletionResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ConfirmDeletionData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    ConfirmDeletionData:
+      type: object
+      properties:
+        alreadyDeleted:
+          type: boolean
+        cleanupPending:
+          type: boolean
+        message:
+          type: string
+      required:
+      - alreadyDeleted
+      - cleanupPending
+      - message
+      additionalProperties: false
     ApiErrorResponse:
       type: object
       properties:
@@ -437,41 +492,6 @@ components:
       - error
       - success
       additionalProperties: false
-    RequestDeletionData:
-      type: object
-      properties:
-        message:
-          type: string
-      required:
-      - message
-      additionalProperties: false
-    ConfirmDeletionResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/ConfirmDeletionData'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    RequestDeletion:
-      type: object
-      properties:
-        email:
-          type: string
-          format: email
-          description: The email address on the account to delete
-          example: user@example.com
-      required:
-      - email
-      additionalProperties: false
     RequestDeletionResponse:
       type: object
       properties:
@@ -488,56 +508,27 @@ components:
       - success
       additionalProperties: false
       description: Successful API response
-    ResponseMetadata:
+    RequestDeletionData:
       type: object
       properties:
-        duration:
-          type: number
-          description: Request duration in milliseconds
-          example: 150
-          exclusiveMinimum: 0
-        performance:
-          type: object
-          properties:
-            dbQueries:
-              type: integer
-              minimum: 0
-            totalDbTime:
-              type: number
-              minimum: 0
-          description: Performance metrics (preview/local only)
-        requestId:
-          type: string
-          description: Unique request identifier
-          example: req_abc123
-        timestamp:
-          type: string
-          format: date-time
-          description: ISO 8601 timestamp
-          example: '2026-09-25T17:29:47.224Z'
-        version:
-          type: string
-          description: API version
-          example: v1
-    ConfirmDeletionData:
-      type: object
-      properties:
-        alreadyDeleted:
-          type: boolean
-        cleanupPending:
-          type: boolean
         message:
           type: string
       required:
-      - alreadyDeleted
-      - cleanupPending
       - message
+      additionalProperties: false
+    RequestDeletion:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          description: The email address on the account to delete
+          example: user@example.com
+      required:
+      - email
       additionalProperties: false
   securitySchemes:
     BearerAuth:
       description: 'Session token from signing in to AI Applyd, sent as `Authorization: Bearer <token>`.'
       scheme: bearer
       type: http
-x-refined-from:
-- aiapplyd-openapi.json
-- aiapplyd-openapi.yml

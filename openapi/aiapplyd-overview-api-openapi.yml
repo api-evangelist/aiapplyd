@@ -1,15 +1,15 @@
 openapi: 3.2.0
 info:
-  title: Aiapplyd Overview API
-  version: 115c47ce
   contact:
     email: support@aiapplyd.com
     name: AI Applyd
     url: https://aiapplyd.com
+  description: 'The AI Applyd API runs the whole job hunt for you: it matches you to roles that fit your profile, rewrites your resume for each posting, writes the cover letter the form asks for, and auto-applies across the major applicant tracking systems.'
   license:
     name: Proprietary
     url: https://aiapplyd.com/legal/terms
-  description: 'Operations tagged overview across 2 of this provider''s published API definitions: aiapplyd-openapi.json, aiapplyd-openapi.yml. Each path carries the servers of the definition it was published in.'
+  title: AI Applyd Overview API
+  version: 115c47ce
 servers:
 - description: Current environment
   url: https://api.aiapplyd.com/api/v1
@@ -50,9 +50,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: getOverview
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /overview/suggestions:
     get:
       tags:
@@ -85,11 +82,238 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: getOverviewSuggestions
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
 components:
   schemas:
+    SuggestionsResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/SuggestionsData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    Suggestion:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+          - upload_resume
+          - score_resume
+          - add_job
+          description: Suggestion type identifier
+          example: upload_resume
+        title:
+          type: string
+          description: Short action title
+          example: Upload your resume
+        description:
+          type: string
+          description: Helpful description
+          example: Upload your resume to unlock ATS scoring
+        icon:
+          type: string
+          description: Icon name for UI
+          example: file-up
+        priority:
+          type: number
+          description: Priority (1=highest)
+          example: 1
+        meta:
+          type: object
+          additionalProperties:
+            anyOf:
+            - type: string
+            - type: number
+          description: Additional metadata
+      required:
+      - type
+      - title
+      - description
+      - icon
+      - priority
+      additionalProperties: false
+    ResponseMetadata:
+      type: object
+      properties:
+        duration:
+          type: number
+          description: Request duration in milliseconds
+          example: 150
+          exclusiveMinimum: 0
+        performance:
+          type: object
+          properties:
+            dbQueries:
+              type: integer
+              minimum: 0
+            totalDbTime:
+              type: number
+              minimum: 0
+          description: Performance metrics (preview/local only)
+        requestId:
+          type: string
+          description: Unique request identifier
+          example: req_abc123
+        timestamp:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp
+          example: '2026-09-25T17:29:47.224Z'
+        version:
+          type: string
+          description: API version
+          example: v1
+    SuccessRateData:
+      type: object
+      properties:
+        successRate:
+          type: number
+          description: Overall success rate percentage
+          example: 92.5
+        successCount:
+          type: integer
+          description: Number of successful operations
+          example: 185
+        failureCount:
+          type: integer
+          description: Number of failed operations
+          example: 10
+        pendingCount:
+          type: integer
+          description: Number of pending/aborted operations
+          example: 5
+        totalCount:
+          type: integer
+          description: Total number of operation attempts
+          example: 200
+      required:
+      - successRate
+      - successCount
+      - failureCount
+      - pendingCount
+      - totalCount
+      additionalProperties: false
+    SuggestionsData:
+      type: object
+      properties:
+        suggestions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Suggestion'
+          description: Personalized next-step suggestions
+      required:
+      - suggestions
+      additionalProperties: false
+    OverviewData:
+      type: object
+      properties:
+        aiHistoryCount:
+          type: integer
+          description: Total number of AI operations
+          example: 200
+        formsLeftData:
+          $ref: '#/components/schemas/FormsLeftData'
+        fillsOverTime:
+          type: array
+          items:
+            $ref: '#/components/schemas/TimeSeriesData'
+          description: AI operation counts over time
+        averageTokensPerFill:
+          type: number
+          description: Average tokens used per operation
+          example: 1500
+        totalTokensUsed:
+          type: number
+          description: Total tokens used
+          example: 300000
+        successRate:
+          $ref: '#/components/schemas/SuccessRateData'
+        periodChange:
+          type: number
+          description: Period-over-period change percentage
+          example: 15.5
+        jobListingsCount:
+          type: integer
+          description: Total number of active job listings
+          example: 12
+        averageAtsScore:
+          type: number
+          description: Average ATS score across all scored jobs
+          example: 72
+        outcomes:
+          $ref: '#/components/schemas/OutcomeMetrics'
+      required:
+      - aiHistoryCount
+      - formsLeftData
+      - fillsOverTime
+      - averageTokensPerFill
+      - totalTokensUsed
+      - successRate
+      - periodChange
+      - jobListingsCount
+      - averageAtsScore
+      - outcomes
+    OutcomeMetrics:
+      type: object
+      properties:
+        emailResponseRate:
+          type: number
+          description: Share of classified inbound job emails that carry a positive signal (interview / scheduling / offer), as a percentage. 0 when no emails are classified.
+          example: 42.5
+        interviewsBooked:
+          type: integer
+          description: Applications that reached an interview-booked outcome (stage phone_screen/interview, or interview_booked_at set).
+          example: 3
+        nextInterviewResultId:
+          type:
+          - integer
+          - 'null'
+          description: Application-result id behind the SOONEST upcoming interview event, for the applications deep-link. Null when that event has no application behind it; absent on payloads that do not resolve it.
+          example: 1481
+        offers:
+          type: integer
+          description: Applications with an offer outcome (applicationStage = offered).
+          example: 1
+        positiveEmailSignals:
+          type: integer
+          description: Count of inbound emails classified as a positive signal (interview_invite / scheduling / reschedule / offer_letter).
+          example: 5
+        upcomingInterviews:
+          type: integer
+          description: Synced calendar events flagged as interviews whose start time is in the future.
+          example: 2
+      required:
+      - emailResponseRate
+      - interviewsBooked
+      - offers
+      - positiveEmailSignals
+      - upcomingInterviews
+      additionalProperties: false
+      description: Real-outcome success metrics from the email + calendar pipeline (interviews booked, offers, upcoming interviews, email response rate).
+    FormsLeftData:
+      type: object
+      properties:
+        count:
+          type: integer
+          description: Estimated AI operations remaining
+          example: 100
+        percent:
+          type: number
+          description: Percentage of tokens remaining
+          example: 75
+      required:
+      - count
+      - percent
+      additionalProperties: false
     ApiErrorResponse:
       type: object
       properties:
@@ -434,43 +658,6 @@ components:
       - error
       - success
       additionalProperties: false
-    OutcomeMetrics:
-      type: object
-      properties:
-        emailResponseRate:
-          type: number
-          description: Share of classified inbound job emails that carry a positive signal (interview / scheduling / offer), as a percentage. 0 when no emails are classified.
-          example: 42.5
-        interviewsBooked:
-          type: integer
-          description: Applications that reached an interview-booked outcome (stage phone_screen/interview, or interview_booked_at set).
-          example: 3
-        nextInterviewResultId:
-          type:
-          - integer
-          - 'null'
-          description: Application-result id behind the SOONEST upcoming interview event, for the applications deep-link. Null when that event has no application behind it; absent on payloads that do not resolve it.
-          example: 1481
-        offers:
-          type: integer
-          description: Applications with an offer outcome (applicationStage = offered).
-          example: 1
-        positiveEmailSignals:
-          type: integer
-          description: Count of inbound emails classified as a positive signal (interview_invite / scheduling / reschedule / offer_letter).
-          example: 5
-        upcomingInterviews:
-          type: integer
-          description: Synced calendar events flagged as interviews whose start time is in the future.
-          example: 2
-      required:
-      - emailResponseRate
-      - interviewsBooked
-      - offers
-      - positiveEmailSignals
-      - upcomingInterviews
-      additionalProperties: false
-      description: Real-outcome success metrics from the email + calendar pipeline (interviews booked, offers, upcoming interviews, email response rate).
     TimeSeriesData:
       type: object
       properties:
@@ -502,204 +689,8 @@ components:
       - success
       additionalProperties: false
       description: Successful API response
-    FormsLeftData:
-      type: object
-      properties:
-        count:
-          type: integer
-          description: Estimated AI operations remaining
-          example: 100
-        percent:
-          type: number
-          description: Percentage of tokens remaining
-          example: 75
-      required:
-      - count
-      - percent
-      additionalProperties: false
-    SuggestionsData:
-      type: object
-      properties:
-        suggestions:
-          type: array
-          items:
-            $ref: '#/components/schemas/Suggestion'
-          description: Personalized next-step suggestions
-      required:
-      - suggestions
-      additionalProperties: false
-    OverviewData:
-      type: object
-      properties:
-        aiHistoryCount:
-          type: integer
-          description: Total number of AI operations
-          example: 200
-        formsLeftData:
-          $ref: '#/components/schemas/FormsLeftData'
-        fillsOverTime:
-          type: array
-          items:
-            $ref: '#/components/schemas/TimeSeriesData'
-          description: AI operation counts over time
-        averageTokensPerFill:
-          type: number
-          description: Average tokens used per operation
-          example: 1500
-        totalTokensUsed:
-          type: number
-          description: Total tokens used
-          example: 300000
-        successRate:
-          $ref: '#/components/schemas/SuccessRateData'
-        periodChange:
-          type: number
-          description: Period-over-period change percentage
-          example: 15.5
-        jobListingsCount:
-          type: integer
-          description: Total number of active job listings
-          example: 12
-        averageAtsScore:
-          type: number
-          description: Average ATS score across all scored jobs
-          example: 72
-        outcomes:
-          $ref: '#/components/schemas/OutcomeMetrics'
-      required:
-      - aiHistoryCount
-      - formsLeftData
-      - fillsOverTime
-      - averageTokensPerFill
-      - totalTokensUsed
-      - successRate
-      - periodChange
-      - jobListingsCount
-      - averageAtsScore
-      - outcomes
-    SuggestionsResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/SuggestionsData'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    SuccessRateData:
-      type: object
-      properties:
-        successRate:
-          type: number
-          description: Overall success rate percentage
-          example: 92.5
-        successCount:
-          type: integer
-          description: Number of successful operations
-          example: 185
-        failureCount:
-          type: integer
-          description: Number of failed operations
-          example: 10
-        pendingCount:
-          type: integer
-          description: Number of pending/aborted operations
-          example: 5
-        totalCount:
-          type: integer
-          description: Total number of operation attempts
-          example: 200
-      required:
-      - successRate
-      - successCount
-      - failureCount
-      - pendingCount
-      - totalCount
-      additionalProperties: false
-    ResponseMetadata:
-      type: object
-      properties:
-        duration:
-          type: number
-          description: Request duration in milliseconds
-          example: 150
-          exclusiveMinimum: 0
-        performance:
-          type: object
-          properties:
-            dbQueries:
-              type: integer
-              minimum: 0
-            totalDbTime:
-              type: number
-              minimum: 0
-          description: Performance metrics (preview/local only)
-        requestId:
-          type: string
-          description: Unique request identifier
-          example: req_abc123
-        timestamp:
-          type: string
-          format: date-time
-          description: ISO 8601 timestamp
-          example: '2026-09-25T17:29:47.224Z'
-        version:
-          type: string
-          description: API version
-          example: v1
-    Suggestion:
-      type: object
-      properties:
-        type:
-          type: string
-          enum:
-          - upload_resume
-          - score_resume
-          - add_job
-          description: Suggestion type identifier
-          example: upload_resume
-        title:
-          type: string
-          description: Short action title
-          example: Upload your resume
-        description:
-          type: string
-          description: Helpful description
-          example: Upload your resume to unlock ATS scoring
-        icon:
-          type: string
-          description: Icon name for UI
-          example: file-up
-        priority:
-          type: number
-          description: Priority (1=highest)
-          example: 1
-        meta:
-          type: object
-          additionalProperties:
-            anyOf:
-            - type: string
-            - type: number
-          description: Additional metadata
-      required:
-      - type
-      - title
-      - description
-      - icon
-      - priority
-      additionalProperties: false
   securitySchemes:
     BearerAuth:
       description: 'Session token from signing in to AI Applyd, sent as `Authorization: Bearer <token>`.'
       scheme: bearer
       type: http
-x-refined-from:
-- aiapplyd-openapi.json
-- aiapplyd-openapi.yml

@@ -1,15 +1,15 @@
 openapi: 3.2.0
 info:
-  title: Aiapplyd Referrals API
-  version: 115c47ce
   contact:
     email: support@aiapplyd.com
     name: AI Applyd
     url: https://aiapplyd.com
+  description: 'The AI Applyd API runs the whole job hunt for you: it matches you to roles that fit your profile, rewrites your resume for each posting, writes the cover letter the form asks for, and auto-applies across the major applicant tracking systems.'
   license:
     name: Proprietary
     url: https://aiapplyd.com/legal/terms
-  description: 'Operations tagged referrals across 2 of this provider''s published API definitions: aiapplyd-openapi.json, aiapplyd-openapi.yml. Each path carries the servers of the definition it was published in.'
+  title: AI Applyd Referrals API
+  version: 115c47ce
 servers:
 - description: Current environment
   url: https://api.aiapplyd.com/api/v1
@@ -50,9 +50,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: getReferralsStats
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /referrals/track:
     post:
       description: Track a referral link click. Called when a visitor lands on /r/{code}. Creates a referral record with status clicked.
@@ -96,9 +93,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: postReferralsTrack
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /referrals/convert:
     post:
       description: Convert a referral after signup. Called by frontend if localStorage has a referral_code. Links the new user to the referral record.
@@ -142,9 +136,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: postReferralsConvert
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
 components:
   schemas:
     ReferralEarnedApplies:
@@ -175,6 +166,149 @@ components:
       - lifetimeCap
       - perConvertingShare
       - remaining
+      additionalProperties: false
+    TrackReferralBody:
+      type: object
+      properties:
+        referralCode:
+          type: string
+          minLength: 1
+          description: Referral code from the /r/{code} link (7-char short code, or a legacy raw user ID for backward compatibility)
+          example: K7M2QPX
+      required:
+      - referralCode
+      additionalProperties: false
+    ResponseMetadata:
+      type: object
+      properties:
+        duration:
+          type: number
+          description: Request duration in milliseconds
+          example: 150
+          exclusiveMinimum: 0
+        performance:
+          type: object
+          properties:
+            dbQueries:
+              type: integer
+              minimum: 0
+            totalDbTime:
+              type: number
+              minimum: 0
+          description: Performance metrics (preview/local only)
+        requestId:
+          type: string
+          description: Unique request identifier
+          example: req_abc123
+        timestamp:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp
+          example: '2026-09-25T17:29:47.224Z'
+        version:
+          type: string
+          description: API version
+          example: v1
+    ConvertReferralBody:
+      type: object
+      properties:
+        referralCode:
+          type: string
+          minLength: 1
+          description: Referral code from localStorage, set during /r/{code} redirect (7-char short code, or a legacy raw user ID for backward compatibility)
+          example: K7M2QPX
+      required:
+      - referralCode
+      additionalProperties: false
+    ConvertReferralPayload:
+      type: object
+      properties:
+        converted:
+          type: boolean
+          description: Whether the referral was successfully converted
+      required:
+      - converted
+      additionalProperties: false
+    ConvertReferralResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ConvertReferralPayload'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    ReferralStatsResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ReferralStatsPayload'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    ReferralStatsPayload:
+      type: object
+      properties:
+        earnedApplies:
+          $ref: '#/components/schemas/ReferralEarnedApplies'
+        pendingRewardPerReferral:
+          type: integer
+          minimum: 0
+          description: Tokens the referrer earns per friend who subscribes (REFERRAL_REWARD_TOKENS)
+          example: 0
+        pendingRewards:
+          type: integer
+          minimum: 0
+          description: Tokens the referrer will earn when their signed-up-but-not-yet-subscribed friends subscribe (signedUpCount × reward-per-referral)
+          example: 0
+        referralCode:
+          type: string
+          description: The user 7-char short referral code (used in /r/{code} links)
+          example: K7M2QPX
+        referredCount:
+          type: integer
+          minimum: 0
+          description: Total referral link clicks
+          example: 0
+        signedUpCount:
+          type: integer
+          minimum: 0
+          description: Users who signed up via referral but have not yet subscribed
+          example: 0
+        subscribedCount:
+          type: integer
+          minimum: 0
+          description: Users who subscribed via referral
+          example: 0
+        totalTokensEarned:
+          type: integer
+          minimum: 0
+          description: Total tokens earned from referrals (claimed)
+          example: 0
+      required:
+      - earnedApplies
+      - pendingRewardPerReferral
+      - pendingRewards
+      - referralCode
+      - referredCount
+      - signedUpCount
+      - subscribedCount
+      - totalTokensEarned
       additionalProperties: false
     ApiErrorResponse:
       type: object
@@ -520,17 +654,6 @@ components:
       - error
       - success
       additionalProperties: false
-    TrackReferralBody:
-      type: object
-      properties:
-        referralCode:
-          type: string
-          minLength: 1
-          description: Referral code from the /r/{code} link (7-char short code, or a legacy raw user ID for backward compatibility)
-          example: K7M2QPX
-      required:
-      - referralCode
-      additionalProperties: false
     TrackReferralResponse:
       type: object
       properties:
@@ -563,143 +686,8 @@ components:
       - success
       additionalProperties: false
       description: Successful API response
-    ConvertReferralResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/ConvertReferralPayload'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    ConvertReferralPayload:
-      type: object
-      properties:
-        converted:
-          type: boolean
-          description: Whether the referral was successfully converted
-      required:
-      - converted
-      additionalProperties: false
-    ConvertReferralBody:
-      type: object
-      properties:
-        referralCode:
-          type: string
-          minLength: 1
-          description: Referral code from localStorage, set during /r/{code} redirect (7-char short code, or a legacy raw user ID for backward compatibility)
-          example: K7M2QPX
-      required:
-      - referralCode
-      additionalProperties: false
-    ReferralStatsResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/ReferralStatsPayload'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    ReferralStatsPayload:
-      type: object
-      properties:
-        earnedApplies:
-          $ref: '#/components/schemas/ReferralEarnedApplies'
-        pendingRewardPerReferral:
-          type: integer
-          minimum: 0
-          description: Tokens the referrer earns per friend who subscribes (REFERRAL_REWARD_TOKENS)
-          example: 0
-        pendingRewards:
-          type: integer
-          minimum: 0
-          description: Tokens the referrer will earn when their signed-up-but-not-yet-subscribed friends subscribe (signedUpCount × reward-per-referral)
-          example: 0
-        referralCode:
-          type: string
-          description: The user 7-char short referral code (used in /r/{code} links)
-          example: K7M2QPX
-        referredCount:
-          type: integer
-          minimum: 0
-          description: Total referral link clicks
-          example: 0
-        signedUpCount:
-          type: integer
-          minimum: 0
-          description: Users who signed up via referral but have not yet subscribed
-          example: 0
-        subscribedCount:
-          type: integer
-          minimum: 0
-          description: Users who subscribed via referral
-          example: 0
-        totalTokensEarned:
-          type: integer
-          minimum: 0
-          description: Total tokens earned from referrals (claimed)
-          example: 0
-      required:
-      - earnedApplies
-      - pendingRewardPerReferral
-      - pendingRewards
-      - referralCode
-      - referredCount
-      - signedUpCount
-      - subscribedCount
-      - totalTokensEarned
-      additionalProperties: false
-    ResponseMetadata:
-      type: object
-      properties:
-        duration:
-          type: number
-          description: Request duration in milliseconds
-          example: 150
-          exclusiveMinimum: 0
-        performance:
-          type: object
-          properties:
-            dbQueries:
-              type: integer
-              minimum: 0
-            totalDbTime:
-              type: number
-              minimum: 0
-          description: Performance metrics (preview/local only)
-        requestId:
-          type: string
-          description: Unique request identifier
-          example: req_abc123
-        timestamp:
-          type: string
-          format: date-time
-          description: ISO 8601 timestamp
-          example: '2026-09-25T17:29:47.224Z'
-        version:
-          type: string
-          description: API version
-          example: v1
   securitySchemes:
     BearerAuth:
       description: 'Session token from signing in to AI Applyd, sent as `Authorization: Bearer <token>`.'
       scheme: bearer
       type: http
-x-refined-from:
-- aiapplyd-openapi.json
-- aiapplyd-openapi.yml

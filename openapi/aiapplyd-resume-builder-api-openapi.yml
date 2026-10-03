@@ -1,15 +1,15 @@
 openapi: 3.2.0
 info:
-  title: Aiapplyd Resume Builder API
-  version: 115c47ce
   contact:
     email: support@aiapplyd.com
     name: AI Applyd
     url: https://aiapplyd.com
+  description: 'The AI Applyd API runs the whole job hunt for you: it matches you to roles that fit your profile, rewrites your resume for each posting, writes the cover letter the form asks for, and auto-applies across the major applicant tracking systems.'
   license:
     name: Proprietary
     url: https://aiapplyd.com/legal/terms
-  description: 'Operations tagged resume-builder across 2 of this provider''s published API definitions: aiapplyd-openapi.json, aiapplyd-openapi.yml. Each path carries the servers of the definition it was published in.'
+  title: AI Applyd Resume Builder API
+  version: 115c47ce
 servers:
 - description: Current environment
   url: https://api.aiapplyd.com/api/v1
@@ -98,9 +98,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: postResumeBuilder
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /resume-builder/templates:
     get:
       tags:
@@ -133,9 +130,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: getResumeBuilderTemplates
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /resume-builder/import:
     post:
       tags:
@@ -185,9 +179,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: postResumeBuilderImport
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /resume-builder/{id}/import-inline:
     post:
       tags:
@@ -253,9 +244,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: postResumeBuilderByIdImportInline
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /resume-builder/{id}:
     get:
       tags:
@@ -397,9 +385,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: deleteResumeBuilderById
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /resume-builder/{id}/artifact:
     post:
       tags:
@@ -476,9 +461,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: postResumeBuilderByIdArtifact
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /resume-builder/{id}/set-default:
     post:
       tags:
@@ -527,9 +509,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: postResumeBuilderByIdSetDefault
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /resume-builder/{id}/ats-score:
     post:
       tags:
@@ -589,9 +568,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: postResumeBuilderByIdAtsScore
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /resume-builder/{id}/ats-optimize:
     post:
       tags:
@@ -651,9 +627,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: postResumeBuilderByIdAtsOptimize
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /resume-builder/{id}/generate-cover-letter:
     post:
       tags:
@@ -713,9 +686,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: postResumeBuilderByIdGenerateCoverLetter
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /resume-builder/{id}/translate:
     post:
       tags:
@@ -775,9 +745,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: postResumeBuilderByIdTranslate
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /resume-builder/{id}/share:
     post:
       tags:
@@ -837,9 +804,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: postResumeBuilderByIdShare
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /resume-builder/{id}/chat-thread:
     get:
       tags:
@@ -934,9 +898,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: putResumeBuilderByIdChatThread
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /resume-builder/shared/{token}:
     get:
       tags:
@@ -979,9 +940,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: getResumeBuilderSharedByToken
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /resume-builder/{id}/tex:
     post:
       tags:
@@ -1030,9 +988,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: postResumeBuilderByIdTex
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /cover-letter/suggest-tone:
     post:
       tags:
@@ -1076,9 +1031,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: postCoverLetterSuggestTone
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /resume-builder/{id}/suggest-section:
     post:
       tags:
@@ -1132,11 +1084,1464 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: postResumeBuilderByIdSuggestSection
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
 components:
   schemas:
+    AtsRequirementMapping:
+      type: object
+      properties:
+        matchStrength:
+          type: string
+          enum:
+          - strong
+          - partial
+          - missing
+          description: How well the resume matches a specific requirement
+          example: strong
+        requirement:
+          type: string
+          description: Specific requirement from the job description
+        resumeMatch:
+          type:
+          - string
+          - 'null'
+          description: Matching content found in resume, or null if no match
+        section:
+          type:
+          - string
+          - 'null'
+          description: Resume section where match was found
+      required:
+      - matchStrength
+      - requirement
+      - resumeMatch
+      - section
+      additionalProperties: false
+    SharedResumeBuildResponse:
+      type: object
+      properties:
+        data:
+          allOf:
+          - $ref: '#/components/schemas/ResumeBuild'
+          - type: object
+            properties:
+              atsScore:
+                type:
+                - integer
+                - 'null'
+                description: ATS score from linked document (if scored)
+                example: 78
+            required:
+            - atsScore
+            additionalProperties: false
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    SuggestResumeSectionResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ResumeSectionSuggestion'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    SetDefaultResumeResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            success:
+              type: boolean
+              enum:
+              - true
+          required:
+          - success
+          additionalProperties: false
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    ImportFromDocumentResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            id:
+              type: integer
+            title:
+              type: string
+          required:
+          - id
+          - title
+          additionalProperties: false
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    ResponseMetadata:
+      type: object
+      properties:
+        duration:
+          type: number
+          description: Request duration in milliseconds
+          example: 150
+          exclusiveMinimum: 0
+        performance:
+          type: object
+          properties:
+            dbQueries:
+              type: integer
+              minimum: 0
+            totalDbTime:
+              type: number
+              minimum: 0
+          description: Performance metrics (preview/local only)
+        requestId:
+          type: string
+          description: Unique request identifier
+          example: req_abc123
+        timestamp:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp
+          example: '2026-09-25T17:29:47.224Z'
+        version:
+          type: string
+          description: API version
+          example: v1
+    SuggestCoverLetterToneData:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+          - cover-letter-tone
+          description: Discriminator for the suggestion engine union (R5-1).
+        persona:
+          type: string
+          enum:
+          - balanced
+          - the_professional
+          - the_conversationalist
+          - the_storyteller
+          - the_closer
+          - the_enthusiast
+          - custom
+          description: Recommended persona preset for this job.
+          example: balanced
+        rationale:
+          type: string
+          minLength: 1
+          maxLength: 280
+          description: One-line rationale shown next to the recommended persona.
+          example: This role values formal, concise communication.
+      required:
+      - type
+      - persona
+      - rationale
+      additionalProperties: false
+    ChatThreadResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ChatThreadData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    ShareResumeRequest:
+      type: object
+      properties:
+        isPublic:
+          type: boolean
+          description: Whether the resource should be publicly accessible
+          example: true
+      required:
+      - isPublic
+      additionalProperties: false
+    SuggestCoverLetterToneResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/SuggestCoverLetterToneData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    AtsScoreResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/AtsScoreData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    ResumeTemplate:
+      type: object
+      properties:
+        description:
+          type: string
+          example: Clean, traditional resume format
+        id:
+          type: string
+          example: classic
+        name:
+          type: string
+          example: Classic
+        previewUrl:
+          type: string
+      required:
+      - description
+      - id
+      - name
+      additionalProperties: false
+    CreateResumeBuildRequest:
+      type: object
+      properties:
+        buildType:
+          type: string
+          enum:
+          - resume
+          - cover_letter
+          default: resume
+          description: Type of build (resume or cover letter)
+          example: resume
+        certifications:
+          type: array
+          items:
+            type: string
+            maxLength: 200
+          maxItems: 20
+        coverLetterBody:
+          type: string
+          maxLength: 10000
+        education:
+          type: array
+          items:
+            $ref: '#/components/schemas/EducationEntry'
+          maxItems: 10
+        experience:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExperienceEntry'
+          maxItems: 20
+        fontFamily:
+          type: string
+          maxLength: 200
+        personalInfo:
+          $ref: '#/components/schemas/PersonalInfo'
+        recipientCompany:
+          type: string
+          maxLength: 200
+        recipientName:
+          type: string
+          maxLength: 200
+        recipientPosition:
+          type: string
+          maxLength: 200
+        sectionOrder:
+          type: array
+          items:
+            type: string
+            maxLength: 50
+          maxItems: 20
+        skills:
+          type: array
+          items:
+            type: string
+            maxLength: 100
+          maxItems: 200
+        summary:
+          type: string
+          maxLength: 2000
+        templateId:
+          type: string
+          maxLength: 50
+          default: classic
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+          example: My Software Engineer Resume
+      required:
+      - title
+      additionalProperties: false
+    AtsRoleClassification:
+      type:
+      - object
+      - 'null'
+      properties:
+        archetype:
+          type: string
+          description: Role archetype (e.g. Backend Engineer, AI/ML, Product Manager, DevOps, etc.)
+        domain:
+          type: string
+          description: Domain/industry focus
+        remote:
+          type:
+          - string
+          - 'null'
+          description: Remote policy if detectable
+        seniority:
+          type: string
+          description: Detected seniority level from JD
+      required:
+      - archetype
+      - domain
+      - remote
+      - seniority
+      additionalProperties: false
+      description: Role classification and archetype detection (populated when jobDescription is provided, null otherwise)
+    AtsScoreData:
+      type: object
+      properties:
+        formattingIssues:
+          type: array
+          items:
+            type: string
+          description: ATS formatting issues detected
+          example:
+          - Headers use images instead of text
+          - Tables may not parse correctly
+        gapAnalysis:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/AtsGapAnalysis'
+          description: Gap analysis with severity and mitigation strategies (populated when jobDescription is provided, null otherwise)
+        keywordStrategy:
+          $ref: '#/components/schemas/AtsKeywordStrategy'
+        matchingKeywords:
+          type: array
+          items:
+            type: string
+          description: Keywords found in the resume that match the job description
+          example:
+          - JavaScript
+          - React
+          - Node.js
+        missingKeywords:
+          type: array
+          items:
+            type: string
+          description: Important keywords from the job description missing from the resume
+          example:
+          - TypeScript
+          - GraphQL
+          - CI/CD
+        overallScore:
+          type: number
+          minimum: 0
+          maximum: 100
+          description: Overall ATS compatibility score (0-100)
+          example: 72
+        requirementMapping:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/AtsRequirementMapping'
+          description: Per-requirement mapping of JD requirements to resume content (populated when jobDescription is provided, null otherwise)
+        roleClassification:
+          $ref: '#/components/schemas/AtsRoleClassification'
+        strengths:
+          type: array
+          items:
+            type: string
+          description: Resume strengths for ATS parsing
+          example:
+          - Strong action verbs in bullet points
+          - Quantified achievements
+        suggestions:
+          type: array
+          items:
+            $ref: '#/components/schemas/AtsSuggestion'
+          description: Section-specific improvement suggestions
+      required:
+      - formattingIssues
+      - gapAnalysis
+      - keywordStrategy
+      - matchingKeywords
+      - missingKeywords
+      - overallScore
+      - requirementMapping
+      - roleClassification
+      - strengths
+      - suggestions
+      additionalProperties: false
+    ResumeBuildListItem:
+      type: object
+      properties:
+        buildType:
+          type: string
+          enum:
+          - resume
+          - cover_letter
+          description: Type of build (resume or cover letter)
+          example: resume
+        createdAt:
+          type:
+          - string
+          - 'null'
+        id:
+          type: integer
+        isDefault:
+          type: integer
+        linkedDocumentId:
+          type:
+          - integer
+          - 'null'
+        sourceDocumentId:
+          type:
+          - integer
+          - 'null'
+        templateId:
+          type: string
+        title:
+          type: string
+        updatedAt:
+          type:
+          - string
+          - 'null'
+      required:
+      - buildType
+      - createdAt
+      - id
+      - isDefault
+      - linkedDocumentId
+      - sourceDocumentId
+      - templateId
+      - title
+      - updatedAt
+      additionalProperties: false
+    TranslateResumeRequest:
+      type: object
+      properties:
+        targetLanguage:
+          type: string
+          minLength: 1
+          maxLength: 50
+          description: Single target language for translation (prefer targetLanguages for batch)
+          example: Spanish
+        targetLanguages:
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 50
+          minItems: 1
+          maxItems: 10
+          description: Array of target languages for batch translation
+          example:
+          - Spanish
+          - French
+          - German
+      additionalProperties: false
+    ExperienceEntry:
+      type: object
+      properties:
+        bullets:
+          type: array
+          items:
+            type: string
+          example:
+          - Led migration of monolithic architecture to microservices, reducing deployment time by 60%
+        company:
+          type: string
+          example: Acme Corp
+        current:
+          type:
+          - boolean
+          - 'null'
+        endDate:
+          type:
+          - string
+          - 'null'
+          example: 2024-01
+        location:
+          type:
+          - string
+          - 'null'
+        startDate:
+          type: string
+          example: 2020-01
+        title:
+          type: string
+          example: Senior Engineer
+      required:
+      - bullets
+      - company
+      - startDate
+      - title
+      additionalProperties: false
+    ImportFromDocumentRequest:
+      type: object
+      properties:
+        documentId:
+          type: integer
+          description: ID of the user document to import resume data from
+          example: 1
+          exclusiveMinimum: 0
+        templateId:
+          type: string
+          maxLength: 50
+          default: classic
+          description: Resume template to use
+          example: classic
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+          description: Title for the new resume build
+          example: Imported Resume - Software Engineer
+      required:
+      - documentId
+      - title
+      additionalProperties: false
+    ResumeBuildCreatedResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            id:
+              type: integer
+            title:
+              type: string
+          required:
+          - id
+          - title
+          additionalProperties: false
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    ResumeBuildListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/ResumeBuildListItem'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    GenerateCoverLetterRequest:
+      type: object
+      properties:
+        company:
+          type: string
+          maxLength: 200
+          description: Target company name (used if no jobMatchId provided)
+          example: Acme Corp
+        jobDescription:
+          type: string
+          maxLength: 50000
+          description: Job description text (used if no jobMatchId provided)
+          example: We are looking for a Senior Software Engineer...
+        jobMatchId:
+          type: integer
+          description: If generating for a saved job match, provide its ID to auto-fill job details
+          example: 42
+          exclusiveMinimum: 0
+        jobTitle:
+          type: string
+          maxLength: 200
+          description: Target job title (used if no jobMatchId provided)
+          example: Senior Software Engineer
+      additionalProperties: false
+    PersonalInfo:
+      type: object
+      properties:
+        email:
+          anyOf:
+          - type: string
+            format: email
+          - type: string
+            enum:
+            - ''
+          - {}
+          example: name@example.com
+        fullName:
+          type:
+          - string
+          - 'null'
+          example: Ada Lovelace
+        linkedin:
+          type:
+          - string
+          - 'null'
+        location:
+          type:
+          - string
+          - 'null'
+          example: San Francisco, CA
+        phone:
+          type:
+          - string
+          - 'null'
+          example: +1 (555) 123-4567
+        title:
+          type:
+          - string
+          - 'null'
+          example: Senior Software Engineer
+        website:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    TemplateListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/ResumeTemplate'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    PollingResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/PollingEnvelope'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    ResumeBuildArtifactResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            artifactRevision:
+              type: string
+              maxLength: 128
+              pattern: ^resume-build:[1-9]\d*:[a-f0-9]{64}$
+            documentId:
+              type: integer
+              exclusiveMinimum: 0
+          required:
+          - artifactRevision
+          - documentId
+          additionalProperties: false
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    AtsKeywordStrategy:
+      type:
+      - object
+      - 'null'
+      properties:
+        competencyTags:
+          type: array
+          items:
+            type: string
+          description: 6-8 keyword phrases for a competency grid
+        experienceKeywords:
+          type: array
+          items:
+            type: string
+          description: Keywords to weave into experience bullets
+        skillsKeywords:
+          type: array
+          items:
+            type: string
+          description: Keywords for skills section
+        summaryKeywords:
+          type: array
+          items:
+            type: string
+          description: Top 5 keywords to add to professional summary
+      required:
+      - competencyTags
+      - experienceKeywords
+      - skillsKeywords
+      - summaryKeywords
+      additionalProperties: false
+      description: Keyword injection strategy by resume section (populated when jobDescription is provided, null otherwise)
+    ResumeBuilderSuccessResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            success:
+              type: boolean
+              enum:
+              - true
+          required:
+          - success
+          additionalProperties: false
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    SuggestCoverLetterToneRequest:
+      type: object
+      properties:
+        jobMatchId:
+          type: integer
+          description: Job match to read context from when picking a recommended tone.
+          example: 42
+          exclusiveMinimum: 0
+      required:
+      - jobMatchId
+      additionalProperties: false
+    GenerateTexResponseData:
+      type: object
+      properties:
+        filename:
+          type: string
+          example: cv.tex
+        tex:
+          type: string
+          description: 'LaTeX source string for the resume. Self-contained: paste into Overleaf or run `latexmk -pdf` locally.'
+      required:
+      - filename
+      - tex
+      additionalProperties: false
+    EducationEntry:
+      type: object
+      properties:
+        degree:
+          type: string
+          example: B.S. Computer Science
+        endDate:
+          type:
+          - string
+          - 'null'
+        gpa:
+          type:
+          - string
+          - 'null'
+        highlights:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        institution:
+          type: string
+          example: MIT
+        location:
+          type:
+          - string
+          - 'null'
+        startDate:
+          type:
+          - string
+          - 'null'
+      required:
+      - degree
+      - institution
+      additionalProperties: false
+    AtsOptimizeRequest:
+      type: object
+      properties:
+        jobDescription:
+          type: string
+          maxLength: 50000
+          description: Job description to optimize against
+        suggestions:
+          type: array
+          items:
+            $ref: '#/components/schemas/AtsSuggestion'
+          description: Previous ATS score suggestions to apply. If omitted, AI generates its own analysis first.
+      additionalProperties: false
+    AtsGapAnalysis:
+      type: object
+      properties:
+        adjacentExperience:
+          type:
+          - string
+          - 'null'
+          description: Related experience that partially covers this gap
+        gap:
+          type: string
+          description: Missing requirement or skill
+        mitigation:
+          type: string
+          description: Strategy to address this gap (adjacent experience, transferable skills, etc)
+        severity:
+          type: string
+          enum:
+          - hard_blocker
+          - nice_to_have
+          - soft_gap
+          description: How critical a missing requirement is
+          example: soft_gap
+      required:
+      - adjacentExperience
+      - gap
+      - mitigation
+      - severity
+      additionalProperties: false
+    AtsSuggestion:
+      type: object
+      properties:
+        fix:
+          type: string
+          example: Add "TypeScript" and "React" to your skills section and weave them into experience bullets
+        issue:
+          type: string
+          example: Missing key technical skills mentioned in the job description
+        section:
+          type: string
+          example: skills
+      required:
+      - fix
+      - issue
+      - section
+      additionalProperties: false
+    ResumeBuild:
+      type: object
+      properties:
+        artifactRevision:
+          type: string
+          maxLength: 128
+          pattern: ^resume-build:[1-9]\d*:[a-f0-9]{64}$
+          description: Receipt for the persisted rendering inputs returned by Save. Required to publish its preview PDF.
+        buildType:
+          type: string
+          enum:
+          - resume
+          - cover_letter
+          description: Type of build (resume or cover letter)
+          example: resume
+        certifications:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        coverLetterBody:
+          type:
+          - string
+          - 'null'
+        coverLetterStatus:
+          type:
+          - string
+          - 'null'
+          enum:
+          - idle
+          - generating
+          - completed
+          - failed
+          - null
+          description: Status of async AI cover-letter generation for this build
+          example: idle
+        coverLetterTraces:
+          type:
+          - array
+          - 'null'
+          items:
+            type: object
+            properties:
+              claim:
+                type: string
+              confidence:
+                type: number
+                minimum: 0
+                maximum: 1
+              sourceLine:
+                type:
+                - string
+                - 'null'
+            required:
+            - claim
+            - confidence
+            - sourceLine
+          description: Per-claim CV-evidence traces from the cover-letter generator (career-ops F6). Null until a cover letter is generated.
+        createdAt:
+          type:
+          - string
+          - 'null'
+        education:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/EducationEntry'
+        experience:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ExperienceEntry'
+        fontFamily:
+          type:
+          - string
+          - 'null'
+        id:
+          type: integer
+        importStatus:
+          type:
+          - string
+          - 'null'
+          enum:
+          - idle
+          - generating
+          - completed
+          - failed
+          - null
+          description: Status of async AI resume import into this build
+          example: idle
+        isDefault:
+          type: integer
+        optimizeStatus:
+          type:
+          - string
+          - 'null'
+          enum:
+          - idle
+          - generating
+          - completed
+          - failed
+          - null
+          description: Status of async AI ATS-optimize run against this build
+          example: idle
+        translateStatus:
+          type:
+          - string
+          - 'null'
+          enum:
+          - idle
+          - generating
+          - completed
+          - failed
+          - null
+          description: Status of async AI translation run against this build
+          example: idle
+        isPublic:
+          type: boolean
+        linkedDocumentId:
+          type:
+          - integer
+          - 'null'
+        shareToken:
+          type:
+          - string
+          - 'null'
+        personalInfo:
+          allOf:
+          - $ref: '#/components/schemas/PersonalInfo'
+          - {}
+        recipientCompany:
+          type:
+          - string
+          - 'null'
+        recipientName:
+          type:
+          - string
+          - 'null'
+        recipientPosition:
+          type:
+          - string
+          - 'null'
+        sectionOrder:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        skills:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        summary:
+          type:
+          - string
+          - 'null'
+        templateId:
+          type: string
+        title:
+          type: string
+        updatedAt:
+          type:
+          - string
+          - 'null'
+      required:
+      - buildType
+      - certifications
+      - coverLetterStatus
+      - createdAt
+      - education
+      - experience
+      - fontFamily
+      - id
+      - importStatus
+      - isDefault
+      - optimizeStatus
+      - translateStatus
+      - isPublic
+      - linkedDocumentId
+      - shareToken
+      - personalInfo
+      - sectionOrder
+      - skills
+      - summary
+      - templateId
+      - title
+      - updatedAt
+      additionalProperties: false
+    ChatThreadUIMessage:
+      type: object
+      properties:
+        id:
+          type: string
+          minLength: 1
+          maxLength: 200
+        role:
+          type: string
+          enum:
+          - system
+          - user
+          - assistant
+          description: Role of a message in an AI chat thread
+          example: user
+        parts:
+          type: array
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+                minLength: 1
+                maxLength: 100
+            required:
+            - type
+          maxItems: 100
+      required:
+      - id
+      - role
+      - parts
+    ResumeSectionSuggestion:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+          - resume-section
+        sectionType:
+          type: string
+          enum:
+          - summary
+          - experience
+          - education
+          - skills
+          description: Resume sections that the auto-suggest engine supports.
+          example: experience
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ResumeSectionSuggestionItem'
+          minItems: 0
+          maxItems: 8
+          description: Suggested items for the requested section, 0-8 depending on section type.
+        cached:
+          type: boolean
+          description: True when this suggestion was served from cache (free, no tokens billed).
+        sourceResumeId:
+          type:
+          - integer
+          - 'null'
+          description: ID of the resume_build the suggestion drew evidence from, when applicable.
+      required:
+      - type
+      - sectionType
+      - items
+      - cached
+      - sourceResumeId
+      additionalProperties: false
+    SuggestResumeSectionRequest:
+      type: object
+      properties:
+        sectionType:
+          type: string
+          enum:
+          - summary
+          - experience
+          - education
+          - skills
+          description: Resume sections that the auto-suggest engine supports.
+          example: experience
+        anchorContext:
+          type: object
+          properties:
+            company:
+              type: string
+              maxLength: 200
+            title:
+              type: string
+              maxLength: 200
+            institution:
+              type: string
+              maxLength: 200
+            degree:
+              type: string
+              maxLength: 200
+          additionalProperties: false
+      required:
+      - sectionType
+      additionalProperties: false
+    UpsertChatThreadRequest:
+      type: object
+      properties:
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChatThreadUIMessage'
+          maxItems: 200
+          description: UIMessage array (max 200) to persist for this resume build.
+      required:
+      - messages
+      additionalProperties: false
+    AtsScoreRequest:
+      type: object
+      properties:
+        jobDescription:
+          type: string
+          minLength: 50
+          maxLength: 20000
+          description: Job description to score against. Required, 50-20000 characters - an ATS score with no role to match against is not a match score.
+          example: We are looking for a Senior Software Engineer with 5+ years experience in React and TypeScript...
+      required:
+      - jobDescription
+      additionalProperties: false
+    UpdateResumeBuildRequest:
+      type: object
+      properties:
+        buildType:
+          type: string
+          enum:
+          - resume
+          - cover_letter
+          default: resume
+          description: Type of build (resume or cover letter)
+          example: resume
+        certifications:
+          type: array
+          items:
+            type: string
+            maxLength: 200
+          maxItems: 20
+        coverLetterBody:
+          type: string
+          maxLength: 10000
+        education:
+          type: array
+          items:
+            $ref: '#/components/schemas/EducationEntry'
+          maxItems: 10
+        experience:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExperienceEntry'
+          maxItems: 20
+        fontFamily:
+          type: string
+          maxLength: 200
+        personalInfo:
+          $ref: '#/components/schemas/PersonalInfo'
+        recipientCompany:
+          type: string
+          maxLength: 200
+        recipientName:
+          type: string
+          maxLength: 200
+        recipientPosition:
+          type: string
+          maxLength: 200
+        sectionOrder:
+          type: array
+          items:
+            type: string
+            maxLength: 50
+          maxItems: 20
+        skills:
+          type: array
+          items:
+            type: string
+            maxLength: 100
+          maxItems: 200
+        summary:
+          type: string
+          maxLength: 2000
+        templateId:
+          type: string
+          maxLength: 50
+          default: classic
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+          example: My Software Engineer Resume
+        linkedDocumentId:
+          type: integer
+          exclusiveMinimum: 0
+      additionalProperties: false
+    ResumeBuildResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ResumeBuild'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    ChatThreadData:
+      type: object
+      properties:
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChatThreadUIMessage'
+          description: Persisted UIMessage array for this resume build (empty if no thread yet).
+        updatedAt:
+          type:
+          - string
+          - 'null'
+      required:
+      - messages
+      - updatedAt
+      additionalProperties: false
+    GenerateTexResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/GenerateTexResponseData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    ResumeSectionSuggestionItem:
+      oneOf:
+      - type: object
+        properties:
+          type:
+            type: string
+            enum:
+            - summary
+          text:
+            type: string
+            minLength: 1
+            maxLength: 2000
+        required:
+        - type
+        - text
+        additionalProperties: false
+      - type: object
+        properties:
+          type:
+            type: string
+            enum:
+            - experience
+          text:
+            type: string
+            minLength: 1
+            maxLength: 500
+          anchorTitle:
+            type: string
+            maxLength: 200
+          anchorCompany:
+            type: string
+            maxLength: 200
+        required:
+        - type
+        - text
+        additionalProperties: false
+      - type: object
+        properties:
+          type:
+            type: string
+            enum:
+            - education
+          text:
+            type: string
+            minLength: 1
+            maxLength: 300
+          anchorInstitution:
+            type: string
+            maxLength: 200
+          anchorDegree:
+            type: string
+            maxLength: 200
+        required:
+        - type
+        - text
+        additionalProperties: false
+      - type: object
+        properties:
+          type:
+            type: string
+            enum:
+            - skill
+          text:
+            type: string
+            minLength: 1
+            maxLength: 100
+        required:
+        - type
+        - text
+        additionalProperties: false
+    ShareResumeData:
+      type: object
+      properties:
+        isPublic:
+          type: boolean
+          description: Whether the resource is currently public
+          example: true
+        shareToken:
+          type:
+          - string
+          - 'null'
+          description: Share token for public URL (null if private)
+          example: a1b2c3d4e5f6...
+        shareUrl:
+          type:
+          - string
+          - 'null'
+          description: Public share URL (null if private)
+          example: https://aiapplyd.com/document/a1b2c3...
+      required:
+      - isPublic
+      - shareToken
+      - shareUrl
+      additionalProperties: false
+    ShareResumeResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ShareResumeData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
     ApiErrorResponse:
       type: object
       properties:
@@ -1481,1291 +2886,6 @@ components:
       - error
       - success
       additionalProperties: false
-    ChatThreadData:
-      type: object
-      properties:
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/ChatThreadUIMessage'
-          description: Persisted UIMessage array for this resume build (empty if no thread yet).
-        updatedAt:
-          type:
-          - string
-          - 'null'
-      required:
-      - messages
-      - updatedAt
-      additionalProperties: false
-    AtsGapAnalysis:
-      type: object
-      properties:
-        adjacentExperience:
-          type:
-          - string
-          - 'null'
-          description: Related experience that partially covers this gap
-        gap:
-          type: string
-          description: Missing requirement or skill
-        mitigation:
-          type: string
-          description: Strategy to address this gap (adjacent experience, transferable skills, etc)
-        severity:
-          type: string
-          enum:
-          - hard_blocker
-          - nice_to_have
-          - soft_gap
-          description: How critical a missing requirement is
-          example: soft_gap
-      required:
-      - adjacentExperience
-      - gap
-      - mitigation
-      - severity
-      additionalProperties: false
-    AtsRequirementMapping:
-      type: object
-      properties:
-        matchStrength:
-          type: string
-          enum:
-          - strong
-          - partial
-          - missing
-          description: How well the resume matches a specific requirement
-          example: strong
-        requirement:
-          type: string
-          description: Specific requirement from the job description
-        resumeMatch:
-          type:
-          - string
-          - 'null'
-          description: Matching content found in resume, or null if no match
-        section:
-          type:
-          - string
-          - 'null'
-          description: Resume section where match was found
-      required:
-      - matchStrength
-      - requirement
-      - resumeMatch
-      - section
-      additionalProperties: false
-    ResumeBuildCreatedResponse:
-      type: object
-      properties:
-        data:
-          type: object
-          properties:
-            id:
-              type: integer
-            title:
-              type: string
-          required:
-          - id
-          - title
-          additionalProperties: false
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    PersonalInfo:
-      type: object
-      properties:
-        email:
-          anyOf:
-          - type: string
-            format: email
-          - type: string
-            enum:
-            - ''
-          - {}
-          example: name@example.com
-        fullName:
-          type:
-          - string
-          - 'null'
-          example: Ada Lovelace
-        linkedin:
-          type:
-          - string
-          - 'null'
-        location:
-          type:
-          - string
-          - 'null'
-          example: San Francisco, CA
-        phone:
-          type:
-          - string
-          - 'null'
-          example: +1 (555) 123-4567
-        title:
-          type:
-          - string
-          - 'null'
-          example: Senior Software Engineer
-        website:
-          type:
-          - string
-          - 'null'
-      additionalProperties: false
-    SuggestCoverLetterToneResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/SuggestCoverLetterToneData'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    AtsOptimizeRequest:
-      type: object
-      properties:
-        jobDescription:
-          type: string
-          maxLength: 50000
-          description: Job description to optimize against
-        suggestions:
-          type: array
-          items:
-            $ref: '#/components/schemas/AtsSuggestion'
-          description: Previous ATS score suggestions to apply. If omitted, AI generates its own analysis first.
-      additionalProperties: false
-    ShareResumeData:
-      type: object
-      properties:
-        isPublic:
-          type: boolean
-          description: Whether the resource is currently public
-          example: true
-        shareToken:
-          type:
-          - string
-          - 'null'
-          description: Share token for public URL (null if private)
-          example: a1b2c3d4e5f6...
-        shareUrl:
-          type:
-          - string
-          - 'null'
-          description: Public share URL (null if private)
-          example: https://aiapplyd.com/document/a1b2c3...
-      required:
-      - isPublic
-      - shareToken
-      - shareUrl
-      additionalProperties: false
-    ShareResumeRequest:
-      type: object
-      properties:
-        isPublic:
-          type: boolean
-          description: Whether the resource should be publicly accessible
-          example: true
-      required:
-      - isPublic
-      additionalProperties: false
-    ResumeSectionSuggestion:
-      type: object
-      properties:
-        type:
-          type: string
-          enum:
-          - resume-section
-        sectionType:
-          type: string
-          enum:
-          - summary
-          - experience
-          - education
-          - skills
-          description: Resume sections that the auto-suggest engine supports.
-          example: experience
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/ResumeSectionSuggestionItem'
-          minItems: 0
-          maxItems: 8
-          description: Suggested items for the requested section, 0-8 depending on section type.
-        cached:
-          type: boolean
-          description: True when this suggestion was served from cache (free, no tokens billed).
-        sourceResumeId:
-          type:
-          - integer
-          - 'null'
-          description: ID of the resume_build the suggestion drew evidence from, when applicable.
-      required:
-      - type
-      - sectionType
-      - items
-      - cached
-      - sourceResumeId
-      additionalProperties: false
-    ResumeTemplate:
-      type: object
-      properties:
-        description:
-          type: string
-          example: Clean, traditional resume format
-        id:
-          type: string
-          example: classic
-        name:
-          type: string
-          example: Classic
-        previewUrl:
-          type: string
-      required:
-      - description
-      - id
-      - name
-      additionalProperties: false
-    ResponseMetadata:
-      type: object
-      properties:
-        duration:
-          type: number
-          description: Request duration in milliseconds
-          example: 150
-          exclusiveMinimum: 0
-        performance:
-          type: object
-          properties:
-            dbQueries:
-              type: integer
-              minimum: 0
-            totalDbTime:
-              type: number
-              minimum: 0
-          description: Performance metrics (preview/local only)
-        requestId:
-          type: string
-          description: Unique request identifier
-          example: req_abc123
-        timestamp:
-          type: string
-          format: date-time
-          description: ISO 8601 timestamp
-          example: '2026-09-25T17:29:47.224Z'
-        version:
-          type: string
-          description: API version
-          example: v1
-    ImportFromDocumentRequest:
-      type: object
-      properties:
-        documentId:
-          type: integer
-          description: ID of the user document to import resume data from
-          example: 1
-          exclusiveMinimum: 0
-        templateId:
-          type: string
-          maxLength: 50
-          default: classic
-          description: Resume template to use
-          example: classic
-        title:
-          type: string
-          minLength: 1
-          maxLength: 200
-          description: Title for the new resume build
-          example: Imported Resume - Software Engineer
-      required:
-      - documentId
-      - title
-      additionalProperties: false
-    SuggestCoverLetterToneData:
-      type: object
-      properties:
-        type:
-          type: string
-          enum:
-          - cover-letter-tone
-          description: Discriminator for the suggestion engine union (R5-1).
-        persona:
-          type: string
-          enum:
-          - balanced
-          - the_professional
-          - the_conversationalist
-          - the_storyteller
-          - the_closer
-          - the_enthusiast
-          - custom
-          description: Recommended persona preset for this job.
-          example: balanced
-        rationale:
-          type: string
-          minLength: 1
-          maxLength: 280
-          description: One-line rationale shown next to the recommended persona.
-          example: This role values formal, concise communication.
-      required:
-      - type
-      - persona
-      - rationale
-      additionalProperties: false
-    ResumeBuild:
-      type: object
-      properties:
-        artifactRevision:
-          type: string
-          maxLength: 128
-          pattern: ^resume-build:[1-9]\d*:[a-f0-9]{64}$
-          description: Receipt for the persisted rendering inputs returned by Save. Required to publish its preview PDF.
-        buildType:
-          type: string
-          enum:
-          - resume
-          - cover_letter
-          description: Type of build (resume or cover letter)
-          example: resume
-        certifications:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-        coverLetterBody:
-          type:
-          - string
-          - 'null'
-        coverLetterStatus:
-          type:
-          - string
-          - 'null'
-          enum:
-          - idle
-          - generating
-          - completed
-          - failed
-          - null
-          description: Status of async AI cover-letter generation for this build
-          example: idle
-        coverLetterTraces:
-          type:
-          - array
-          - 'null'
-          items:
-            type: object
-            properties:
-              claim:
-                type: string
-              confidence:
-                type: number
-                minimum: 0
-                maximum: 1
-              sourceLine:
-                type:
-                - string
-                - 'null'
-            required:
-            - claim
-            - confidence
-            - sourceLine
-          description: Per-claim CV-evidence traces from the cover-letter generator (career-ops F6). Null until a cover letter is generated.
-        createdAt:
-          type:
-          - string
-          - 'null'
-        education:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/EducationEntry'
-        experience:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ExperienceEntry'
-        fontFamily:
-          type:
-          - string
-          - 'null'
-        id:
-          type: integer
-        importStatus:
-          type:
-          - string
-          - 'null'
-          enum:
-          - idle
-          - generating
-          - completed
-          - failed
-          - null
-          description: Status of async AI resume import into this build
-          example: idle
-        isDefault:
-          type: integer
-        optimizeStatus:
-          type:
-          - string
-          - 'null'
-          enum:
-          - idle
-          - generating
-          - completed
-          - failed
-          - null
-          description: Status of async AI ATS-optimize run against this build
-          example: idle
-        translateStatus:
-          type:
-          - string
-          - 'null'
-          enum:
-          - idle
-          - generating
-          - completed
-          - failed
-          - null
-          description: Status of async AI translation run against this build
-          example: idle
-        isPublic:
-          type: boolean
-        linkedDocumentId:
-          type:
-          - integer
-          - 'null'
-        shareToken:
-          type:
-          - string
-          - 'null'
-        personalInfo:
-          allOf:
-          - $ref: '#/components/schemas/PersonalInfo'
-          - {}
-        recipientCompany:
-          type:
-          - string
-          - 'null'
-        recipientName:
-          type:
-          - string
-          - 'null'
-        recipientPosition:
-          type:
-          - string
-          - 'null'
-        sectionOrder:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-        skills:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-        summary:
-          type:
-          - string
-          - 'null'
-        templateId:
-          type: string
-        title:
-          type: string
-        updatedAt:
-          type:
-          - string
-          - 'null'
-      required:
-      - buildType
-      - certifications
-      - coverLetterStatus
-      - createdAt
-      - education
-      - experience
-      - fontFamily
-      - id
-      - importStatus
-      - isDefault
-      - optimizeStatus
-      - translateStatus
-      - isPublic
-      - linkedDocumentId
-      - shareToken
-      - personalInfo
-      - sectionOrder
-      - skills
-      - summary
-      - templateId
-      - title
-      - updatedAt
-      additionalProperties: false
-    ChatThreadUIMessage:
-      type: object
-      properties:
-        id:
-          type: string
-          minLength: 1
-          maxLength: 200
-        role:
-          type: string
-          enum:
-          - system
-          - user
-          - assistant
-          description: Role of a message in an AI chat thread
-          example: user
-        parts:
-          type: array
-          items:
-            type: object
-            properties:
-              type:
-                type: string
-                minLength: 1
-                maxLength: 100
-            required:
-            - type
-          maxItems: 100
-      required:
-      - id
-      - role
-      - parts
-    ShareResumeResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/ShareResumeData'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    ImportFromDocumentResponse:
-      type: object
-      properties:
-        data:
-          type: object
-          properties:
-            id:
-              type: integer
-            title:
-              type: string
-          required:
-          - id
-          - title
-          additionalProperties: false
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    SharedResumeBuildResponse:
-      type: object
-      properties:
-        data:
-          allOf:
-          - $ref: '#/components/schemas/ResumeBuild'
-          - type: object
-            properties:
-              atsScore:
-                type:
-                - integer
-                - 'null'
-                description: ATS score from linked document (if scored)
-                example: 78
-            required:
-            - atsScore
-            additionalProperties: false
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    GenerateTexResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/GenerateTexResponseData'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    GenerateTexResponseData:
-      type: object
-      properties:
-        filename:
-          type: string
-          example: cv.tex
-        tex:
-          type: string
-          description: 'LaTeX source string for the resume. Self-contained: paste into Overleaf or run `latexmk -pdf` locally.'
-      required:
-      - filename
-      - tex
-      additionalProperties: false
-    ChatThreadResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/ChatThreadData'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    AtsScoreResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/AtsScoreData'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    SuggestResumeSectionRequest:
-      type: object
-      properties:
-        sectionType:
-          type: string
-          enum:
-          - summary
-          - experience
-          - education
-          - skills
-          description: Resume sections that the auto-suggest engine supports.
-          example: experience
-        anchorContext:
-          type: object
-          properties:
-            company:
-              type: string
-              maxLength: 200
-            title:
-              type: string
-              maxLength: 200
-            institution:
-              type: string
-              maxLength: 200
-            degree:
-              type: string
-              maxLength: 200
-          additionalProperties: false
-      required:
-      - sectionType
-      additionalProperties: false
-    SetDefaultResumeResponse:
-      type: object
-      properties:
-        data:
-          type: object
-          properties:
-            success:
-              type: boolean
-              enum:
-              - true
-          required:
-          - success
-          additionalProperties: false
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    AtsScoreRequest:
-      type: object
-      properties:
-        jobDescription:
-          type: string
-          minLength: 50
-          maxLength: 20000
-          description: Job description to score against. Required, 50-20000 characters - an ATS score with no role to match against is not a match score.
-          example: We are looking for a Senior Software Engineer with 5+ years experience in React and TypeScript...
-      required:
-      - jobDescription
-      additionalProperties: false
-    ExperienceEntry:
-      type: object
-      properties:
-        bullets:
-          type: array
-          items:
-            type: string
-          example:
-          - Led migration of monolithic architecture to microservices, reducing deployment time by 60%
-        company:
-          type: string
-          example: Acme Corp
-        current:
-          type:
-          - boolean
-          - 'null'
-        endDate:
-          type:
-          - string
-          - 'null'
-          example: 2024-01
-        location:
-          type:
-          - string
-          - 'null'
-        startDate:
-          type: string
-          example: 2020-01
-        title:
-          type: string
-          example: Senior Engineer
-      required:
-      - bullets
-      - company
-      - startDate
-      - title
-      additionalProperties: false
-    AtsScoreData:
-      type: object
-      properties:
-        formattingIssues:
-          type: array
-          items:
-            type: string
-          description: ATS formatting issues detected
-          example:
-          - Headers use images instead of text
-          - Tables may not parse correctly
-        gapAnalysis:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/AtsGapAnalysis'
-          description: Gap analysis with severity and mitigation strategies (populated when jobDescription is provided, null otherwise)
-        keywordStrategy:
-          $ref: '#/components/schemas/AtsKeywordStrategy'
-        matchingKeywords:
-          type: array
-          items:
-            type: string
-          description: Keywords found in the resume that match the job description
-          example:
-          - JavaScript
-          - React
-          - Node.js
-        missingKeywords:
-          type: array
-          items:
-            type: string
-          description: Important keywords from the job description missing from the resume
-          example:
-          - TypeScript
-          - GraphQL
-          - CI/CD
-        overallScore:
-          type: number
-          minimum: 0
-          maximum: 100
-          description: Overall ATS compatibility score (0-100)
-          example: 72
-        requirementMapping:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/AtsRequirementMapping'
-          description: Per-requirement mapping of JD requirements to resume content (populated when jobDescription is provided, null otherwise)
-        roleClassification:
-          $ref: '#/components/schemas/AtsRoleClassification'
-        strengths:
-          type: array
-          items:
-            type: string
-          description: Resume strengths for ATS parsing
-          example:
-          - Strong action verbs in bullet points
-          - Quantified achievements
-        suggestions:
-          type: array
-          items:
-            $ref: '#/components/schemas/AtsSuggestion'
-          description: Section-specific improvement suggestions
-      required:
-      - formattingIssues
-      - gapAnalysis
-      - keywordStrategy
-      - matchingKeywords
-      - missingKeywords
-      - overallScore
-      - requirementMapping
-      - roleClassification
-      - strengths
-      - suggestions
-      additionalProperties: false
-    ResumeSectionSuggestionItem:
-      oneOf:
-      - type: object
-        properties:
-          type:
-            type: string
-            enum:
-            - summary
-          text:
-            type: string
-            minLength: 1
-            maxLength: 2000
-        required:
-        - type
-        - text
-        additionalProperties: false
-      - type: object
-        properties:
-          type:
-            type: string
-            enum:
-            - experience
-          text:
-            type: string
-            minLength: 1
-            maxLength: 500
-          anchorTitle:
-            type: string
-            maxLength: 200
-          anchorCompany:
-            type: string
-            maxLength: 200
-        required:
-        - type
-        - text
-        additionalProperties: false
-      - type: object
-        properties:
-          type:
-            type: string
-            enum:
-            - education
-          text:
-            type: string
-            minLength: 1
-            maxLength: 300
-          anchorInstitution:
-            type: string
-            maxLength: 200
-          anchorDegree:
-            type: string
-            maxLength: 200
-        required:
-        - type
-        - text
-        additionalProperties: false
-      - type: object
-        properties:
-          type:
-            type: string
-            enum:
-            - skill
-          text:
-            type: string
-            minLength: 1
-            maxLength: 100
-        required:
-        - type
-        - text
-        additionalProperties: false
-    PollingResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/PollingEnvelope'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    SuggestCoverLetterToneRequest:
-      type: object
-      properties:
-        jobMatchId:
-          type: integer
-          description: Job match to read context from when picking a recommended tone.
-          example: 42
-          exclusiveMinimum: 0
-      required:
-      - jobMatchId
-      additionalProperties: false
-    AtsKeywordStrategy:
-      type:
-      - object
-      - 'null'
-      properties:
-        competencyTags:
-          type: array
-          items:
-            type: string
-          description: 6-8 keyword phrases for a competency grid
-        experienceKeywords:
-          type: array
-          items:
-            type: string
-          description: Keywords to weave into experience bullets
-        skillsKeywords:
-          type: array
-          items:
-            type: string
-          description: Keywords for skills section
-        summaryKeywords:
-          type: array
-          items:
-            type: string
-          description: Top 5 keywords to add to professional summary
-      required:
-      - competencyTags
-      - experienceKeywords
-      - skillsKeywords
-      - summaryKeywords
-      additionalProperties: false
-      description: Keyword injection strategy by resume section (populated when jobDescription is provided, null otherwise)
-    TranslateResumeRequest:
-      type: object
-      properties:
-        targetLanguage:
-          type: string
-          minLength: 1
-          maxLength: 50
-          description: Single target language for translation (prefer targetLanguages for batch)
-          example: Spanish
-        targetLanguages:
-          type: array
-          items:
-            type: string
-            minLength: 1
-            maxLength: 50
-          minItems: 1
-          maxItems: 10
-          description: Array of target languages for batch translation
-          example:
-          - Spanish
-          - French
-          - German
-      additionalProperties: false
-    TemplateListResponse:
-      type: object
-      properties:
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/ResumeTemplate'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    AtsSuggestion:
-      type: object
-      properties:
-        fix:
-          type: string
-          example: Add "TypeScript" and "React" to your skills section and weave them into experience bullets
-        issue:
-          type: string
-          example: Missing key technical skills mentioned in the job description
-        section:
-          type: string
-          example: skills
-      required:
-      - fix
-      - issue
-      - section
-      additionalProperties: false
-    ResumeBuilderSuccessResponse:
-      type: object
-      properties:
-        data:
-          type: object
-          properties:
-            success:
-              type: boolean
-              enum:
-              - true
-          required:
-          - success
-          additionalProperties: false
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    GenerateCoverLetterRequest:
-      type: object
-      properties:
-        company:
-          type: string
-          maxLength: 200
-          description: Target company name (used if no jobMatchId provided)
-          example: Acme Corp
-        jobDescription:
-          type: string
-          maxLength: 50000
-          description: Job description text (used if no jobMatchId provided)
-          example: We are looking for a Senior Software Engineer...
-        jobMatchId:
-          type: integer
-          description: If generating for a saved job match, provide its ID to auto-fill job details
-          example: 42
-          exclusiveMinimum: 0
-        jobTitle:
-          type: string
-          maxLength: 200
-          description: Target job title (used if no jobMatchId provided)
-          example: Senior Software Engineer
-      additionalProperties: false
-    ResumeBuildArtifactResponse:
-      type: object
-      properties:
-        data:
-          type: object
-          properties:
-            artifactRevision:
-              type: string
-              maxLength: 128
-              pattern: ^resume-build:[1-9]\d*:[a-f0-9]{64}$
-            documentId:
-              type: integer
-              exclusiveMinimum: 0
-          required:
-          - artifactRevision
-          - documentId
-          additionalProperties: false
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    ResumeBuildListResponse:
-      type: object
-      properties:
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/ResumeBuildListItem'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    EducationEntry:
-      type: object
-      properties:
-        degree:
-          type: string
-          example: B.S. Computer Science
-        endDate:
-          type:
-          - string
-          - 'null'
-        gpa:
-          type:
-          - string
-          - 'null'
-        highlights:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-        institution:
-          type: string
-          example: MIT
-        location:
-          type:
-          - string
-          - 'null'
-        startDate:
-          type:
-          - string
-          - 'null'
-      required:
-      - degree
-      - institution
-      additionalProperties: false
-    ResumeBuildResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/ResumeBuild'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    CreateResumeBuildRequest:
-      type: object
-      properties:
-        buildType:
-          type: string
-          enum:
-          - resume
-          - cover_letter
-          default: resume
-          description: Type of build (resume or cover letter)
-          example: resume
-        certifications:
-          type: array
-          items:
-            type: string
-            maxLength: 200
-          maxItems: 20
-        coverLetterBody:
-          type: string
-          maxLength: 10000
-        education:
-          type: array
-          items:
-            $ref: '#/components/schemas/EducationEntry'
-          maxItems: 10
-        experience:
-          type: array
-          items:
-            $ref: '#/components/schemas/ExperienceEntry'
-          maxItems: 20
-        fontFamily:
-          type: string
-          maxLength: 200
-        personalInfo:
-          $ref: '#/components/schemas/PersonalInfo'
-        recipientCompany:
-          type: string
-          maxLength: 200
-        recipientName:
-          type: string
-          maxLength: 200
-        recipientPosition:
-          type: string
-          maxLength: 200
-        sectionOrder:
-          type: array
-          items:
-            type: string
-            maxLength: 50
-          maxItems: 20
-        skills:
-          type: array
-          items:
-            type: string
-            maxLength: 100
-          maxItems: 200
-        summary:
-          type: string
-          maxLength: 2000
-        templateId:
-          type: string
-          maxLength: 50
-          default: classic
-        title:
-          type: string
-          minLength: 1
-          maxLength: 200
-          example: My Software Engineer Resume
-      required:
-      - title
-      additionalProperties: false
     PollingEnvelope:
       type: object
       properties:
@@ -2801,182 +2921,8 @@ components:
       - retryAfterMs
       - status
       additionalProperties: false
-    AtsRoleClassification:
-      type:
-      - object
-      - 'null'
-      properties:
-        archetype:
-          type: string
-          description: Role archetype (e.g. Backend Engineer, AI/ML, Product Manager, DevOps, etc.)
-        domain:
-          type: string
-          description: Domain/industry focus
-        remote:
-          type:
-          - string
-          - 'null'
-          description: Remote policy if detectable
-        seniority:
-          type: string
-          description: Detected seniority level from JD
-      required:
-      - archetype
-      - domain
-      - remote
-      - seniority
-      additionalProperties: false
-      description: Role classification and archetype detection (populated when jobDescription is provided, null otherwise)
-    UpsertChatThreadRequest:
-      type: object
-      properties:
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/ChatThreadUIMessage'
-          maxItems: 200
-          description: UIMessage array (max 200) to persist for this resume build.
-      required:
-      - messages
-      additionalProperties: false
-    SuggestResumeSectionResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/ResumeSectionSuggestion'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    UpdateResumeBuildRequest:
-      type: object
-      properties:
-        buildType:
-          type: string
-          enum:
-          - resume
-          - cover_letter
-          default: resume
-          description: Type of build (resume or cover letter)
-          example: resume
-        certifications:
-          type: array
-          items:
-            type: string
-            maxLength: 200
-          maxItems: 20
-        coverLetterBody:
-          type: string
-          maxLength: 10000
-        education:
-          type: array
-          items:
-            $ref: '#/components/schemas/EducationEntry'
-          maxItems: 10
-        experience:
-          type: array
-          items:
-            $ref: '#/components/schemas/ExperienceEntry'
-          maxItems: 20
-        fontFamily:
-          type: string
-          maxLength: 200
-        personalInfo:
-          $ref: '#/components/schemas/PersonalInfo'
-        recipientCompany:
-          type: string
-          maxLength: 200
-        recipientName:
-          type: string
-          maxLength: 200
-        recipientPosition:
-          type: string
-          maxLength: 200
-        sectionOrder:
-          type: array
-          items:
-            type: string
-            maxLength: 50
-          maxItems: 20
-        skills:
-          type: array
-          items:
-            type: string
-            maxLength: 100
-          maxItems: 200
-        summary:
-          type: string
-          maxLength: 2000
-        templateId:
-          type: string
-          maxLength: 50
-          default: classic
-        title:
-          type: string
-          minLength: 1
-          maxLength: 200
-          example: My Software Engineer Resume
-        linkedDocumentId:
-          type: integer
-          exclusiveMinimum: 0
-      additionalProperties: false
-    ResumeBuildListItem:
-      type: object
-      properties:
-        buildType:
-          type: string
-          enum:
-          - resume
-          - cover_letter
-          description: Type of build (resume or cover letter)
-          example: resume
-        createdAt:
-          type:
-          - string
-          - 'null'
-        id:
-          type: integer
-        isDefault:
-          type: integer
-        linkedDocumentId:
-          type:
-          - integer
-          - 'null'
-        sourceDocumentId:
-          type:
-          - integer
-          - 'null'
-        templateId:
-          type: string
-        title:
-          type: string
-        updatedAt:
-          type:
-          - string
-          - 'null'
-      required:
-      - buildType
-      - createdAt
-      - id
-      - isDefault
-      - linkedDocumentId
-      - sourceDocumentId
-      - templateId
-      - title
-      - updatedAt
-      additionalProperties: false
   securitySchemes:
     BearerAuth:
       description: 'Session token from signing in to AI Applyd, sent as `Authorization: Bearer <token>`.'
       scheme: bearer
       type: http
-x-refined-from:
-- aiapplyd-openapi.json
-- aiapplyd-openapi.yml

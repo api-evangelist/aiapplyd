@@ -1,15 +1,15 @@
 openapi: 3.2.0
 info:
-  title: Aiapplyd Public Reviews API
-  version: 115c47ce
   contact:
     email: support@aiapplyd.com
     name: AI Applyd
     url: https://aiapplyd.com
+  description: 'The AI Applyd API runs the whole job hunt for you: it matches you to roles that fit your profile, rewrites your resume for each posting, writes the cover letter the form asks for, and auto-applies across the major applicant tracking systems.'
   license:
     name: Proprietary
     url: https://aiapplyd.com/legal/terms
-  description: 'Operations tagged public-reviews across 2 of this provider''s published API definitions: aiapplyd-openapi.json, aiapplyd-openapi.yml. Each path carries the servers of the definition it was published in.'
+  title: AI Applyd Public Reviews API
+  version: 115c47ce
 servers:
 - description: Current environment
   url: https://api.aiapplyd.com/api/v1
@@ -55,11 +55,66 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: getPublicReviews
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
 components:
   schemas:
+    ResponseMetadata:
+      type: object
+      properties:
+        duration:
+          type: number
+          description: Request duration in milliseconds
+          example: 150
+          exclusiveMinimum: 0
+        performance:
+          type: object
+          properties:
+            dbQueries:
+              type: integer
+              minimum: 0
+            totalDbTime:
+              type: number
+              minimum: 0
+          description: Performance metrics (preview/local only)
+        requestId:
+          type: string
+          description: Unique request identifier
+          example: req_abc123
+        timestamp:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp
+          example: '2026-09-25T17:29:47.224Z'
+        version:
+          type: string
+          description: API version
+          example: v1
+    PublicReview:
+      type: object
+      properties:
+        body:
+          type: string
+          description: The review text, as written by the reviewer.
+          example: I stopped writing cover letters by hand and started getting replies within a fortnight.
+        createdAt:
+          type: string
+          description: When the review was written (ISO-8601). Feeds `datePublished` in the Review markup.
+          example: '2026-08-31T09:15:00.000Z'
+        displayName:
+          type: string
+          description: The credit the reviewer chose for themselves. Feeds `author.name` in the Review markup.
+          example: Ava K.
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+          description: Star rating, 1-5. Feeds `reviewRating.ratingValue`.
+          example: 5
+      required:
+      - body
+      - createdAt
+      - displayName
+      - rating
+      additionalProperties: false
     ApiErrorResponse:
       type: object
       properties:
@@ -404,43 +459,6 @@ components:
       - error
       - success
       additionalProperties: false
-    PublicReview:
-      type: object
-      properties:
-        body:
-          type: string
-          description: The review text, as written by the reviewer.
-          example: I stopped writing cover letters by hand and started getting replies within a fortnight.
-        createdAt:
-          type: string
-          description: When the review was written (ISO-8601). Feeds `datePublished` in the Review markup.
-          example: '2026-08-31T09:15:00.000Z'
-        displayName:
-          type: string
-          description: The credit the reviewer chose for themselves. Feeds `author.name` in the Review markup.
-          example: Ava K.
-        rating:
-          type: integer
-          minimum: 1
-          maximum: 5
-          description: Star rating, 1-5. Feeds `reviewRating.ratingValue`.
-          example: 5
-      required:
-      - body
-      - createdAt
-      - displayName
-      - rating
-      additionalProperties: false
-    PublicReviewsPayload:
-      type: object
-      properties:
-        reviews:
-          type: array
-          items:
-            $ref: '#/components/schemas/PublicReview'
-      required:
-      - reviews
-      additionalProperties: false
     PublicReviewsResponse:
       type: object
       properties:
@@ -457,42 +475,18 @@ components:
       - success
       additionalProperties: false
       description: Successful API response
-    ResponseMetadata:
+    PublicReviewsPayload:
       type: object
       properties:
-        duration:
-          type: number
-          description: Request duration in milliseconds
-          example: 150
-          exclusiveMinimum: 0
-        performance:
-          type: object
-          properties:
-            dbQueries:
-              type: integer
-              minimum: 0
-            totalDbTime:
-              type: number
-              minimum: 0
-          description: Performance metrics (preview/local only)
-        requestId:
-          type: string
-          description: Unique request identifier
-          example: req_abc123
-        timestamp:
-          type: string
-          format: date-time
-          description: ISO 8601 timestamp
-          example: '2026-09-25T17:29:47.224Z'
-        version:
-          type: string
-          description: API version
-          example: v1
+        reviews:
+          type: array
+          items:
+            $ref: '#/components/schemas/PublicReview'
+      required:
+      - reviews
+      additionalProperties: false
   securitySchemes:
     BearerAuth:
       description: 'Session token from signing in to AI Applyd, sent as `Authorization: Bearer <token>`.'
       scheme: bearer
       type: http
-x-refined-from:
-- aiapplyd-openapi.json
-- aiapplyd-openapi.yml

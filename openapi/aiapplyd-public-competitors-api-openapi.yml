@@ -1,15 +1,15 @@
 openapi: 3.2.0
 info:
-  title: Aiapplyd Public Competitors API
-  version: 115c47ce
   contact:
     email: support@aiapplyd.com
     name: AI Applyd
     url: https://aiapplyd.com
+  description: 'The AI Applyd API runs the whole job hunt for you: it matches you to roles that fit your profile, rewrites your resume for each posting, writes the cover letter the form asks for, and auto-applies across the major applicant tracking systems.'
   license:
     name: Proprietary
     url: https://aiapplyd.com/legal/terms
-  description: 'Operations tagged public-competitors across 2 of this provider''s published API definitions: aiapplyd-openapi.json, aiapplyd-openapi.yml. Each path carries the servers of the definition it was published in.'
+  title: AI Applyd Public Competitors API
+  version: 115c47ce
 servers:
 - description: Current environment
   url: https://api.aiapplyd.com/api/v1
@@ -44,9 +44,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: getPublicCompetitors
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /public/competitors/{slug}:
     get:
       description: Get full competitor detail by slug, with pillars / comparisonRows / faqs pre-parsed into typed arrays so the SSR loader can hand the payload straight to the renderer. 404s on unknown slugs and on draft rows (`published_at IS NULL`).
@@ -85,9 +82,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: getPublicCompetitorsBySlug
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /public/competitors/{slug}/alternatives:
     get:
       description: List alternative tools for a competitor slug, with pros/cons + comparison links derived from the canonical competitor registry. 404 + noindex when fewer than 5 alternatives exist or when the thin-content gate trips.
@@ -126,27 +120,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: getPublicCompetitorsBySlugAlternatives
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
 components:
   schemas:
-    CompetitorAlternativesPayload:
-      type: object
-      properties:
-        alternatives:
-          $ref: '#/components/schemas/AlternativesEnrichment'
-        introParagraph:
-          type: string
-          default: ''
-        lastUpdatedAt:
-          type:
-          - string
-          - 'null'
-      required:
-      - alternatives
-      - lastUpdatedAt
-      additionalProperties: false
     CompetitorComparisonRow:
       type: object
       properties:
@@ -177,28 +152,6 @@ components:
         competitor: Paid add-on ($20/mo)
         feature: Auto-apply submissions
         highlightWinner: aiapplyd
-    CompetitorFaq:
-      type: object
-      properties:
-        answer:
-          type: string
-          minLength: 1
-        category:
-          type: string
-          minLength: 1
-        question:
-          type: string
-          minLength: 1
-      required:
-      - answer
-      - category
-      - question
-      additionalProperties: false
-      description: Single FAQ entry surfaced on a competitor comparison page.
-      example:
-        answer: Yes, every paid plan includes unlimited exports of your application history as CSV or JSON.
-        category: migration
-        question: Can I export my data if I cancel?
     CompetitorListItem:
       type: object
       properties:
@@ -224,49 +177,53 @@ components:
       - sortOrder
       - tagline
       additionalProperties: false
-    AlternativeRow:
+    ResponseMetadata:
       type: object
       properties:
-        comparisonHref:
-          type:
-          - string
-          - 'null'
-        description:
+        duration:
+          type: number
+          description: Request duration in milliseconds
+          example: 150
+          exclusiveMinimum: 0
+        performance:
+          type: object
+          properties:
+            dbQueries:
+              type: integer
+              minimum: 0
+            totalDbTime:
+              type: number
+              minimum: 0
+          description: Performance metrics (preview/local only)
+        requestId:
           type: string
-        domain:
+          description: Unique request identifier
+          example: req_abc123
+        timestamp:
           type: string
-        freeTierSummary:
-          type:
-          - string
-          - 'null'
-        logoUrl:
-          type:
-          - string
-          - 'null'
-        name:
+          format: date-time
+          description: ISO 8601 timestamp
+          example: '2026-09-25T17:29:47.224Z'
+        version:
           type: string
-        pricingSummary:
-          type:
-          - string
-          - 'null'
-        prosCons:
-          $ref: '#/components/schemas/AlternativeProsCons'
-        slug:
-          type: string
-        tagline:
-          type: string
+          description: API version
+          example: v1
+    CompetitorDetailResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/CompetitorDetail'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
       required:
-      - comparisonHref
-      - description
-      - domain
-      - freeTierSummary
-      - logoUrl
-      - name
-      - pricingSummary
-      - prosCons
-      - slug
-      - tagline
+      - data
+      - success
       additionalProperties: false
+      description: Successful API response
     CompetitorAlternativesResponse:
       type: object
       properties:
@@ -348,6 +305,146 @@ components:
       - subhead
       - tagline
       - updatedAt
+      additionalProperties: false
+    CompetitorPillar:
+      type: object
+      properties:
+        body:
+          type: string
+          minLength: 1
+        icon:
+          type: string
+          minLength: 1
+        title:
+          type: string
+          minLength: 1
+      required:
+      - body
+      - icon
+      - title
+      additionalProperties: false
+      description: Single pillar card shown on a competitor comparison page.
+      example:
+        body: One AI model picks the right jobs, writes the cover letter, and submits the application without 40 tabs.
+        icon: zap
+        title: One workflow, not forty tabs
+    CompetitorFaq:
+      type: object
+      properties:
+        answer:
+          type: string
+          minLength: 1
+        category:
+          type: string
+          minLength: 1
+        question:
+          type: string
+          minLength: 1
+      required:
+      - answer
+      - category
+      - question
+      additionalProperties: false
+      description: Single FAQ entry surfaced on a competitor comparison page.
+      example:
+        answer: Yes, every paid plan includes unlimited exports of your application history as CSV or JSON.
+        category: migration
+        question: Can I export my data if I cancel?
+    AlternativesEnrichment:
+      type: object
+      properties:
+        alternatives:
+          type: array
+          items:
+            $ref: '#/components/schemas/AlternativeRow'
+        sourceCompetitor:
+          type:
+          - object
+          - 'null'
+          properties:
+            domain:
+              type: string
+            logoUrl:
+              type:
+              - string
+              - 'null'
+            name:
+              type: string
+            slug:
+              type: string
+            tagline:
+              type: string
+          required:
+          - domain
+          - logoUrl
+          - name
+          - slug
+          - tagline
+        totalCount:
+          type: integer
+          minimum: 0
+      required:
+      - alternatives
+      - sourceCompetitor
+      - totalCount
+      additionalProperties: false
+    AlternativeRow:
+      type: object
+      properties:
+        comparisonHref:
+          type:
+          - string
+          - 'null'
+        description:
+          type: string
+        domain:
+          type: string
+        freeTierSummary:
+          type:
+          - string
+          - 'null'
+        logoUrl:
+          type:
+          - string
+          - 'null'
+        name:
+          type: string
+        pricingSummary:
+          type:
+          - string
+          - 'null'
+        prosCons:
+          $ref: '#/components/schemas/AlternativeProsCons'
+        slug:
+          type: string
+        tagline:
+          type: string
+      required:
+      - comparisonHref
+      - description
+      - domain
+      - freeTierSummary
+      - logoUrl
+      - name
+      - pricingSummary
+      - prosCons
+      - slug
+      - tagline
+      additionalProperties: false
+    AlternativeProsCons:
+      type: object
+      properties:
+        cons:
+          type: array
+          items:
+            type: string
+        pros:
+          type: array
+          items:
+            type: string
+      required:
+      - cons
+      - pros
       additionalProperties: false
     ApiErrorResponse:
       type: object
@@ -693,37 +790,32 @@ components:
       - error
       - success
       additionalProperties: false
-    AlternativeProsCons:
+    CompetitorAlternativesPayload:
       type: object
       properties:
-        cons:
-          type: array
-          items:
-            type: string
-        pros:
-          type: array
-          items:
-            type: string
+        alternatives:
+          $ref: '#/components/schemas/AlternativesEnrichment'
+        introParagraph:
+          type: string
+          default: ''
+        lastUpdatedAt:
+          type:
+          - string
+          - 'null'
       required:
-      - cons
-      - pros
+      - alternatives
+      - lastUpdatedAt
       additionalProperties: false
-    CompetitorDetailResponse:
+    CompetitorListPayload:
       type: object
       properties:
-        data:
-          $ref: '#/components/schemas/CompetitorDetail'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
+        competitors:
+          type: array
+          items:
+            $ref: '#/components/schemas/CompetitorListItem'
       required:
-      - data
-      - success
+      - competitors
       additionalProperties: false
-      description: Successful API response
     CompetitorListResponse:
       type: object
       properties:
@@ -740,112 +832,8 @@ components:
       - success
       additionalProperties: false
       description: Successful API response
-    AlternativesEnrichment:
-      type: object
-      properties:
-        alternatives:
-          type: array
-          items:
-            $ref: '#/components/schemas/AlternativeRow'
-        sourceCompetitor:
-          type:
-          - object
-          - 'null'
-          properties:
-            domain:
-              type: string
-            logoUrl:
-              type:
-              - string
-              - 'null'
-            name:
-              type: string
-            slug:
-              type: string
-            tagline:
-              type: string
-          required:
-          - domain
-          - logoUrl
-          - name
-          - slug
-          - tagline
-        totalCount:
-          type: integer
-          minimum: 0
-      required:
-      - alternatives
-      - sourceCompetitor
-      - totalCount
-      additionalProperties: false
-    CompetitorPillar:
-      type: object
-      properties:
-        body:
-          type: string
-          minLength: 1
-        icon:
-          type: string
-          minLength: 1
-        title:
-          type: string
-          minLength: 1
-      required:
-      - body
-      - icon
-      - title
-      additionalProperties: false
-      description: Single pillar card shown on a competitor comparison page.
-      example:
-        body: One AI model picks the right jobs, writes the cover letter, and submits the application without 40 tabs.
-        icon: zap
-        title: One workflow, not forty tabs
-    CompetitorListPayload:
-      type: object
-      properties:
-        competitors:
-          type: array
-          items:
-            $ref: '#/components/schemas/CompetitorListItem'
-      required:
-      - competitors
-      additionalProperties: false
-    ResponseMetadata:
-      type: object
-      properties:
-        duration:
-          type: number
-          description: Request duration in milliseconds
-          example: 150
-          exclusiveMinimum: 0
-        performance:
-          type: object
-          properties:
-            dbQueries:
-              type: integer
-              minimum: 0
-            totalDbTime:
-              type: number
-              minimum: 0
-          description: Performance metrics (preview/local only)
-        requestId:
-          type: string
-          description: Unique request identifier
-          example: req_abc123
-        timestamp:
-          type: string
-          format: date-time
-          description: ISO 8601 timestamp
-          example: '2026-09-25T17:29:47.224Z'
-        version:
-          type: string
-          description: API version
-          example: v1
   securitySchemes:
     BearerAuth:
       description: 'Session token from signing in to AI Applyd, sent as `Authorization: Bearer <token>`.'
       scheme: bearer
       type: http
-x-refined-from:
-- aiapplyd-openapi.json
-- aiapplyd-openapi.yml

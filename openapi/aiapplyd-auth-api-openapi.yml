@@ -1,15 +1,15 @@
 openapi: 3.2.0
 info:
-  title: Aiapplyd Auth API
-  version: 115c47ce
   contact:
     email: support@aiapplyd.com
     name: AI Applyd
     url: https://aiapplyd.com
+  description: 'The AI Applyd API runs the whole job hunt for you: it matches you to roles that fit your profile, rewrites your resume for each posting, writes the cover letter the form asks for, and auto-applies across the major applicant tracking systems.'
   license:
     name: Proprietary
     url: https://aiapplyd.com/legal/terms
-  description: 'Operations tagged auth across 2 of this provider''s published API definitions: aiapplyd-openapi.json, aiapplyd-openapi.yml. Each path carries the servers of the definition it was published in.'
+  title: AI Applyd Auth API
+  version: 115c47ce
 servers:
 - description: Current environment
   url: https://api.aiapplyd.com/api/v1
@@ -57,11 +57,87 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: postAuthTestLogin
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
 components:
   schemas:
+    TestLoginResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/TestLoginData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    ResponseMetadata:
+      type: object
+      properties:
+        duration:
+          type: number
+          description: Request duration in milliseconds
+          example: 150
+          exclusiveMinimum: 0
+        performance:
+          type: object
+          properties:
+            dbQueries:
+              type: integer
+              minimum: 0
+            totalDbTime:
+              type: number
+              minimum: 0
+          description: Performance metrics (preview/local only)
+        requestId:
+          type: string
+          description: Unique request identifier
+          example: req_abc123
+        timestamp:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp
+          example: '2026-09-25T17:29:47.224Z'
+        version:
+          type: string
+          description: API version
+          example: v1
+    TestLoginData:
+      type: object
+      properties:
+        success:
+          type: boolean
+          enum:
+          - true
+          description: Always true when the route returns 200. Errors return wrapped error envelopes.
+        userId:
+          type: string
+          description: Echoes the user id the session was minted for.
+          example: test-sarah-chen-00000000-0000-0000-0000-000000000001
+        sessionToken:
+          type: string
+          description: Raw Better Auth session token. The same value is also set as the `aiapplyd.session_token` HMAC-signed cookie on the response.
+          example: JuYbT8e0g3uVqkX...
+      required:
+      - success
+      - userId
+      - sessionToken
+      additionalProperties: false
+    TestLoginBody:
+      type: object
+      properties:
+        userId:
+          type: string
+          minLength: 1
+          description: Target user id. Must have `is_test_user = 1` in the user table.
+          example: test-sarah-chen-00000000-0000-0000-0000-000000000001
+      required:
+      - userId
+      additionalProperties: false
     ApiErrorResponse:
       type: object
       properties:
@@ -406,90 +482,8 @@ components:
       - error
       - success
       additionalProperties: false
-    TestLoginData:
-      type: object
-      properties:
-        success:
-          type: boolean
-          enum:
-          - true
-          description: Always true when the route returns 200. Errors return wrapped error envelopes.
-        userId:
-          type: string
-          description: Echoes the user id the session was minted for.
-          example: test-sarah-chen-00000000-0000-0000-0000-000000000001
-        sessionToken:
-          type: string
-          description: Raw Better Auth session token. The same value is also set as the `aiapplyd.session_token` HMAC-signed cookie on the response.
-          example: JuYbT8e0g3uVqkX...
-      required:
-      - success
-      - userId
-      - sessionToken
-      additionalProperties: false
-    TestLoginBody:
-      type: object
-      properties:
-        userId:
-          type: string
-          minLength: 1
-          description: Target user id. Must have `is_test_user = 1` in the user table.
-          example: test-sarah-chen-00000000-0000-0000-0000-000000000001
-      required:
-      - userId
-      additionalProperties: false
-    TestLoginResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/TestLoginData'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    ResponseMetadata:
-      type: object
-      properties:
-        duration:
-          type: number
-          description: Request duration in milliseconds
-          example: 150
-          exclusiveMinimum: 0
-        performance:
-          type: object
-          properties:
-            dbQueries:
-              type: integer
-              minimum: 0
-            totalDbTime:
-              type: number
-              minimum: 0
-          description: Performance metrics (preview/local only)
-        requestId:
-          type: string
-          description: Unique request identifier
-          example: req_abc123
-        timestamp:
-          type: string
-          format: date-time
-          description: ISO 8601 timestamp
-          example: '2026-09-25T17:29:47.224Z'
-        version:
-          type: string
-          description: API version
-          example: v1
   securitySchemes:
     BearerAuth:
       description: 'Session token from signing in to AI Applyd, sent as `Authorization: Bearer <token>`.'
       scheme: bearer
       type: http
-x-refined-from:
-- aiapplyd-openapi.json
-- aiapplyd-openapi.yml

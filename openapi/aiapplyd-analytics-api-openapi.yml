@@ -1,15 +1,15 @@
 openapi: 3.2.0
 info:
-  title: Aiapplyd Analytics API
-  version: 115c47ce
   contact:
     email: support@aiapplyd.com
     name: AI Applyd
     url: https://aiapplyd.com
+  description: 'The AI Applyd API runs the whole job hunt for you: it matches you to roles that fit your profile, rewrites your resume for each posting, writes the cover letter the form asks for, and auto-applies across the major applicant tracking systems.'
   license:
     name: Proprietary
     url: https://aiapplyd.com/legal/terms
-  description: 'Operations tagged analytics across 2 of this provider''s published API definitions: aiapplyd-openapi.json, aiapplyd-openapi.yml. Each path carries the servers of the definition it was published in.'
+  title: AI Applyd Analytics API
+  version: 115c47ce
 servers:
 - description: Current environment
   url: https://api.aiapplyd.com/api/v1
@@ -50,9 +50,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: getAnalytics
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /analytics/patterns:
     get:
       description: 'Strategic insights derived deterministically from the user''s applications: conversion funnel by archetype / remote-policy / score band, top blockers, tech-stack gaps, data-driven score floor, and prioritized recommendations. Returns `{status: "insufficient_data"}` when fewer than 5 applications have moved past Evaluated.'
@@ -85,9 +82,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: getAnalyticsPatterns
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /analytics/recommendations/apply:
     post:
       description: 'Apply a structured pattern-analyzer recommendation. The actionType + actionPayload are produced by the analyzer and round-tripped through the FE. Idempotent: repeat-applies do not double-write.'
@@ -131,354 +125,76 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: postAnalyticsRecommendationsApply
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
 components:
   schemas:
-    ApiErrorResponse:
+    ResponseMetadata:
       type: object
       properties:
-        error:
+        duration:
+          type: number
+          description: Request duration in milliseconds
+          example: 150
+          exclusiveMinimum: 0
+        performance:
           type: object
           properties:
-            code:
-              type: string
-            context:
-              oneOf:
-              - type: object
-                properties:
-                  errorType:
-                    type: string
-                    enum:
-                    - validation
-                  field:
-                    type: string
-                  fieldErrors:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        code:
-                          type: string
-                        expected:
-                          type: string
-                        field:
-                          type: string
-                        message:
-                          type: string
-                        received:
-                          type: string
-                      required:
-                      - field
-                      - message
-                  schemaName:
-                    type: string
-                required:
-                - errorType
-              - type: object
-                properties:
-                  attemptedEmail:
-                    type: string
-                    format: email
-                  errorType:
-                    type: string
-                    enum:
-                    - authentication
-                  failureReason:
-                    type: string
-                    enum:
-                    - invalid_credentials
-                    - account_locked
-                    - expired_token
-                    - token_expired
-                    - missing_token
-                    - invalid_token
-                    - session_expired
-                    description: Reason for authentication failure
-                    example: token_expired
-                  ipAddress:
-                    type: string
-                  operation:
-                    type: string
-                  service:
-                    type: string
-                  userAgent:
-                    type: string
-                required:
-                - errorType
-              - type: object
-                properties:
-                  actualPermission:
-                    type: string
-                  errorType:
-                    type: string
-                    enum:
-                    - authorization
-                  requiredPermission:
-                    type: string
-                  resource:
-                    type: string
-                  resourceId:
-                    type: string
-                  userId:
-                    type: string
-                required:
-                - errorType
-              - type: object
-                properties:
-                  constraint:
-                    type: string
-                  errorType:
-                    type: string
-                    enum:
-                    - database
-                  operation:
-                    type: string
-                    enum:
-                    - insert
-                    - update
-                    - delete
-                    - select
-                    - batch
-                    - transaction
-                    - migration
-                    description: Type of database operation
-                    example: select
-                  resourceId:
-                    type: string
-                  sqlState:
-                    type: string
-                  table:
-                    type: string
-                  userId:
-                    type: string
-                required:
-                - errorType
-              - type: object
-                properties:
-                  endpoint:
-                    type: string
-                  errorType:
-                    type: string
-                    enum:
-                    - external_service
-                  httpStatus:
-                    type: number
-                  operation:
-                    type: string
-                  resourceId:
-                    type: string
-                  responseTime:
-                    type: number
-                  retryAttempt:
-                    type: integer
-                  service:
-                    type: string
-                  serviceName:
-                    type: string
-                  userId:
-                    type: string
-                required:
-                - errorType
-              - type: object
-                properties:
-                  errorType:
-                    type: string
-                    enum:
-                    - resource
-                  resource:
-                    type: string
-                  resourceId:
-                    type: string
-                  service:
-                    type: string
-                  userId:
-                    type: string
-                required:
-                - errorType
-              - type: object
-                properties:
-                  errorType:
-                    type: string
-                    enum:
-                    - rate_limit
-                  limit:
-                    type: number
-                  resetTime:
-                    type: string
-                  windowMs:
-                    type: number
-                required:
-                - errorType
-              - type: object
-                properties:
-                  configKey:
-                    type: string
-                  errorType:
-                    type: string
-                    enum:
-                    - configuration
-                  operation:
-                    type: string
-                  service:
-                    type: string
-                required:
-                - errorType
-              description: Type-safe error context information
-              example:
-                errorType: validation
-                fieldErrors:
-                - field: email
-                  message: Invalid email format
-            details:
-              oneOf:
-              - type: object
-                properties:
-                  detailType:
-                    type: string
-                    enum:
-                    - validation
-                  validationErrors:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        code:
-                          type: string
-                        field:
-                          type: string
-                        message:
-                          type: string
-                      required:
-                      - field
-                      - message
-                required:
-                - detailType
-                - validationErrors
-                additionalProperties: false
-              - type: object
-                properties:
-                  detailType:
-                    type: string
-                    enum:
-                    - service_error
-                  originalError:
-                    type: string
-                  serviceName:
-                    type: string
-                required:
-                - detailType
-                - serviceName
-                additionalProperties: false
-              - type: object
-                properties:
-                  currentSize:
-                    type: number
-                  detailType:
-                    type: string
-                    enum:
-                    - batch
-                  originalError:
-                    type: string
-                  statementCount:
-                    type: number
-                required:
-                - detailType
-                additionalProperties: false
-              - type: object
-                properties:
-                  detailType:
-                    type: string
-                    enum:
-                    - rate_limit
-                  limit:
-                    type: number
-                  resetTime:
-                    type: string
-                  windowMs:
-                    type: number
-                required:
-                - detailType
-                - limit
-                - resetTime
-                - windowMs
-                additionalProperties: false
-              - type: object
-                properties:
-                  conflictingField:
-                    type: string
-                  detailType:
-                    type: string
-                    enum:
-                    - resource
-                  resourceId:
-                    anyOf:
-                    - type: string
-                    - type: number
-                  resourceType:
-                    type: string
-                required:
-                - detailType
-                additionalProperties: false
-              - type: object
-                properties:
-                  detailType:
-                    type: string
-                    enum:
-                    - generic
-                  info:
-                    type: string
-                required:
-                - detailType
-                additionalProperties: false
-              - type: object
-                properties:
-                  currentTokens:
-                    type: integer
-                    minimum: 0
-                  detailType:
-                    type: string
-                    enum:
-                    - insufficient_tokens
-                  requiredTokens:
-                    type: integer
-                    minimum: 0
-                required:
-                - currentTokens
-                - detailType
-                - requiredTokens
-                additionalProperties: false
-            message:
-              type: string
-            validation:
-              type: array
-              items:
-                type: object
-                properties:
-                  code:
-                    type: string
-                  field:
-                    type: string
-                  message:
-                    type: string
-                required:
-                - field
-                - message
-                additionalProperties: false
-          required:
-          - code
-          - message
-          additionalProperties: false
+            dbQueries:
+              type: integer
+              minimum: 0
+            totalDbTime:
+              type: number
+              minimum: 0
+          description: Performance metrics (preview/local only)
+        requestId:
+          type: string
+          description: Unique request identifier
+          example: req_abc123
+        timestamp:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp
+          example: '2026-09-25T17:29:47.224Z'
+        version:
+          type: string
+          description: API version
+          example: v1
+    PatternAnalysisResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/PatternAnalysisResult'
         meta:
           $ref: '#/components/schemas/ResponseMetadata'
         success:
           type: boolean
           enum:
-          - false
+          - true
       required:
-      - error
+      - data
       - success
+      additionalProperties: false
+      description: Successful API response
+    MatchQualityWeek:
+      type: object
+      properties:
+        excellent:
+          type: integer
+          description: Roles scored 90 or above
+        fair:
+          type: integer
+          description: Roles scored 60 to 79
+        strong:
+          type: integer
+          description: Roles scored 80 to 89
+        week:
+          type: string
+          description: ISO year-week key, e.g. 2026-31
+          example: 2026-31
+      required:
+      - excellent
+      - fair
+      - strong
+      - week
       additionalProperties: false
     AnalyticsData:
       type:
@@ -672,69 +388,11 @@ components:
       - totalJobs
       - unactionedHighMatches
       - weeklyApplications
-    RemotePolicyFunnelRow:
-      type: object
-      properties:
-        conversionRate:
-          type: number
-        progressed:
-          type: integer
-        total:
-          type: integer
-        workArrangement:
-          type: string
-          enum:
-          - onsite
-          - hybrid
-          - remote_local
-          - remote_country
-          - remote_region
-          - remote_global
-          - unknown
-          description: How a job can be performed geographically
-          example: remote_country
-      required:
-      - conversionRate
-      - progressed
-      - total
-      - workArrangement
-      additionalProperties: false
-    ResponseMetadata:
-      type: object
-      properties:
-        duration:
-          type: number
-          description: Request duration in milliseconds
-          example: 150
-          exclusiveMinimum: 0
-        performance:
-          type: object
-          properties:
-            dbQueries:
-              type: integer
-              minimum: 0
-            totalDbTime:
-              type: number
-              minimum: 0
-          description: Performance metrics (preview/local only)
-        requestId:
-          type: string
-          description: Unique request identifier
-          example: req_abc123
-        timestamp:
-          type: string
-          format: date-time
-          description: ISO 8601 timestamp
-          example: '2026-09-25T17:29:47.224Z'
-        version:
-          type: string
-          description: API version
-          example: v1
-    PatternAnalysisResponse:
+    AnalyticsResponse:
       type: object
       properties:
         data:
-          $ref: '#/components/schemas/PatternAnalysisResult'
+          $ref: '#/components/schemas/AnalyticsData'
         meta:
           $ref: '#/components/schemas/ResponseMetadata'
         success:
@@ -746,199 +404,15 @@ components:
       - success
       additionalProperties: false
       description: Successful API response
-    BlockerRow:
-      type: object
-      properties:
-        count:
-          type: integer
-        reason:
-          type: string
-          enum:
-          - geo_restriction
-          - stack_mismatch
-          - seniority_mismatch
-          - onsite_requirement
-          - no_response
-          - low_match
-          - other
-          - unknown
-          description: Coarse "why this application did not progress" bucket. Used by the pattern-analyzer to surface top blockers and recommendations.
-          example: stack_mismatch
-        share:
-          type: number
-          description: 0..1 share of negative outcomes attributable to this blocker
-          example: 0.32
-      required:
-      - count
-      - reason
-      - share
-      additionalProperties: false
-    ApplyRecommendationResult:
-      type: object
-      properties:
-        changed:
-          type: boolean
-          description: True when the executor mutated state. False = idempotent no-op (already applied).
-        message:
-          type: string
-          description: Human-readable summary of what happened.
-        ok:
-          type: boolean
-          description: True when the executor accepted + processed the action.
-      required:
-      - changed
-      - message
-      - ok
-      additionalProperties: false
-    ArchetypeFunnelRow:
-      type: object
-      properties:
-        archetype:
-          type: string
-          enum:
-          - software_engineer_frontend
-          - software_engineer_backend
-          - software_engineer_fullstack
-          - software_engineer_mobile
-          - software_engineer_embedded
-          - software_engineer_games
-          - software_engineer_generic
-          - devops_sre
-          - platform_infra
-          - security_engineer
-          - qa_test
-          - data_engineer
-          - data_scientist
-          - data_analyst
-          - ml_engineer
-          - ai_research
-          - product_manager
-          - project_program_manager
-          - designer_product
-          - designer_ux_research
-          - designer_visual
-          - engineering_manager
-          - technical_writer
-          - developer_advocate
-          - solutions_engineer
-          - support_engineer
-          - sales
-          - marketing
-          - operations
-          - executive
-          - finance
-          - legal
-          - hr_recruiting
-          - customer_success
-          - healthcare
-          - creative-design
-          - trades-manual
-          - education
-          - hospitality
-          - logistics-supply
-          - manufacturing
-          - gov-nonprofit
-          - marketing-sales
-          - consulting
-          - retail
-          - insurance
-          - admin_office
-          - other
-          - robotics_engineer
-          - control_systems_engineer
-          - mechatronics_engineer
-          - firmware_engineer
-          - fpga_engineer
-          - hardware_engineer
-          - electrical_engineer
-          - rf_engineer
-          - analog_engineer
-          - biomedical_engineer
-          - aerospace_engineer
-          - avionics_engineer
-          - simulation_engineer
-          - computer_vision_engineer
-          - autonomous_vehicles_engineer
-          - graphics_engineer
-          - blockchain_engineer
-          - smart_contract_engineer
-          - game_designer
-          - ios_engineer
-          - android_engineer
-          - mlops_engineer
-          - ai_infrastructure_engineer
-          - llm_engineer
-          - prompt_engineer
-          - research_engineer
-          - applied_scientist
-          - cloud_architect
-          - solutions_architect
-          - enterprise_architect
-          - release_engineer
-          - network_engineer
-          - systems_engineer
-          - database_administrator
-          - appsec_engineer
-          - pentest_engineer
-          - soc_analyst
-          - incident_responder
-          - analytics_engineer
-          - data_architect
-          - bioinformatics_engineer
-          - computational_biologist
-          - quant_analyst
-          - quant_developer
-          - trading_systems_engineer
-          - risk_analyst
-          - sdet
-          - automation_engineer
-          - product_manager_growth
-          - ux_writer
-          - content_designer
-          - design_engineer
-          - documentation_engineer
-          - customer_engineer
-          - implementation_engineer
-          - civil_engineer
-          - mechanical_engineer
-          description: Canonical role family for matching
-          example: software_engineer_frontend
-        conversionRate:
-          type: number
-          description: progressed / total expressed as a 0..1 ratio. Rounded to 3 decimals.
-          example: 0.214
-        progressed:
-          type: integer
-        total:
-          type: integer
-      required:
-      - archetype
-      - conversionRate
-      - progressed
-      - total
-      additionalProperties: false
-    MatchQualityWeek:
-      type: object
-      properties:
-        excellent:
-          type: integer
-          description: Roles scored 90 or above
-        fair:
-          type: integer
-          description: Roles scored 60 to 79
-        strong:
-          type: integer
-          description: Roles scored 80 to 89
-        week:
-          type: string
-          description: ISO year-week key, e.g. 2026-31
-          example: 2026-31
-      required:
-      - excellent
-      - fair
-      - strong
-      - week
-      additionalProperties: false
+    PatternAnalysisResult:
+      oneOf:
+      - $ref: '#/components/schemas/PatternAnalysisReady'
+      - $ref: '#/components/schemas/PatternAnalysisInsufficient'
+      discriminator:
+        propertyName: status
+        mapping:
+          ready: '#/components/schemas/PatternAnalysisReady'
+          insufficient_data: '#/components/schemas/PatternAnalysisInsufficient'
     ApplyRecommendationRequest:
       oneOf:
       - type: object
@@ -1125,15 +599,342 @@ components:
         - actionType
         additionalProperties: false
       description: Recommendation action with discriminated payload by actionType.
-    PatternAnalysisResult:
-      oneOf:
-      - $ref: '#/components/schemas/PatternAnalysisReady'
-      - $ref: '#/components/schemas/PatternAnalysisInsufficient'
-      discriminator:
-        propertyName: status
-        mapping:
-          ready: '#/components/schemas/PatternAnalysisReady'
-          insufficient_data: '#/components/schemas/PatternAnalysisInsufficient'
+    BlockerRow:
+      type: object
+      properties:
+        count:
+          type: integer
+        reason:
+          type: string
+          enum:
+          - geo_restriction
+          - stack_mismatch
+          - seniority_mismatch
+          - onsite_requirement
+          - no_response
+          - low_match
+          - other
+          - unknown
+          description: Coarse "why this application did not progress" bucket. Used by the pattern-analyzer to surface top blockers and recommendations.
+          example: stack_mismatch
+        share:
+          type: number
+          description: 0..1 share of negative outcomes attributable to this blocker
+          example: 0.32
+      required:
+      - count
+      - reason
+      - share
+      additionalProperties: false
+    PatternAnalysisData:
+      type: object
+      properties:
+        blockers:
+          type: array
+          items:
+            $ref: '#/components/schemas/BlockerRow'
+          description: Top blockers ordered by count desc.
+        funnel:
+          type: object
+          properties:
+            byArchetype:
+              type: array
+              items:
+                $ref: '#/components/schemas/ArchetypeFunnelRow'
+            byRemotePolicy:
+              type: array
+              items:
+                $ref: '#/components/schemas/RemotePolicyFunnelRow'
+            byScoreBucket:
+              type: array
+              items:
+                $ref: '#/components/schemas/ScoreBucketFunnelRow'
+          required:
+          - byArchetype
+          - byRemotePolicy
+          - byScoreBucket
+          additionalProperties: false
+        recommendations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Recommendation'
+          description: Recommendations ordered by impact (high → low) and tie-broken by sample size.
+        scoreFloor:
+          type:
+          - number
+          - 'null'
+          example: 4.2
+        skillGaps:
+          type: array
+          items:
+            $ref: '#/components/schemas/SkillGapRow'
+          description: Skill slugs over-represented in negative outcomes.
+        totalApplications:
+          type: integer
+      required:
+      - blockers
+      - funnel
+      - recommendations
+      - scoreFloor
+      - skillGaps
+      - totalApplications
+      additionalProperties: false
+    PatternAnalysisInsufficient:
+      type: object
+      properties:
+        current:
+          type: integer
+          description: Number of applications the user currently has past Evaluated.
+        status:
+          type: string
+          enum:
+          - insufficient_data
+        threshold:
+          type: number
+          enum:
+          - 5
+      required:
+      - current
+      - status
+      - threshold
+      additionalProperties: false
+    ArchetypeFunnelRow:
+      type: object
+      properties:
+        archetype:
+          type: string
+          enum:
+          - software_engineer_frontend
+          - software_engineer_backend
+          - software_engineer_fullstack
+          - software_engineer_mobile
+          - software_engineer_embedded
+          - software_engineer_games
+          - software_engineer_generic
+          - devops_sre
+          - platform_infra
+          - security_engineer
+          - qa_test
+          - data_engineer
+          - data_scientist
+          - data_analyst
+          - ml_engineer
+          - ai_research
+          - product_manager
+          - project_program_manager
+          - designer_product
+          - designer_ux_research
+          - designer_visual
+          - engineering_manager
+          - technical_writer
+          - developer_advocate
+          - solutions_engineer
+          - support_engineer
+          - sales
+          - marketing
+          - operations
+          - executive
+          - finance
+          - legal
+          - hr_recruiting
+          - customer_success
+          - healthcare
+          - creative-design
+          - trades-manual
+          - education
+          - hospitality
+          - logistics-supply
+          - manufacturing
+          - gov-nonprofit
+          - marketing-sales
+          - consulting
+          - retail
+          - insurance
+          - admin_office
+          - other
+          - robotics_engineer
+          - control_systems_engineer
+          - mechatronics_engineer
+          - firmware_engineer
+          - fpga_engineer
+          - hardware_engineer
+          - electrical_engineer
+          - rf_engineer
+          - analog_engineer
+          - biomedical_engineer
+          - aerospace_engineer
+          - avionics_engineer
+          - simulation_engineer
+          - computer_vision_engineer
+          - autonomous_vehicles_engineer
+          - graphics_engineer
+          - blockchain_engineer
+          - smart_contract_engineer
+          - game_designer
+          - ios_engineer
+          - android_engineer
+          - mlops_engineer
+          - ai_infrastructure_engineer
+          - llm_engineer
+          - prompt_engineer
+          - research_engineer
+          - applied_scientist
+          - cloud_architect
+          - solutions_architect
+          - enterprise_architect
+          - release_engineer
+          - network_engineer
+          - systems_engineer
+          - database_administrator
+          - appsec_engineer
+          - pentest_engineer
+          - soc_analyst
+          - incident_responder
+          - analytics_engineer
+          - data_architect
+          - bioinformatics_engineer
+          - computational_biologist
+          - quant_analyst
+          - quant_developer
+          - trading_systems_engineer
+          - risk_analyst
+          - sdet
+          - automation_engineer
+          - product_manager_growth
+          - ux_writer
+          - content_designer
+          - design_engineer
+          - documentation_engineer
+          - customer_engineer
+          - implementation_engineer
+          - civil_engineer
+          - mechanical_engineer
+          description: Canonical role family for matching
+          example: software_engineer_frontend
+        conversionRate:
+          type: number
+          description: progressed / total expressed as a 0..1 ratio. Rounded to 3 decimals.
+          example: 0.214
+        progressed:
+          type: integer
+        total:
+          type: integer
+      required:
+      - archetype
+      - conversionRate
+      - progressed
+      - total
+      additionalProperties: false
+    RemotePolicyFunnelRow:
+      type: object
+      properties:
+        conversionRate:
+          type: number
+        progressed:
+          type: integer
+        total:
+          type: integer
+        workArrangement:
+          type: string
+          enum:
+          - onsite
+          - hybrid
+          - remote_local
+          - remote_country
+          - remote_region
+          - remote_global
+          - unknown
+          description: How a job can be performed geographically
+          example: remote_country
+      required:
+      - conversionRate
+      - progressed
+      - total
+      - workArrangement
+      additionalProperties: false
+    PatternAnalysisReady:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/PatternAnalysisData'
+        status:
+          type: string
+          enum:
+          - ready
+      required:
+      - data
+      - status
+      additionalProperties: false
+    OutcomeMetrics:
+      type: object
+      properties:
+        emailResponseRate:
+          type: number
+          description: Share of classified inbound job emails that carry a positive signal (interview / scheduling / offer), as a percentage. 0 when no emails are classified.
+          example: 42.5
+        interviewsBooked:
+          type: integer
+          description: Applications that reached an interview-booked outcome (stage phone_screen/interview, or interview_booked_at set).
+          example: 3
+        nextInterviewResultId:
+          type:
+          - integer
+          - 'null'
+          description: Application-result id behind the SOONEST upcoming interview event, for the applications deep-link. Null when that event has no application behind it; absent on payloads that do not resolve it.
+          example: 1481
+        offers:
+          type: integer
+          description: Applications with an offer outcome (applicationStage = offered).
+          example: 1
+        positiveEmailSignals:
+          type: integer
+          description: Count of inbound emails classified as a positive signal (interview_invite / scheduling / reschedule / offer_letter).
+          example: 5
+        upcomingInterviews:
+          type: integer
+          description: Synced calendar events flagged as interviews whose start time is in the future.
+          example: 2
+      required:
+      - emailResponseRate
+      - interviewsBooked
+      - offers
+      - positiveEmailSignals
+      - upcomingInterviews
+      additionalProperties: false
+      description: Real-outcome success metrics from the email + calendar pipeline (interviews booked, offers, upcoming interviews, email response rate).
+    ApplyRecommendationResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ApplyRecommendationResult'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    ApplyRecommendationResult:
+      type: object
+      properties:
+        changed:
+          type: boolean
+          description: True when the executor mutated state. False = idempotent no-op (already applied).
+        message:
+          type: string
+          description: Human-readable summary of what happened.
+        ok:
+          type: boolean
+          description: True when the executor accepted + processed the action.
+      required:
+      - changed
+      - message
+      - ok
+      additionalProperties: false
     ScoreBucketFunnelRow:
       type: object
       properties:
@@ -1157,136 +958,6 @@ components:
       - conversionRate
       - progressed
       - total
-      additionalProperties: false
-    SkillGapRow:
-      type: object
-      properties:
-        negativeRate:
-          type: number
-        occurrences:
-          type: integer
-          description: Total applications that mention this skill (numerator + denominator union).
-        skill:
-          type: string
-          description: Canonical skill slug (lowercased, kebab-cased) as stored on `job_match.canonical_skills`.
-          example: rust
-      required:
-      - negativeRate
-      - occurrences
-      - skill
-      additionalProperties: false
-    Recommendation:
-      type: object
-      properties:
-        action:
-          type: string
-          description: One concrete action the user can take next. Phrased as an imperative.
-          example: Filter out roles with match score below 4.0 - none have progressed.
-        actionPayload:
-          type: object
-          additionalProperties: {}
-          description: Per-action JSON payload. Empty / omitted for noop actions or legacy text-only recs.
-          example:
-            threshold: 4
-        actionType:
-          type: string
-          enum:
-          - raise_score_floor
-          - filter_remote_policy
-          - deprioritize_archetype
-          - noop
-          description: Structured action enum. Absent / `noop` means the recommendation is informational only (no Apply button).
-          example: raise_score_floor
-        appliedAt:
-          type:
-          - string
-          - 'null'
-          format: date-time
-          description: When this recommendation's target state was already in effect at analysis time. Null / absent = still actionable.
-          example: '2026-05-10T12:34:56.000Z'
-        impact:
-          type: string
-          enum:
-          - high
-          - medium
-          - low
-          description: Coarse expected-impact bucket for a recommendation. Computed from sample size + outcome shift, not author-supplied.
-          example: high
-        reasoning:
-          type: string
-          description: 'Why this recommendation: which signal in the data triggered it (counts, share, conversion deltas).'
-          example: 12 of 12 applications below 4.0 ended in no_response or rejection.
-        template:
-          $ref: '#/components/schemas/RecommendationTemplate'
-      required:
-      - action
-      - impact
-      - reasoning
-      - template
-      additionalProperties: false
-    PatternAnalysisInsufficient:
-      type: object
-      properties:
-        current:
-          type: integer
-          description: Number of applications the user currently has past Evaluated.
-        status:
-          type: string
-          enum:
-          - insufficient_data
-        threshold:
-          type: number
-          enum:
-          - 5
-      required:
-      - current
-      - status
-      - threshold
-      additionalProperties: false
-    ApplyRecommendationResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/ApplyRecommendationResult'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    AnalyticsResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/AnalyticsData'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    PatternAnalysisReady:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/PatternAnalysisData'
-        status:
-          type: string
-          enum:
-          - ready
-      required:
-      - data
-      - status
       additionalProperties: false
     RecommendationTemplate:
       oneOf:
@@ -1813,43 +1484,416 @@ components:
         - params
         additionalProperties: false
       description: Stable catalog template and exact interpolation values for localized clients.
-    OutcomeMetrics:
+    Recommendation:
       type: object
       properties:
-        emailResponseRate:
-          type: number
-          description: Share of classified inbound job emails that carry a positive signal (interview / scheduling / offer), as a percentage. 0 when no emails are classified.
-          example: 42.5
-        interviewsBooked:
-          type: integer
-          description: Applications that reached an interview-booked outcome (stage phone_screen/interview, or interview_booked_at set).
-          example: 3
-        nextInterviewResultId:
+        action:
+          type: string
+          description: One concrete action the user can take next. Phrased as an imperative.
+          example: Filter out roles with match score below 4.0 - none have progressed.
+        actionPayload:
+          type: object
+          additionalProperties: {}
+          description: Per-action JSON payload. Empty / omitted for noop actions or legacy text-only recs.
+          example:
+            threshold: 4
+        actionType:
+          type: string
+          enum:
+          - raise_score_floor
+          - filter_remote_policy
+          - deprioritize_archetype
+          - noop
+          description: Structured action enum. Absent / `noop` means the recommendation is informational only (no Apply button).
+          example: raise_score_floor
+        appliedAt:
           type:
-          - integer
+          - string
           - 'null'
-          description: Application-result id behind the SOONEST upcoming interview event, for the applications deep-link. Null when that event has no application behind it; absent on payloads that do not resolve it.
-          example: 1481
-        offers:
-          type: integer
-          description: Applications with an offer outcome (applicationStage = offered).
-          example: 1
-        positiveEmailSignals:
-          type: integer
-          description: Count of inbound emails classified as a positive signal (interview_invite / scheduling / reschedule / offer_letter).
-          example: 5
-        upcomingInterviews:
-          type: integer
-          description: Synced calendar events flagged as interviews whose start time is in the future.
-          example: 2
+          format: date-time
+          description: When this recommendation's target state was already in effect at analysis time. Null / absent = still actionable.
+          example: '2026-05-10T12:34:56.000Z'
+        impact:
+          type: string
+          enum:
+          - high
+          - medium
+          - low
+          description: Coarse expected-impact bucket for a recommendation. Computed from sample size + outcome shift, not author-supplied.
+          example: high
+        reasoning:
+          type: string
+          description: 'Why this recommendation: which signal in the data triggered it (counts, share, conversion deltas).'
+          example: 12 of 12 applications below 4.0 ended in no_response or rejection.
+        template:
+          $ref: '#/components/schemas/RecommendationTemplate'
       required:
-      - emailResponseRate
-      - interviewsBooked
-      - offers
-      - positiveEmailSignals
-      - upcomingInterviews
+      - action
+      - impact
+      - reasoning
+      - template
       additionalProperties: false
-      description: Real-outcome success metrics from the email + calendar pipeline (interviews booked, offers, upcoming interviews, email response rate).
+    ApiErrorResponse:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+            context:
+              oneOf:
+              - type: object
+                properties:
+                  errorType:
+                    type: string
+                    enum:
+                    - validation
+                  field:
+                    type: string
+                  fieldErrors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        code:
+                          type: string
+                        expected:
+                          type: string
+                        field:
+                          type: string
+                        message:
+                          type: string
+                        received:
+                          type: string
+                      required:
+                      - field
+                      - message
+                  schemaName:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  attemptedEmail:
+                    type: string
+                    format: email
+                  errorType:
+                    type: string
+                    enum:
+                    - authentication
+                  failureReason:
+                    type: string
+                    enum:
+                    - invalid_credentials
+                    - account_locked
+                    - expired_token
+                    - token_expired
+                    - missing_token
+                    - invalid_token
+                    - session_expired
+                    description: Reason for authentication failure
+                    example: token_expired
+                  ipAddress:
+                    type: string
+                  operation:
+                    type: string
+                  service:
+                    type: string
+                  userAgent:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  actualPermission:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - authorization
+                  requiredPermission:
+                    type: string
+                  resource:
+                    type: string
+                  resourceId:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  constraint:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - database
+                  operation:
+                    type: string
+                    enum:
+                    - insert
+                    - update
+                    - delete
+                    - select
+                    - batch
+                    - transaction
+                    - migration
+                    description: Type of database operation
+                    example: select
+                  resourceId:
+                    type: string
+                  sqlState:
+                    type: string
+                  table:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  endpoint:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - external_service
+                  httpStatus:
+                    type: number
+                  operation:
+                    type: string
+                  resourceId:
+                    type: string
+                  responseTime:
+                    type: number
+                  retryAttempt:
+                    type: integer
+                  service:
+                    type: string
+                  serviceName:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  errorType:
+                    type: string
+                    enum:
+                    - resource
+                  resource:
+                    type: string
+                  resourceId:
+                    type: string
+                  service:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  errorType:
+                    type: string
+                    enum:
+                    - rate_limit
+                  limit:
+                    type: number
+                  resetTime:
+                    type: string
+                  windowMs:
+                    type: number
+                required:
+                - errorType
+              - type: object
+                properties:
+                  configKey:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - configuration
+                  operation:
+                    type: string
+                  service:
+                    type: string
+                required:
+                - errorType
+              description: Type-safe error context information
+              example:
+                errorType: validation
+                fieldErrors:
+                - field: email
+                  message: Invalid email format
+            details:
+              oneOf:
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - validation
+                  validationErrors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        code:
+                          type: string
+                        field:
+                          type: string
+                        message:
+                          type: string
+                      required:
+                      - field
+                      - message
+                required:
+                - detailType
+                - validationErrors
+                additionalProperties: false
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - service_error
+                  originalError:
+                    type: string
+                  serviceName:
+                    type: string
+                required:
+                - detailType
+                - serviceName
+                additionalProperties: false
+              - type: object
+                properties:
+                  currentSize:
+                    type: number
+                  detailType:
+                    type: string
+                    enum:
+                    - batch
+                  originalError:
+                    type: string
+                  statementCount:
+                    type: number
+                required:
+                - detailType
+                additionalProperties: false
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - rate_limit
+                  limit:
+                    type: number
+                  resetTime:
+                    type: string
+                  windowMs:
+                    type: number
+                required:
+                - detailType
+                - limit
+                - resetTime
+                - windowMs
+                additionalProperties: false
+              - type: object
+                properties:
+                  conflictingField:
+                    type: string
+                  detailType:
+                    type: string
+                    enum:
+                    - resource
+                  resourceId:
+                    anyOf:
+                    - type: string
+                    - type: number
+                  resourceType:
+                    type: string
+                required:
+                - detailType
+                additionalProperties: false
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - generic
+                  info:
+                    type: string
+                required:
+                - detailType
+                additionalProperties: false
+              - type: object
+                properties:
+                  currentTokens:
+                    type: integer
+                    minimum: 0
+                  detailType:
+                    type: string
+                    enum:
+                    - insufficient_tokens
+                  requiredTokens:
+                    type: integer
+                    minimum: 0
+                required:
+                - currentTokens
+                - detailType
+                - requiredTokens
+                additionalProperties: false
+            message:
+              type: string
+            validation:
+              type: array
+              items:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  field:
+                    type: string
+                  message:
+                    type: string
+                required:
+                - field
+                - message
+                additionalProperties: false
+          required:
+          - code
+          - message
+          additionalProperties: false
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - false
+      required:
+      - error
+      - success
+      additionalProperties: false
+    SkillGapRow:
+      type: object
+      properties:
+        negativeRate:
+          type: number
+        occurrences:
+          type: integer
+          description: Total applications that mention this skill (numerator + denominator union).
+        skill:
+          type: string
+          description: Canonical skill slug (lowercased, kebab-cased) as stored on `job_match.canonical_skills`.
+          example: rust
+      required:
+      - negativeRate
+      - occurrences
+      - skill
+      additionalProperties: false
     DailyApplication:
       type: object
       properties:
@@ -1863,64 +1907,8 @@ components:
       - count
       - date
       additionalProperties: false
-    PatternAnalysisData:
-      type: object
-      properties:
-        blockers:
-          type: array
-          items:
-            $ref: '#/components/schemas/BlockerRow'
-          description: Top blockers ordered by count desc.
-        funnel:
-          type: object
-          properties:
-            byArchetype:
-              type: array
-              items:
-                $ref: '#/components/schemas/ArchetypeFunnelRow'
-            byRemotePolicy:
-              type: array
-              items:
-                $ref: '#/components/schemas/RemotePolicyFunnelRow'
-            byScoreBucket:
-              type: array
-              items:
-                $ref: '#/components/schemas/ScoreBucketFunnelRow'
-          required:
-          - byArchetype
-          - byRemotePolicy
-          - byScoreBucket
-          additionalProperties: false
-        recommendations:
-          type: array
-          items:
-            $ref: '#/components/schemas/Recommendation'
-          description: Recommendations ordered by impact (high → low) and tie-broken by sample size.
-        scoreFloor:
-          type:
-          - number
-          - 'null'
-          example: 4.2
-        skillGaps:
-          type: array
-          items:
-            $ref: '#/components/schemas/SkillGapRow'
-          description: Skill slugs over-represented in negative outcomes.
-        totalApplications:
-          type: integer
-      required:
-      - blockers
-      - funnel
-      - recommendations
-      - scoreFloor
-      - skillGaps
-      - totalApplications
-      additionalProperties: false
   securitySchemes:
     BearerAuth:
       description: 'Session token from signing in to AI Applyd, sent as `Authorization: Bearer <token>`.'
       scheme: bearer
       type: http
-x-refined-from:
-- aiapplyd-openapi.json
-- aiapplyd-openapi.yml

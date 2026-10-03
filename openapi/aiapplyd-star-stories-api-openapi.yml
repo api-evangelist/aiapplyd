@@ -1,15 +1,15 @@
 openapi: 3.2.0
 info:
-  title: Aiapplyd Star Stories API
-  version: 115c47ce
   contact:
     email: support@aiapplyd.com
     name: AI Applyd
     url: https://aiapplyd.com
+  description: 'The AI Applyd API runs the whole job hunt for you: it matches you to roles that fit your profile, rewrites your resume for each posting, writes the cover letter the form asks for, and auto-applies across the major applicant tracking systems.'
   license:
     name: Proprietary
     url: https://aiapplyd.com/legal/terms
-  description: 'Operations tagged star-stories across 2 of this provider''s published API definitions: aiapplyd-openapi.json, aiapplyd-openapi.yml. Each path carries the servers of the definition it was published in.'
+  title: AI Applyd Star Stories API
+  version: 115c47ce
 servers:
 - description: Current environment
   url: https://api.aiapplyd.com/api/v1
@@ -132,9 +132,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: postStarStories
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /star-stories/draft:
     post:
       tags:
@@ -178,9 +175,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: postStarStoriesDraft
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /star-stories/generate-from-resume:
     post:
       tags:
@@ -219,9 +213,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: postStarStoriesGenerateFromResume
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /star-stories/extract-from-interview-prep/{jobId}:
     post:
       tags:
@@ -270,9 +261,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: postStarStoriesExtractFromInterviewPrepByJobId
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /star-stories/{id}:
     patch:
       tags:
@@ -373,11 +361,379 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: deleteStarStoriesById
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
 components:
   schemas:
+    DraftStarStoryData:
+      type: object
+      properties:
+        action:
+          type: string
+          description: Drafted Action narrative
+        reflection:
+          type:
+          - string
+          - 'null'
+          description: Drafted Reflection (lessons learned)
+        result:
+          type: string
+          description: Drafted quantified Result
+        savedStory:
+          type:
+          - object
+          - 'null'
+          properties:
+            action:
+              type: string
+              description: What the candidate did (specific, detailed)
+            bestForQuestions:
+              type: array
+              items:
+                type: string
+              description: Question types this story can answer
+              example:
+              - Tell me about a time you led a team
+              - How do you handle conflict?
+            createdAt:
+              type: string
+              description: Story creation timestamp (ISO-8601)
+              example: '2026-01-15T12:00:00Z'
+            derivedFromResume:
+              type: boolean
+              description: True when this row was produced by the one-click "generate from resume" flow. Lets the UI flip its CTA to "Regenerate" and replace prior AI rows instead of duplicating them.
+              example: true
+            id:
+              type: string
+              description: STAR story identifier (UUID)
+              example: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+            reflection:
+              type:
+              - string
+              - 'null'
+              description: Lessons learned / what would be done differently (signals seniority)
+              example: I learned to invest in observability before scaling, not after.
+            result:
+              type: string
+              description: Quantified outcome with metrics where possible
+            situation:
+              type: string
+              description: Context for the story (1-2 sentences)
+            task:
+              type: string
+              description: What needed to be done
+            theme:
+              type: string
+              enum:
+              - leadership
+              - technical_challenge
+              - conflict_resolution
+              - ambiguity
+              - customer_impact
+              - failure
+              - ownership
+              - cross_functional
+              - scaling
+              - other
+              description: Theme tag for a STAR+Reflection story
+              example: leadership
+            title:
+              type: string
+              description: Short memorable title
+              example: Cutting CI from 22 to 6 minutes
+            updatedAt:
+              type: string
+              description: Story last update timestamp (ISO-8601)
+              example: '2026-03-10T08:30:00Z'
+            usageCount:
+              type: integer
+              minimum: 0
+              description: How many interview-prep generations have used this story
+              example: 3
+            userId:
+              type: string
+              description: Owner user identifier
+              example: user_123
+          required:
+          - action
+          - bestForQuestions
+          - createdAt
+          - derivedFromResume
+          - id
+          - reflection
+          - result
+          - situation
+          - task
+          - theme
+          - title
+          - updatedAt
+          - usageCount
+          - userId
+          additionalProperties: false
+          description: The persisted bank row when `persist` was requested; null/omitted otherwise
+        situation:
+          type: string
+          description: Drafted Situation context
+        task:
+          type: string
+          description: Drafted Task
+        theme:
+          type: string
+          enum:
+          - leadership
+          - technical_challenge
+          - conflict_resolution
+          - ambiguity
+          - customer_impact
+          - failure
+          - ownership
+          - cross_functional
+          - scaling
+          - other
+          description: Theme tag for a STAR+Reflection story
+          example: leadership
+        title:
+          type: string
+          description: Drafted short title
+      required:
+      - action
+      - reflection
+      - result
+      - situation
+      - task
+      - theme
+      - title
+      additionalProperties: false
+    CreateStarStory:
+      type: object
+      properties:
+        action:
+          type: string
+          minLength: 1
+          maxLength: 4000
+          description: What the candidate did (specific, detailed)
+          example: Re-architected the build pipeline to use parallel test sharding...
+        bestForQuestions:
+          type: array
+          items:
+            type: string
+            maxLength: 300
+          maxItems: 20
+          description: Question types this story is best for
+          example:
+          - Tell me about a time you led
+          - Describe a hard technical decision
+        reflection:
+          type:
+          - string
+          - 'null'
+          maxLength: 2000
+          description: Lessons learned / what would be done differently (signals seniority)
+          example: I learned to invest in observability before scaling, not after.
+        result:
+          type: string
+          minLength: 1
+          maxLength: 2000
+          description: Quantified outcome with metrics where possible
+          example: Cut CI time from 22 min to 6 min, unblocking 12 engineers.
+        situation:
+          type: string
+          minLength: 1
+          maxLength: 2000
+          description: Context for the story (1-2 sentences)
+          example: Our flagship CI pipeline grew to 22 minutes per run.
+        task:
+          type: string
+          minLength: 1
+          maxLength: 2000
+          description: What needed to be done
+          example: Get CI under 10 minutes without dropping coverage.
+        theme:
+          type: string
+          enum:
+          - leadership
+          - technical_challenge
+          - conflict_resolution
+          - ambiguity
+          - customer_impact
+          - failure
+          - ownership
+          - cross_functional
+          - scaling
+          - other
+          description: Theme tag for the story
+          example: technical_challenge
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+          description: Short memorable title
+          example: Cutting CI from 22 to 6 minutes
+      required:
+      - action
+      - result
+      - situation
+      - task
+      - theme
+      - title
+      additionalProperties: false
+    StarStoryDeletedResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            success:
+              type: boolean
+              enum:
+              - true
+          required:
+          - success
+          additionalProperties: false
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    ResponseMetadata:
+      type: object
+      properties:
+        duration:
+          type: number
+          description: Request duration in milliseconds
+          example: 150
+          exclusiveMinimum: 0
+        performance:
+          type: object
+          properties:
+            dbQueries:
+              type: integer
+              minimum: 0
+            totalDbTime:
+              type: number
+              minimum: 0
+          description: Performance metrics (preview/local only)
+        requestId:
+          type: string
+          description: Unique request identifier
+          example: req_abc123
+        timestamp:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp
+          example: '2026-09-25T17:29:47.224Z'
+        version:
+          type: string
+          description: API version
+          example: v1
+    DraftStarStoryRequest:
+      type: object
+      properties:
+        persist:
+          type: boolean
+          default: false
+          description: Also persist the drafted story to the bank and return the saved row
+          example: false
+        question:
+          type: string
+          minLength: 1
+          maxLength: 500
+          description: The interview question the drafted story should answer
+          example: Tell me about a time you led a team through a hard technical decision.
+      required:
+      - question
+      additionalProperties: false
+    GenerateStarStoriesFromResumeData:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/StarStoryData'
+      required:
+      - items
+      additionalProperties: false
+    ExtractedStarStoryCandidate:
+      type: object
+      properties:
+        action:
+          type: string
+        bestForQuestions:
+          type: array
+          items:
+            type: string
+        reflection:
+          type:
+          - string
+          - 'null'
+        result:
+          type: string
+        situation:
+          type: string
+        task:
+          type: string
+        theme:
+          type: string
+          enum:
+          - leadership
+          - technical_challenge
+          - conflict_resolution
+          - ambiguity
+          - customer_impact
+          - failure
+          - ownership
+          - cross_functional
+          - scaling
+          - other
+          description: Theme tag for a STAR+Reflection story
+          example: leadership
+        title:
+          type: string
+      required:
+      - action
+      - bestForQuestions
+      - reflection
+      - result
+      - situation
+      - task
+      - theme
+      - title
+      additionalProperties: false
+    ExtractStarStoriesResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ExtractStarStoriesData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    ExtractStarStoriesData:
+      type: object
+      properties:
+        candidates:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExtractedStarStoryCandidate'
+        promotedExistingIds:
+          type: array
+          items:
+            type: string
+      required:
+      - candidates
+      - promotedExistingIds
+      additionalProperties: false
     ApiErrorResponse:
       type: object
       properties:
@@ -722,7 +1078,79 @@ components:
       - error
       - success
       additionalProperties: false
-    CreateStarStory:
+    DraftStarStoryResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/DraftStarStoryData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    StarStoryListResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: '#/components/schemas/StarStoryData'
+          required:
+          - items
+          additionalProperties: false
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    StarStoryResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/StarStoryData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    GenerateStarStoriesFromResumeResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/GenerateStarStoriesFromResumeData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    UpdateStarStory:
       type: object
       properties:
         action:
@@ -787,352 +1215,6 @@ components:
           maxLength: 200
           description: Short memorable title
           example: Cutting CI from 22 to 6 minutes
-      required:
-      - action
-      - result
-      - situation
-      - task
-      - theme
-      - title
-      additionalProperties: false
-    StarStoryListResponse:
-      type: object
-      properties:
-        data:
-          type: object
-          properties:
-            items:
-              type: array
-              items:
-                $ref: '#/components/schemas/StarStoryData'
-          required:
-          - items
-          additionalProperties: false
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    ExtractStarStoriesResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/ExtractStarStoriesData'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    DraftStarStoryRequest:
-      type: object
-      properties:
-        persist:
-          type: boolean
-          default: false
-          description: Also persist the drafted story to the bank and return the saved row
-          example: false
-        question:
-          type: string
-          minLength: 1
-          maxLength: 500
-          description: The interview question the drafted story should answer
-          example: Tell me about a time you led a team through a hard technical decision.
-      required:
-      - question
-      additionalProperties: false
-    ExtractStarStoriesData:
-      type: object
-      properties:
-        candidates:
-          type: array
-          items:
-            $ref: '#/components/schemas/ExtractedStarStoryCandidate'
-        promotedExistingIds:
-          type: array
-          items:
-            type: string
-      required:
-      - candidates
-      - promotedExistingIds
-      additionalProperties: false
-    StarStoryResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/StarStoryData'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    ExtractedStarStoryCandidate:
-      type: object
-      properties:
-        action:
-          type: string
-        bestForQuestions:
-          type: array
-          items:
-            type: string
-        reflection:
-          type:
-          - string
-          - 'null'
-        result:
-          type: string
-        situation:
-          type: string
-        task:
-          type: string
-        theme:
-          type: string
-          enum:
-          - leadership
-          - technical_challenge
-          - conflict_resolution
-          - ambiguity
-          - customer_impact
-          - failure
-          - ownership
-          - cross_functional
-          - scaling
-          - other
-          description: Theme tag for a STAR+Reflection story
-          example: leadership
-        title:
-          type: string
-      required:
-      - action
-      - bestForQuestions
-      - reflection
-      - result
-      - situation
-      - task
-      - theme
-      - title
-      additionalProperties: false
-    GenerateStarStoriesFromResumeResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/GenerateStarStoriesFromResumeData'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    DraftStarStoryResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/DraftStarStoryData'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    GenerateStarStoriesFromResumeData:
-      type: object
-      properties:
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/StarStoryData'
-      required:
-      - items
-      additionalProperties: false
-    StarStoryDeletedResponse:
-      type: object
-      properties:
-        data:
-          type: object
-          properties:
-            success:
-              type: boolean
-              enum:
-              - true
-          required:
-          - success
-          additionalProperties: false
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    DraftStarStoryData:
-      type: object
-      properties:
-        action:
-          type: string
-          description: Drafted Action narrative
-        reflection:
-          type:
-          - string
-          - 'null'
-          description: Drafted Reflection (lessons learned)
-        result:
-          type: string
-          description: Drafted quantified Result
-        savedStory:
-          type:
-          - object
-          - 'null'
-          properties:
-            action:
-              type: string
-              description: What the candidate did (specific, detailed)
-            bestForQuestions:
-              type: array
-              items:
-                type: string
-              description: Question types this story can answer
-              example:
-              - Tell me about a time you led a team
-              - How do you handle conflict?
-            createdAt:
-              type: string
-              description: Story creation timestamp (ISO-8601)
-              example: '2026-01-15T12:00:00Z'
-            derivedFromResume:
-              type: boolean
-              description: True when this row was produced by the one-click "generate from resume" flow. Lets the UI flip its CTA to "Regenerate" and replace prior AI rows instead of duplicating them.
-              example: true
-            id:
-              type: string
-              description: STAR story identifier (UUID)
-              example: a1b2c3d4-e5f6-7890-abcd-ef1234567890
-            reflection:
-              type:
-              - string
-              - 'null'
-              description: Lessons learned / what would be done differently (signals seniority)
-              example: I learned to invest in observability before scaling, not after.
-            result:
-              type: string
-              description: Quantified outcome with metrics where possible
-            situation:
-              type: string
-              description: Context for the story (1-2 sentences)
-            task:
-              type: string
-              description: What needed to be done
-            theme:
-              type: string
-              enum:
-              - leadership
-              - technical_challenge
-              - conflict_resolution
-              - ambiguity
-              - customer_impact
-              - failure
-              - ownership
-              - cross_functional
-              - scaling
-              - other
-              description: Theme tag for a STAR+Reflection story
-              example: leadership
-            title:
-              type: string
-              description: Short memorable title
-              example: Cutting CI from 22 to 6 minutes
-            updatedAt:
-              type: string
-              description: Story last update timestamp (ISO-8601)
-              example: '2026-03-10T08:30:00Z'
-            usageCount:
-              type: integer
-              minimum: 0
-              description: How many interview-prep generations have used this story
-              example: 3
-            userId:
-              type: string
-              description: Owner user identifier
-              example: user_123
-          required:
-          - action
-          - bestForQuestions
-          - createdAt
-          - derivedFromResume
-          - id
-          - reflection
-          - result
-          - situation
-          - task
-          - theme
-          - title
-          - updatedAt
-          - usageCount
-          - userId
-          additionalProperties: false
-          description: The persisted bank row when `persist` was requested; null/omitted otherwise
-        situation:
-          type: string
-          description: Drafted Situation context
-        task:
-          type: string
-          description: Drafted Task
-        theme:
-          type: string
-          enum:
-          - leadership
-          - technical_challenge
-          - conflict_resolution
-          - ambiguity
-          - customer_impact
-          - failure
-          - ownership
-          - cross_functional
-          - scaling
-          - other
-          description: Theme tag for a STAR+Reflection story
-          example: leadership
-        title:
-          type: string
-          description: Drafted short title
-      required:
-      - action
-      - reflection
-      - result
-      - situation
-      - task
-      - theme
-      - title
       additionalProperties: false
     StarStoryData:
       type: object
@@ -1223,108 +1305,8 @@ components:
       - usageCount
       - userId
       additionalProperties: false
-    ResponseMetadata:
-      type: object
-      properties:
-        duration:
-          type: number
-          description: Request duration in milliseconds
-          example: 150
-          exclusiveMinimum: 0
-        performance:
-          type: object
-          properties:
-            dbQueries:
-              type: integer
-              minimum: 0
-            totalDbTime:
-              type: number
-              minimum: 0
-          description: Performance metrics (preview/local only)
-        requestId:
-          type: string
-          description: Unique request identifier
-          example: req_abc123
-        timestamp:
-          type: string
-          format: date-time
-          description: ISO 8601 timestamp
-          example: '2026-09-25T17:29:47.224Z'
-        version:
-          type: string
-          description: API version
-          example: v1
-    UpdateStarStory:
-      type: object
-      properties:
-        action:
-          type: string
-          minLength: 1
-          maxLength: 4000
-          description: What the candidate did (specific, detailed)
-          example: Re-architected the build pipeline to use parallel test sharding...
-        bestForQuestions:
-          type: array
-          items:
-            type: string
-            maxLength: 300
-          maxItems: 20
-          description: Question types this story is best for
-          example:
-          - Tell me about a time you led
-          - Describe a hard technical decision
-        reflection:
-          type:
-          - string
-          - 'null'
-          maxLength: 2000
-          description: Lessons learned / what would be done differently (signals seniority)
-          example: I learned to invest in observability before scaling, not after.
-        result:
-          type: string
-          minLength: 1
-          maxLength: 2000
-          description: Quantified outcome with metrics where possible
-          example: Cut CI time from 22 min to 6 min, unblocking 12 engineers.
-        situation:
-          type: string
-          minLength: 1
-          maxLength: 2000
-          description: Context for the story (1-2 sentences)
-          example: Our flagship CI pipeline grew to 22 minutes per run.
-        task:
-          type: string
-          minLength: 1
-          maxLength: 2000
-          description: What needed to be done
-          example: Get CI under 10 minutes without dropping coverage.
-        theme:
-          type: string
-          enum:
-          - leadership
-          - technical_challenge
-          - conflict_resolution
-          - ambiguity
-          - customer_impact
-          - failure
-          - ownership
-          - cross_functional
-          - scaling
-          - other
-          description: Theme tag for the story
-          example: technical_challenge
-        title:
-          type: string
-          minLength: 1
-          maxLength: 200
-          description: Short memorable title
-          example: Cutting CI from 22 to 6 minutes
-      additionalProperties: false
   securitySchemes:
     BearerAuth:
       description: 'Session token from signing in to AI Applyd, sent as `Authorization: Bearer <token>`.'
       scheme: bearer
       type: http
-x-refined-from:
-- aiapplyd-openapi.json
-- aiapplyd-openapi.yml

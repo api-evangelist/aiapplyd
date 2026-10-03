@@ -1,15 +1,15 @@
 openapi: 3.2.0
 info:
-  title: Aiapplyd MCP API
-  version: 115c47ce
   contact:
     email: support@aiapplyd.com
     name: AI Applyd
     url: https://aiapplyd.com
+  description: 'The AI Applyd API runs the whole job hunt for you: it matches you to roles that fit your profile, rewrites your resume for each posting, writes the cover letter the form asks for, and auto-applies across the major applicant tracking systems.'
   license:
     name: Proprietary
     url: https://aiapplyd.com/legal/terms
-  description: 'Operations tagged mcp across 2 of this provider''s published API definitions: aiapplyd-openapi.json, aiapplyd-openapi.yml. Each path carries the servers of the definition it was published in.'
+  title: AI Applyd MCP API
+  version: 115c47ce
 servers:
 - description: Current environment
   url: https://api.aiapplyd.com/api/v1
@@ -62,11 +62,97 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: postMcpSession
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
 components:
   schemas:
+    McpSessionBody:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          description: Google-verified email of the user to find or create.
+          example: jane@example.com
+        name:
+          type: string
+          minLength: 1
+          description: Display name from the Google profile. Used when creating a new user.
+          example: Jane Doe
+        googleSub:
+          type: string
+          description: Google `sub` (stable account id). Informational; logged for traceability.
+          example: '104821739203847102938'
+      required:
+      - email
+      - name
+      additionalProperties: false
+    ResponseMetadata:
+      type: object
+      properties:
+        duration:
+          type: number
+          description: Request duration in milliseconds
+          example: 150
+          exclusiveMinimum: 0
+        performance:
+          type: object
+          properties:
+            dbQueries:
+              type: integer
+              minimum: 0
+            totalDbTime:
+              type: number
+              minimum: 0
+          description: Performance metrics (preview/local only)
+        requestId:
+          type: string
+          description: Unique request identifier
+          example: req_abc123
+        timestamp:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp
+          example: '2026-09-25T17:29:47.224Z'
+        version:
+          type: string
+          description: API version
+          example: v1
+    McpSessionData:
+      type: object
+      properties:
+        sessionToken:
+          type: string
+          description: 'Raw Better Auth session token. Pass as `Authorization: Bearer <token>` on session-auth routes.'
+          example: JuYbT8e0g3uVqkX...
+        userId:
+          type: string
+          description: AI Applyd user id the session was minted for.
+          example: usr_01HXY...
+        email:
+          type: string
+          description: Resolved user email (lower-cased).
+          example: jane@example.com
+        name:
+          type:
+          - string
+          - 'null'
+          description: Resolved user display name, or null when unset.
+          example: Jane Doe
+        planTier:
+          type: string
+          description: Resolved plan tier for the user.
+          example: free
+        isNewUser:
+          type: boolean
+          description: True when the user was created by this call, false when an existing user was matched.
+          example: false
+      required:
+      - sessionToken
+      - userId
+      - email
+      - name
+      - planTier
+      - isNewUser
+      additionalProperties: false
     ApiErrorResponse:
       type: object
       properties:
@@ -427,100 +513,8 @@ components:
       - success
       additionalProperties: false
       description: Successful API response
-    McpSessionBody:
-      type: object
-      properties:
-        email:
-          type: string
-          format: email
-          description: Google-verified email of the user to find or create.
-          example: jane@example.com
-        name:
-          type: string
-          minLength: 1
-          description: Display name from the Google profile. Used when creating a new user.
-          example: Jane Doe
-        googleSub:
-          type: string
-          description: Google `sub` (stable account id). Informational; logged for traceability.
-          example: '104821739203847102938'
-      required:
-      - email
-      - name
-      additionalProperties: false
-    McpSessionData:
-      type: object
-      properties:
-        sessionToken:
-          type: string
-          description: 'Raw Better Auth session token. Pass as `Authorization: Bearer <token>` on session-auth routes.'
-          example: JuYbT8e0g3uVqkX...
-        userId:
-          type: string
-          description: AI Applyd user id the session was minted for.
-          example: usr_01HXY...
-        email:
-          type: string
-          description: Resolved user email (lower-cased).
-          example: jane@example.com
-        name:
-          type:
-          - string
-          - 'null'
-          description: Resolved user display name, or null when unset.
-          example: Jane Doe
-        planTier:
-          type: string
-          description: Resolved plan tier for the user.
-          example: free
-        isNewUser:
-          type: boolean
-          description: True when the user was created by this call, false when an existing user was matched.
-          example: false
-      required:
-      - sessionToken
-      - userId
-      - email
-      - name
-      - planTier
-      - isNewUser
-      additionalProperties: false
-    ResponseMetadata:
-      type: object
-      properties:
-        duration:
-          type: number
-          description: Request duration in milliseconds
-          example: 150
-          exclusiveMinimum: 0
-        performance:
-          type: object
-          properties:
-            dbQueries:
-              type: integer
-              minimum: 0
-            totalDbTime:
-              type: number
-              minimum: 0
-          description: Performance metrics (preview/local only)
-        requestId:
-          type: string
-          description: Unique request identifier
-          example: req_abc123
-        timestamp:
-          type: string
-          format: date-time
-          description: ISO 8601 timestamp
-          example: '2026-09-25T17:29:47.224Z'
-        version:
-          type: string
-          description: API version
-          example: v1
   securitySchemes:
     BearerAuth:
       description: 'Session token from signing in to AI Applyd, sent as `Authorization: Bearer <token>`.'
       scheme: bearer
       type: http
-x-refined-from:
-- aiapplyd-openapi.json
-- aiapplyd-openapi.yml

@@ -1,15 +1,15 @@
 openapi: 3.2.0
 info:
-  title: Aiapplyd Application Profile API
-  version: 115c47ce
   contact:
     email: support@aiapplyd.com
     name: AI Applyd
     url: https://aiapplyd.com
+  description: 'The AI Applyd API runs the whole job hunt for you: it matches you to roles that fit your profile, rewrites your resume for each posting, writes the cover letter the form asks for, and auto-applies across the major applicant tracking systems.'
   license:
     name: Proprietary
     url: https://aiapplyd.com/legal/terms
-  description: 'Operations tagged application-profile across 2 of this provider''s published API definitions: aiapplyd-openapi.json, aiapplyd-openapi.yml. Each path carries the servers of the definition it was published in.'
+  title: AI Applyd Application Profile API
+  version: 115c47ce
 servers:
 - description: Current environment
   url: https://api.aiapplyd.com/api/v1
@@ -92,9 +92,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: putApplicationProfile
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /application-profile/suggest:
     post:
       tags:
@@ -133,16 +130,382 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: postApplicationProfileSuggest
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
 components:
   schemas:
-    ApplicationProfileResponse:
+    ResponseMetadata:
+      type: object
+      properties:
+        duration:
+          type: number
+          description: Request duration in milliseconds
+          example: 150
+          exclusiveMinimum: 0
+        performance:
+          type: object
+          properties:
+            dbQueries:
+              type: integer
+              minimum: 0
+            totalDbTime:
+              type: number
+              minimum: 0
+          description: Performance metrics (preview/local only)
+        requestId:
+          type: string
+          description: Unique request identifier
+          example: req_abc123
+        timestamp:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp
+          example: '2026-09-25T17:29:47.224Z'
+        version:
+          type: string
+          description: API version
+          example: v1
+    UpsertApplicationProfile:
+      type: object
+      properties:
+        phone:
+          type:
+          - string
+          - 'null'
+          maxLength: 20
+          description: Phone number
+          example: +1-555-123-4567
+        addressLine1:
+          type:
+          - string
+          - 'null'
+          maxLength: 255
+          description: Address line 1
+          example: 123 Main St
+        addressLine2:
+          type:
+          - string
+          - 'null'
+          maxLength: 255
+          description: Address line 2
+          example: Apt 4B
+        city:
+          type:
+          - string
+          - 'null'
+          maxLength: 100
+          description: City
+          example: San Francisco
+        state:
+          type:
+          - string
+          - 'null'
+          maxLength: 100
+          description: State or province
+          example: CA
+        zipCode:
+          type:
+          - string
+          - 'null'
+          maxLength: 20
+          description: ZIP or postal code
+          example: '94105'
+        country:
+          type:
+          - string
+          - 'null'
+          maxLength: 100
+          description: Country
+          example: US
+        linkedinUrl:
+          type:
+          - string
+          - 'null'
+          maxLength: 500
+          format: uri
+          description: LinkedIn profile URL
+          example: https://linkedin.com/in/johndoe
+        portfolioUrl:
+          type:
+          - string
+          - 'null'
+          maxLength: 500
+          format: uri
+          description: Portfolio website URL
+          example: https://johndoe.dev
+        githubUrl:
+          type:
+          - string
+          - 'null'
+          maxLength: 500
+          format: uri
+          description: GitHub profile URL
+          example: https://github.com/johndoe
+        currentEmployer:
+          type:
+          - string
+          - 'null'
+          maxLength: 120
+          description: Current employer / company. Helps tailor recommendations; unlocks team analytics if the company onboards.
+          example: Acme Corp
+        dateOfBirth:
+          type:
+          - string
+          - 'null'
+          description: Date of birth (ISO 8601 date string)
+          example: '1995-06-15'
+        workAuthorization:
+          type:
+          - string
+          - 'null'
+          enum:
+          - us_citizen
+          - permanent_resident
+          - visa_holder
+          - require_sponsorship
+          - other
+          - null
+          description: Work authorization status
+          example: us_citizen
+        willingToRelocate:
+          type: boolean
+          description: Willing to relocate for a job
+          example: false
+        relocationLocations:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: Preferred relocation locations as "City, Country" or "Country" (max per-entry stripping of middle admin segments on ingest).
+          example:
+          - New York, United States
+          - Austin, United States
+        salaryCurrency:
+          type:
+          - string
+          - 'null'
+          enum:
+          - usd
+          - eur
+          - gbp
+          - cad
+          - aud
+          - inr
+          - null
+          description: Salary currency
+          example: usd
+        availableStartDate:
+          type:
+          - string
+          - 'null'
+          description: Earliest available start date (ISO 8601 date string)
+          example: '2026-04-01'
+        noticePeriod:
+          type:
+          - string
+          - 'null'
+          enum:
+          - immediately
+          - two_weeks
+          - one_month
+          - two_months
+          - three_months
+          - flexible
+          - null
+          description: Notice period before starting new position
+          example: two_weeks
+        personalNarrative:
+          type:
+          - string
+          - 'null'
+          maxLength: 500
+          description: Free-form narrative about gaps / transitions / short stints. Drives interview-prep red-flag question generation (F8).
+          example: Took a 14-month gap in 2024 for caregiving; returning with a refreshed cloud certification.
+        travelWillingness:
+          type:
+          - string
+          - 'null'
+          enum:
+          - none
+          - up_to_25
+          - up_to_50
+          - up_to_75
+          - up_to_100
+          - null
+          description: Willingness to travel for work
+          example: up_to_25
+        securityClearance:
+          type:
+          - string
+          - 'null'
+          enum:
+          - none
+          - confidential
+          - secret
+          - top_secret
+          - ts_sci
+          - prefer_not_to_say
+          - null
+          description: Security clearance level
+          example: none
+        restrictiveCovenantStatus:
+          type:
+          - string
+          - 'null'
+          enum:
+          - 'yes'
+          - 'no'
+          - prefer_not_to_say
+          - null
+          description: Currently subject to a non-compete / non-solicit / restrictive covenant with a former employer
+          example: 'no'
+        criminalRecordStatus:
+          type:
+          - string
+          - 'null'
+          enum:
+          - 'yes'
+          - 'no'
+          - prefer_not_to_say
+          - null
+          description: Has a criminal conviction they are legally required to disclose
+          example: 'no'
+        backgroundCheckConsent:
+          type:
+          - string
+          - 'null'
+          enum:
+          - 'yes'
+          - 'no'
+          - prefer_not_to_say
+          - null
+          description: Consents to a background / reference / credit check or drug screen where the role requires one
+          example: 'yes'
+        relatedToEmployeeStatus:
+          type:
+          - string
+          - 'null'
+          enum:
+          - 'yes'
+          - 'no'
+          - prefer_not_to_say
+          - null
+          description: 'Has a family member or close personal relationship with an employee of a company they apply to. Global, not per-employer: only a "no" is committable on a form.'
+          example: 'no'
+        exportControlUsPerson:
+          type:
+          - string
+          - 'null'
+          enum:
+          - 'yes'
+          - 'no'
+          - prefer_not_to_say
+          - null
+          description: Is a U.S. person for export-control (ITAR / EAR) purposes. The only declaration whose "yes" is the permissive answer.
+          example: 'yes'
+        highestEducation:
+          type:
+          - string
+          - 'null'
+          enum:
+          - high_school
+          - associate
+          - bachelor
+          - master
+          - doctorate
+          - any
+          - null
+          description: Highest education level completed
+          example: bachelor
+        yearsOfExperience:
+          type:
+          - integer
+          - 'null'
+          minimum: 0
+          maximum: 50
+          description: Total years of professional experience
+          example: 5
+        veteranStatus:
+          type:
+          - string
+          - 'null'
+          enum:
+          - not_a_veteran
+          - veteran
+          - disabled_veteran
+          - recently_separated_veteran
+          - active_duty_wartime_veteran
+          - armed_forces_service_medal_veteran
+          - prefer_not_to_say
+          - null
+          description: Veteran status for EEO forms
+          example: prefer_not_to_say
+        disabilityStatus:
+          type:
+          - string
+          - 'null'
+          enum:
+          - 'yes'
+          - 'no'
+          - prefer_not_to_say
+          - null
+          description: Disability status for EEO forms
+          example: prefer_not_to_say
+        gender:
+          type:
+          - string
+          - 'null'
+          enum:
+          - male
+          - female
+          - non_binary
+          - prefer_not_to_say
+          - other
+          - null
+          description: Gender for EEO forms
+          example: prefer_not_to_say
+        ethnicity:
+          type:
+          - string
+          - 'null'
+          enum:
+          - american_indian_or_alaska_native
+          - asian
+          - black_or_african_american
+          - hispanic_or_latino
+          - native_hawaiian_or_pacific_islander
+          - white
+          - two_or_more_races
+          - prefer_not_to_say
+          - other
+          - null
+          description: Ethnicity for EEO forms
+          example: prefer_not_to_say
+        sexualOrientation:
+          type:
+          - string
+          - 'null'
+          enum:
+          - heterosexual
+          - gay_or_lesbian
+          - bisexual
+          - prefer_not_to_say
+          - other
+          - null
+          description: Sexual orientation for EEO forms
+          example: prefer_not_to_say
+        pronouns:
+          type:
+          - string
+          - 'null'
+          maxLength: 40
+          description: Preferred pronouns, self-described free text
+          example: she/her
+      additionalProperties: false
+    SuggestApplicationProfileResponse:
       type: object
       properties:
         data:
-          $ref: '#/components/schemas/ApplicationProfileData'
+          $ref: '#/components/schemas/SuggestApplicationProfileData'
         meta:
           $ref: '#/components/schemas/ResponseMetadata'
         success:
@@ -166,366 +529,6 @@ components:
       required:
       - suggestions
       - hasResume
-    ApiErrorResponse:
-      type: object
-      properties:
-        error:
-          type: object
-          properties:
-            code:
-              type: string
-            context:
-              oneOf:
-              - type: object
-                properties:
-                  errorType:
-                    type: string
-                    enum:
-                    - validation
-                  field:
-                    type: string
-                  fieldErrors:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        code:
-                          type: string
-                        expected:
-                          type: string
-                        field:
-                          type: string
-                        message:
-                          type: string
-                        received:
-                          type: string
-                      required:
-                      - field
-                      - message
-                  schemaName:
-                    type: string
-                required:
-                - errorType
-              - type: object
-                properties:
-                  attemptedEmail:
-                    type: string
-                    format: email
-                  errorType:
-                    type: string
-                    enum:
-                    - authentication
-                  failureReason:
-                    type: string
-                    enum:
-                    - invalid_credentials
-                    - account_locked
-                    - expired_token
-                    - token_expired
-                    - missing_token
-                    - invalid_token
-                    - session_expired
-                    description: Reason for authentication failure
-                    example: token_expired
-                  ipAddress:
-                    type: string
-                  operation:
-                    type: string
-                  service:
-                    type: string
-                  userAgent:
-                    type: string
-                required:
-                - errorType
-              - type: object
-                properties:
-                  actualPermission:
-                    type: string
-                  errorType:
-                    type: string
-                    enum:
-                    - authorization
-                  requiredPermission:
-                    type: string
-                  resource:
-                    type: string
-                  resourceId:
-                    type: string
-                  userId:
-                    type: string
-                required:
-                - errorType
-              - type: object
-                properties:
-                  constraint:
-                    type: string
-                  errorType:
-                    type: string
-                    enum:
-                    - database
-                  operation:
-                    type: string
-                    enum:
-                    - insert
-                    - update
-                    - delete
-                    - select
-                    - batch
-                    - transaction
-                    - migration
-                    description: Type of database operation
-                    example: select
-                  resourceId:
-                    type: string
-                  sqlState:
-                    type: string
-                  table:
-                    type: string
-                  userId:
-                    type: string
-                required:
-                - errorType
-              - type: object
-                properties:
-                  endpoint:
-                    type: string
-                  errorType:
-                    type: string
-                    enum:
-                    - external_service
-                  httpStatus:
-                    type: number
-                  operation:
-                    type: string
-                  resourceId:
-                    type: string
-                  responseTime:
-                    type: number
-                  retryAttempt:
-                    type: integer
-                  service:
-                    type: string
-                  serviceName:
-                    type: string
-                  userId:
-                    type: string
-                required:
-                - errorType
-              - type: object
-                properties:
-                  errorType:
-                    type: string
-                    enum:
-                    - resource
-                  resource:
-                    type: string
-                  resourceId:
-                    type: string
-                  service:
-                    type: string
-                  userId:
-                    type: string
-                required:
-                - errorType
-              - type: object
-                properties:
-                  errorType:
-                    type: string
-                    enum:
-                    - rate_limit
-                  limit:
-                    type: number
-                  resetTime:
-                    type: string
-                  windowMs:
-                    type: number
-                required:
-                - errorType
-              - type: object
-                properties:
-                  configKey:
-                    type: string
-                  errorType:
-                    type: string
-                    enum:
-                    - configuration
-                  operation:
-                    type: string
-                  service:
-                    type: string
-                required:
-                - errorType
-              description: Type-safe error context information
-              example:
-                errorType: validation
-                fieldErrors:
-                - field: email
-                  message: Invalid email format
-            details:
-              oneOf:
-              - type: object
-                properties:
-                  detailType:
-                    type: string
-                    enum:
-                    - validation
-                  validationErrors:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        code:
-                          type: string
-                        field:
-                          type: string
-                        message:
-                          type: string
-                      required:
-                      - field
-                      - message
-                required:
-                - detailType
-                - validationErrors
-                additionalProperties: false
-              - type: object
-                properties:
-                  detailType:
-                    type: string
-                    enum:
-                    - service_error
-                  originalError:
-                    type: string
-                  serviceName:
-                    type: string
-                required:
-                - detailType
-                - serviceName
-                additionalProperties: false
-              - type: object
-                properties:
-                  currentSize:
-                    type: number
-                  detailType:
-                    type: string
-                    enum:
-                    - batch
-                  originalError:
-                    type: string
-                  statementCount:
-                    type: number
-                required:
-                - detailType
-                additionalProperties: false
-              - type: object
-                properties:
-                  detailType:
-                    type: string
-                    enum:
-                    - rate_limit
-                  limit:
-                    type: number
-                  resetTime:
-                    type: string
-                  windowMs:
-                    type: number
-                required:
-                - detailType
-                - limit
-                - resetTime
-                - windowMs
-                additionalProperties: false
-              - type: object
-                properties:
-                  conflictingField:
-                    type: string
-                  detailType:
-                    type: string
-                    enum:
-                    - resource
-                  resourceId:
-                    anyOf:
-                    - type: string
-                    - type: number
-                  resourceType:
-                    type: string
-                required:
-                - detailType
-                additionalProperties: false
-              - type: object
-                properties:
-                  detailType:
-                    type: string
-                    enum:
-                    - generic
-                  info:
-                    type: string
-                required:
-                - detailType
-                additionalProperties: false
-              - type: object
-                properties:
-                  currentTokens:
-                    type: integer
-                    minimum: 0
-                  detailType:
-                    type: string
-                    enum:
-                    - insufficient_tokens
-                  requiredTokens:
-                    type: integer
-                    minimum: 0
-                required:
-                - currentTokens
-                - detailType
-                - requiredTokens
-                additionalProperties: false
-            message:
-              type: string
-            validation:
-              type: array
-              items:
-                type: object
-                properties:
-                  code:
-                    type: string
-                  field:
-                    type: string
-                  message:
-                    type: string
-                required:
-                - field
-                - message
-                additionalProperties: false
-          required:
-          - code
-          - message
-          additionalProperties: false
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - false
-      required:
-      - error
-      - success
-      additionalProperties: false
-    SuggestApplicationProfileResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/SuggestApplicationProfileData'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
     ApplicationProfileData:
       type: object
       properties:
@@ -945,6 +948,366 @@ components:
       - addressCompleteness
       - createdAt
       - updatedAt
+    ApiErrorResponse:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+            context:
+              oneOf:
+              - type: object
+                properties:
+                  errorType:
+                    type: string
+                    enum:
+                    - validation
+                  field:
+                    type: string
+                  fieldErrors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        code:
+                          type: string
+                        expected:
+                          type: string
+                        field:
+                          type: string
+                        message:
+                          type: string
+                        received:
+                          type: string
+                      required:
+                      - field
+                      - message
+                  schemaName:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  attemptedEmail:
+                    type: string
+                    format: email
+                  errorType:
+                    type: string
+                    enum:
+                    - authentication
+                  failureReason:
+                    type: string
+                    enum:
+                    - invalid_credentials
+                    - account_locked
+                    - expired_token
+                    - token_expired
+                    - missing_token
+                    - invalid_token
+                    - session_expired
+                    description: Reason for authentication failure
+                    example: token_expired
+                  ipAddress:
+                    type: string
+                  operation:
+                    type: string
+                  service:
+                    type: string
+                  userAgent:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  actualPermission:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - authorization
+                  requiredPermission:
+                    type: string
+                  resource:
+                    type: string
+                  resourceId:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  constraint:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - database
+                  operation:
+                    type: string
+                    enum:
+                    - insert
+                    - update
+                    - delete
+                    - select
+                    - batch
+                    - transaction
+                    - migration
+                    description: Type of database operation
+                    example: select
+                  resourceId:
+                    type: string
+                  sqlState:
+                    type: string
+                  table:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  endpoint:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - external_service
+                  httpStatus:
+                    type: number
+                  operation:
+                    type: string
+                  resourceId:
+                    type: string
+                  responseTime:
+                    type: number
+                  retryAttempt:
+                    type: integer
+                  service:
+                    type: string
+                  serviceName:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  errorType:
+                    type: string
+                    enum:
+                    - resource
+                  resource:
+                    type: string
+                  resourceId:
+                    type: string
+                  service:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  errorType:
+                    type: string
+                    enum:
+                    - rate_limit
+                  limit:
+                    type: number
+                  resetTime:
+                    type: string
+                  windowMs:
+                    type: number
+                required:
+                - errorType
+              - type: object
+                properties:
+                  configKey:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - configuration
+                  operation:
+                    type: string
+                  service:
+                    type: string
+                required:
+                - errorType
+              description: Type-safe error context information
+              example:
+                errorType: validation
+                fieldErrors:
+                - field: email
+                  message: Invalid email format
+            details:
+              oneOf:
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - validation
+                  validationErrors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        code:
+                          type: string
+                        field:
+                          type: string
+                        message:
+                          type: string
+                      required:
+                      - field
+                      - message
+                required:
+                - detailType
+                - validationErrors
+                additionalProperties: false
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - service_error
+                  originalError:
+                    type: string
+                  serviceName:
+                    type: string
+                required:
+                - detailType
+                - serviceName
+                additionalProperties: false
+              - type: object
+                properties:
+                  currentSize:
+                    type: number
+                  detailType:
+                    type: string
+                    enum:
+                    - batch
+                  originalError:
+                    type: string
+                  statementCount:
+                    type: number
+                required:
+                - detailType
+                additionalProperties: false
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - rate_limit
+                  limit:
+                    type: number
+                  resetTime:
+                    type: string
+                  windowMs:
+                    type: number
+                required:
+                - detailType
+                - limit
+                - resetTime
+                - windowMs
+                additionalProperties: false
+              - type: object
+                properties:
+                  conflictingField:
+                    type: string
+                  detailType:
+                    type: string
+                    enum:
+                    - resource
+                  resourceId:
+                    anyOf:
+                    - type: string
+                    - type: number
+                  resourceType:
+                    type: string
+                required:
+                - detailType
+                additionalProperties: false
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - generic
+                  info:
+                    type: string
+                required:
+                - detailType
+                additionalProperties: false
+              - type: object
+                properties:
+                  currentTokens:
+                    type: integer
+                    minimum: 0
+                  detailType:
+                    type: string
+                    enum:
+                    - insufficient_tokens
+                  requiredTokens:
+                    type: integer
+                    minimum: 0
+                required:
+                - currentTokens
+                - detailType
+                - requiredTokens
+                additionalProperties: false
+            message:
+              type: string
+            validation:
+              type: array
+              items:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  field:
+                    type: string
+                  message:
+                    type: string
+                required:
+                - field
+                - message
+                additionalProperties: false
+          required:
+          - code
+          - message
+          additionalProperties: false
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - false
+      required:
+      - error
+      - success
+      additionalProperties: false
+    ApplicationProfileResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ApplicationProfileData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
     ApplicationProfileSuggestions:
       type: object
       properties:
@@ -1044,380 +1407,8 @@ components:
       - yearsOfExperience
       - highestEducation
       - workAuthorization
-    UpsertApplicationProfile:
-      type: object
-      properties:
-        phone:
-          type:
-          - string
-          - 'null'
-          maxLength: 20
-          description: Phone number
-          example: +1-555-123-4567
-        addressLine1:
-          type:
-          - string
-          - 'null'
-          maxLength: 255
-          description: Address line 1
-          example: 123 Main St
-        addressLine2:
-          type:
-          - string
-          - 'null'
-          maxLength: 255
-          description: Address line 2
-          example: Apt 4B
-        city:
-          type:
-          - string
-          - 'null'
-          maxLength: 100
-          description: City
-          example: San Francisco
-        state:
-          type:
-          - string
-          - 'null'
-          maxLength: 100
-          description: State or province
-          example: CA
-        zipCode:
-          type:
-          - string
-          - 'null'
-          maxLength: 20
-          description: ZIP or postal code
-          example: '94105'
-        country:
-          type:
-          - string
-          - 'null'
-          maxLength: 100
-          description: Country
-          example: US
-        linkedinUrl:
-          type:
-          - string
-          - 'null'
-          maxLength: 500
-          format: uri
-          description: LinkedIn profile URL
-          example: https://linkedin.com/in/johndoe
-        portfolioUrl:
-          type:
-          - string
-          - 'null'
-          maxLength: 500
-          format: uri
-          description: Portfolio website URL
-          example: https://johndoe.dev
-        githubUrl:
-          type:
-          - string
-          - 'null'
-          maxLength: 500
-          format: uri
-          description: GitHub profile URL
-          example: https://github.com/johndoe
-        currentEmployer:
-          type:
-          - string
-          - 'null'
-          maxLength: 120
-          description: Current employer / company. Helps tailor recommendations; unlocks team analytics if the company onboards.
-          example: Acme Corp
-        dateOfBirth:
-          type:
-          - string
-          - 'null'
-          description: Date of birth (ISO 8601 date string)
-          example: '1995-06-15'
-        workAuthorization:
-          type:
-          - string
-          - 'null'
-          enum:
-          - us_citizen
-          - permanent_resident
-          - visa_holder
-          - require_sponsorship
-          - other
-          - null
-          description: Work authorization status
-          example: us_citizen
-        willingToRelocate:
-          type: boolean
-          description: Willing to relocate for a job
-          example: false
-        relocationLocations:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-          description: Preferred relocation locations as "City, Country" or "Country" (max per-entry stripping of middle admin segments on ingest).
-          example:
-          - New York, United States
-          - Austin, United States
-        salaryCurrency:
-          type:
-          - string
-          - 'null'
-          enum:
-          - usd
-          - eur
-          - gbp
-          - cad
-          - aud
-          - inr
-          - null
-          description: Salary currency
-          example: usd
-        availableStartDate:
-          type:
-          - string
-          - 'null'
-          description: Earliest available start date (ISO 8601 date string)
-          example: '2026-04-01'
-        noticePeriod:
-          type:
-          - string
-          - 'null'
-          enum:
-          - immediately
-          - two_weeks
-          - one_month
-          - two_months
-          - three_months
-          - flexible
-          - null
-          description: Notice period before starting new position
-          example: two_weeks
-        personalNarrative:
-          type:
-          - string
-          - 'null'
-          maxLength: 500
-          description: Free-form narrative about gaps / transitions / short stints. Drives interview-prep red-flag question generation (F8).
-          example: Took a 14-month gap in 2024 for caregiving; returning with a refreshed cloud certification.
-        travelWillingness:
-          type:
-          - string
-          - 'null'
-          enum:
-          - none
-          - up_to_25
-          - up_to_50
-          - up_to_75
-          - up_to_100
-          - null
-          description: Willingness to travel for work
-          example: up_to_25
-        securityClearance:
-          type:
-          - string
-          - 'null'
-          enum:
-          - none
-          - confidential
-          - secret
-          - top_secret
-          - ts_sci
-          - prefer_not_to_say
-          - null
-          description: Security clearance level
-          example: none
-        restrictiveCovenantStatus:
-          type:
-          - string
-          - 'null'
-          enum:
-          - 'yes'
-          - 'no'
-          - prefer_not_to_say
-          - null
-          description: Currently subject to a non-compete / non-solicit / restrictive covenant with a former employer
-          example: 'no'
-        criminalRecordStatus:
-          type:
-          - string
-          - 'null'
-          enum:
-          - 'yes'
-          - 'no'
-          - prefer_not_to_say
-          - null
-          description: Has a criminal conviction they are legally required to disclose
-          example: 'no'
-        backgroundCheckConsent:
-          type:
-          - string
-          - 'null'
-          enum:
-          - 'yes'
-          - 'no'
-          - prefer_not_to_say
-          - null
-          description: Consents to a background / reference / credit check or drug screen where the role requires one
-          example: 'yes'
-        relatedToEmployeeStatus:
-          type:
-          - string
-          - 'null'
-          enum:
-          - 'yes'
-          - 'no'
-          - prefer_not_to_say
-          - null
-          description: 'Has a family member or close personal relationship with an employee of a company they apply to. Global, not per-employer: only a "no" is committable on a form.'
-          example: 'no'
-        exportControlUsPerson:
-          type:
-          - string
-          - 'null'
-          enum:
-          - 'yes'
-          - 'no'
-          - prefer_not_to_say
-          - null
-          description: Is a U.S. person for export-control (ITAR / EAR) purposes. The only declaration whose "yes" is the permissive answer.
-          example: 'yes'
-        highestEducation:
-          type:
-          - string
-          - 'null'
-          enum:
-          - high_school
-          - associate
-          - bachelor
-          - master
-          - doctorate
-          - any
-          - null
-          description: Highest education level completed
-          example: bachelor
-        yearsOfExperience:
-          type:
-          - integer
-          - 'null'
-          minimum: 0
-          maximum: 50
-          description: Total years of professional experience
-          example: 5
-        veteranStatus:
-          type:
-          - string
-          - 'null'
-          enum:
-          - not_a_veteran
-          - veteran
-          - disabled_veteran
-          - recently_separated_veteran
-          - active_duty_wartime_veteran
-          - armed_forces_service_medal_veteran
-          - prefer_not_to_say
-          - null
-          description: Veteran status for EEO forms
-          example: prefer_not_to_say
-        disabilityStatus:
-          type:
-          - string
-          - 'null'
-          enum:
-          - 'yes'
-          - 'no'
-          - prefer_not_to_say
-          - null
-          description: Disability status for EEO forms
-          example: prefer_not_to_say
-        gender:
-          type:
-          - string
-          - 'null'
-          enum:
-          - male
-          - female
-          - non_binary
-          - prefer_not_to_say
-          - other
-          - null
-          description: Gender for EEO forms
-          example: prefer_not_to_say
-        ethnicity:
-          type:
-          - string
-          - 'null'
-          enum:
-          - american_indian_or_alaska_native
-          - asian
-          - black_or_african_american
-          - hispanic_or_latino
-          - native_hawaiian_or_pacific_islander
-          - white
-          - two_or_more_races
-          - prefer_not_to_say
-          - other
-          - null
-          description: Ethnicity for EEO forms
-          example: prefer_not_to_say
-        sexualOrientation:
-          type:
-          - string
-          - 'null'
-          enum:
-          - heterosexual
-          - gay_or_lesbian
-          - bisexual
-          - prefer_not_to_say
-          - other
-          - null
-          description: Sexual orientation for EEO forms
-          example: prefer_not_to_say
-        pronouns:
-          type:
-          - string
-          - 'null'
-          maxLength: 40
-          description: Preferred pronouns, self-described free text
-          example: she/her
-      additionalProperties: false
-    ResponseMetadata:
-      type: object
-      properties:
-        duration:
-          type: number
-          description: Request duration in milliseconds
-          example: 150
-          exclusiveMinimum: 0
-        performance:
-          type: object
-          properties:
-            dbQueries:
-              type: integer
-              minimum: 0
-            totalDbTime:
-              type: number
-              minimum: 0
-          description: Performance metrics (preview/local only)
-        requestId:
-          type: string
-          description: Unique request identifier
-          example: req_abc123
-        timestamp:
-          type: string
-          format: date-time
-          description: ISO 8601 timestamp
-          example: '2026-09-25T17:29:47.224Z'
-        version:
-          type: string
-          description: API version
-          example: v1
   securitySchemes:
     BearerAuth:
       description: 'Session token from signing in to AI Applyd, sent as `Authorization: Bearer <token>`.'
       scheme: bearer
       type: http
-x-refined-from:
-- aiapplyd-openapi.json
-- aiapplyd-openapi.yml

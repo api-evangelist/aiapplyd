@@ -1,15 +1,15 @@
 openapi: 3.2.0
 info:
-  title: Aiapplyd Pricing API
-  version: 115c47ce
   contact:
     email: support@aiapplyd.com
     name: AI Applyd
     url: https://aiapplyd.com
+  description: 'The AI Applyd API runs the whole job hunt for you: it matches you to roles that fit your profile, rewrites your resume for each posting, writes the cover letter the form asks for, and auto-applies across the major applicant tracking systems.'
   license:
     name: Proprietary
     url: https://aiapplyd.com/legal/terms
-  description: 'Operations tagged pricing across 2 of this provider''s published API definitions: aiapplyd-openapi.json, aiapplyd-openapi.yml. Each path carries the servers of the definition it was published in.'
+  title: AI Applyd Pricing API
+  version: 115c47ce
 servers:
 - description: Current environment
   url: https://api.aiapplyd.com/api/v1
@@ -44,9 +44,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: getPricing
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /pricing/subscriptions:
     get:
       tags:
@@ -73,11 +70,117 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: getPricingSubscriptions
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
 components:
   schemas:
+    SubscriptionPlansResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/SubscriptionPlan'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    PlanActionLimit:
+      type: object
+      properties:
+        actionType:
+          type: string
+          enum:
+          - ats_score
+          - cover_letter
+          - auto_apply
+          - auto_apply_daily
+          - auto_apply_weekly
+          - auto_apply_monthly
+          - interview_prep
+          - job_discovery
+          - resume_tailor
+          - ats_optimize
+          - translate_resume
+          - extract_keywords
+          - parse_job_url
+          - job_match_score
+          - compare_offers
+          - comp_intelligence
+          - match_report_generated
+          - layoff_news_check
+          - latex_export_generated
+          - pattern_recommendation_applied
+          - proof_point_created
+          - relay_reply
+          - relay_receive
+          - relay_storage
+          description: Type of gated feature action
+          example: ats_score
+        limitPeriod:
+          type: string
+          enum:
+          - monthly
+          - daily
+          - weekly
+          - lifetime
+          - none
+          description: Period over which an action limit resets
+          example: monthly
+        limitValue:
+          type: integer
+          description: Limit value for this action (-1 means unlimited)
+          example: 10
+        planTier:
+          type: string
+          enum:
+          - job_seeker
+          - hired_in_30
+          - hired_yesterday
+          description: Subscription plan tier level
+          example: job_seeker
+      required:
+      - actionType
+      - limitPeriod
+      - limitValue
+      - planTier
+      additionalProperties: false
+    ResponseMetadata:
+      type: object
+      properties:
+        duration:
+          type: number
+          description: Request duration in milliseconds
+          example: 150
+          exclusiveMinimum: 0
+        performance:
+          type: object
+          properties:
+            dbQueries:
+              type: integer
+              minimum: 0
+            totalDbTime:
+              type: number
+              minimum: 0
+          description: Performance metrics (preview/local only)
+        requestId:
+          type: string
+          description: Unique request identifier
+          example: req_abc123
+        timestamp:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp
+          example: '2026-09-25T17:29:47.224Z'
+        version:
+          type: string
+          description: API version
+          example: v1
     PricingWithLimitsPayload:
       type: object
       properties:
@@ -93,6 +196,22 @@ components:
       - actionLimits
       - subscriptionPlans
       additionalProperties: false
+    PricingResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/PricingWithLimitsPayload'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
     ApiErrorResponse:
       type: object
       properties:
@@ -437,40 +556,6 @@ components:
       - error
       - success
       additionalProperties: false
-    SubscriptionPlansResponse:
-      type: object
-      properties:
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/SubscriptionPlan'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    PricingResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/PricingWithLimitsPayload'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
     SubscriptionPlan:
       type: object
       properties:
@@ -542,102 +627,8 @@ components:
       - stripePriceIdWeekly
       - updatedAt
       additionalProperties: false
-    PlanActionLimit:
-      type: object
-      properties:
-        actionType:
-          type: string
-          enum:
-          - ats_score
-          - cover_letter
-          - auto_apply
-          - auto_apply_daily
-          - auto_apply_weekly
-          - auto_apply_monthly
-          - interview_prep
-          - job_discovery
-          - resume_tailor
-          - ats_optimize
-          - translate_resume
-          - extract_keywords
-          - parse_job_url
-          - job_match_score
-          - compare_offers
-          - comp_intelligence
-          - match_report_generated
-          - layoff_news_check
-          - latex_export_generated
-          - pattern_recommendation_applied
-          - proof_point_created
-          - relay_reply
-          - relay_receive
-          - relay_storage
-          description: Type of gated feature action
-          example: ats_score
-        limitPeriod:
-          type: string
-          enum:
-          - monthly
-          - daily
-          - weekly
-          - lifetime
-          - none
-          description: Period over which an action limit resets
-          example: monthly
-        limitValue:
-          type: integer
-          description: Limit value for this action (-1 means unlimited)
-          example: 10
-        planTier:
-          type: string
-          enum:
-          - job_seeker
-          - hired_in_30
-          - hired_yesterday
-          description: Subscription plan tier level
-          example: job_seeker
-      required:
-      - actionType
-      - limitPeriod
-      - limitValue
-      - planTier
-      additionalProperties: false
-    ResponseMetadata:
-      type: object
-      properties:
-        duration:
-          type: number
-          description: Request duration in milliseconds
-          example: 150
-          exclusiveMinimum: 0
-        performance:
-          type: object
-          properties:
-            dbQueries:
-              type: integer
-              minimum: 0
-            totalDbTime:
-              type: number
-              minimum: 0
-          description: Performance metrics (preview/local only)
-        requestId:
-          type: string
-          description: Unique request identifier
-          example: req_abc123
-        timestamp:
-          type: string
-          format: date-time
-          description: ISO 8601 timestamp
-          example: '2026-09-25T17:29:47.224Z'
-        version:
-          type: string
-          description: API version
-          example: v1
   securitySchemes:
     BearerAuth:
       description: 'Session token from signing in to AI Applyd, sent as `Authorization: Bearer <token>`.'
       scheme: bearer
       type: http
-x-refined-from:
-- aiapplyd-openapi.json
-- aiapplyd-openapi.yml

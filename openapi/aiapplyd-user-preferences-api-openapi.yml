@@ -1,15 +1,15 @@
 openapi: 3.2.0
 info:
-  title: Aiapplyd User Preferences API
-  version: 115c47ce
   contact:
     email: support@aiapplyd.com
     name: AI Applyd
     url: https://aiapplyd.com
+  description: 'The AI Applyd API runs the whole job hunt for you: it matches you to roles that fit your profile, rewrites your resume for each posting, writes the cover letter the form asks for, and auto-applies across the major applicant tracking systems.'
   license:
     name: Proprietary
     url: https://aiapplyd.com/legal/terms
-  description: 'Operations tagged user-preferences across 2 of this provider''s published API definitions: aiapplyd-openapi.json, aiapplyd-openapi.yml. Each path carries the servers of the definition it was published in.'
+  title: AI Applyd User Preferences API
+  version: 115c47ce
 servers:
 - description: Current environment
   url: https://api.aiapplyd.com/api/v1
@@ -92,355 +92,55 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: patchUserPreferences
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
 components:
   schemas:
-    ApiErrorResponse:
+    PatchUserPreferencesResponse:
       type: object
       properties:
-        error:
-          type: object
-          properties:
-            code:
-              type: string
-            context:
-              oneOf:
-              - type: object
-                properties:
-                  errorType:
-                    type: string
-                    enum:
-                    - validation
-                  field:
-                    type: string
-                  fieldErrors:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        code:
-                          type: string
-                        expected:
-                          type: string
-                        field:
-                          type: string
-                        message:
-                          type: string
-                        received:
-                          type: string
-                      required:
-                      - field
-                      - message
-                  schemaName:
-                    type: string
-                required:
-                - errorType
-              - type: object
-                properties:
-                  attemptedEmail:
-                    type: string
-                    format: email
-                  errorType:
-                    type: string
-                    enum:
-                    - authentication
-                  failureReason:
-                    type: string
-                    enum:
-                    - invalid_credentials
-                    - account_locked
-                    - expired_token
-                    - token_expired
-                    - missing_token
-                    - invalid_token
-                    - session_expired
-                    description: Reason for authentication failure
-                    example: token_expired
-                  ipAddress:
-                    type: string
-                  operation:
-                    type: string
-                  service:
-                    type: string
-                  userAgent:
-                    type: string
-                required:
-                - errorType
-              - type: object
-                properties:
-                  actualPermission:
-                    type: string
-                  errorType:
-                    type: string
-                    enum:
-                    - authorization
-                  requiredPermission:
-                    type: string
-                  resource:
-                    type: string
-                  resourceId:
-                    type: string
-                  userId:
-                    type: string
-                required:
-                - errorType
-              - type: object
-                properties:
-                  constraint:
-                    type: string
-                  errorType:
-                    type: string
-                    enum:
-                    - database
-                  operation:
-                    type: string
-                    enum:
-                    - insert
-                    - update
-                    - delete
-                    - select
-                    - batch
-                    - transaction
-                    - migration
-                    description: Type of database operation
-                    example: select
-                  resourceId:
-                    type: string
-                  sqlState:
-                    type: string
-                  table:
-                    type: string
-                  userId:
-                    type: string
-                required:
-                - errorType
-              - type: object
-                properties:
-                  endpoint:
-                    type: string
-                  errorType:
-                    type: string
-                    enum:
-                    - external_service
-                  httpStatus:
-                    type: number
-                  operation:
-                    type: string
-                  resourceId:
-                    type: string
-                  responseTime:
-                    type: number
-                  retryAttempt:
-                    type: integer
-                  service:
-                    type: string
-                  serviceName:
-                    type: string
-                  userId:
-                    type: string
-                required:
-                - errorType
-              - type: object
-                properties:
-                  errorType:
-                    type: string
-                    enum:
-                    - resource
-                  resource:
-                    type: string
-                  resourceId:
-                    type: string
-                  service:
-                    type: string
-                  userId:
-                    type: string
-                required:
-                - errorType
-              - type: object
-                properties:
-                  errorType:
-                    type: string
-                    enum:
-                    - rate_limit
-                  limit:
-                    type: number
-                  resetTime:
-                    type: string
-                  windowMs:
-                    type: number
-                required:
-                - errorType
-              - type: object
-                properties:
-                  configKey:
-                    type: string
-                  errorType:
-                    type: string
-                    enum:
-                    - configuration
-                  operation:
-                    type: string
-                  service:
-                    type: string
-                required:
-                - errorType
-              description: Type-safe error context information
-              example:
-                errorType: validation
-                fieldErrors:
-                - field: email
-                  message: Invalid email format
-            details:
-              oneOf:
-              - type: object
-                properties:
-                  detailType:
-                    type: string
-                    enum:
-                    - validation
-                  validationErrors:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        code:
-                          type: string
-                        field:
-                          type: string
-                        message:
-                          type: string
-                      required:
-                      - field
-                      - message
-                required:
-                - detailType
-                - validationErrors
-                additionalProperties: false
-              - type: object
-                properties:
-                  detailType:
-                    type: string
-                    enum:
-                    - service_error
-                  originalError:
-                    type: string
-                  serviceName:
-                    type: string
-                required:
-                - detailType
-                - serviceName
-                additionalProperties: false
-              - type: object
-                properties:
-                  currentSize:
-                    type: number
-                  detailType:
-                    type: string
-                    enum:
-                    - batch
-                  originalError:
-                    type: string
-                  statementCount:
-                    type: number
-                required:
-                - detailType
-                additionalProperties: false
-              - type: object
-                properties:
-                  detailType:
-                    type: string
-                    enum:
-                    - rate_limit
-                  limit:
-                    type: number
-                  resetTime:
-                    type: string
-                  windowMs:
-                    type: number
-                required:
-                - detailType
-                - limit
-                - resetTime
-                - windowMs
-                additionalProperties: false
-              - type: object
-                properties:
-                  conflictingField:
-                    type: string
-                  detailType:
-                    type: string
-                    enum:
-                    - resource
-                  resourceId:
-                    anyOf:
-                    - type: string
-                    - type: number
-                  resourceType:
-                    type: string
-                required:
-                - detailType
-                additionalProperties: false
-              - type: object
-                properties:
-                  detailType:
-                    type: string
-                    enum:
-                    - generic
-                  info:
-                    type: string
-                required:
-                - detailType
-                additionalProperties: false
-              - type: object
-                properties:
-                  currentTokens:
-                    type: integer
-                    minimum: 0
-                  detailType:
-                    type: string
-                    enum:
-                    - insufficient_tokens
-                  requiredTokens:
-                    type: integer
-                    minimum: 0
-                required:
-                - currentTokens
-                - detailType
-                - requiredTokens
-                additionalProperties: false
-            message:
-              type: string
-            validation:
-              type: array
-              items:
-                type: object
-                properties:
-                  code:
-                    type: string
-                  field:
-                    type: string
-                  message:
-                    type: string
-                required:
-                - field
-                - message
-                additionalProperties: false
-          required:
-          - code
-          - message
-          additionalProperties: false
+        data:
+          $ref: '#/components/schemas/PatchUserPreferencesData'
         meta:
           $ref: '#/components/schemas/ResponseMetadata'
         success:
           type: boolean
           enum:
-          - false
+          - true
       required:
-      - error
+      - data
       - success
       additionalProperties: false
+      description: Successful API response
+    ResponseMetadata:
+      type: object
+      properties:
+        duration:
+          type: number
+          description: Request duration in milliseconds
+          example: 150
+          exclusiveMinimum: 0
+        performance:
+          type: object
+          properties:
+            dbQueries:
+              type: integer
+              minimum: 0
+            totalDbTime:
+              type: number
+              minimum: 0
+          description: Performance metrics (preview/local only)
+        requestId:
+          type: string
+          description: Unique request identifier
+          example: req_abc123
+        timestamp:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp
+          example: '2026-09-25T17:29:47.224Z'
+        version:
+          type: string
+          description: API version
+          example: v1
     UserPreferencesResponse:
       type: object
       properties:
@@ -457,163 +157,6 @@ components:
       - success
       additionalProperties: false
       description: Successful API response
-    AIPersonaData:
-      type: object
-      properties:
-        id:
-          type: string
-          description: AI persona identifier
-          example: abc-123
-        userId:
-          type: string
-          description: User identifier
-          example: user_abc123
-        presetId:
-          type: string
-          enum:
-          - balanced
-          - the_professional
-          - the_conversationalist
-          - the_storyteller
-          - the_closer
-          - the_enthusiast
-          - custom
-          description: Selected persona preset
-          example: balanced
-        personalDescription:
-          type:
-          - string
-          - 'null'
-          description: Free text about the user for AI personalization
-          example: Senior engineer with 10 years in fintech
-        toneInstructions:
-          type:
-          - string
-          - 'null'
-          description: Custom rules for AI tone and style
-          example: Always mention my passion for open-source
-        samplePhrases:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-          description: Example phrases the user would naturally use
-          example:
-          - Let me walk you through my approach
-          - I thrive in fast-paced environments
-        generateCoverLetterPerJob:
-          type: boolean
-          description: Whether AI generates a cover letter for each job application
-          example: true
-        tailorResumePerJob:
-          type: boolean
-          description: Whether AI tailors resume for each job application
-          example: true
-        resumeStrategy:
-          type: string
-          enum:
-          - base
-          - tailor
-          description: Resume handling strategy
-          example: tailor
-        coverLetterStrategy:
-          type: string
-          enum:
-          - 'off'
-          - use_base
-          - tailor_base
-          - generate_new
-          description: Cover letter handling strategy
-          example: generate_new
-        translationStrategy:
-          type: string
-          enum:
-          - 'off'
-          - translate
-          - translate_and_tailor
-          description: Translation strategy
-          example: 'off'
-        mode:
-          type: string
-          enum:
-          - copilot
-          - auto_approve
-          description: 'Application mode: copilot (review before submitting) or auto_approve (submits automatically)'
-          example: copilot
-        allowFabrication:
-          type: boolean
-          description: Fill-gaps for the apply agent, enabled by default. When true, a required field the agent cannot take directly from profile facts is sourced real-data-first (the resume, tailored resume, and cover letter for this application, then job preferences, then profile) and only fabricated as a last resort, marked as assumed. When false (explicit opt-out), it never fabricates such an answer. Contact/identity completion (phone, city, postal, profile links) always completes required fields and is not governed by this flag.
-          example: true
-        scoringWeights:
-          type:
-          - object
-          - 'null'
-          properties:
-            location:
-              type: number
-              minimum: 0
-              maximum: 2
-            remote:
-              type: number
-              minimum: 0
-              maximum: 2
-            salary:
-              type: number
-              minimum: 0
-              maximum: 2
-            seniority:
-              type: number
-              minimum: 0
-              maximum: 2
-            skills:
-              type: number
-              minimum: 0
-              maximum: 2
-            visa:
-              type: number
-              minimum: 0
-              maximum: 2
-          required:
-          - location
-          - remote
-          - salary
-          - seniority
-          - skills
-          - visa
-          description: Per-dimension match scoring weights. NULL when the user has never customised them (scorer falls back to uniform defaults).
-          example:
-            skills: 1
-            location: 1
-            remote: 1
-            seniority: 1
-            salary: 1
-            visa: 1
-        createdAt:
-          type: string
-          description: Persona creation timestamp
-          example: '2026-01-15T12:00:00Z'
-        updatedAt:
-          type: string
-          description: Persona last update timestamp
-          example: '2026-03-10T08:30:00Z'
-      required:
-      - id
-      - userId
-      - presetId
-      - personalDescription
-      - toneInstructions
-      - samplePhrases
-      - generateCoverLetterPerJob
-      - tailorResumePerJob
-      - resumeStrategy
-      - coverLetterStrategy
-      - translationStrategy
-      - mode
-      - allowFabrication
-      - scoringWeights
-      - createdAt
-      - updatedAt
     PatchUserPreferences:
       type: object
       properties:
@@ -1211,17 +754,143 @@ components:
           additionalProperties: false
           description: Partial ai_persona patch. Strategy enums win over legacy booleans via mirrorLegacyBooleans().
       additionalProperties: false
-    PatchUserPreferencesData:
-      allOf:
-      - $ref: '#/components/schemas/UserPreferencesData'
-      - type: object
-        properties:
-          prefsChanged:
-            type: boolean
-            description: True only when this PATCH changed at least one job_match_preference column AND started a match rebuild. False for an unchanged or persona/profile-only save, when the post-write prefs read failed, and when an earlier save's rebuild was already running (no rebuild started for this request).
-            example: true
-        required:
-        - prefsChanged
+    JobMatchPreferencesData:
+      type: object
+      properties:
+        benefits:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        companySize:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        createdAt:
+          type:
+          - string
+          - 'null'
+        educationLevel:
+          type:
+          - string
+          - 'null'
+        excludeIndustries:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        experienceLevel:
+          type:
+          - string
+          - 'null'
+        experienceLevels:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        id:
+          type: integer
+        includeRemote:
+          type: boolean
+        industries:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        isActive:
+          type: boolean
+        jobTypes:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        locations:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        remoteGlobal:
+          type: boolean
+        salaryCurrency:
+          type: string
+          enum:
+          - usd
+          - eur
+          - gbp
+          - cad
+          - aud
+          - inr
+          description: Currency for salary values
+          example: usd
+        salaryMax:
+          type:
+          - number
+          - 'null'
+        salaryMin:
+          type:
+          - number
+          - 'null'
+        skills:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        targetRoles:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        updatedAt:
+          type:
+          - string
+          - 'null'
+        visaSponsorship:
+          type:
+          - string
+          - 'null'
+        workStyles:
+          type: array
+          items:
+            type: string
+            enum:
+            - onsite
+            - hybrid
+            - remote
+            description: User's preferred work style, physical mode only, no geo scoping
+            example: remote
+      required:
+      - benefits
+      - companySize
+      - createdAt
+      - educationLevel
+      - excludeIndustries
+      - experienceLevel
+      - experienceLevels
+      - id
+      - includeRemote
+      - industries
+      - isActive
+      - jobTypes
+      - locations
+      - remoteGlobal
+      - salaryCurrency
+      - salaryMax
+      - salaryMin
+      - skills
+      - targetRoles
+      - updatedAt
+      - visaSponsorship
+      - workStyles
     ApplicationProfileData:
       type: object
       properties:
@@ -1641,143 +1310,17 @@ components:
       - addressCompleteness
       - createdAt
       - updatedAt
-    JobMatchPreferencesData:
-      type: object
-      properties:
-        benefits:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-        companySize:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-        createdAt:
-          type:
-          - string
-          - 'null'
-        educationLevel:
-          type:
-          - string
-          - 'null'
-        excludeIndustries:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-        experienceLevel:
-          type:
-          - string
-          - 'null'
-        experienceLevels:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-        id:
-          type: integer
-        includeRemote:
-          type: boolean
-        industries:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-        isActive:
-          type: boolean
-        jobTypes:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-        locations:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-        remoteGlobal:
-          type: boolean
-        salaryCurrency:
-          type: string
-          enum:
-          - usd
-          - eur
-          - gbp
-          - cad
-          - aud
-          - inr
-          description: Currency for salary values
-          example: usd
-        salaryMax:
-          type:
-          - number
-          - 'null'
-        salaryMin:
-          type:
-          - number
-          - 'null'
-        skills:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-        targetRoles:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-        updatedAt:
-          type:
-          - string
-          - 'null'
-        visaSponsorship:
-          type:
-          - string
-          - 'null'
-        workStyles:
-          type: array
-          items:
-            type: string
-            enum:
-            - onsite
-            - hybrid
-            - remote
-            description: User's preferred work style, physical mode only, no geo scoping
-            example: remote
-      required:
-      - benefits
-      - companySize
-      - createdAt
-      - educationLevel
-      - excludeIndustries
-      - experienceLevel
-      - experienceLevels
-      - id
-      - includeRemote
-      - industries
-      - isActive
-      - jobTypes
-      - locations
-      - remoteGlobal
-      - salaryCurrency
-      - salaryMax
-      - salaryMin
-      - skills
-      - targetRoles
-      - updatedAt
-      - visaSponsorship
-      - workStyles
+    PatchUserPreferencesData:
+      allOf:
+      - $ref: '#/components/schemas/UserPreferencesData'
+      - type: object
+        properties:
+          prefsChanged:
+            type: boolean
+            description: True only when this PATCH changed at least one job_match_preference column AND started a match rebuild. False for an unchanged or persona/profile-only save, when the post-write prefs read failed, and when an earlier save's rebuild was already running (no rebuild started for this request).
+            example: true
+        required:
+        - prefsChanged
     UserPreferencesData:
       type:
       - object
@@ -1793,58 +1336,509 @@ components:
       - applicationProfile
       - jobMatchPreferences
       - aiPersona
-    PatchUserPreferencesResponse:
+    ApiErrorResponse:
       type: object
       properties:
-        data:
-          $ref: '#/components/schemas/PatchUserPreferencesData'
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+            context:
+              oneOf:
+              - type: object
+                properties:
+                  errorType:
+                    type: string
+                    enum:
+                    - validation
+                  field:
+                    type: string
+                  fieldErrors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        code:
+                          type: string
+                        expected:
+                          type: string
+                        field:
+                          type: string
+                        message:
+                          type: string
+                        received:
+                          type: string
+                      required:
+                      - field
+                      - message
+                  schemaName:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  attemptedEmail:
+                    type: string
+                    format: email
+                  errorType:
+                    type: string
+                    enum:
+                    - authentication
+                  failureReason:
+                    type: string
+                    enum:
+                    - invalid_credentials
+                    - account_locked
+                    - expired_token
+                    - token_expired
+                    - missing_token
+                    - invalid_token
+                    - session_expired
+                    description: Reason for authentication failure
+                    example: token_expired
+                  ipAddress:
+                    type: string
+                  operation:
+                    type: string
+                  service:
+                    type: string
+                  userAgent:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  actualPermission:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - authorization
+                  requiredPermission:
+                    type: string
+                  resource:
+                    type: string
+                  resourceId:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  constraint:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - database
+                  operation:
+                    type: string
+                    enum:
+                    - insert
+                    - update
+                    - delete
+                    - select
+                    - batch
+                    - transaction
+                    - migration
+                    description: Type of database operation
+                    example: select
+                  resourceId:
+                    type: string
+                  sqlState:
+                    type: string
+                  table:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  endpoint:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - external_service
+                  httpStatus:
+                    type: number
+                  operation:
+                    type: string
+                  resourceId:
+                    type: string
+                  responseTime:
+                    type: number
+                  retryAttempt:
+                    type: integer
+                  service:
+                    type: string
+                  serviceName:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  errorType:
+                    type: string
+                    enum:
+                    - resource
+                  resource:
+                    type: string
+                  resourceId:
+                    type: string
+                  service:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  errorType:
+                    type: string
+                    enum:
+                    - rate_limit
+                  limit:
+                    type: number
+                  resetTime:
+                    type: string
+                  windowMs:
+                    type: number
+                required:
+                - errorType
+              - type: object
+                properties:
+                  configKey:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - configuration
+                  operation:
+                    type: string
+                  service:
+                    type: string
+                required:
+                - errorType
+              description: Type-safe error context information
+              example:
+                errorType: validation
+                fieldErrors:
+                - field: email
+                  message: Invalid email format
+            details:
+              oneOf:
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - validation
+                  validationErrors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        code:
+                          type: string
+                        field:
+                          type: string
+                        message:
+                          type: string
+                      required:
+                      - field
+                      - message
+                required:
+                - detailType
+                - validationErrors
+                additionalProperties: false
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - service_error
+                  originalError:
+                    type: string
+                  serviceName:
+                    type: string
+                required:
+                - detailType
+                - serviceName
+                additionalProperties: false
+              - type: object
+                properties:
+                  currentSize:
+                    type: number
+                  detailType:
+                    type: string
+                    enum:
+                    - batch
+                  originalError:
+                    type: string
+                  statementCount:
+                    type: number
+                required:
+                - detailType
+                additionalProperties: false
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - rate_limit
+                  limit:
+                    type: number
+                  resetTime:
+                    type: string
+                  windowMs:
+                    type: number
+                required:
+                - detailType
+                - limit
+                - resetTime
+                - windowMs
+                additionalProperties: false
+              - type: object
+                properties:
+                  conflictingField:
+                    type: string
+                  detailType:
+                    type: string
+                    enum:
+                    - resource
+                  resourceId:
+                    anyOf:
+                    - type: string
+                    - type: number
+                  resourceType:
+                    type: string
+                required:
+                - detailType
+                additionalProperties: false
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - generic
+                  info:
+                    type: string
+                required:
+                - detailType
+                additionalProperties: false
+              - type: object
+                properties:
+                  currentTokens:
+                    type: integer
+                    minimum: 0
+                  detailType:
+                    type: string
+                    enum:
+                    - insufficient_tokens
+                  requiredTokens:
+                    type: integer
+                    minimum: 0
+                required:
+                - currentTokens
+                - detailType
+                - requiredTokens
+                additionalProperties: false
+            message:
+              type: string
+            validation:
+              type: array
+              items:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  field:
+                    type: string
+                  message:
+                    type: string
+                required:
+                - field
+                - message
+                additionalProperties: false
+          required:
+          - code
+          - message
+          additionalProperties: false
         meta:
           $ref: '#/components/schemas/ResponseMetadata'
         success:
           type: boolean
           enum:
-          - true
+          - false
       required:
-      - data
+      - error
       - success
       additionalProperties: false
-      description: Successful API response
-    ResponseMetadata:
+    AIPersonaData:
       type: object
       properties:
-        duration:
-          type: number
-          description: Request duration in milliseconds
-          example: 150
-          exclusiveMinimum: 0
-        performance:
-          type: object
+        id:
+          type: string
+          description: AI persona identifier
+          example: abc-123
+        userId:
+          type: string
+          description: User identifier
+          example: user_abc123
+        presetId:
+          type: string
+          enum:
+          - balanced
+          - the_professional
+          - the_conversationalist
+          - the_storyteller
+          - the_closer
+          - the_enthusiast
+          - custom
+          description: Selected persona preset
+          example: balanced
+        personalDescription:
+          type:
+          - string
+          - 'null'
+          description: Free text about the user for AI personalization
+          example: Senior engineer with 10 years in fintech
+        toneInstructions:
+          type:
+          - string
+          - 'null'
+          description: Custom rules for AI tone and style
+          example: Always mention my passion for open-source
+        samplePhrases:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: Example phrases the user would naturally use
+          example:
+          - Let me walk you through my approach
+          - I thrive in fast-paced environments
+        generateCoverLetterPerJob:
+          type: boolean
+          description: Whether AI generates a cover letter for each job application
+          example: true
+        tailorResumePerJob:
+          type: boolean
+          description: Whether AI tailors resume for each job application
+          example: true
+        resumeStrategy:
+          type: string
+          enum:
+          - base
+          - tailor
+          description: Resume handling strategy
+          example: tailor
+        coverLetterStrategy:
+          type: string
+          enum:
+          - 'off'
+          - use_base
+          - tailor_base
+          - generate_new
+          description: Cover letter handling strategy
+          example: generate_new
+        translationStrategy:
+          type: string
+          enum:
+          - 'off'
+          - translate
+          - translate_and_tailor
+          description: Translation strategy
+          example: 'off'
+        mode:
+          type: string
+          enum:
+          - copilot
+          - auto_approve
+          description: 'Application mode: copilot (review before submitting) or auto_approve (submits automatically)'
+          example: copilot
+        allowFabrication:
+          type: boolean
+          description: Fill-gaps for the apply agent, enabled by default. When true, a required field the agent cannot take directly from profile facts is sourced real-data-first (the resume, tailored resume, and cover letter for this application, then job preferences, then profile) and only fabricated as a last resort, marked as assumed. When false (explicit opt-out), it never fabricates such an answer. Contact/identity completion (phone, city, postal, profile links) always completes required fields and is not governed by this flag.
+          example: true
+        scoringWeights:
+          type:
+          - object
+          - 'null'
           properties:
-            dbQueries:
-              type: integer
-              minimum: 0
-            totalDbTime:
+            location:
               type: number
               minimum: 0
-          description: Performance metrics (preview/local only)
-        requestId:
+              maximum: 2
+            remote:
+              type: number
+              minimum: 0
+              maximum: 2
+            salary:
+              type: number
+              minimum: 0
+              maximum: 2
+            seniority:
+              type: number
+              minimum: 0
+              maximum: 2
+            skills:
+              type: number
+              minimum: 0
+              maximum: 2
+            visa:
+              type: number
+              minimum: 0
+              maximum: 2
+          required:
+          - location
+          - remote
+          - salary
+          - seniority
+          - skills
+          - visa
+          description: Per-dimension match scoring weights. NULL when the user has never customised them (scorer falls back to uniform defaults).
+          example:
+            skills: 1
+            location: 1
+            remote: 1
+            seniority: 1
+            salary: 1
+            visa: 1
+        createdAt:
           type: string
-          description: Unique request identifier
-          example: req_abc123
-        timestamp:
+          description: Persona creation timestamp
+          example: '2026-01-15T12:00:00Z'
+        updatedAt:
           type: string
-          format: date-time
-          description: ISO 8601 timestamp
-          example: '2026-09-25T17:29:47.224Z'
-        version:
-          type: string
-          description: API version
-          example: v1
+          description: Persona last update timestamp
+          example: '2026-03-10T08:30:00Z'
+      required:
+      - id
+      - userId
+      - presetId
+      - personalDescription
+      - toneInstructions
+      - samplePhrases
+      - generateCoverLetterPerJob
+      - tailorResumePerJob
+      - resumeStrategy
+      - coverLetterStrategy
+      - translationStrategy
+      - mode
+      - allowFabrication
+      - scoringWeights
+      - createdAt
+      - updatedAt
   securitySchemes:
     BearerAuth:
       description: 'Session token from signing in to AI Applyd, sent as `Authorization: Bearer <token>`.'
       scheme: bearer
       type: http
-x-refined-from:
-- aiapplyd-openapi.json
-- aiapplyd-openapi.yml

@@ -1,15 +1,15 @@
 openapi: 3.2.0
 info:
-  title: Aiapplyd Integrations API
-  version: 115c47ce
   contact:
     email: support@aiapplyd.com
     name: AI Applyd
     url: https://aiapplyd.com
+  description: 'The AI Applyd API runs the whole job hunt for you: it matches you to roles that fit your profile, rewrites your resume for each posting, writes the cover letter the form asks for, and auto-applies across the major applicant tracking systems.'
   license:
     name: Proprietary
     url: https://aiapplyd.com/legal/terms
-  description: 'Operations tagged integrations across 2 of this provider''s published API definitions: aiapplyd-openapi.json, aiapplyd-openapi.yml. Each path carries the servers of the definition it was published in.'
+  title: AI Applyd Integrations API
+  version: 115c47ce
 servers:
 - description: Current environment
   url: https://api.aiapplyd.com/api/v1
@@ -60,9 +60,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: getIntegrationsGoogleConnect
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /integrations/google/callback:
     get:
       tags:
@@ -116,9 +113,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: getIntegrationsGoogleCallback
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /integrations/google/status:
     get:
       tags:
@@ -151,9 +145,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: getIntegrationsGoogleStatus
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /integrations/google/disconnect:
     post:
       tags:
@@ -197,9 +188,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: postIntegrationsGoogleDisconnect
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
 components:
   schemas:
     GoogleStatusResponse:
@@ -218,6 +206,118 @@ components:
       - success
       additionalProperties: false
       description: Successful API response
+    ResponseMetadata:
+      type: object
+      properties:
+        duration:
+          type: number
+          description: Request duration in milliseconds
+          example: 150
+          exclusiveMinimum: 0
+        performance:
+          type: object
+          properties:
+            dbQueries:
+              type: integer
+              minimum: 0
+            totalDbTime:
+              type: number
+              minimum: 0
+          description: Performance metrics (preview/local only)
+        requestId:
+          type: string
+          description: Unique request identifier
+          example: req_abc123
+        timestamp:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp
+          example: '2026-09-25T17:29:47.224Z'
+        version:
+          type: string
+          description: API version
+          example: v1
+    GoogleStatusData:
+      type: object
+      properties:
+        calendar:
+          $ref: '#/components/schemas/GoogleServiceStatus'
+        gmail:
+          $ref: '#/components/schemas/GoogleServiceStatus'
+      required:
+      - calendar
+      - gmail
+      additionalProperties: false
+    GoogleServiceStatus:
+      type: object
+      properties:
+        connected:
+          type: boolean
+          description: Whether a live (non-revoked) connection exists for this service
+          example: true
+        email:
+          type:
+          - string
+          - 'null'
+          description: Connected Google account email, when known
+          example: user@gmail.com
+        scopes:
+          type: array
+          items:
+            type: string
+          description: OAuth scopes Google granted for this service
+          example:
+          - https://www.googleapis.com/auth/gmail.modify
+      required:
+      - connected
+      - email
+      - scopes
+      additionalProperties: false
+    GoogleDisconnectData:
+      type: object
+      properties:
+        disconnected:
+          type: boolean
+          description: True when the connection row was removed (or already absent)
+          example: true
+        service:
+          type: string
+          enum:
+          - gmail
+          - calendar
+          description: Service within an integration provider the user opted into
+          example: gmail
+      required:
+      - disconnected
+      - service
+      additionalProperties: false
+    GoogleConnectResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/GoogleConnectData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    GoogleConnectData:
+      type: object
+      properties:
+        authUrl:
+          type: string
+          format: uri
+          description: Google authorization URL to redirect / open the user to
+          example: https://accounts.google.com/o/oauth2/v2/auth?...
+      required:
+      - authUrl
+      additionalProperties: false
     ApiErrorResponse:
       type: object
       properties:
@@ -562,30 +662,6 @@ components:
       - error
       - success
       additionalProperties: false
-    GoogleStatusData:
-      type: object
-      properties:
-        calendar:
-          $ref: '#/components/schemas/GoogleServiceStatus'
-        gmail:
-          $ref: '#/components/schemas/GoogleServiceStatus'
-      required:
-      - calendar
-      - gmail
-      additionalProperties: false
-    GoogleDisconnectBody:
-      type: object
-      properties:
-        service:
-          type: string
-          enum:
-          - gmail
-          - calendar
-          description: Service within an integration provider the user opted into
-          example: gmail
-      required:
-      - service
-      additionalProperties: false
     GoogleDisconnectResponse:
       type: object
       properties:
@@ -602,65 +678,9 @@ components:
       - success
       additionalProperties: false
       description: Successful API response
-    GoogleConnectResponse:
+    GoogleDisconnectBody:
       type: object
       properties:
-        data:
-          $ref: '#/components/schemas/GoogleConnectData'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    GoogleServiceStatus:
-      type: object
-      properties:
-        connected:
-          type: boolean
-          description: Whether a live (non-revoked) connection exists for this service
-          example: true
-        email:
-          type:
-          - string
-          - 'null'
-          description: Connected Google account email, when known
-          example: user@gmail.com
-        scopes:
-          type: array
-          items:
-            type: string
-          description: OAuth scopes Google granted for this service
-          example:
-          - https://www.googleapis.com/auth/gmail.modify
-      required:
-      - connected
-      - email
-      - scopes
-      additionalProperties: false
-    GoogleConnectData:
-      type: object
-      properties:
-        authUrl:
-          type: string
-          format: uri
-          description: Google authorization URL to redirect / open the user to
-          example: https://accounts.google.com/o/oauth2/v2/auth?...
-      required:
-      - authUrl
-      additionalProperties: false
-    GoogleDisconnectData:
-      type: object
-      properties:
-        disconnected:
-          type: boolean
-          description: True when the connection row was removed (or already absent)
-          example: true
         service:
           type: string
           enum:
@@ -669,45 +689,10 @@ components:
           description: Service within an integration provider the user opted into
           example: gmail
       required:
-      - disconnected
       - service
       additionalProperties: false
-    ResponseMetadata:
-      type: object
-      properties:
-        duration:
-          type: number
-          description: Request duration in milliseconds
-          example: 150
-          exclusiveMinimum: 0
-        performance:
-          type: object
-          properties:
-            dbQueries:
-              type: integer
-              minimum: 0
-            totalDbTime:
-              type: number
-              minimum: 0
-          description: Performance metrics (preview/local only)
-        requestId:
-          type: string
-          description: Unique request identifier
-          example: req_abc123
-        timestamp:
-          type: string
-          format: date-time
-          description: ISO 8601 timestamp
-          example: '2026-09-25T17:29:47.224Z'
-        version:
-          type: string
-          description: API version
-          example: v1
   securitySchemes:
     BearerAuth:
       description: 'Session token from signing in to AI Applyd, sent as `Authorization: Bearer <token>`.'
       scheme: bearer
       type: http
-x-refined-from:
-- aiapplyd-openapi.json
-- aiapplyd-openapi.yml

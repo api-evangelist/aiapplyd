@@ -1,15 +1,15 @@
 openapi: 3.2.0
 info:
-  title: Aiapplyd Outreach API
-  version: 115c47ce
   contact:
     email: support@aiapplyd.com
     name: AI Applyd
     url: https://aiapplyd.com
+  description: 'The AI Applyd API runs the whole job hunt for you: it matches you to roles that fit your profile, rewrites your resume for each posting, writes the cover letter the form asks for, and auto-applies across the major applicant tracking systems.'
   license:
     name: Proprietary
     url: https://aiapplyd.com/legal/terms
-  description: 'Operations tagged outreach across 2 of this provider''s published API definitions: aiapplyd-openapi.json, aiapplyd-openapi.yml. Each path carries the servers of the definition it was published in.'
+  title: AI Applyd Outreach API
+  version: 115c47ce
 servers:
 - description: Current environment
   url: https://api.aiapplyd.com/api/v1
@@ -60,9 +60,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: getOutreachJobByJobIdContacts
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /outreach/job/{jobId}/draft:
     post:
       tags:
@@ -116,9 +113,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: postOutreachJobByJobIdDraft
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /outreach/{applicationResultId}/contacts:
     get:
       tags:
@@ -161,9 +155,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: getOutreachByApplicationResultIdContacts
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /outreach/{applicationResultId}/draft:
     post:
       tags:
@@ -217,11 +208,222 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: postOutreachByApplicationResultIdDraft
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
 components:
   schemas:
+    OutreachCompany:
+      type:
+      - object
+      - 'null'
+      properties:
+        checkedAt:
+          type:
+          - string
+          - 'null'
+          description: ISO timestamp of when the company's own site was last fetched for this block. Null when nothing was fetched yet.
+          example: '2026-09-05T10:00:00.000Z'
+        domain:
+          type:
+          - string
+          - 'null'
+          description: Company web domain on file (no scheme, no www).
+          example: acme.com
+        evidenceUrl:
+          type:
+          - string
+          - 'null'
+          description: The page `hq`, `socials` and the site-published industry tags were read from. Null when nothing was fetched (the industry on our own record may still appear in `industryTags`).
+          example: https://acme.com/
+        hq:
+          type:
+          - string
+          - 'null'
+          description: Headquarters as the company states it in its own structured data (schema.org Organization address). Null when not published.
+          example: Berlin, Germany
+        industryTags:
+          type: array
+          items:
+            type: string
+          description: 'Up to 6 industry / category tags, deduped. Two origins, and only two: what the company states about itself in its own structured data (schema.org `industry` / `knowsAbout`, read from `evidenceUrl`), and the industry on OUR record for this company, which is not page evidence and may be absent from the site. SEO `<meta name="keywords">` is deliberately excluded - it is a crawler keyword dump, not a category list. Empty when neither origin has anything.'
+          example:
+          - Software
+          - Fintech
+        name:
+          type: string
+          description: Company name as it appears on the job
+          example: Acme
+        socials:
+          type: array
+          items:
+            $ref: '#/components/schemas/OutreachSocialHandle'
+          description: Social handles linked from the company's own homepage / footer, one per platform, each with the page it was found on.
+        website:
+          type:
+          - string
+          - 'null'
+          description: Homepage URL. Null when the company has no domain on file.
+          example: https://acme.com/
+      required:
+      - checkedAt
+      - domain
+      - evidenceUrl
+      - hq
+      - industryTags
+      - name
+      - socials
+      - website
+      additionalProperties: false
+      description: Company research block from the company's own site. Null when the job carries no company name.
+    OutreachDraftData:
+      type: object
+      properties:
+        alternates:
+          type: array
+          items:
+            $ref: '#/components/schemas/OutreachDraftAlternate'
+          description: The SAME message written for every other channel, generated in the same request and grounded in the same evidence. A cold outreach is not one route - the user can paste into LinkedIn or into an email client without regenerating.
+        body:
+          type: string
+          description: Drafted outreach message. For LinkedIn channel, capped at 300 chars.
+          example: Hi Jane, I just applied for the Senior Backend Engineer role...
+        channel:
+          type: string
+          enum:
+          - email
+          - linkedin
+          - other
+          description: Auto-detected channel (email when an address is known, else linkedin)
+          example: email
+        linkedinUrl:
+          type:
+          - string
+          - 'null'
+          description: LinkedIn URL of the contact, for the "Open on LinkedIn" deep-link
+          example: https://www.linkedin.com/in/jane-doe
+        mailto:
+          type:
+          - string
+          - 'null'
+          description: 'Pre-filled mailto: link when the contact has an email, else null'
+          example: mailto:jane.doe@acme.com?subject=...&body=...
+        subject:
+          type: string
+          description: Email subject line. Empty when channel=linkedin.
+          example: Following up on my application
+      required:
+      - alternates
+      - body
+      - channel
+      - linkedinUrl
+      - mailto
+      - subject
+      additionalProperties: false
+    OutreachDraftAlternate:
+      type: object
+      properties:
+        body:
+          type: string
+          description: Draft body for this channel. LinkedIn variants are capped at 300 chars.
+        channel:
+          type: string
+          enum:
+          - email
+          - linkedin
+          - other
+          description: Channel this variant is written for
+          example: email
+        mailto:
+          type:
+          - string
+          - 'null'
+          description: 'Pre-filled mailto: link when this variant is the email channel and an address is known.'
+        subject:
+          type: string
+          description: Subject line. Empty for the LinkedIn variant.
+      required:
+      - body
+      - channel
+      - mailto
+      - subject
+      additionalProperties: false
+    OutreachContactDrafts:
+      type: object
+      properties:
+        email:
+          $ref: '#/components/schemas/OutreachEmailDraft'
+        linkedin:
+          $ref: '#/components/schemas/OutreachLinkedinNote'
+      required:
+      - email
+      - linkedin
+      additionalProperties: false
+      description: 'Deterministic drafts for this person: an email (subject + body) and a LinkedIn connection note. Nothing here is sent by us.'
+    OutreachEmailDraft:
+      type: object
+      properties:
+        body:
+          type: string
+          description: Ready-to-paste email body, first person, no clichés (anti-cliché filter applied).
+        mailto:
+          type:
+          - string
+          - 'null'
+          description: 'Pre-filled mailto: link when the contact has an address, else null.'
+        subject:
+          type: string
+          description: Email subject line.
+          example: Applying for Senior Backend Engineer at Acme
+      required:
+      - body
+      - mailto
+      - subject
+      additionalProperties: false
+    ResponseMetadata:
+      type: object
+      properties:
+        duration:
+          type: number
+          description: Request duration in milliseconds
+          example: 150
+          exclusiveMinimum: 0
+        performance:
+          type: object
+          properties:
+            dbQueries:
+              type: integer
+              minimum: 0
+            totalDbTime:
+              type: number
+              minimum: 0
+          description: Performance metrics (preview/local only)
+        requestId:
+          type: string
+          description: Unique request identifier
+          example: req_abc123
+        timestamp:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp
+          example: '2026-09-25T17:29:47.224Z'
+        version:
+          type: string
+          description: API version
+          example: v1
+    OutreachDraftResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/OutreachDraftData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
     OutreachLinkedinNote:
       type: object
       properties:
@@ -232,6 +434,65 @@ components:
       required:
       - body
       additionalProperties: false
+    OutreachContactsData:
+      type: object
+      properties:
+        company:
+          $ref: '#/components/schemas/OutreachCompany'
+        contacts:
+          type: array
+          items:
+            $ref: '#/components/schemas/OutreachContact'
+          description: The top 3 sourced contacts, ranked by relevance to the applied role (recruiter / hiring manager / team lead first). People whose evidence says they left are never included.
+        postingEmails:
+          type: array
+          items:
+            type: string
+          description: Contact addresses the employer printed in this job description. Extracted verbatim from the stored posting - no model, no inference, no network call - so they are the highest-provenance contact on this surface. Empty for most postings.
+          example:
+          - careers@acme.com
+        peopleDeepLink:
+          type: string
+          description: LinkedIn company People-tab deep-link so the user can keep searching themselves
+          example: https://www.linkedin.com/company/acme/people/?keywords=recruiter
+        rateLimited:
+          type: boolean
+          description: True when a fresh sourcing run was skipped (one run per company per 24h)
+          example: false
+        sourced:
+          type: boolean
+          description: True when this request triggered a fresh sourcing run
+          example: true
+        totalContacts:
+          type: integer
+          minimum: 0
+          description: How many verified contacts exist for this company before the top-3 cut.
+          example: 7
+      required:
+      - company
+      - contacts
+      - postingEmails
+      - peopleDeepLink
+      - rateLimited
+      - sourced
+      - totalContacts
+      additionalProperties: false
+    OutreachContactsResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/OutreachContactsData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
     ApiErrorResponse:
       type: object
       properties:
@@ -576,50 +837,6 @@ components:
       - error
       - success
       additionalProperties: false
-    OutreachDraftData:
-      type: object
-      properties:
-        alternates:
-          type: array
-          items:
-            $ref: '#/components/schemas/OutreachDraftAlternate'
-          description: The SAME message written for every other channel, generated in the same request and grounded in the same evidence. A cold outreach is not one route - the user can paste into LinkedIn or into an email client without regenerating.
-        body:
-          type: string
-          description: Drafted outreach message. For LinkedIn channel, capped at 300 chars.
-          example: Hi Jane, I just applied for the Senior Backend Engineer role...
-        channel:
-          type: string
-          enum:
-          - email
-          - linkedin
-          - other
-          description: Auto-detected channel (email when an address is known, else linkedin)
-          example: email
-        linkedinUrl:
-          type:
-          - string
-          - 'null'
-          description: LinkedIn URL of the contact, for the "Open on LinkedIn" deep-link
-          example: https://www.linkedin.com/in/jane-doe
-        mailto:
-          type:
-          - string
-          - 'null'
-          description: 'Pre-filled mailto: link when the contact has an email, else null'
-          example: mailto:jane.doe@acme.com?subject=...&body=...
-        subject:
-          type: string
-          description: Email subject line. Empty when channel=linkedin.
-          example: Following up on my application
-      required:
-      - alternates
-      - body
-      - channel
-      - linkedinUrl
-      - mailto
-      - subject
-      additionalProperties: false
     OutreachContact:
       type: object
       properties:
@@ -772,144 +989,6 @@ components:
       - stillThere
       - title
       additionalProperties: false
-    OutreachContactsResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/OutreachContactsData'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    OutreachContactsData:
-      type: object
-      properties:
-        company:
-          $ref: '#/components/schemas/OutreachCompany'
-        contacts:
-          type: array
-          items:
-            $ref: '#/components/schemas/OutreachContact'
-          description: The top 3 sourced contacts, ranked by relevance to the applied role (recruiter / hiring manager / team lead first). People whose evidence says they left are never included.
-        postingEmails:
-          type: array
-          items:
-            type: string
-          description: Contact addresses the employer printed in this job description. Extracted verbatim from the stored posting - no model, no inference, no network call - so they are the highest-provenance contact on this surface. Empty for most postings.
-          example:
-          - careers@acme.com
-        peopleDeepLink:
-          type: string
-          description: LinkedIn company People-tab deep-link so the user can keep searching themselves
-          example: https://www.linkedin.com/company/acme/people/?keywords=recruiter
-        rateLimited:
-          type: boolean
-          description: True when a fresh sourcing run was skipped (one run per company per 24h)
-          example: false
-        sourced:
-          type: boolean
-          description: True when this request triggered a fresh sourcing run
-          example: true
-        totalContacts:
-          type: integer
-          minimum: 0
-          description: How many verified contacts exist for this company before the top-3 cut.
-          example: 7
-      required:
-      - company
-      - contacts
-      - postingEmails
-      - peopleDeepLink
-      - rateLimited
-      - sourced
-      - totalContacts
-      additionalProperties: false
-    OutreachDraftResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/OutreachDraftData'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    OutreachCompany:
-      type:
-      - object
-      - 'null'
-      properties:
-        checkedAt:
-          type:
-          - string
-          - 'null'
-          description: ISO timestamp of when the company's own site was last fetched for this block. Null when nothing was fetched yet.
-          example: '2026-09-05T10:00:00.000Z'
-        domain:
-          type:
-          - string
-          - 'null'
-          description: Company web domain on file (no scheme, no www).
-          example: acme.com
-        evidenceUrl:
-          type:
-          - string
-          - 'null'
-          description: The page `hq`, `socials` and the site-published industry tags were read from. Null when nothing was fetched (the industry on our own record may still appear in `industryTags`).
-          example: https://acme.com/
-        hq:
-          type:
-          - string
-          - 'null'
-          description: Headquarters as the company states it in its own structured data (schema.org Organization address). Null when not published.
-          example: Berlin, Germany
-        industryTags:
-          type: array
-          items:
-            type: string
-          description: 'Up to 6 industry / category tags, deduped. Two origins, and only two: what the company states about itself in its own structured data (schema.org `industry` / `knowsAbout`, read from `evidenceUrl`), and the industry on OUR record for this company, which is not page evidence and may be absent from the site. SEO `<meta name="keywords">` is deliberately excluded - it is a crawler keyword dump, not a category list. Empty when neither origin has anything.'
-          example:
-          - Software
-          - Fintech
-        name:
-          type: string
-          description: Company name as it appears on the job
-          example: Acme
-        socials:
-          type: array
-          items:
-            $ref: '#/components/schemas/OutreachSocialHandle'
-          description: Social handles linked from the company's own homepage / footer, one per platform, each with the page it was found on.
-        website:
-          type:
-          - string
-          - 'null'
-          description: Homepage URL. Null when the company has no domain on file.
-          example: https://acme.com/
-      required:
-      - checkedAt
-      - domain
-      - evidenceUrl
-      - hq
-      - industryTags
-      - name
-      - socials
-      - website
-      additionalProperties: false
-      description: Company research block from the company's own site. Null when the job carries no company name.
     OutreachSocialHandle:
       type: object
       properties:
@@ -937,97 +1016,6 @@ components:
       - platform
       - url
       additionalProperties: false
-    OutreachEmailDraft:
-      type: object
-      properties:
-        body:
-          type: string
-          description: Ready-to-paste email body, first person, no clichés (anti-cliché filter applied).
-        mailto:
-          type:
-          - string
-          - 'null'
-          description: 'Pre-filled mailto: link when the contact has an address, else null.'
-        subject:
-          type: string
-          description: Email subject line.
-          example: Applying for Senior Backend Engineer at Acme
-      required:
-      - body
-      - mailto
-      - subject
-      additionalProperties: false
-    OutreachContactDrafts:
-      type: object
-      properties:
-        email:
-          $ref: '#/components/schemas/OutreachEmailDraft'
-        linkedin:
-          $ref: '#/components/schemas/OutreachLinkedinNote'
-      required:
-      - email
-      - linkedin
-      additionalProperties: false
-      description: 'Deterministic drafts for this person: an email (subject + body) and a LinkedIn connection note. Nothing here is sent by us.'
-    OutreachDraftAlternate:
-      type: object
-      properties:
-        body:
-          type: string
-          description: Draft body for this channel. LinkedIn variants are capped at 300 chars.
-        channel:
-          type: string
-          enum:
-          - email
-          - linkedin
-          - other
-          description: Channel this variant is written for
-          example: email
-        mailto:
-          type:
-          - string
-          - 'null'
-          description: 'Pre-filled mailto: link when this variant is the email channel and an address is known.'
-        subject:
-          type: string
-          description: Subject line. Empty for the LinkedIn variant.
-      required:
-      - body
-      - channel
-      - mailto
-      - subject
-      additionalProperties: false
-    ResponseMetadata:
-      type: object
-      properties:
-        duration:
-          type: number
-          description: Request duration in milliseconds
-          example: 150
-          exclusiveMinimum: 0
-        performance:
-          type: object
-          properties:
-            dbQueries:
-              type: integer
-              minimum: 0
-            totalDbTime:
-              type: number
-              minimum: 0
-          description: Performance metrics (preview/local only)
-        requestId:
-          type: string
-          description: Unique request identifier
-          example: req_abc123
-        timestamp:
-          type: string
-          format: date-time
-          description: ISO 8601 timestamp
-          example: '2026-09-25T17:29:47.224Z'
-        version:
-          type: string
-          description: API version
-          example: v1
     OutreachDraftBody:
       type: object
       properties:
@@ -1044,6 +1032,3 @@ components:
       description: 'Session token from signing in to AI Applyd, sent as `Authorization: Bearer <token>`.'
       scheme: bearer
       type: http
-x-refined-from:
-- aiapplyd-openapi.json
-- aiapplyd-openapi.yml

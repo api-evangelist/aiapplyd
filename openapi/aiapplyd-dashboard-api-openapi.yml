@@ -1,15 +1,15 @@
 openapi: 3.2.0
 info:
-  title: Aiapplyd Dashboard API
-  version: 115c47ce
   contact:
     email: support@aiapplyd.com
     name: AI Applyd
     url: https://aiapplyd.com
+  description: 'The AI Applyd API runs the whole job hunt for you: it matches you to roles that fit your profile, rewrites your resume for each posting, writes the cover letter the form asks for, and auto-applies across the major applicant tracking systems.'
   license:
     name: Proprietary
     url: https://aiapplyd.com/legal/terms
-  description: 'Operations tagged dashboard across 2 of this provider''s published API definitions: aiapplyd-openapi.json, aiapplyd-openapi.yml. Each path carries the servers of the definition it was published in.'
+  title: AI Applyd Dashboard API
+  version: 115c47ce
 servers:
 - description: Current environment
   url: https://api.aiapplyd.com/api/v1
@@ -50,11 +50,417 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: getDashboardBootstrap
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
 components:
   schemas:
+    MatchData:
+      type: object
+      properties:
+        appliedAt:
+          type:
+          - string
+          - 'null'
+          description: Timestamp when the application was confirmed submitted. Null until submission completes.
+          example: '2026-04-20T10:15:00Z'
+        applicationStatus:
+          type:
+          - string
+          - 'null'
+          enum:
+          - pending
+          - pending_review
+          - ready_to_submit
+          - applied
+          - applied_unconfirmed
+          - skipped
+          - error
+          - cancelled
+          - null
+          description: Status of the latest applicationResult row for this match (pending / pending_review / ready_to_submit / applied / skipped / error). Null when no application has been started.
+          example: ready_to_submit
+        authPlatform:
+          type:
+          - string
+          - 'null'
+          description: Platform credential key required for auto-apply (e.g. "linkedin", "indeed"), or null if no auth needed
+          example: linkedin
+        requiresAuth:
+          type: boolean
+          description: True when this match's platform requires authenticated apply AND the user has not connected the corresponding integration. Frontend renders a locked card with a "Connect {authPlatform}" CTA when true.
+          example: false
+        platformType:
+          type: string
+          description: Resolved URL platform classifier (e.g. "linkedin", "greenhouse", "lever"). Always present.
+          example: greenhouse
+        benefits:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        company:
+          type:
+          - string
+          - 'null'
+        companyLogoUrl:
+          type:
+          - string
+          - 'null'
+        companyDomain:
+          type:
+          - string
+          - 'null'
+          description: Trusted company-intel domain (company.domain) for the company-jobs page logo fallback. Null when the match has no linked company record or the company has no domain.
+          example: acme.com
+        companySize:
+          type:
+          - string
+          - 'null'
+        createdAt:
+          type:
+          - string
+          - 'null'
+        description:
+          type:
+          - string
+          - 'null'
+        dismissed:
+          type: boolean
+        educationRequired:
+          type:
+          - string
+          - 'null'
+        extractedSkills:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        id:
+          type: integer
+        publicJobId:
+          type:
+          - integer
+          - 'null'
+        jobType:
+          type:
+          - string
+          - 'null'
+        listingStatus:
+          type:
+          - string
+          - 'null'
+          enum:
+          - saved
+          - preparing
+          - applied
+          - interviewing
+          - offered
+          - rejected
+          - archived
+          - null
+          description: Status from the user's jobListings row for this match (saved / preparing / applied / rejected / interviewing / offered / archived). Null when the match has never been saved.
+          example: preparing
+        location:
+          type:
+          - string
+          - 'null'
+        locationMatch:
+          type:
+          - boolean
+          - 'null'
+          description: Job country is in user preferences OR job is remote. Null when both sides lack data.
+        geoTier:
+          type: string
+          enum:
+          - exact_city
+          - within_radius
+          - in_country
+          - remote
+          - off_country
+          - unknown
+          description: Rung this job occupies on the user's location-priority ladder (exact_city > within_radius > in_country > remote > off_country > unknown). `unknown` means the job could not be placed and must NEVER be rendered as a location match.
+          example: within_radius
+        distanceKm:
+          type:
+          - number
+          - 'null'
+          description: Whole-km great-circle distance to the user's NEAREST preferred city. Null means NOT COMPUTABLE (missing coordinates on either side) and must be read as unknown, never as "far" and never as 0.
+          example: 24
+        matchScore:
+          type:
+          - number
+          - 'null'
+        postedAt:
+          type:
+          - string
+          - 'null'
+        preparationStatus:
+          type:
+          - string
+          - 'null'
+          enum:
+          - pending
+          - preparing
+          - ready
+          - submitting
+          - submitted
+          - failed
+          - cancelled
+          - null
+          description: Preparation progress for the latest application (pending / preparing / ready / submitting / submitted / failed). Null when no application has been started.
+          example: preparing
+        remoteMatch:
+          type:
+          - boolean
+          - 'null'
+          description: Job supports any remote arrangement. Null when work arrangement is missing.
+        resolvedApplyUrl:
+          type:
+          - string
+          - 'null'
+          description: Resolved external ATS apply URL (e.g. the Greenhouse/Lever page a LinkedIn-scraped job actually applies on). Null when the job applies on its own page. The apply gate prefers this over `url` for platform detection.
+          example: https://boards.greenhouse.io/acme/jobs/123
+        linkedinApplyMethod:
+          type: string
+          enum:
+          - easy_apply
+          - offsite
+          - unknown
+          description: Resolved LinkedIn apply target. `offsite` → applies on a company ATS (use resolvedApplyUrl for the provider badge); `easy_apply` → in-platform LinkedIn Easy Apply ("LinkedIn Easy Apply" badge); `unknown` → not yet resolved / not a LinkedIn posting (fall back to `source` for the badge).
+          example: offsite
+        salary:
+          type:
+          - string
+          - 'null'
+        salaryMatch:
+          type:
+          - boolean
+          - 'null'
+          description: Job salary meets or exceeds user minimum. Null when either side lacks a salary value.
+        saved:
+          type: boolean
+        seniorityMatch:
+          type:
+          - boolean
+          - 'null'
+          description: Job seniority band equals user preference. Null when either side lacks a band.
+        skillsMatch:
+          type:
+          - boolean
+          - 'null'
+          description: At least one user canonical skill appears on the job. Null when either side lacks a skills list.
+        skillsMatchCount:
+          type:
+          - integer
+          - 'null'
+          minimum: 0
+          description: Count of user canonical skills matched on this job. Null when either side lacks a skills list.
+        source:
+          type: string
+        title:
+          type: string
+        url:
+          type: string
+        visaMatch:
+          type:
+          - boolean
+          - 'null'
+          description: User does not require sponsorship OR job offers sponsorship. Null when sponsorship status is unknown.
+        visaSponsorship:
+          type:
+          - string
+          - 'null'
+        whyGoodFit:
+          type:
+          - string
+          - 'null'
+          description: 'Enrichment-v2: one-paragraph (<=280 chars) neutral third-person blurb describing why a generic candidate might want this role. Null when the description is too thin.'
+          example: Remote-first Series B fintech with strong mentorship, modern TypeScript stack, and paid conference budget. Limited on-call and a small team where individual impact is high.
+        workArrangement:
+          type:
+          - string
+          - 'null'
+          description: Canonical work-arrangement enum (remote_global / remote_country / remote_region / hybrid / onsite / unknown). Drives the "Remote" chip + filter. Null only when enrichment hasn't run yet.
+          example: remote_global
+        city:
+          type:
+          - string
+          - 'null'
+          description: Parsed city component of location.
+        country:
+          type:
+          - string
+          - 'null'
+          description: Canonical country code.
+        legitimacyTier:
+          type:
+          - string
+          - 'null'
+          enum:
+          - high_confidence
+          - proceed_with_caution
+          - suspicious
+          - null
+          description: Deterministic posting-legitimacy verdict. Null when not yet evaluated.
+          example: proceed_with_caution
+        freshnessStatus:
+          type:
+          - string
+          - 'null'
+          enum:
+          - fresh
+          - aging
+          - stale
+          - unknown
+          - null
+          description: Posting age bucket (fresh / aging / stale / unknown).
+          example: fresh
+        repostedCount:
+          type:
+          - integer
+          - 'null'
+          minimum: 0
+          description: Number of prior live scraped_job rows for this URL family. 0 when no repost history.
+          example: 0
+        lastRepostDate:
+          type:
+          - string
+          - 'null'
+          description: posted_date of the most-recent prior repost. Null when no prior posting exists.
+          example: '2026-03-04'
+        legitimacySignals:
+          type:
+          - string
+          - 'null'
+          description: Serialized LegitimacySignals payload (score + signals[] + tier). Null when not yet evaluated.
+        seniorityBand:
+          type:
+          - string
+          - 'null'
+          enum:
+          - intern
+          - entry
+          - junior
+          - mid
+          - senior
+          - staff
+          - principal
+          - lead
+          - manager
+          - director
+          - vp
+          - cxo
+          - null
+          description: Canonical seniority band parsed from the listing (intern / entry / junior / mid / senior / staff / principal / lead / manager / director / vp / cxo). Null when the band could not be inferred.
+          example: senior
+        salaryMinUsd:
+          type:
+          - integer
+          - 'null'
+          description: Lower bound of the listing salary range normalized to USD/year. Null when no parseable salary range exists.
+          example: 120000
+        salaryMaxUsd:
+          type:
+          - integer
+          - 'null'
+          description: Upper bound of the listing salary range normalized to USD/year. Null when no parseable salary range exists.
+          example: 180000
+        salaryCurrency:
+          type:
+          - string
+          - 'null'
+          description: ISO-4217 currency code of the original (pre-normalization) salary range (USD, EUR, GBP, ...). Null when no salary was reported.
+          example: USD
+        needsLivenessCheck:
+          type: boolean
+          description: True when the match is a stale-candidate on a browser-required aggregator (indeed/linkedin/glassdoor) and the frontend should call POST /job-matches/{id}/verify-live before allowing swipe-right. False means the listing is fresh enough to swipe directly.
+          example: false
+      required:
+      - appliedAt
+      - applicationStatus
+      - authPlatform
+      - requiresAuth
+      - platformType
+      - benefits
+      - company
+      - companyLogoUrl
+      - companySize
+      - createdAt
+      - description
+      - dismissed
+      - educationRequired
+      - extractedSkills
+      - id
+      - publicJobId
+      - jobType
+      - listingStatus
+      - location
+      - locationMatch
+      - geoTier
+      - distanceKm
+      - matchScore
+      - postedAt
+      - preparationStatus
+      - remoteMatch
+      - resolvedApplyUrl
+      - linkedinApplyMethod
+      - salary
+      - salaryMatch
+      - saved
+      - seniorityMatch
+      - skillsMatch
+      - skillsMatchCount
+      - source
+      - title
+      - url
+      - visaMatch
+      - visaSponsorship
+      - whyGoodFit
+      - workArrangement
+      - city
+      - country
+      - legitimacyTier
+      - freshnessStatus
+      - repostedCount
+      - lastRepostDate
+      - legitimacySignals
+      - seniorityBand
+      - salaryMinUsd
+      - salaryMaxUsd
+      - salaryCurrency
+      - needsLivenessCheck
+      additionalProperties: false
+    ResponseMetadata:
+      type: object
+      properties:
+        duration:
+          type: number
+          description: Request duration in milliseconds
+          example: 150
+          exclusiveMinimum: 0
+        performance:
+          type: object
+          properties:
+            dbQueries:
+              type: integer
+              minimum: 0
+            totalDbTime:
+              type: number
+              minimum: 0
+          description: Performance metrics (preview/local only)
+        requestId:
+          type: string
+          description: Unique request identifier
+          example: req_abc123
+        timestamp:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp
+          example: '2026-09-25T17:29:47.224Z'
+        version:
+          type: string
+          description: API version
+          example: v1
     ApplicationConfigData:
       type: object
       properties:
@@ -106,1048 +512,6 @@ components:
       - totalSubmitConfirmed
       - totalSubmitClicked
       additionalProperties: false
-    ApiErrorResponse:
-      type: object
-      properties:
-        error:
-          type: object
-          properties:
-            code:
-              type: string
-            context:
-              oneOf:
-              - type: object
-                properties:
-                  errorType:
-                    type: string
-                    enum:
-                    - validation
-                  field:
-                    type: string
-                  fieldErrors:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        code:
-                          type: string
-                        expected:
-                          type: string
-                        field:
-                          type: string
-                        message:
-                          type: string
-                        received:
-                          type: string
-                      required:
-                      - field
-                      - message
-                  schemaName:
-                    type: string
-                required:
-                - errorType
-              - type: object
-                properties:
-                  attemptedEmail:
-                    type: string
-                    format: email
-                  errorType:
-                    type: string
-                    enum:
-                    - authentication
-                  failureReason:
-                    type: string
-                    enum:
-                    - invalid_credentials
-                    - account_locked
-                    - expired_token
-                    - token_expired
-                    - missing_token
-                    - invalid_token
-                    - session_expired
-                    description: Reason for authentication failure
-                    example: token_expired
-                  ipAddress:
-                    type: string
-                  operation:
-                    type: string
-                  service:
-                    type: string
-                  userAgent:
-                    type: string
-                required:
-                - errorType
-              - type: object
-                properties:
-                  actualPermission:
-                    type: string
-                  errorType:
-                    type: string
-                    enum:
-                    - authorization
-                  requiredPermission:
-                    type: string
-                  resource:
-                    type: string
-                  resourceId:
-                    type: string
-                  userId:
-                    type: string
-                required:
-                - errorType
-              - type: object
-                properties:
-                  constraint:
-                    type: string
-                  errorType:
-                    type: string
-                    enum:
-                    - database
-                  operation:
-                    type: string
-                    enum:
-                    - insert
-                    - update
-                    - delete
-                    - select
-                    - batch
-                    - transaction
-                    - migration
-                    description: Type of database operation
-                    example: select
-                  resourceId:
-                    type: string
-                  sqlState:
-                    type: string
-                  table:
-                    type: string
-                  userId:
-                    type: string
-                required:
-                - errorType
-              - type: object
-                properties:
-                  endpoint:
-                    type: string
-                  errorType:
-                    type: string
-                    enum:
-                    - external_service
-                  httpStatus:
-                    type: number
-                  operation:
-                    type: string
-                  resourceId:
-                    type: string
-                  responseTime:
-                    type: number
-                  retryAttempt:
-                    type: integer
-                  service:
-                    type: string
-                  serviceName:
-                    type: string
-                  userId:
-                    type: string
-                required:
-                - errorType
-              - type: object
-                properties:
-                  errorType:
-                    type: string
-                    enum:
-                    - resource
-                  resource:
-                    type: string
-                  resourceId:
-                    type: string
-                  service:
-                    type: string
-                  userId:
-                    type: string
-                required:
-                - errorType
-              - type: object
-                properties:
-                  errorType:
-                    type: string
-                    enum:
-                    - rate_limit
-                  limit:
-                    type: number
-                  resetTime:
-                    type: string
-                  windowMs:
-                    type: number
-                required:
-                - errorType
-              - type: object
-                properties:
-                  configKey:
-                    type: string
-                  errorType:
-                    type: string
-                    enum:
-                    - configuration
-                  operation:
-                    type: string
-                  service:
-                    type: string
-                required:
-                - errorType
-              description: Type-safe error context information
-              example:
-                errorType: validation
-                fieldErrors:
-                - field: email
-                  message: Invalid email format
-            details:
-              oneOf:
-              - type: object
-                properties:
-                  detailType:
-                    type: string
-                    enum:
-                    - validation
-                  validationErrors:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        code:
-                          type: string
-                        field:
-                          type: string
-                        message:
-                          type: string
-                      required:
-                      - field
-                      - message
-                required:
-                - detailType
-                - validationErrors
-                additionalProperties: false
-              - type: object
-                properties:
-                  detailType:
-                    type: string
-                    enum:
-                    - service_error
-                  originalError:
-                    type: string
-                  serviceName:
-                    type: string
-                required:
-                - detailType
-                - serviceName
-                additionalProperties: false
-              - type: object
-                properties:
-                  currentSize:
-                    type: number
-                  detailType:
-                    type: string
-                    enum:
-                    - batch
-                  originalError:
-                    type: string
-                  statementCount:
-                    type: number
-                required:
-                - detailType
-                additionalProperties: false
-              - type: object
-                properties:
-                  detailType:
-                    type: string
-                    enum:
-                    - rate_limit
-                  limit:
-                    type: number
-                  resetTime:
-                    type: string
-                  windowMs:
-                    type: number
-                required:
-                - detailType
-                - limit
-                - resetTime
-                - windowMs
-                additionalProperties: false
-              - type: object
-                properties:
-                  conflictingField:
-                    type: string
-                  detailType:
-                    type: string
-                    enum:
-                    - resource
-                  resourceId:
-                    anyOf:
-                    - type: string
-                    - type: number
-                  resourceType:
-                    type: string
-                required:
-                - detailType
-                additionalProperties: false
-              - type: object
-                properties:
-                  detailType:
-                    type: string
-                    enum:
-                    - generic
-                  info:
-                    type: string
-                required:
-                - detailType
-                additionalProperties: false
-              - type: object
-                properties:
-                  currentTokens:
-                    type: integer
-                    minimum: 0
-                  detailType:
-                    type: string
-                    enum:
-                    - insufficient_tokens
-                  requiredTokens:
-                    type: integer
-                    minimum: 0
-                required:
-                - currentTokens
-                - detailType
-                - requiredTokens
-                additionalProperties: false
-            message:
-              type: string
-            validation:
-              type: array
-              items:
-                type: object
-                properties:
-                  code:
-                    type: string
-                  field:
-                    type: string
-                  message:
-                    type: string
-                required:
-                - field
-                - message
-                additionalProperties: false
-          required:
-          - code
-          - message
-          additionalProperties: false
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - false
-      required:
-      - error
-      - success
-      additionalProperties: false
-    DashboardBootstrapResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/DashboardBootstrapData'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    AnalyticsData:
-      type:
-      - object
-      - 'null'
-      properties:
-        atsScoreDistribution:
-          type: object
-          properties:
-            excellent:
-              type: integer
-              description: Scores >= 80
-            fair:
-              type: integer
-              description: Scores >= 40 and < 60
-            good:
-              type: integer
-              description: Scores >= 60 and < 80
-            poor:
-              type: integer
-              description: Scores < 40
-          required:
-          - excellent
-          - fair
-          - good
-          - poor
-          additionalProperties: false
-          description: ATS score distribution across 4 buckets
-        avgAtsScore:
-          type:
-          - number
-          - 'null'
-          description: Average ATS score across all scored jobs
-        dailyAnswers:
-          type: array
-          items:
-            $ref: '#/components/schemas/DailyApplication'
-          description: Employer-confirmed answers per day for the last 14 days
-        dailyApplications:
-          type: array
-          items:
-            $ref: '#/components/schemas/DailyApplication'
-          description: Application counts per day for the last 14 days
-        matchQualityByWeek:
-          type: array
-          items:
-            $ref: '#/components/schemas/MatchQualityWeek'
-          description: Roles scored for this user per ISO week over the last 8 weeks, split into quality bands. Weeks with no supply are omitted.
-        monthlyApplications:
-          type: integer
-          description: Jobs applied this month
-        outcomes:
-          allOf:
-          - $ref: '#/components/schemas/OutcomeMetrics'
-          - description: Real-outcome success metrics from the email + calendar pipeline.
-        previousWeekApplications:
-          type: integer
-          description: Jobs applied 14-7 days ago for trend comparison
-        recentActivity:
-          type: array
-          items:
-            type: object
-            properties:
-              company:
-                type:
-                - string
-                - 'null'
-              companyDomain:
-                type:
-                - string
-                - 'null'
-                description: Trusted company-intel domain (company.domain) for the FE logo favicon fallback
-              companyLogoUrl:
-                type:
-                - string
-                - 'null'
-                description: Company logo URL (company-intel R2 logo, falling back to the scraped snapshot)
-              id:
-                type: integer
-              status:
-                type: string
-                enum:
-                - saved
-                - preparing
-                - applied
-                - interviewing
-                - offered
-                - rejected
-                - archived
-                description: Status of a job listing
-                example: saved
-              title:
-                type: string
-              updatedAt:
-                type:
-                - string
-                - 'null'
-            required:
-            - company
-            - companyDomain
-            - companyLogoUrl
-            - id
-            - status
-            - title
-            - updatedAt
-            additionalProperties: false
-        responseRate:
-          type: number
-          description: Percentage of applied jobs with response
-          example: 35.5
-        statusCounts:
-          type: object
-          properties:
-            applied:
-              type: integer
-            archived:
-              type: integer
-            interviewing:
-              type: integer
-            offered:
-              type: integer
-            preparing:
-              type: integer
-            rejected:
-              type: integer
-            saved:
-              type: integer
-          required:
-          - applied
-          - archived
-          - interviewing
-          - offered
-          - preparing
-          - rejected
-          - saved
-          additionalProperties: false
-        topCompanies:
-          type: array
-          items:
-            type: object
-            properties:
-              company:
-                type: string
-              companyDomain:
-                type:
-                - string
-                - 'null'
-                description: Trusted company-intel domain (company.domain) for the FE logo favicon fallback
-              companyLogoUrl:
-                type:
-                - string
-                - 'null'
-                description: Company logo URL
-              count:
-                type: integer
-              recentJobTitle:
-                type:
-                - string
-                - 'null'
-                description: Most recent job title at this company
-            required:
-            - company
-            - companyDomain
-            - companyLogoUrl
-            - count
-            - recentJobTitle
-            additionalProperties: false
-          description: Most applied-to companies with recent job title
-        totalJobs:
-          type: integer
-        unactionedHighMatches:
-          type: integer
-          description: Roles scored 80+ that the user has neither dismissed nor applied to. The one figure on the analytics screen that names a next action.
-          example: 942
-        weeklyApplications:
-          type: integer
-          description: Jobs applied this week
-      required:
-      - atsScoreDistribution
-      - avgAtsScore
-      - dailyAnswers
-      - dailyApplications
-      - matchQualityByWeek
-      - monthlyApplications
-      - outcomes
-      - previousWeekApplications
-      - recentActivity
-      - responseRate
-      - statusCounts
-      - topCompanies
-      - totalJobs
-      - unactionedHighMatches
-      - weeklyApplications
-    ApplicationProfileData:
-      type: object
-      properties:
-        id:
-          type: string
-          description: Application profile identifier
-          example: abc-123
-        userId:
-          type: string
-          description: User identifier
-          example: user_abc123
-        phone:
-          type:
-          - string
-          - 'null'
-          description: Phone number
-          example: +1-555-123-4567
-        addressLine1:
-          type:
-          - string
-          - 'null'
-          description: Address line 1
-          example: 123 Main St
-        addressLine2:
-          type:
-          - string
-          - 'null'
-          description: Address line 2
-          example: Apt 4B
-        city:
-          type:
-          - string
-          - 'null'
-          description: City
-          example: San Francisco
-        state:
-          type:
-          - string
-          - 'null'
-          description: State or province
-          example: CA
-        zipCode:
-          type:
-          - string
-          - 'null'
-          description: ZIP or postal code
-          example: '94105'
-        country:
-          type:
-          - string
-          - 'null'
-          description: Country
-          example: US
-        linkedinUrl:
-          type:
-          - string
-          - 'null'
-          description: LinkedIn profile URL
-          example: https://linkedin.com/in/johndoe
-        portfolioUrl:
-          type:
-          - string
-          - 'null'
-          description: Portfolio website URL
-          example: https://johndoe.dev
-        githubUrl:
-          type:
-          - string
-          - 'null'
-          description: GitHub profile URL
-          example: https://github.com/johndoe
-        currentEmployer:
-          type:
-          - string
-          - 'null'
-          description: Current employer / company. Helps tailor recommendations; unlocks team analytics if the company onboards.
-          example: Acme Corp
-        dateOfBirth:
-          type:
-          - string
-          - 'null'
-          description: Date of birth (ISO 8601 date string)
-          example: '1995-06-15'
-        workAuthorization:
-          type:
-          - string
-          - 'null'
-          enum:
-          - us_citizen
-          - permanent_resident
-          - visa_holder
-          - require_sponsorship
-          - other
-          - null
-          description: Work authorization status
-          example: us_citizen
-        willingToRelocate:
-          type: boolean
-          description: Willing to relocate for a job
-          example: false
-        relocationLocations:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-          description: Preferred relocation locations as "City, Country" or "Country". Middle admin segments stripped on read.
-          example:
-          - New York, United States
-          - Austin, United States
-        salaryCurrency:
-          type:
-          - string
-          - 'null'
-          enum:
-          - usd
-          - eur
-          - gbp
-          - cad
-          - aud
-          - inr
-          - null
-          description: Salary currency
-          example: usd
-        availableStartDate:
-          type:
-          - string
-          - 'null'
-          description: Earliest available start date (ISO 8601 date string)
-          example: '2026-04-01'
-        noticePeriod:
-          type:
-          - string
-          - 'null'
-          enum:
-          - immediately
-          - two_weeks
-          - one_month
-          - two_months
-          - three_months
-          - flexible
-          - null
-          description: Notice period before starting new position
-          example: two_weeks
-        personalNarrative:
-          type:
-          - string
-          - 'null'
-          description: Free-form narrative about gaps / transitions / short stints. Drives interview-prep red-flag question generation (F8).
-          example: Took a 14-month gap in 2024 for caregiving; returning with a refreshed cloud certification.
-        travelWillingness:
-          type:
-          - string
-          - 'null'
-          enum:
-          - none
-          - up_to_25
-          - up_to_50
-          - up_to_75
-          - up_to_100
-          - null
-          description: Willingness to travel for work
-          example: up_to_25
-        securityClearance:
-          type:
-          - string
-          - 'null'
-          enum:
-          - none
-          - confidential
-          - secret
-          - top_secret
-          - ts_sci
-          - prefer_not_to_say
-          - null
-          description: Security clearance level
-          example: none
-        restrictiveCovenantStatus:
-          type:
-          - string
-          - 'null'
-          enum:
-          - 'yes'
-          - 'no'
-          - prefer_not_to_say
-          - null
-          description: Currently subject to a non-compete / non-solicit / restrictive covenant with a former employer
-          example: 'no'
-        criminalRecordStatus:
-          type:
-          - string
-          - 'null'
-          enum:
-          - 'yes'
-          - 'no'
-          - prefer_not_to_say
-          - null
-          description: Has a criminal conviction they are legally required to disclose
-          example: 'no'
-        backgroundCheckConsent:
-          type:
-          - string
-          - 'null'
-          enum:
-          - 'yes'
-          - 'no'
-          - prefer_not_to_say
-          - null
-          description: Consents to a background / reference / credit check or drug screen where the role requires one
-          example: 'yes'
-        relatedToEmployeeStatus:
-          type:
-          - string
-          - 'null'
-          enum:
-          - 'yes'
-          - 'no'
-          - prefer_not_to_say
-          - null
-          description: 'Has a family member or close personal relationship with an employee of a company they apply to. Global, not per-employer: only a "no" is committable on a form.'
-          example: 'no'
-        exportControlUsPerson:
-          type:
-          - string
-          - 'null'
-          enum:
-          - 'yes'
-          - 'no'
-          - prefer_not_to_say
-          - null
-          description: Is a U.S. person for export-control (ITAR / EAR) purposes. The only declaration whose "yes" is the permissive answer.
-          example: 'yes'
-        highestEducation:
-          type:
-          - string
-          - 'null'
-          enum:
-          - high_school
-          - associate
-          - bachelor
-          - master
-          - doctorate
-          - any
-          - null
-          description: Highest education level completed
-          example: bachelor
-        yearsOfExperience:
-          type:
-          - integer
-          - 'null'
-          description: Total years of professional experience
-          example: 5
-        veteranStatus:
-          type:
-          - string
-          - 'null'
-          enum:
-          - not_a_veteran
-          - veteran
-          - disabled_veteran
-          - recently_separated_veteran
-          - active_duty_wartime_veteran
-          - armed_forces_service_medal_veteran
-          - prefer_not_to_say
-          - null
-          description: Veteran status for EEO forms
-          example: prefer_not_to_say
-        disabilityStatus:
-          type:
-          - string
-          - 'null'
-          enum:
-          - 'yes'
-          - 'no'
-          - prefer_not_to_say
-          - null
-          description: Disability status for EEO forms
-          example: prefer_not_to_say
-        gender:
-          type:
-          - string
-          - 'null'
-          enum:
-          - male
-          - female
-          - non_binary
-          - prefer_not_to_say
-          - other
-          - null
-          description: Gender for EEO forms
-          example: prefer_not_to_say
-        ethnicity:
-          type:
-          - string
-          - 'null'
-          enum:
-          - american_indian_or_alaska_native
-          - asian
-          - black_or_african_american
-          - hispanic_or_latino
-          - native_hawaiian_or_pacific_islander
-          - white
-          - two_or_more_races
-          - prefer_not_to_say
-          - other
-          - null
-          description: Ethnicity for EEO forms
-          example: prefer_not_to_say
-        sexualOrientation:
-          type:
-          - string
-          - 'null'
-          enum:
-          - heterosexual
-          - gay_or_lesbian
-          - bisexual
-          - prefer_not_to_say
-          - other
-          - null
-          description: Sexual orientation for EEO forms
-          example: prefer_not_to_say
-        pronouns:
-          type:
-          - string
-          - 'null'
-          maxLength: 40
-          description: Preferred pronouns, self-described free text. Never inferred from a name or from `gender`.
-          example: she/her
-        applyReadiness:
-          type: object
-          properties:
-            missingRequiredForApply:
-              type: array
-              items:
-                type: string
-                enum:
-                - zip_code
-                - state
-                - country
-                description: An application_profile column an employer form can require and that we never invent
-                example: zip_code
-              description: Profile columns an employer form can require that are empty. We never invent these; the user fills them.
-              example:
-              - zip_code
-              - state
-          required:
-          - missingRequiredForApply
-          description: Required-for-apply columns that are still empty
-        addressCompleteness:
-          type: object
-          properties:
-            city:
-              type: boolean
-            complete:
-              type: boolean
-            country:
-              type: boolean
-            postalCode:
-              type: boolean
-            state:
-              type: boolean
-            street:
-              type: boolean
-          required:
-          - city
-          - complete
-          - country
-          - postalCode
-          - state
-          - street
-        createdAt:
-          type: string
-          description: Profile creation timestamp
-          example: '2026-01-15T12:00:00Z'
-        updatedAt:
-          type: string
-          description: Profile last update timestamp
-          example: '2026-03-10T08:30:00Z'
-      required:
-      - id
-      - userId
-      - phone
-      - addressLine1
-      - addressLine2
-      - city
-      - state
-      - zipCode
-      - country
-      - linkedinUrl
-      - portfolioUrl
-      - githubUrl
-      - currentEmployer
-      - dateOfBirth
-      - workAuthorization
-      - willingToRelocate
-      - relocationLocations
-      - salaryCurrency
-      - availableStartDate
-      - noticePeriod
-      - personalNarrative
-      - travelWillingness
-      - securityClearance
-      - restrictiveCovenantStatus
-      - criminalRecordStatus
-      - backgroundCheckConsent
-      - relatedToEmployeeStatus
-      - exportControlUsPerson
-      - highestEducation
-      - yearsOfExperience
-      - veteranStatus
-      - disabilityStatus
-      - gender
-      - ethnicity
-      - sexualOrientation
-      - pronouns
-      - applyReadiness
-      - addressCompleteness
-      - createdAt
-      - updatedAt
-    FormsLeftData:
-      type: object
-      properties:
-        count:
-          type: integer
-          description: Estimated AI operations remaining
-          example: 100
-        percent:
-          type: number
-          description: Percentage of tokens remaining
-          example: 75
-      required:
-      - count
-      - percent
-      additionalProperties: false
-    PersonalInfo:
-      type: object
-      properties:
-        email:
-          anyOf:
-          - type: string
-            format: email
-          - type: string
-            enum:
-            - ''
-          - {}
-          example: name@example.com
-        fullName:
-          type:
-          - string
-          - 'null'
-          example: Ada Lovelace
-        linkedin:
-          type:
-          - string
-          - 'null'
-        location:
-          type:
-          - string
-          - 'null'
-          example: San Francisco, CA
-        phone:
-          type:
-          - string
-          - 'null'
-          example: +1 (555) 123-4567
-        title:
-          type:
-          - string
-          - 'null'
-          example: Senior Software Engineer
-        website:
-          type:
-          - string
-          - 'null'
-      additionalProperties: false
-    UserPreferencesData:
-      type:
-      - object
-      - 'null'
-      properties:
-        applicationProfile:
-          $ref: '#/components/schemas/ApplicationProfileData'
-        jobMatchPreferences:
-          $ref: '#/components/schemas/JobMatchPreferencesData'
-        aiPersona:
-          $ref: '#/components/schemas/AIPersonaData'
-      required:
-      - applicationProfile
-      - jobMatchPreferences
-      - aiPersona
     MatchListData:
       type: object
       properties:
@@ -1561,885 +925,48 @@ components:
       required:
       - items
       - pagination
-    JobListingListItem:
-      type: object
-      properties:
-        company:
-          type:
-          - string
-          - 'null'
-          description: Company name
-          example: Acme Corp
-        companyLogoUrl:
-          type:
-          - string
-          - 'null'
-          description: Company logo URL
-          example: https://www.google.com/s2/favicons?domain=google.com&sz=128
-        companyDomain:
-          type:
-          - string
-          - 'null'
-          description: Company domain for the FE DDG-favicon logo fallback
-          example: acme.com
-        location:
-          type:
-          - string
-          - 'null'
-          description: Job location
-          example: Remote, US
-        salary:
-          type:
-          - string
-          - 'null'
-          description: Salary range or details
-          example: $120,000 - $160,000
-        sourceUrl:
-          type:
-          - string
-          - 'null'
-          description: URL where the job listing was found
-          example: https://linkedin.com/jobs/123
-        title:
-          type: string
-          description: Job title
-          example: Senior Software Engineer
-        createdAt:
-          type:
-          - string
-          - 'null'
-          description: Creation timestamp
-          example: '2024-01-01T00:00:00Z'
-        id:
-          type: integer
-          description: Job listing identifier
-          example: 1
-        jobMatchId:
-          type:
-          - integer
-          - 'null'
-          description: Associated job match identifier
-          example: 42
-        status:
-          type: string
-          enum:
-          - saved
-          - preparing
-          - applied
-          - interviewing
-          - offered
-          - rejected
-          - archived
-          description: Status of a job listing
-          example: saved
-        updatedAt:
-          type:
-          - string
-          - 'null'
-          description: Last update timestamp
-          example: '2024-01-15T10:30:00Z'
-        source:
-          type:
-          - string
-          - 'null'
-          enum:
-          - linkedin
-          - indeed
-          - glassdoor
-          - google
-          - ziprecruiter
-          - remotive
-          - jobicy
-          - arbeitnow
-          - ashby
-          - greenhouse
-          - himalayas
-          - lever
-          - recruitee
-          - smartrecruiters
-          - themuse
-          - workingnomads
-          - join
-          - bayt
-          - naukri
-          - bdjobs
-          - web
-          - company_career_page
-          - manual
-          - pool
-          - workable
-          - remoteok
-          - weworkremotely
-          - reed
-          - wellfound
-          - dice
-          - monster
-          - careerbuilder
-          - simplyhired
-          - builtin
-          - snagajob
-          - seek
-          - totaljobs
-          - stepstone
-          - nofluffjobs
-          - devitjobs
-          - workday
-          - jobspresso
-          - landingjobs
-          - personio
-          - rss
-          - teamtailor
-          - breezy
-          - jazzhr
-          - pinpoint
-          - comeet
-          - bamboohr
-          - icims
-          - polymer
-          - gohire
-          - eddy
-          - recruiterflow
-          - hireology
-          - workstream
-          - bullhorn
-          - rippling
-          - softgarden
-          - jobtech
-          - null
-          description: Source platform where the job was found (from linked job match)
-          example: ashby
-        resolvedApplyUrl:
-          type:
-          - string
-          - 'null'
-          description: Resolved external ATS apply URL from the linked job match (e.g. the Greenhouse/Lever page a LinkedIn-scraped job actually applies on). Prefer this over `source` for the provider badge.
-          example: https://boards.greenhouse.io/acme/jobs/123
-        linkedinApplyMethod:
-          type:
-          - string
-          - 'null'
-          enum:
-          - easy_apply
-          - offsite
-          - unknown
-          - null
-          description: Resolved LinkedIn apply target from the linked job match. `offsite` → applies on a company ATS (use resolvedApplyUrl for the badge); `easy_apply` → "LinkedIn Easy Apply"; `unknown`/null → fall back to `source`.
-          example: offsite
-        atsScoreCount:
-          type: integer
-          minimum: 0
-          description: Number of ATS scores for this job listing
-          example: 2
-        latestAtsScore:
-          type:
-          - integer
-          - 'null'
-          minimum: 0
-          maximum: 100
-          description: Most recent ATS overall score (0-100), null if no scores exist
-          example: 78
-        preparationStatus:
-          type:
-          - string
-          - 'null'
-          description: Preparation status of the linked application result (null if no application)
-          example: ready
-        autoRetryStopped:
-          type: boolean
-          description: True when NO automatic lane will retry this application (submit evidence fences it, or the retry budget is spent). The UI must not promise a retry when this is true.
-          example: false
-        autoRetryStoppedReason:
-          type:
-          - string
-          - 'null'
-          enum:
-          - submit_evidence
-          - attempts_spent
-          - not_retryable
-          - cancelled
-          - needs_review
-          - orphaned
-          - null
-          description: Which permanent-abandonment lane stopped this row, or null when it is not stopped / could not be evaluated.
-          example: null
-        employerReceiptConfirmed:
-          type: boolean
-          description: True when employer receipt proof exists. Page or screenshot proof stays separate in landingProofs. Outranks every status/error/retry field on this row.
-          example: false
-        submitEvidenceTier:
-          type: string
-          enum:
-          - other_side_confirmed
-          - our_click_only
-          - no_submit_evidence
-          description: 'Whose observation backs this row: other_side_confirmed (the employer produced a receipt), our_click_only (we clicked Submit but read no receipt), or no_submit_evidence (we never clicked).'
-          example: no_submit_evidence
-        nextAutoRetryAt:
-          type:
-          - string
-          - 'null'
-          description: Earliest ISO timestamp an automatic attempt can re-claim this row. A floor, not a guarantee. Null means we are not naming a time - NOT that no retry exists.
-          example: null
-        statusDisplay:
-          anyOf:
-          - type: object
-            properties:
-              label:
-                type: string
-                minLength: 1
-                description: Legacy English badge text for rolling compatibility. V2 clients localize from code and params instead of rendering this field.
-                example: Trying again shortly · pass 3 of 4
-              noCreditUsed:
-                type: boolean
-                description: True only when no billable AI or browser work ran for this row (the skipped short-circuits). An errored apply is never "free".
-                example: false
-              pendingRetryAt:
-                type:
-                - string
-                - 'null'
-                format: date-time
-                description: Earliest ISO timestamp an automatic attempt can re-claim this row, echoed only with matching V2 scheduledAttempt params. Null means we are not naming a time, never that no retry exists.
-                example: null
-              tone:
-                type: string
-                enum:
-                - success
-                - warning
-                - info
-                - destructive
-                - settled
-                - neutral
-                - muted
-                description: Platform-agnostic colour verdict for a derived application status badge. Web maps it to a Tailwind bg-* class, mobile to a theme hex. Never a class name on the wire.
-                example: info
-              code:
-                type: string
-                enum:
-                - queued
-                - preparing
-                - queued_to_apply
-                - waiting_for_browser
-                - submitting
-                - action_needed
-                - waiting_for_review
-                - applied
-                - applied_confirming_landing
-                - employer_receipt_confirmed
-                - sent_no_receipt_read
-                - submitted_verifying
-                - already_applied
-                - retrying_our_hiccup
-                - retrying_soon
-                - employer_rejected_retrying
-                - failed_retrying
-                - resumes_when_funded
-                - signing_in
-                - paused
-                - resuming
-                - resume_required
-                - not_through
-                - no_form
-                - not_ready_to_send
-                - not_submitted
-                - linkedin_easy_apply
-                - job_unavailable
-                - aggregator_skipped
-                - result_submitted
-                - result_submitted_awaiting_receipt
-                - cancelled
-                - result_error
-                - result_preparing
-                - result_pending_approval
-                - result_ready_to_submit
-                - result_skipped
-                - stopped_generic
-                - stopped_submit_evidence
-                - stopped_attempts_spent
-                - stopped_not_retryable
-                - stopped_cancelled
-                - stopped_needs_review
-                - stopped_orphaned
-                - stopped_our_click_only
-                - unknown
-                description: Stable semantic code for a derived application status display. Clients localize this code and use the legacy label only for rolling compatibility.
-                example: queued_to_apply
-              params:
-                type: object
-                properties:
-                  attemptsMade:
-                    type:
-                    - integer
-                    - 'null'
-                    exclusiveMinimum: 0
-                  retryBudget:
-                    type:
-                    - object
-                    - 'null'
-                    properties:
-                      remaining:
-                        type: integer
-                        minimum: 0
-                      total:
-                        type: integer
-                        exclusiveMinimum: 0
-                    required:
-                    - remaining
-                    - total
-                    additionalProperties: false
-                  scheduledAttempt:
-                    type:
-                    - object
-                    - 'null'
-                    properties:
-                      current:
-                        type: integer
-                        exclusiveMinimum: 0
-                      total:
-                        type: integer
-                        exclusiveMinimum: 0
-                    required:
-                    - current
-                    - total
-                    additionalProperties: false
-                required:
-                - attemptsMade
-                - retryBudget
-                - scheduledAttempt
-                additionalProperties: false
-              schemaVersion:
-                type: number
-                enum:
-                - 2
-            required:
-            - label
-            - noCreditUsed
-            - pendingRetryAt
-            - tone
-            - code
-            - params
-            - schemaVersion
-            additionalProperties: false
-          - type: object
-            properties:
-              label:
-                type: string
-                minLength: 1
-                description: Legacy English badge text for rolling compatibility. V2 clients localize from code and params instead of rendering this field.
-                example: Trying again shortly · pass 3 of 4
-              noCreditUsed:
-                type: boolean
-                description: True only when no billable AI or browser work ran for this row (the skipped short-circuits). An errored apply is never "free".
-                example: false
-              pendingRetryAt:
-                type:
-                - string
-                - 'null'
-                format: date-time
-                description: Earliest ISO timestamp an automatic attempt can re-claim this row, echoed only with matching V2 scheduledAttempt params. Null means we are not naming a time, never that no retry exists.
-                example: null
-              tone:
-                type: string
-                enum:
-                - success
-                - warning
-                - info
-                - destructive
-                - settled
-                - neutral
-                - muted
-                description: Platform-agnostic colour verdict for a derived application status badge. Web maps it to a Tailwind bg-* class, mobile to a theme hex. Never a class name on the wire.
-                example: info
-            required:
-            - label
-            - noCreditUsed
-            - pendingRetryAt
-            - tone
-            additionalProperties: false
-          - {}
-          description: The server-derived application status verdict. V2 clients localize its stable code and typed params, then map the semantic tone to platform tokens. The English label remains only for rolling compatibility. Null means the listing has no linked application, so clients fall back to the job listing status.
-          example: null
-        errorCode:
-          type:
-          - string
-          - 'null'
-          description: Terminal error code of the latest application result, or null. Drives the status label.
-          example: agent_stuck
-        applicationResultStatus:
-          type:
-          - string
-          - 'null'
-          description: Status of the linked application result (null if no application)
-          example: ready_to_submit
-        legitimacyTier:
-          type:
-          - string
-          - 'null'
-          enum:
-          - high_confidence
-          - proceed_with_caution
-          - suspicious
-          - null
-          description: Deterministic posting-legitimacy verdict from the parent job match. Null when not yet evaluated.
-          example: proceed_with_caution
-        legitimacySignals:
-          anyOf:
-          - type: string
-          - {}
-          description: Serialized LegitimacySignals payload (score + signals[] + tier) from the parent job match. Null when not yet evaluated.
-        freshnessStatus:
-          type:
-          - string
-          - 'null'
-          enum:
-          - fresh
-          - aging
-          - stale
-          - unknown
-          - null
-          description: Posting age bucket (fresh / aging / stale / unknown) from the scraped_job snapshot.
-          example: fresh
-        repostedCount:
-          type:
-          - integer
-          - 'null'
-          minimum: 0
-          description: Number of prior live scraped_job rows for this URL family. 0 when no repost history.
-          example: 0
-        lastRepostDate:
-          type:
-          - string
-          - 'null'
-          description: posted_date of the most-recent prior repost. Null when no prior posting exists.
-          example: '2026-03-04'
-      required:
-      - company
-      - companyLogoUrl
-      - location
-      - salary
-      - sourceUrl
-      - title
-      - createdAt
-      - id
-      - jobMatchId
-      - status
-      - updatedAt
-      - source
-      - resolvedApplyUrl
-      - linkedinApplyMethod
-      - atsScoreCount
-      - latestAtsScore
-      - preparationStatus
-      - autoRetryStopped
-      - autoRetryStoppedReason
-      - employerReceiptConfirmed
-      - submitEvidenceTier
-      - nextAutoRetryAt
-      - statusDisplay
-      - errorCode
-      - applicationResultStatus
-    ResponseMetadata:
-      type: object
-      properties:
-        duration:
-          type: number
-          description: Request duration in milliseconds
-          example: 150
-          exclusiveMinimum: 0
-        performance:
-          type: object
-          properties:
-            dbQueries:
-              type: integer
-              minimum: 0
-            totalDbTime:
-              type: number
-              minimum: 0
-          description: Performance metrics (preview/local only)
-        requestId:
-          type: string
-          description: Unique request identifier
-          example: req_abc123
-        timestamp:
-          type: string
-          format: date-time
-          description: ISO 8601 timestamp
-          example: '2026-09-25T17:29:47.224Z'
-        version:
-          type: string
-          description: API version
-          example: v1
-    LiveMatchData:
-      type: object
-      properties:
-        city:
-          type:
-          - string
-          - 'null'
-          description: Structured city published by the upstream feed.
-          example: Berlin
-        company:
-          type: string
-          description: Employer name.
-          example: Acme GmbH
-        companyLogoUrl:
-          type:
-          - string
-          - 'null'
-          description: Employer logo, when the feed published one.
-          example: null
-        location:
-          type:
-          - string
-          - 'null'
-          description: Free-text location as published.
-          example: Berlin, Germany
-        persistedJobId:
-          type:
-          - integer
-          - 'null'
-          description: 'scraped_job.id once this live row provably exists in the database, else null. Null means "not yet confirmed", never "failed" - persistence is asynchronous. Never optimistic: only written after the id is read back out of the database post-insert.'
-          example: null
-          exclusiveMinimum: 0
-        postedDate:
-          type:
-          - string
-          - 'null'
-          description: ISO date the posting went live.
-          example: '2026-07-21'
-        salary:
-          type:
-          - string
-          - 'null'
-          description: Salary string as published, when present.
-          example: null
-        source:
-          type: string
-          enum:
-          - linkedin
-          - indeed
-          - glassdoor
-          - google
-          - ziprecruiter
-          - remotive
-          - jobicy
-          - arbeitnow
-          - ashby
-          - greenhouse
-          - himalayas
-          - lever
-          - recruitee
-          - smartrecruiters
-          - themuse
-          - workingnomads
-          - join
-          - bayt
-          - naukri
-          - bdjobs
-          - web
-          - company_career_page
-          - manual
-          - pool
-          - workable
-          - remoteok
-          - weworkremotely
-          - reed
-          - wellfound
-          - dice
-          - monster
-          - careerbuilder
-          - simplyhired
-          - builtin
-          - snagajob
-          - seek
-          - totaljobs
-          - stepstone
-          - nofluffjobs
-          - devitjobs
-          - workday
-          - jobspresso
-          - landingjobs
-          - personio
-          - rss
-          - teamtailor
-          - breezy
-          - jazzhr
-          - pinpoint
-          - comeet
-          - bamboohr
-          - icims
-          - polymer
-          - gohire
-          - eddy
-          - recruiterflow
-          - hireology
-          - workstream
-          - bullhorn
-          - rippling
-          - softgarden
-          - jobtech
-          description: The supported direct-ATS provider this row resolved onto. Never an aggregator - those are filtered out before the row reaches this schema.
-          example: greenhouse
-        title:
-          type: string
-          description: Job title.
-          example: Backend Engineer
-        url:
-          type: string
-          description: Direct ATS apply URL.
-          example: https://boards.greenhouse.io/acme/jobs/123
-      required:
-      - city
-      - company
-      - companyLogoUrl
-      - location
-      - persistedJobId
-      - postedDate
-      - salary
-      - source
-      - title
-      - url
-      additionalProperties: false
-    SubmissionInfo:
-      type: object
-      properties:
-        authPlatform:
-          type: string
-          description: Which platform needs auth credentials (e.g. linkedin)
-          example: linkedin
-        canSubmit:
-          type: boolean
-          description: Whether the application can be submitted to this platform
-        hasCredentials:
-          type: boolean
-          description: Whether the user has stored credentials for the required platform
-        platformType:
-          type: string
-          description: Detected submission platform type
-          example: linkedin
-        reason:
-          type: string
-          description: Reason submission is blocked or limited
-        requiresAuth:
-          type: boolean
-          description: Whether the platform requires user authentication credentials
-      required:
-      - canSubmit
-      - platformType
-      additionalProperties: false
-      description: Pre-flight submission requirements and credential status
-    UserDocumentListData:
+    AIResumeData:
       type:
       - object
       - 'null'
       properties:
-        items:
+        certifications:
           type: array
           items:
-            $ref: '#/components/schemas/UserDocument'
-        pagination:
-          type: object
-          properties:
-            hasNext:
-              type: boolean
-            hasPrev:
-              type: boolean
-            limit:
-              type: integer
-              exclusiveMinimum: 0
-            page:
-              type: integer
-              exclusiveMinimum: 0
-            totalCount:
-              type: integer
-              minimum: 0
-            totalPages:
-              type: integer
-              minimum: 0
-          required:
-          - hasNext
-          - hasPrev
-          - limit
-          - page
-          - totalCount
-          - totalPages
-          additionalProperties: false
-      required:
-      - items
-      - pagination
-    JobMatchPreferencesData:
-      type: object
-      properties:
-        benefits:
-          type:
-          - array
-          - 'null'
-          items:
             type: string
-        companySize:
-          type:
-          - array
-          - 'null'
+        education:
+          type: array
           items:
-            type: string
-        createdAt:
-          type:
-          - string
-          - 'null'
-        educationLevel:
-          type:
-          - string
-          - 'null'
-        excludeIndustries:
-          type:
-          - array
-          - 'null'
+            $ref: '#/components/schemas/EducationEntry'
+        experience:
+          type: array
           items:
-            type: string
-        experienceLevel:
-          type:
-          - string
-          - 'null'
-        experienceLevels:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-        id:
-          type: integer
-        includeRemote:
-          type: boolean
-        industries:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-        isActive:
-          type: boolean
-        jobTypes:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-        locations:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-        remoteGlobal:
-          type: boolean
-        salaryCurrency:
-          type: string
-          enum:
-          - usd
-          - eur
-          - gbp
-          - cad
-          - aud
-          - inr
-          description: Currency for salary values
-          example: usd
-        salaryMax:
-          type:
-          - number
-          - 'null'
-        salaryMin:
-          type:
-          - number
-          - 'null'
+            $ref: '#/components/schemas/ExperienceEntry'
+        personalInfo:
+          $ref: '#/components/schemas/PersonalInfo'
         skills:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-        targetRoles:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-        updatedAt:
-          type:
-          - string
-          - 'null'
-        visaSponsorship:
-          type:
-          - string
-          - 'null'
-        workStyles:
           type: array
           items:
             type: string
-            enum:
-            - onsite
-            - hybrid
-            - remote
-            description: User's preferred work style, physical mode only, no geo scoping
-            example: remote
-      required:
-      - benefits
-      - companySize
-      - createdAt
-      - educationLevel
-      - excludeIndustries
-      - experienceLevel
-      - experienceLevels
-      - id
-      - includeRemote
-      - industries
-      - isActive
-      - jobTypes
-      - locations
-      - remoteGlobal
-      - salaryCurrency
-      - salaryMax
-      - salaryMin
-      - skills
-      - targetRoles
-      - updatedAt
-      - visaSponsorship
-      - workStyles
-    ExperienceEntry:
-      type: object
+        summary:
+          type:
+          - string
+          - 'null'
+    UserPreferencesData:
+      type:
+      - object
+      - 'null'
       properties:
-        bullets:
-          type: array
-          items:
-            type: string
-          example:
-          - Led migration of monolithic architecture to microservices, reducing deployment time by 60%
-        company:
-          type: string
-          example: Acme Corp
-        current:
-          type:
-          - boolean
-          - 'null'
-        endDate:
-          type:
-          - string
-          - 'null'
-          example: 2024-01
-        location:
-          type:
-          - string
-          - 'null'
-        startDate:
-          type: string
-          example: 2020-01
-        title:
-          type: string
-          example: Senior Engineer
+        applicationProfile:
+          $ref: '#/components/schemas/ApplicationProfileData'
+        jobMatchPreferences:
+          $ref: '#/components/schemas/JobMatchPreferencesData'
+        aiPersona:
+          $ref: '#/components/schemas/AIPersonaData'
       required:
-      - bullets
-      - company
-      - startDate
-      - title
-      additionalProperties: false
+      - applicationProfile
+      - jobMatchPreferences
+      - aiPersona
     MatchQualityWeek:
       type: object
       properties:
@@ -2462,33 +989,198 @@ components:
       - strong
       - week
       additionalProperties: false
-    AuthHealthData:
+    AnalyticsData:
       type:
       - object
       - 'null'
       properties:
-        status:
-          type: string
-          enum:
-          - success
-        user:
-          $ref: '#/components/schemas/AuthHealthUser'
-        limitations:
-          $ref: '#/components/schemas/PlanLimitations'
-        hasCompletedSetup:
-          type: boolean
-          description: Whether the user has completed onboarding (has job match preferences)
-          example: false
-        onboardingCompleted:
-          type: boolean
-          description: Whether the user finished the onboarding wizard (user.onboarding_completed_at is set)
-          example: false
+        atsScoreDistribution:
+          type: object
+          properties:
+            excellent:
+              type: integer
+              description: Scores >= 80
+            fair:
+              type: integer
+              description: Scores >= 40 and < 60
+            good:
+              type: integer
+              description: Scores >= 60 and < 80
+            poor:
+              type: integer
+              description: Scores < 40
+          required:
+          - excellent
+          - fair
+          - good
+          - poor
+          additionalProperties: false
+          description: ATS score distribution across 4 buckets
+        avgAtsScore:
+          type:
+          - number
+          - 'null'
+          description: Average ATS score across all scored jobs
+        dailyAnswers:
+          type: array
+          items:
+            $ref: '#/components/schemas/DailyApplication'
+          description: Employer-confirmed answers per day for the last 14 days
+        dailyApplications:
+          type: array
+          items:
+            $ref: '#/components/schemas/DailyApplication'
+          description: Application counts per day for the last 14 days
+        matchQualityByWeek:
+          type: array
+          items:
+            $ref: '#/components/schemas/MatchQualityWeek'
+          description: Roles scored for this user per ISO week over the last 8 weeks, split into quality bands. Weeks with no supply are omitted.
+        monthlyApplications:
+          type: integer
+          description: Jobs applied this month
+        outcomes:
+          allOf:
+          - $ref: '#/components/schemas/OutcomeMetrics'
+          - description: Real-outcome success metrics from the email + calendar pipeline.
+        previousWeekApplications:
+          type: integer
+          description: Jobs applied 14-7 days ago for trend comparison
+        recentActivity:
+          type: array
+          items:
+            type: object
+            properties:
+              company:
+                type:
+                - string
+                - 'null'
+              companyDomain:
+                type:
+                - string
+                - 'null'
+                description: Trusted company-intel domain (company.domain) for the FE logo favicon fallback
+              companyLogoUrl:
+                type:
+                - string
+                - 'null'
+                description: Company logo URL (company-intel R2 logo, falling back to the scraped snapshot)
+              id:
+                type: integer
+              status:
+                type: string
+                enum:
+                - saved
+                - preparing
+                - applied
+                - interviewing
+                - offered
+                - rejected
+                - archived
+                description: Status of a job listing
+                example: saved
+              title:
+                type: string
+              updatedAt:
+                type:
+                - string
+                - 'null'
+            required:
+            - company
+            - companyDomain
+            - companyLogoUrl
+            - id
+            - status
+            - title
+            - updatedAt
+            additionalProperties: false
+        responseRate:
+          type: number
+          description: Percentage of applied jobs with response
+          example: 35.5
+        statusCounts:
+          type: object
+          properties:
+            applied:
+              type: integer
+            archived:
+              type: integer
+            interviewing:
+              type: integer
+            offered:
+              type: integer
+            preparing:
+              type: integer
+            rejected:
+              type: integer
+            saved:
+              type: integer
+          required:
+          - applied
+          - archived
+          - interviewing
+          - offered
+          - preparing
+          - rejected
+          - saved
+          additionalProperties: false
+        topCompanies:
+          type: array
+          items:
+            type: object
+            properties:
+              company:
+                type: string
+              companyDomain:
+                type:
+                - string
+                - 'null'
+                description: Trusted company-intel domain (company.domain) for the FE logo favicon fallback
+              companyLogoUrl:
+                type:
+                - string
+                - 'null'
+                description: Company logo URL
+              count:
+                type: integer
+              recentJobTitle:
+                type:
+                - string
+                - 'null'
+                description: Most recent job title at this company
+            required:
+            - company
+            - companyDomain
+            - companyLogoUrl
+            - count
+            - recentJobTitle
+            additionalProperties: false
+          description: Most applied-to companies with recent job title
+        totalJobs:
+          type: integer
+        unactionedHighMatches:
+          type: integer
+          description: Roles scored 80+ that the user has neither dismissed nor applied to. The one figure on the analytics screen that names a next action.
+          example: 942
+        weeklyApplications:
+          type: integer
+          description: Jobs applied this week
       required:
-      - status
-      - user
-      - limitations
-      - hasCompletedSetup
-      - onboardingCompleted
+      - atsScoreDistribution
+      - avgAtsScore
+      - dailyAnswers
+      - dailyApplications
+      - matchQualityByWeek
+      - monthlyApplications
+      - outcomes
+      - previousWeekApplications
+      - recentActivity
+      - responseRate
+      - statusCounts
+      - topCompanies
+      - totalJobs
+      - unactionedHighMatches
+      - weeklyApplications
     UserDocument:
       type: object
       properties:
@@ -2671,568 +1363,6 @@ components:
       - r2MimeType
       - createdAt
       - updatedAt
-    MatchData:
-      type: object
-      properties:
-        appliedAt:
-          type:
-          - string
-          - 'null'
-          description: Timestamp when the application was confirmed submitted. Null until submission completes.
-          example: '2026-04-20T10:15:00Z'
-        applicationStatus:
-          type:
-          - string
-          - 'null'
-          enum:
-          - pending
-          - pending_review
-          - ready_to_submit
-          - applied
-          - applied_unconfirmed
-          - skipped
-          - error
-          - cancelled
-          - null
-          description: Status of the latest applicationResult row for this match (pending / pending_review / ready_to_submit / applied / skipped / error). Null when no application has been started.
-          example: ready_to_submit
-        authPlatform:
-          type:
-          - string
-          - 'null'
-          description: Platform credential key required for auto-apply (e.g. "linkedin", "indeed"), or null if no auth needed
-          example: linkedin
-        requiresAuth:
-          type: boolean
-          description: True when this match's platform requires authenticated apply AND the user has not connected the corresponding integration. Frontend renders a locked card with a "Connect {authPlatform}" CTA when true.
-          example: false
-        platformType:
-          type: string
-          description: Resolved URL platform classifier (e.g. "linkedin", "greenhouse", "lever"). Always present.
-          example: greenhouse
-        benefits:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-        company:
-          type:
-          - string
-          - 'null'
-        companyLogoUrl:
-          type:
-          - string
-          - 'null'
-        companyDomain:
-          type:
-          - string
-          - 'null'
-          description: Trusted company-intel domain (company.domain) for the company-jobs page logo fallback. Null when the match has no linked company record or the company has no domain.
-          example: acme.com
-        companySize:
-          type:
-          - string
-          - 'null'
-        createdAt:
-          type:
-          - string
-          - 'null'
-        description:
-          type:
-          - string
-          - 'null'
-        dismissed:
-          type: boolean
-        educationRequired:
-          type:
-          - string
-          - 'null'
-        extractedSkills:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-        id:
-          type: integer
-        publicJobId:
-          type:
-          - integer
-          - 'null'
-        jobType:
-          type:
-          - string
-          - 'null'
-        listingStatus:
-          type:
-          - string
-          - 'null'
-          enum:
-          - saved
-          - preparing
-          - applied
-          - interviewing
-          - offered
-          - rejected
-          - archived
-          - null
-          description: Status from the user's jobListings row for this match (saved / preparing / applied / rejected / interviewing / offered / archived). Null when the match has never been saved.
-          example: preparing
-        location:
-          type:
-          - string
-          - 'null'
-        locationMatch:
-          type:
-          - boolean
-          - 'null'
-          description: Job country is in user preferences OR job is remote. Null when both sides lack data.
-        geoTier:
-          type: string
-          enum:
-          - exact_city
-          - within_radius
-          - in_country
-          - remote
-          - off_country
-          - unknown
-          description: Rung this job occupies on the user's location-priority ladder (exact_city > within_radius > in_country > remote > off_country > unknown). `unknown` means the job could not be placed and must NEVER be rendered as a location match.
-          example: within_radius
-        distanceKm:
-          type:
-          - number
-          - 'null'
-          description: Whole-km great-circle distance to the user's NEAREST preferred city. Null means NOT COMPUTABLE (missing coordinates on either side) and must be read as unknown, never as "far" and never as 0.
-          example: 24
-        matchScore:
-          type:
-          - number
-          - 'null'
-        postedAt:
-          type:
-          - string
-          - 'null'
-        preparationStatus:
-          type:
-          - string
-          - 'null'
-          enum:
-          - pending
-          - preparing
-          - ready
-          - submitting
-          - submitted
-          - failed
-          - cancelled
-          - null
-          description: Preparation progress for the latest application (pending / preparing / ready / submitting / submitted / failed). Null when no application has been started.
-          example: preparing
-        remoteMatch:
-          type:
-          - boolean
-          - 'null'
-          description: Job supports any remote arrangement. Null when work arrangement is missing.
-        resolvedApplyUrl:
-          type:
-          - string
-          - 'null'
-          description: Resolved external ATS apply URL (e.g. the Greenhouse/Lever page a LinkedIn-scraped job actually applies on). Null when the job applies on its own page. The apply gate prefers this over `url` for platform detection.
-          example: https://boards.greenhouse.io/acme/jobs/123
-        linkedinApplyMethod:
-          type: string
-          enum:
-          - easy_apply
-          - offsite
-          - unknown
-          description: Resolved LinkedIn apply target. `offsite` → applies on a company ATS (use resolvedApplyUrl for the provider badge); `easy_apply` → in-platform LinkedIn Easy Apply ("LinkedIn Easy Apply" badge); `unknown` → not yet resolved / not a LinkedIn posting (fall back to `source` for the badge).
-          example: offsite
-        salary:
-          type:
-          - string
-          - 'null'
-        salaryMatch:
-          type:
-          - boolean
-          - 'null'
-          description: Job salary meets or exceeds user minimum. Null when either side lacks a salary value.
-        saved:
-          type: boolean
-        seniorityMatch:
-          type:
-          - boolean
-          - 'null'
-          description: Job seniority band equals user preference. Null when either side lacks a band.
-        skillsMatch:
-          type:
-          - boolean
-          - 'null'
-          description: At least one user canonical skill appears on the job. Null when either side lacks a skills list.
-        skillsMatchCount:
-          type:
-          - integer
-          - 'null'
-          minimum: 0
-          description: Count of user canonical skills matched on this job. Null when either side lacks a skills list.
-        source:
-          type: string
-        title:
-          type: string
-        url:
-          type: string
-        visaMatch:
-          type:
-          - boolean
-          - 'null'
-          description: User does not require sponsorship OR job offers sponsorship. Null when sponsorship status is unknown.
-        visaSponsorship:
-          type:
-          - string
-          - 'null'
-        whyGoodFit:
-          type:
-          - string
-          - 'null'
-          description: 'Enrichment-v2: one-paragraph (<=280 chars) neutral third-person blurb describing why a generic candidate might want this role. Null when the description is too thin.'
-          example: Remote-first Series B fintech with strong mentorship, modern TypeScript stack, and paid conference budget. Limited on-call and a small team where individual impact is high.
-        workArrangement:
-          type:
-          - string
-          - 'null'
-          description: Canonical work-arrangement enum (remote_global / remote_country / remote_region / hybrid / onsite / unknown). Drives the "Remote" chip + filter. Null only when enrichment hasn't run yet.
-          example: remote_global
-        city:
-          type:
-          - string
-          - 'null'
-          description: Parsed city component of location.
-        country:
-          type:
-          - string
-          - 'null'
-          description: Canonical country code.
-        legitimacyTier:
-          type:
-          - string
-          - 'null'
-          enum:
-          - high_confidence
-          - proceed_with_caution
-          - suspicious
-          - null
-          description: Deterministic posting-legitimacy verdict. Null when not yet evaluated.
-          example: proceed_with_caution
-        freshnessStatus:
-          type:
-          - string
-          - 'null'
-          enum:
-          - fresh
-          - aging
-          - stale
-          - unknown
-          - null
-          description: Posting age bucket (fresh / aging / stale / unknown).
-          example: fresh
-        repostedCount:
-          type:
-          - integer
-          - 'null'
-          minimum: 0
-          description: Number of prior live scraped_job rows for this URL family. 0 when no repost history.
-          example: 0
-        lastRepostDate:
-          type:
-          - string
-          - 'null'
-          description: posted_date of the most-recent prior repost. Null when no prior posting exists.
-          example: '2026-03-04'
-        legitimacySignals:
-          type:
-          - string
-          - 'null'
-          description: Serialized LegitimacySignals payload (score + signals[] + tier). Null when not yet evaluated.
-        seniorityBand:
-          type:
-          - string
-          - 'null'
-          enum:
-          - intern
-          - entry
-          - junior
-          - mid
-          - senior
-          - staff
-          - principal
-          - lead
-          - manager
-          - director
-          - vp
-          - cxo
-          - null
-          description: Canonical seniority band parsed from the listing (intern / entry / junior / mid / senior / staff / principal / lead / manager / director / vp / cxo). Null when the band could not be inferred.
-          example: senior
-        salaryMinUsd:
-          type:
-          - integer
-          - 'null'
-          description: Lower bound of the listing salary range normalized to USD/year. Null when no parseable salary range exists.
-          example: 120000
-        salaryMaxUsd:
-          type:
-          - integer
-          - 'null'
-          description: Upper bound of the listing salary range normalized to USD/year. Null when no parseable salary range exists.
-          example: 180000
-        salaryCurrency:
-          type:
-          - string
-          - 'null'
-          description: ISO-4217 currency code of the original (pre-normalization) salary range (USD, EUR, GBP, ...). Null when no salary was reported.
-          example: USD
-        needsLivenessCheck:
-          type: boolean
-          description: True when the match is a stale-candidate on a browser-required aggregator (indeed/linkedin/glassdoor) and the frontend should call POST /job-matches/{id}/verify-live before allowing swipe-right. False means the listing is fresh enough to swipe directly.
-          example: false
-      required:
-      - appliedAt
-      - applicationStatus
-      - authPlatform
-      - requiresAuth
-      - platformType
-      - benefits
-      - company
-      - companyLogoUrl
-      - companySize
-      - createdAt
-      - description
-      - dismissed
-      - educationRequired
-      - extractedSkills
-      - id
-      - publicJobId
-      - jobType
-      - listingStatus
-      - location
-      - locationMatch
-      - geoTier
-      - distanceKm
-      - matchScore
-      - postedAt
-      - preparationStatus
-      - remoteMatch
-      - resolvedApplyUrl
-      - linkedinApplyMethod
-      - salary
-      - salaryMatch
-      - saved
-      - seniorityMatch
-      - skillsMatch
-      - skillsMatchCount
-      - source
-      - title
-      - url
-      - visaMatch
-      - visaSponsorship
-      - whyGoodFit
-      - workArrangement
-      - city
-      - country
-      - legitimacyTier
-      - freshnessStatus
-      - repostedCount
-      - lastRepostDate
-      - legitimacySignals
-      - seniorityBand
-      - salaryMinUsd
-      - salaryMaxUsd
-      - salaryCurrency
-      - needsLivenessCheck
-      additionalProperties: false
-    AIPersonaData:
-      type: object
-      properties:
-        id:
-          type: string
-          description: AI persona identifier
-          example: abc-123
-        userId:
-          type: string
-          description: User identifier
-          example: user_abc123
-        presetId:
-          type: string
-          enum:
-          - balanced
-          - the_professional
-          - the_conversationalist
-          - the_storyteller
-          - the_closer
-          - the_enthusiast
-          - custom
-          description: Selected persona preset
-          example: balanced
-        personalDescription:
-          type:
-          - string
-          - 'null'
-          description: Free text about the user for AI personalization
-          example: Senior engineer with 10 years in fintech
-        toneInstructions:
-          type:
-          - string
-          - 'null'
-          description: Custom rules for AI tone and style
-          example: Always mention my passion for open-source
-        samplePhrases:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-          description: Example phrases the user would naturally use
-          example:
-          - Let me walk you through my approach
-          - I thrive in fast-paced environments
-        generateCoverLetterPerJob:
-          type: boolean
-          description: Whether AI generates a cover letter for each job application
-          example: true
-        tailorResumePerJob:
-          type: boolean
-          description: Whether AI tailors resume for each job application
-          example: true
-        resumeStrategy:
-          type: string
-          enum:
-          - base
-          - tailor
-          description: Resume handling strategy
-          example: tailor
-        coverLetterStrategy:
-          type: string
-          enum:
-          - 'off'
-          - use_base
-          - tailor_base
-          - generate_new
-          description: Cover letter handling strategy
-          example: generate_new
-        translationStrategy:
-          type: string
-          enum:
-          - 'off'
-          - translate
-          - translate_and_tailor
-          description: Translation strategy
-          example: 'off'
-        mode:
-          type: string
-          enum:
-          - copilot
-          - auto_approve
-          description: 'Application mode: copilot (review before submitting) or auto_approve (submits automatically)'
-          example: copilot
-        allowFabrication:
-          type: boolean
-          description: Fill-gaps for the apply agent, enabled by default. When true, a required field the agent cannot take directly from profile facts is sourced real-data-first (the resume, tailored resume, and cover letter for this application, then job preferences, then profile) and only fabricated as a last resort, marked as assumed. When false (explicit opt-out), it never fabricates such an answer. Contact/identity completion (phone, city, postal, profile links) always completes required fields and is not governed by this flag.
-          example: true
-        scoringWeights:
-          type:
-          - object
-          - 'null'
-          properties:
-            location:
-              type: number
-              minimum: 0
-              maximum: 2
-            remote:
-              type: number
-              minimum: 0
-              maximum: 2
-            salary:
-              type: number
-              minimum: 0
-              maximum: 2
-            seniority:
-              type: number
-              minimum: 0
-              maximum: 2
-            skills:
-              type: number
-              minimum: 0
-              maximum: 2
-            visa:
-              type: number
-              minimum: 0
-              maximum: 2
-          required:
-          - location
-          - remote
-          - salary
-          - seniority
-          - skills
-          - visa
-          description: Per-dimension match scoring weights. NULL when the user has never customised them (scorer falls back to uniform defaults).
-          example:
-            skills: 1
-            location: 1
-            remote: 1
-            seniority: 1
-            salary: 1
-            visa: 1
-        createdAt:
-          type: string
-          description: Persona creation timestamp
-          example: '2026-01-15T12:00:00Z'
-        updatedAt:
-          type: string
-          description: Persona last update timestamp
-          example: '2026-03-10T08:30:00Z'
-      required:
-      - id
-      - userId
-      - presetId
-      - personalDescription
-      - toneInstructions
-      - samplePhrases
-      - generateCoverLetterPerJob
-      - tailorResumePerJob
-      - resumeStrategy
-      - coverLetterStrategy
-      - translationStrategy
-      - mode
-      - allowFabrication
-      - scoringWeights
-      - createdAt
-      - updatedAt
-    AIResumeData:
-      type:
-      - object
-      - 'null'
-      properties:
-        certifications:
-          type: array
-          items:
-            type: string
-        education:
-          type: array
-          items:
-            $ref: '#/components/schemas/EducationEntry'
-        experience:
-          type: array
-          items:
-            $ref: '#/components/schemas/ExperienceEntry'
-        personalInfo:
-          $ref: '#/components/schemas/PersonalInfo'
-        skills:
-          type: array
-          items:
-            type: string
-        summary:
-          type:
-          - string
-          - 'null'
     ApplicationResultData:
       type: object
       properties:
@@ -3960,93 +2090,6 @@ components:
       - tokensRefunded
       - refundReason
       additionalProperties: false
-    OutcomeMetrics:
-      type: object
-      properties:
-        emailResponseRate:
-          type: number
-          description: Share of classified inbound job emails that carry a positive signal (interview / scheduling / offer), as a percentage. 0 when no emails are classified.
-          example: 42.5
-        interviewsBooked:
-          type: integer
-          description: Applications that reached an interview-booked outcome (stage phone_screen/interview, or interview_booked_at set).
-          example: 3
-        nextInterviewResultId:
-          type:
-          - integer
-          - 'null'
-          description: Application-result id behind the SOONEST upcoming interview event, for the applications deep-link. Null when that event has no application behind it; absent on payloads that do not resolve it.
-          example: 1481
-        offers:
-          type: integer
-          description: Applications with an offer outcome (applicationStage = offered).
-          example: 1
-        positiveEmailSignals:
-          type: integer
-          description: Count of inbound emails classified as a positive signal (interview_invite / scheduling / reschedule / offer_letter).
-          example: 5
-        upcomingInterviews:
-          type: integer
-          description: Synced calendar events flagged as interviews whose start time is in the future.
-          example: 2
-      required:
-      - emailResponseRate
-      - interviewsBooked
-      - offers
-      - positiveEmailSignals
-      - upcomingInterviews
-      additionalProperties: false
-      description: Real-outcome success metrics from the email + calendar pipeline (interviews booked, offers, upcoming interviews, email response rate).
-    TimeSeriesData:
-      type: object
-      properties:
-        date:
-          type: string
-          description: Date in YYYY-MM-DD format
-          example: '2024-01-01'
-        count:
-          type: integer
-          description: Count for this date
-          example: 5
-      required:
-      - date
-      - count
-      additionalProperties: false
-    EducationEntry:
-      type: object
-      properties:
-        degree:
-          type: string
-          example: B.S. Computer Science
-        endDate:
-          type:
-          - string
-          - 'null'
-        gpa:
-          type:
-          - string
-          - 'null'
-        highlights:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-        institution:
-          type: string
-          example: MIT
-        location:
-          type:
-          - string
-          - 'null'
-        startDate:
-          type:
-          - string
-          - 'null'
-      required:
-      - degree
-      - institution
-      additionalProperties: false
     OverviewData:
       type: object
       properties:
@@ -4096,6 +2139,270 @@ components:
       - jobListingsCount
       - averageAtsScore
       - outcomes
+    AuthHealthData:
+      type:
+      - object
+      - 'null'
+      properties:
+        status:
+          type: string
+          enum:
+          - success
+        user:
+          $ref: '#/components/schemas/AuthHealthUser'
+        limitations:
+          $ref: '#/components/schemas/PlanLimitations'
+        hasCompletedSetup:
+          type: boolean
+          description: Whether the user has completed onboarding (has job match preferences)
+          example: false
+        onboardingCompleted:
+          type: boolean
+          description: Whether the user finished the onboarding wizard (user.onboarding_completed_at is set)
+          example: false
+      required:
+      - status
+      - user
+      - limitations
+      - hasCompletedSetup
+      - onboardingCompleted
+    LiveMatchData:
+      type: object
+      properties:
+        city:
+          type:
+          - string
+          - 'null'
+          description: Structured city published by the upstream feed.
+          example: Berlin
+        company:
+          type: string
+          description: Employer name.
+          example: Acme GmbH
+        companyLogoUrl:
+          type:
+          - string
+          - 'null'
+          description: Employer logo, when the feed published one.
+          example: null
+        location:
+          type:
+          - string
+          - 'null'
+          description: Free-text location as published.
+          example: Berlin, Germany
+        persistedJobId:
+          type:
+          - integer
+          - 'null'
+          description: 'scraped_job.id once this live row provably exists in the database, else null. Null means "not yet confirmed", never "failed" - persistence is asynchronous. Never optimistic: only written after the id is read back out of the database post-insert.'
+          example: null
+          exclusiveMinimum: 0
+        postedDate:
+          type:
+          - string
+          - 'null'
+          description: ISO date the posting went live.
+          example: '2026-07-21'
+        salary:
+          type:
+          - string
+          - 'null'
+          description: Salary string as published, when present.
+          example: null
+        source:
+          type: string
+          enum:
+          - linkedin
+          - indeed
+          - glassdoor
+          - google
+          - ziprecruiter
+          - remotive
+          - jobicy
+          - arbeitnow
+          - ashby
+          - greenhouse
+          - himalayas
+          - lever
+          - recruitee
+          - smartrecruiters
+          - themuse
+          - workingnomads
+          - join
+          - bayt
+          - naukri
+          - bdjobs
+          - web
+          - company_career_page
+          - manual
+          - pool
+          - workable
+          - remoteok
+          - weworkremotely
+          - reed
+          - wellfound
+          - dice
+          - monster
+          - careerbuilder
+          - simplyhired
+          - builtin
+          - snagajob
+          - seek
+          - totaljobs
+          - stepstone
+          - nofluffjobs
+          - devitjobs
+          - workday
+          - jobspresso
+          - landingjobs
+          - personio
+          - rss
+          - teamtailor
+          - breezy
+          - jazzhr
+          - pinpoint
+          - comeet
+          - bamboohr
+          - icims
+          - polymer
+          - gohire
+          - eddy
+          - recruiterflow
+          - hireology
+          - workstream
+          - bullhorn
+          - rippling
+          - softgarden
+          - jobtech
+          description: The supported direct-ATS provider this row resolved onto. Never an aggregator - those are filtered out before the row reaches this schema.
+          example: greenhouse
+        title:
+          type: string
+          description: Job title.
+          example: Backend Engineer
+        url:
+          type: string
+          description: Direct ATS apply URL.
+          example: https://boards.greenhouse.io/acme/jobs/123
+      required:
+      - city
+      - company
+      - companyLogoUrl
+      - location
+      - persistedJobId
+      - postedDate
+      - salary
+      - source
+      - title
+      - url
+      additionalProperties: false
+    ExperienceEntry:
+      type: object
+      properties:
+        bullets:
+          type: array
+          items:
+            type: string
+          example:
+          - Led migration of monolithic architecture to microservices, reducing deployment time by 60%
+        company:
+          type: string
+          example: Acme Corp
+        current:
+          type:
+          - boolean
+          - 'null'
+        endDate:
+          type:
+          - string
+          - 'null'
+          example: 2024-01
+        location:
+          type:
+          - string
+          - 'null'
+        startDate:
+          type: string
+          example: 2020-01
+        title:
+          type: string
+          example: Senior Engineer
+      required:
+      - bullets
+      - company
+      - startDate
+      - title
+      additionalProperties: false
+    SubmissionInfo:
+      type: object
+      properties:
+        authPlatform:
+          type: string
+          description: Which platform needs auth credentials (e.g. linkedin)
+          example: linkedin
+        canSubmit:
+          type: boolean
+          description: Whether the application can be submitted to this platform
+        hasCredentials:
+          type: boolean
+          description: Whether the user has stored credentials for the required platform
+        platformType:
+          type: string
+          description: Detected submission platform type
+          example: linkedin
+        reason:
+          type: string
+          description: Reason submission is blocked or limited
+        requiresAuth:
+          type: boolean
+          description: Whether the platform requires user authentication credentials
+      required:
+      - canSubmit
+      - platformType
+      additionalProperties: false
+      description: Pre-flight submission requirements and credential status
+    PersonalInfo:
+      type: object
+      properties:
+        email:
+          anyOf:
+          - type: string
+            format: email
+          - type: string
+            enum:
+            - ''
+          - {}
+          example: name@example.com
+        fullName:
+          type:
+          - string
+          - 'null'
+          example: Ada Lovelace
+        linkedin:
+          type:
+          - string
+          - 'null'
+        location:
+          type:
+          - string
+          - 'null'
+          example: San Francisco, CA
+        phone:
+          type:
+          - string
+          - 'null'
+          example: +1 (555) 123-4567
+        title:
+          type:
+          - string
+          - 'null'
+          example: Senior Software Engineer
+        website:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
     DashboardBootstrapData:
       type: object
       properties:
@@ -4197,19 +2504,634 @@ components:
       - agentConfig
       - pendingReview
       - tabCounts
-    DailyApplication:
+    EducationEntry:
       type: object
       properties:
-        count:
-          type: integer
-        date:
+        degree:
           type: string
-          description: Date in YYYY-MM-DD format
-          example: '2026-03-24'
+          example: B.S. Computer Science
+        endDate:
+          type:
+          - string
+          - 'null'
+        gpa:
+          type:
+          - string
+          - 'null'
+        highlights:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        institution:
+          type: string
+          example: MIT
+        location:
+          type:
+          - string
+          - 'null'
+        startDate:
+          type:
+          - string
+          - 'null'
       required:
-      - count
-      - date
+      - degree
+      - institution
       additionalProperties: false
+    JobMatchPreferencesData:
+      type: object
+      properties:
+        benefits:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        companySize:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        createdAt:
+          type:
+          - string
+          - 'null'
+        educationLevel:
+          type:
+          - string
+          - 'null'
+        excludeIndustries:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        experienceLevel:
+          type:
+          - string
+          - 'null'
+        experienceLevels:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        id:
+          type: integer
+        includeRemote:
+          type: boolean
+        industries:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        isActive:
+          type: boolean
+        jobTypes:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        locations:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        remoteGlobal:
+          type: boolean
+        salaryCurrency:
+          type: string
+          enum:
+          - usd
+          - eur
+          - gbp
+          - cad
+          - aud
+          - inr
+          description: Currency for salary values
+          example: usd
+        salaryMax:
+          type:
+          - number
+          - 'null'
+        salaryMin:
+          type:
+          - number
+          - 'null'
+        skills:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        targetRoles:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        updatedAt:
+          type:
+          - string
+          - 'null'
+        visaSponsorship:
+          type:
+          - string
+          - 'null'
+        workStyles:
+          type: array
+          items:
+            type: string
+            enum:
+            - onsite
+            - hybrid
+            - remote
+            description: User's preferred work style, physical mode only, no geo scoping
+            example: remote
+      required:
+      - benefits
+      - companySize
+      - createdAt
+      - educationLevel
+      - excludeIndustries
+      - experienceLevel
+      - experienceLevels
+      - id
+      - includeRemote
+      - industries
+      - isActive
+      - jobTypes
+      - locations
+      - remoteGlobal
+      - salaryCurrency
+      - salaryMax
+      - salaryMin
+      - skills
+      - targetRoles
+      - updatedAt
+      - visaSponsorship
+      - workStyles
+    OutcomeMetrics:
+      type: object
+      properties:
+        emailResponseRate:
+          type: number
+          description: Share of classified inbound job emails that carry a positive signal (interview / scheduling / offer), as a percentage. 0 when no emails are classified.
+          example: 42.5
+        interviewsBooked:
+          type: integer
+          description: Applications that reached an interview-booked outcome (stage phone_screen/interview, or interview_booked_at set).
+          example: 3
+        nextInterviewResultId:
+          type:
+          - integer
+          - 'null'
+          description: Application-result id behind the SOONEST upcoming interview event, for the applications deep-link. Null when that event has no application behind it; absent on payloads that do not resolve it.
+          example: 1481
+        offers:
+          type: integer
+          description: Applications with an offer outcome (applicationStage = offered).
+          example: 1
+        positiveEmailSignals:
+          type: integer
+          description: Count of inbound emails classified as a positive signal (interview_invite / scheduling / reschedule / offer_letter).
+          example: 5
+        upcomingInterviews:
+          type: integer
+          description: Synced calendar events flagged as interviews whose start time is in the future.
+          example: 2
+      required:
+      - emailResponseRate
+      - interviewsBooked
+      - offers
+      - positiveEmailSignals
+      - upcomingInterviews
+      additionalProperties: false
+      description: Real-outcome success metrics from the email + calendar pipeline (interviews booked, offers, upcoming interviews, email response rate).
+    ApplicationProfileData:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Application profile identifier
+          example: abc-123
+        userId:
+          type: string
+          description: User identifier
+          example: user_abc123
+        phone:
+          type:
+          - string
+          - 'null'
+          description: Phone number
+          example: +1-555-123-4567
+        addressLine1:
+          type:
+          - string
+          - 'null'
+          description: Address line 1
+          example: 123 Main St
+        addressLine2:
+          type:
+          - string
+          - 'null'
+          description: Address line 2
+          example: Apt 4B
+        city:
+          type:
+          - string
+          - 'null'
+          description: City
+          example: San Francisco
+        state:
+          type:
+          - string
+          - 'null'
+          description: State or province
+          example: CA
+        zipCode:
+          type:
+          - string
+          - 'null'
+          description: ZIP or postal code
+          example: '94105'
+        country:
+          type:
+          - string
+          - 'null'
+          description: Country
+          example: US
+        linkedinUrl:
+          type:
+          - string
+          - 'null'
+          description: LinkedIn profile URL
+          example: https://linkedin.com/in/johndoe
+        portfolioUrl:
+          type:
+          - string
+          - 'null'
+          description: Portfolio website URL
+          example: https://johndoe.dev
+        githubUrl:
+          type:
+          - string
+          - 'null'
+          description: GitHub profile URL
+          example: https://github.com/johndoe
+        currentEmployer:
+          type:
+          - string
+          - 'null'
+          description: Current employer / company. Helps tailor recommendations; unlocks team analytics if the company onboards.
+          example: Acme Corp
+        dateOfBirth:
+          type:
+          - string
+          - 'null'
+          description: Date of birth (ISO 8601 date string)
+          example: '1995-06-15'
+        workAuthorization:
+          type:
+          - string
+          - 'null'
+          enum:
+          - us_citizen
+          - permanent_resident
+          - visa_holder
+          - require_sponsorship
+          - other
+          - null
+          description: Work authorization status
+          example: us_citizen
+        willingToRelocate:
+          type: boolean
+          description: Willing to relocate for a job
+          example: false
+        relocationLocations:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: Preferred relocation locations as "City, Country" or "Country". Middle admin segments stripped on read.
+          example:
+          - New York, United States
+          - Austin, United States
+        salaryCurrency:
+          type:
+          - string
+          - 'null'
+          enum:
+          - usd
+          - eur
+          - gbp
+          - cad
+          - aud
+          - inr
+          - null
+          description: Salary currency
+          example: usd
+        availableStartDate:
+          type:
+          - string
+          - 'null'
+          description: Earliest available start date (ISO 8601 date string)
+          example: '2026-04-01'
+        noticePeriod:
+          type:
+          - string
+          - 'null'
+          enum:
+          - immediately
+          - two_weeks
+          - one_month
+          - two_months
+          - three_months
+          - flexible
+          - null
+          description: Notice period before starting new position
+          example: two_weeks
+        personalNarrative:
+          type:
+          - string
+          - 'null'
+          description: Free-form narrative about gaps / transitions / short stints. Drives interview-prep red-flag question generation (F8).
+          example: Took a 14-month gap in 2024 for caregiving; returning with a refreshed cloud certification.
+        travelWillingness:
+          type:
+          - string
+          - 'null'
+          enum:
+          - none
+          - up_to_25
+          - up_to_50
+          - up_to_75
+          - up_to_100
+          - null
+          description: Willingness to travel for work
+          example: up_to_25
+        securityClearance:
+          type:
+          - string
+          - 'null'
+          enum:
+          - none
+          - confidential
+          - secret
+          - top_secret
+          - ts_sci
+          - prefer_not_to_say
+          - null
+          description: Security clearance level
+          example: none
+        restrictiveCovenantStatus:
+          type:
+          - string
+          - 'null'
+          enum:
+          - 'yes'
+          - 'no'
+          - prefer_not_to_say
+          - null
+          description: Currently subject to a non-compete / non-solicit / restrictive covenant with a former employer
+          example: 'no'
+        criminalRecordStatus:
+          type:
+          - string
+          - 'null'
+          enum:
+          - 'yes'
+          - 'no'
+          - prefer_not_to_say
+          - null
+          description: Has a criminal conviction they are legally required to disclose
+          example: 'no'
+        backgroundCheckConsent:
+          type:
+          - string
+          - 'null'
+          enum:
+          - 'yes'
+          - 'no'
+          - prefer_not_to_say
+          - null
+          description: Consents to a background / reference / credit check or drug screen where the role requires one
+          example: 'yes'
+        relatedToEmployeeStatus:
+          type:
+          - string
+          - 'null'
+          enum:
+          - 'yes'
+          - 'no'
+          - prefer_not_to_say
+          - null
+          description: 'Has a family member or close personal relationship with an employee of a company they apply to. Global, not per-employer: only a "no" is committable on a form.'
+          example: 'no'
+        exportControlUsPerson:
+          type:
+          - string
+          - 'null'
+          enum:
+          - 'yes'
+          - 'no'
+          - prefer_not_to_say
+          - null
+          description: Is a U.S. person for export-control (ITAR / EAR) purposes. The only declaration whose "yes" is the permissive answer.
+          example: 'yes'
+        highestEducation:
+          type:
+          - string
+          - 'null'
+          enum:
+          - high_school
+          - associate
+          - bachelor
+          - master
+          - doctorate
+          - any
+          - null
+          description: Highest education level completed
+          example: bachelor
+        yearsOfExperience:
+          type:
+          - integer
+          - 'null'
+          description: Total years of professional experience
+          example: 5
+        veteranStatus:
+          type:
+          - string
+          - 'null'
+          enum:
+          - not_a_veteran
+          - veteran
+          - disabled_veteran
+          - recently_separated_veteran
+          - active_duty_wartime_veteran
+          - armed_forces_service_medal_veteran
+          - prefer_not_to_say
+          - null
+          description: Veteran status for EEO forms
+          example: prefer_not_to_say
+        disabilityStatus:
+          type:
+          - string
+          - 'null'
+          enum:
+          - 'yes'
+          - 'no'
+          - prefer_not_to_say
+          - null
+          description: Disability status for EEO forms
+          example: prefer_not_to_say
+        gender:
+          type:
+          - string
+          - 'null'
+          enum:
+          - male
+          - female
+          - non_binary
+          - prefer_not_to_say
+          - other
+          - null
+          description: Gender for EEO forms
+          example: prefer_not_to_say
+        ethnicity:
+          type:
+          - string
+          - 'null'
+          enum:
+          - american_indian_or_alaska_native
+          - asian
+          - black_or_african_american
+          - hispanic_or_latino
+          - native_hawaiian_or_pacific_islander
+          - white
+          - two_or_more_races
+          - prefer_not_to_say
+          - other
+          - null
+          description: Ethnicity for EEO forms
+          example: prefer_not_to_say
+        sexualOrientation:
+          type:
+          - string
+          - 'null'
+          enum:
+          - heterosexual
+          - gay_or_lesbian
+          - bisexual
+          - prefer_not_to_say
+          - other
+          - null
+          description: Sexual orientation for EEO forms
+          example: prefer_not_to_say
+        pronouns:
+          type:
+          - string
+          - 'null'
+          maxLength: 40
+          description: Preferred pronouns, self-described free text. Never inferred from a name or from `gender`.
+          example: she/her
+        applyReadiness:
+          type: object
+          properties:
+            missingRequiredForApply:
+              type: array
+              items:
+                type: string
+                enum:
+                - zip_code
+                - state
+                - country
+                description: An application_profile column an employer form can require and that we never invent
+                example: zip_code
+              description: Profile columns an employer form can require that are empty. We never invent these; the user fills them.
+              example:
+              - zip_code
+              - state
+          required:
+          - missingRequiredForApply
+          description: Required-for-apply columns that are still empty
+        addressCompleteness:
+          type: object
+          properties:
+            city:
+              type: boolean
+            complete:
+              type: boolean
+            country:
+              type: boolean
+            postalCode:
+              type: boolean
+            state:
+              type: boolean
+            street:
+              type: boolean
+          required:
+          - city
+          - complete
+          - country
+          - postalCode
+          - state
+          - street
+        createdAt:
+          type: string
+          description: Profile creation timestamp
+          example: '2026-01-15T12:00:00Z'
+        updatedAt:
+          type: string
+          description: Profile last update timestamp
+          example: '2026-03-10T08:30:00Z'
+      required:
+      - id
+      - userId
+      - phone
+      - addressLine1
+      - addressLine2
+      - city
+      - state
+      - zipCode
+      - country
+      - linkedinUrl
+      - portfolioUrl
+      - githubUrl
+      - currentEmployer
+      - dateOfBirth
+      - workAuthorization
+      - willingToRelocate
+      - relocationLocations
+      - salaryCurrency
+      - availableStartDate
+      - noticePeriod
+      - personalNarrative
+      - travelWillingness
+      - securityClearance
+      - restrictiveCovenantStatus
+      - criminalRecordStatus
+      - backgroundCheckConsent
+      - relatedToEmployeeStatus
+      - exportControlUsPerson
+      - highestEducation
+      - yearsOfExperience
+      - veteranStatus
+      - disabilityStatus
+      - gender
+      - ethnicity
+      - sexualOrientation
+      - pronouns
+      - applyReadiness
+      - addressCompleteness
+      - createdAt
+      - updatedAt
     PlanLimitations:
       type: object
       properties:
@@ -4250,36 +3172,482 @@ components:
       - tokensRemaining
       - tokensSpendable
       additionalProperties: false
-    SuccessRateData:
+    JobListingListItem:
       type: object
       properties:
-        successRate:
-          type: number
-          description: Overall success rate percentage
-          example: 92.5
-        successCount:
+        company:
+          type:
+          - string
+          - 'null'
+          description: Company name
+          example: Acme Corp
+        companyLogoUrl:
+          type:
+          - string
+          - 'null'
+          description: Company logo URL
+          example: https://www.google.com/s2/favicons?domain=google.com&sz=128
+        companyDomain:
+          type:
+          - string
+          - 'null'
+          description: Company domain for the FE DDG-favicon logo fallback
+          example: acme.com
+        location:
+          type:
+          - string
+          - 'null'
+          description: Job location
+          example: Remote, US
+        salary:
+          type:
+          - string
+          - 'null'
+          description: Salary range or details
+          example: $120,000 - $160,000
+        sourceUrl:
+          type:
+          - string
+          - 'null'
+          description: URL where the job listing was found
+          example: https://linkedin.com/jobs/123
+        title:
+          type: string
+          description: Job title
+          example: Senior Software Engineer
+        createdAt:
+          type:
+          - string
+          - 'null'
+          description: Creation timestamp
+          example: '2024-01-01T00:00:00Z'
+        id:
           type: integer
-          description: Number of successful operations
-          example: 185
-        failureCount:
+          description: Job listing identifier
+          example: 1
+        jobMatchId:
+          type:
+          - integer
+          - 'null'
+          description: Associated job match identifier
+          example: 42
+        status:
+          type: string
+          enum:
+          - saved
+          - preparing
+          - applied
+          - interviewing
+          - offered
+          - rejected
+          - archived
+          description: Status of a job listing
+          example: saved
+        updatedAt:
+          type:
+          - string
+          - 'null'
+          description: Last update timestamp
+          example: '2024-01-15T10:30:00Z'
+        source:
+          type:
+          - string
+          - 'null'
+          enum:
+          - linkedin
+          - indeed
+          - glassdoor
+          - google
+          - ziprecruiter
+          - remotive
+          - jobicy
+          - arbeitnow
+          - ashby
+          - greenhouse
+          - himalayas
+          - lever
+          - recruitee
+          - smartrecruiters
+          - themuse
+          - workingnomads
+          - join
+          - bayt
+          - naukri
+          - bdjobs
+          - web
+          - company_career_page
+          - manual
+          - pool
+          - workable
+          - remoteok
+          - weworkremotely
+          - reed
+          - wellfound
+          - dice
+          - monster
+          - careerbuilder
+          - simplyhired
+          - builtin
+          - snagajob
+          - seek
+          - totaljobs
+          - stepstone
+          - nofluffjobs
+          - devitjobs
+          - workday
+          - jobspresso
+          - landingjobs
+          - personio
+          - rss
+          - teamtailor
+          - breezy
+          - jazzhr
+          - pinpoint
+          - comeet
+          - bamboohr
+          - icims
+          - polymer
+          - gohire
+          - eddy
+          - recruiterflow
+          - hireology
+          - workstream
+          - bullhorn
+          - rippling
+          - softgarden
+          - jobtech
+          - null
+          description: Source platform where the job was found (from linked job match)
+          example: ashby
+        resolvedApplyUrl:
+          type:
+          - string
+          - 'null'
+          description: Resolved external ATS apply URL from the linked job match (e.g. the Greenhouse/Lever page a LinkedIn-scraped job actually applies on). Prefer this over `source` for the provider badge.
+          example: https://boards.greenhouse.io/acme/jobs/123
+        linkedinApplyMethod:
+          type:
+          - string
+          - 'null'
+          enum:
+          - easy_apply
+          - offsite
+          - unknown
+          - null
+          description: Resolved LinkedIn apply target from the linked job match. `offsite` → applies on a company ATS (use resolvedApplyUrl for the badge); `easy_apply` → "LinkedIn Easy Apply"; `unknown`/null → fall back to `source`.
+          example: offsite
+        atsScoreCount:
           type: integer
-          description: Number of failed operations
-          example: 10
-        pendingCount:
-          type: integer
-          description: Number of pending/aborted operations
-          example: 5
-        totalCount:
-          type: integer
-          description: Total number of operation attempts
-          example: 200
+          minimum: 0
+          description: Number of ATS scores for this job listing
+          example: 2
+        latestAtsScore:
+          type:
+          - integer
+          - 'null'
+          minimum: 0
+          maximum: 100
+          description: Most recent ATS overall score (0-100), null if no scores exist
+          example: 78
+        preparationStatus:
+          type:
+          - string
+          - 'null'
+          description: Preparation status of the linked application result (null if no application)
+          example: ready
+        autoRetryStopped:
+          type: boolean
+          description: True when NO automatic lane will retry this application (submit evidence fences it, or the retry budget is spent). The UI must not promise a retry when this is true.
+          example: false
+        autoRetryStoppedReason:
+          type:
+          - string
+          - 'null'
+          enum:
+          - submit_evidence
+          - attempts_spent
+          - not_retryable
+          - cancelled
+          - needs_review
+          - orphaned
+          - null
+          description: Which permanent-abandonment lane stopped this row, or null when it is not stopped / could not be evaluated.
+          example: null
+        employerReceiptConfirmed:
+          type: boolean
+          description: True when employer receipt proof exists. Page or screenshot proof stays separate in landingProofs. Outranks every status/error/retry field on this row.
+          example: false
+        submitEvidenceTier:
+          type: string
+          enum:
+          - other_side_confirmed
+          - our_click_only
+          - no_submit_evidence
+          description: 'Whose observation backs this row: other_side_confirmed (the employer produced a receipt), our_click_only (we clicked Submit but read no receipt), or no_submit_evidence (we never clicked).'
+          example: no_submit_evidence
+        nextAutoRetryAt:
+          type:
+          - string
+          - 'null'
+          description: Earliest ISO timestamp an automatic attempt can re-claim this row. A floor, not a guarantee. Null means we are not naming a time - NOT that no retry exists.
+          example: null
+        statusDisplay:
+          anyOf:
+          - type: object
+            properties:
+              label:
+                type: string
+                minLength: 1
+                description: Legacy English badge text for rolling compatibility. V2 clients localize from code and params instead of rendering this field.
+                example: Trying again shortly · pass 3 of 4
+              noCreditUsed:
+                type: boolean
+                description: True only when no billable AI or browser work ran for this row (the skipped short-circuits). An errored apply is never "free".
+                example: false
+              pendingRetryAt:
+                type:
+                - string
+                - 'null'
+                format: date-time
+                description: Earliest ISO timestamp an automatic attempt can re-claim this row, echoed only with matching V2 scheduledAttempt params. Null means we are not naming a time, never that no retry exists.
+                example: null
+              tone:
+                type: string
+                enum:
+                - success
+                - warning
+                - info
+                - destructive
+                - settled
+                - neutral
+                - muted
+                description: Platform-agnostic colour verdict for a derived application status badge. Web maps it to a Tailwind bg-* class, mobile to a theme hex. Never a class name on the wire.
+                example: info
+              code:
+                type: string
+                enum:
+                - queued
+                - preparing
+                - queued_to_apply
+                - waiting_for_browser
+                - submitting
+                - action_needed
+                - waiting_for_review
+                - applied
+                - applied_confirming_landing
+                - employer_receipt_confirmed
+                - sent_no_receipt_read
+                - submitted_verifying
+                - already_applied
+                - retrying_our_hiccup
+                - retrying_soon
+                - employer_rejected_retrying
+                - failed_retrying
+                - resumes_when_funded
+                - signing_in
+                - paused
+                - resuming
+                - resume_required
+                - not_through
+                - no_form
+                - not_ready_to_send
+                - not_submitted
+                - linkedin_easy_apply
+                - job_unavailable
+                - aggregator_skipped
+                - result_submitted
+                - result_submitted_awaiting_receipt
+                - cancelled
+                - result_error
+                - result_preparing
+                - result_pending_approval
+                - result_ready_to_submit
+                - result_skipped
+                - stopped_generic
+                - stopped_submit_evidence
+                - stopped_attempts_spent
+                - stopped_not_retryable
+                - stopped_cancelled
+                - stopped_needs_review
+                - stopped_orphaned
+                - stopped_our_click_only
+                - unknown
+                description: Stable semantic code for a derived application status display. Clients localize this code and use the legacy label only for rolling compatibility.
+                example: queued_to_apply
+              params:
+                type: object
+                properties:
+                  attemptsMade:
+                    type:
+                    - integer
+                    - 'null'
+                    exclusiveMinimum: 0
+                  retryBudget:
+                    type:
+                    - object
+                    - 'null'
+                    properties:
+                      remaining:
+                        type: integer
+                        minimum: 0
+                      total:
+                        type: integer
+                        exclusiveMinimum: 0
+                    required:
+                    - remaining
+                    - total
+                    additionalProperties: false
+                  scheduledAttempt:
+                    type:
+                    - object
+                    - 'null'
+                    properties:
+                      current:
+                        type: integer
+                        exclusiveMinimum: 0
+                      total:
+                        type: integer
+                        exclusiveMinimum: 0
+                    required:
+                    - current
+                    - total
+                    additionalProperties: false
+                required:
+                - attemptsMade
+                - retryBudget
+                - scheduledAttempt
+                additionalProperties: false
+              schemaVersion:
+                type: number
+                enum:
+                - 2
+            required:
+            - label
+            - noCreditUsed
+            - pendingRetryAt
+            - tone
+            - code
+            - params
+            - schemaVersion
+            additionalProperties: false
+          - type: object
+            properties:
+              label:
+                type: string
+                minLength: 1
+                description: Legacy English badge text for rolling compatibility. V2 clients localize from code and params instead of rendering this field.
+                example: Trying again shortly · pass 3 of 4
+              noCreditUsed:
+                type: boolean
+                description: True only when no billable AI or browser work ran for this row (the skipped short-circuits). An errored apply is never "free".
+                example: false
+              pendingRetryAt:
+                type:
+                - string
+                - 'null'
+                format: date-time
+                description: Earliest ISO timestamp an automatic attempt can re-claim this row, echoed only with matching V2 scheduledAttempt params. Null means we are not naming a time, never that no retry exists.
+                example: null
+              tone:
+                type: string
+                enum:
+                - success
+                - warning
+                - info
+                - destructive
+                - settled
+                - neutral
+                - muted
+                description: Platform-agnostic colour verdict for a derived application status badge. Web maps it to a Tailwind bg-* class, mobile to a theme hex. Never a class name on the wire.
+                example: info
+            required:
+            - label
+            - noCreditUsed
+            - pendingRetryAt
+            - tone
+            additionalProperties: false
+          - {}
+          description: The server-derived application status verdict. V2 clients localize its stable code and typed params, then map the semantic tone to platform tokens. The English label remains only for rolling compatibility. Null means the listing has no linked application, so clients fall back to the job listing status.
+          example: null
+        errorCode:
+          type:
+          - string
+          - 'null'
+          description: Terminal error code of the latest application result, or null. Drives the status label.
+          example: agent_stuck
+        applicationResultStatus:
+          type:
+          - string
+          - 'null'
+          description: Status of the linked application result (null if no application)
+          example: ready_to_submit
+        legitimacyTier:
+          type:
+          - string
+          - 'null'
+          enum:
+          - high_confidence
+          - proceed_with_caution
+          - suspicious
+          - null
+          description: Deterministic posting-legitimacy verdict from the parent job match. Null when not yet evaluated.
+          example: proceed_with_caution
+        legitimacySignals:
+          anyOf:
+          - type: string
+          - {}
+          description: Serialized LegitimacySignals payload (score + signals[] + tier) from the parent job match. Null when not yet evaluated.
+        freshnessStatus:
+          type:
+          - string
+          - 'null'
+          enum:
+          - fresh
+          - aging
+          - stale
+          - unknown
+          - null
+          description: Posting age bucket (fresh / aging / stale / unknown) from the scraped_job snapshot.
+          example: fresh
+        repostedCount:
+          type:
+          - integer
+          - 'null'
+          minimum: 0
+          description: Number of prior live scraped_job rows for this URL family. 0 when no repost history.
+          example: 0
+        lastRepostDate:
+          type:
+          - string
+          - 'null'
+          description: posted_date of the most-recent prior repost. Null when no prior posting exists.
+          example: '2026-03-04'
       required:
-      - successRate
-      - successCount
-      - failureCount
-      - pendingCount
-      - totalCount
-      additionalProperties: false
+      - company
+      - companyLogoUrl
+      - location
+      - salary
+      - sourceUrl
+      - title
+      - createdAt
+      - id
+      - jobMatchId
+      - status
+      - updatedAt
+      - source
+      - resolvedApplyUrl
+      - linkedinApplyMethod
+      - atsScoreCount
+      - latestAtsScore
+      - preparationStatus
+      - autoRetryStopped
+      - autoRetryStoppedReason
+      - employerReceiptConfirmed
+      - submitEvidenceTier
+      - nextAutoRetryAt
+      - statusDisplay
+      - errorCode
+      - applicationResultStatus
     AuthHealthUser:
       type: object
       properties:
@@ -4361,11 +3729,637 @@ components:
       - companySlug
       - createdAt
       - updatedAt
+    TimeSeriesData:
+      type: object
+      properties:
+        date:
+          type: string
+          description: Date in YYYY-MM-DD format
+          example: '2024-01-01'
+        count:
+          type: integer
+          description: Count for this date
+          example: 5
+      required:
+      - date
+      - count
+      additionalProperties: false
+    DashboardBootstrapResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/DashboardBootstrapData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    SuccessRateData:
+      type: object
+      properties:
+        successRate:
+          type: number
+          description: Overall success rate percentage
+          example: 92.5
+        successCount:
+          type: integer
+          description: Number of successful operations
+          example: 185
+        failureCount:
+          type: integer
+          description: Number of failed operations
+          example: 10
+        pendingCount:
+          type: integer
+          description: Number of pending/aborted operations
+          example: 5
+        totalCount:
+          type: integer
+          description: Total number of operation attempts
+          example: 200
+      required:
+      - successRate
+      - successCount
+      - failureCount
+      - pendingCount
+      - totalCount
+      additionalProperties: false
+    FormsLeftData:
+      type: object
+      properties:
+        count:
+          type: integer
+          description: Estimated AI operations remaining
+          example: 100
+        percent:
+          type: number
+          description: Percentage of tokens remaining
+          example: 75
+      required:
+      - count
+      - percent
+      additionalProperties: false
+    ApiErrorResponse:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+            context:
+              oneOf:
+              - type: object
+                properties:
+                  errorType:
+                    type: string
+                    enum:
+                    - validation
+                  field:
+                    type: string
+                  fieldErrors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        code:
+                          type: string
+                        expected:
+                          type: string
+                        field:
+                          type: string
+                        message:
+                          type: string
+                        received:
+                          type: string
+                      required:
+                      - field
+                      - message
+                  schemaName:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  attemptedEmail:
+                    type: string
+                    format: email
+                  errorType:
+                    type: string
+                    enum:
+                    - authentication
+                  failureReason:
+                    type: string
+                    enum:
+                    - invalid_credentials
+                    - account_locked
+                    - expired_token
+                    - token_expired
+                    - missing_token
+                    - invalid_token
+                    - session_expired
+                    description: Reason for authentication failure
+                    example: token_expired
+                  ipAddress:
+                    type: string
+                  operation:
+                    type: string
+                  service:
+                    type: string
+                  userAgent:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  actualPermission:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - authorization
+                  requiredPermission:
+                    type: string
+                  resource:
+                    type: string
+                  resourceId:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  constraint:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - database
+                  operation:
+                    type: string
+                    enum:
+                    - insert
+                    - update
+                    - delete
+                    - select
+                    - batch
+                    - transaction
+                    - migration
+                    description: Type of database operation
+                    example: select
+                  resourceId:
+                    type: string
+                  sqlState:
+                    type: string
+                  table:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  endpoint:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - external_service
+                  httpStatus:
+                    type: number
+                  operation:
+                    type: string
+                  resourceId:
+                    type: string
+                  responseTime:
+                    type: number
+                  retryAttempt:
+                    type: integer
+                  service:
+                    type: string
+                  serviceName:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  errorType:
+                    type: string
+                    enum:
+                    - resource
+                  resource:
+                    type: string
+                  resourceId:
+                    type: string
+                  service:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  errorType:
+                    type: string
+                    enum:
+                    - rate_limit
+                  limit:
+                    type: number
+                  resetTime:
+                    type: string
+                  windowMs:
+                    type: number
+                required:
+                - errorType
+              - type: object
+                properties:
+                  configKey:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - configuration
+                  operation:
+                    type: string
+                  service:
+                    type: string
+                required:
+                - errorType
+              description: Type-safe error context information
+              example:
+                errorType: validation
+                fieldErrors:
+                - field: email
+                  message: Invalid email format
+            details:
+              oneOf:
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - validation
+                  validationErrors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        code:
+                          type: string
+                        field:
+                          type: string
+                        message:
+                          type: string
+                      required:
+                      - field
+                      - message
+                required:
+                - detailType
+                - validationErrors
+                additionalProperties: false
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - service_error
+                  originalError:
+                    type: string
+                  serviceName:
+                    type: string
+                required:
+                - detailType
+                - serviceName
+                additionalProperties: false
+              - type: object
+                properties:
+                  currentSize:
+                    type: number
+                  detailType:
+                    type: string
+                    enum:
+                    - batch
+                  originalError:
+                    type: string
+                  statementCount:
+                    type: number
+                required:
+                - detailType
+                additionalProperties: false
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - rate_limit
+                  limit:
+                    type: number
+                  resetTime:
+                    type: string
+                  windowMs:
+                    type: number
+                required:
+                - detailType
+                - limit
+                - resetTime
+                - windowMs
+                additionalProperties: false
+              - type: object
+                properties:
+                  conflictingField:
+                    type: string
+                  detailType:
+                    type: string
+                    enum:
+                    - resource
+                  resourceId:
+                    anyOf:
+                    - type: string
+                    - type: number
+                  resourceType:
+                    type: string
+                required:
+                - detailType
+                additionalProperties: false
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - generic
+                  info:
+                    type: string
+                required:
+                - detailType
+                additionalProperties: false
+              - type: object
+                properties:
+                  currentTokens:
+                    type: integer
+                    minimum: 0
+                  detailType:
+                    type: string
+                    enum:
+                    - insufficient_tokens
+                  requiredTokens:
+                    type: integer
+                    minimum: 0
+                required:
+                - currentTokens
+                - detailType
+                - requiredTokens
+                additionalProperties: false
+            message:
+              type: string
+            validation:
+              type: array
+              items:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  field:
+                    type: string
+                  message:
+                    type: string
+                required:
+                - field
+                - message
+                additionalProperties: false
+          required:
+          - code
+          - message
+          additionalProperties: false
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - false
+      required:
+      - error
+      - success
+      additionalProperties: false
+    AIPersonaData:
+      type: object
+      properties:
+        id:
+          type: string
+          description: AI persona identifier
+          example: abc-123
+        userId:
+          type: string
+          description: User identifier
+          example: user_abc123
+        presetId:
+          type: string
+          enum:
+          - balanced
+          - the_professional
+          - the_conversationalist
+          - the_storyteller
+          - the_closer
+          - the_enthusiast
+          - custom
+          description: Selected persona preset
+          example: balanced
+        personalDescription:
+          type:
+          - string
+          - 'null'
+          description: Free text about the user for AI personalization
+          example: Senior engineer with 10 years in fintech
+        toneInstructions:
+          type:
+          - string
+          - 'null'
+          description: Custom rules for AI tone and style
+          example: Always mention my passion for open-source
+        samplePhrases:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: Example phrases the user would naturally use
+          example:
+          - Let me walk you through my approach
+          - I thrive in fast-paced environments
+        generateCoverLetterPerJob:
+          type: boolean
+          description: Whether AI generates a cover letter for each job application
+          example: true
+        tailorResumePerJob:
+          type: boolean
+          description: Whether AI tailors resume for each job application
+          example: true
+        resumeStrategy:
+          type: string
+          enum:
+          - base
+          - tailor
+          description: Resume handling strategy
+          example: tailor
+        coverLetterStrategy:
+          type: string
+          enum:
+          - 'off'
+          - use_base
+          - tailor_base
+          - generate_new
+          description: Cover letter handling strategy
+          example: generate_new
+        translationStrategy:
+          type: string
+          enum:
+          - 'off'
+          - translate
+          - translate_and_tailor
+          description: Translation strategy
+          example: 'off'
+        mode:
+          type: string
+          enum:
+          - copilot
+          - auto_approve
+          description: 'Application mode: copilot (review before submitting) or auto_approve (submits automatically)'
+          example: copilot
+        allowFabrication:
+          type: boolean
+          description: Fill-gaps for the apply agent, enabled by default. When true, a required field the agent cannot take directly from profile facts is sourced real-data-first (the resume, tailored resume, and cover letter for this application, then job preferences, then profile) and only fabricated as a last resort, marked as assumed. When false (explicit opt-out), it never fabricates such an answer. Contact/identity completion (phone, city, postal, profile links) always completes required fields and is not governed by this flag.
+          example: true
+        scoringWeights:
+          type:
+          - object
+          - 'null'
+          properties:
+            location:
+              type: number
+              minimum: 0
+              maximum: 2
+            remote:
+              type: number
+              minimum: 0
+              maximum: 2
+            salary:
+              type: number
+              minimum: 0
+              maximum: 2
+            seniority:
+              type: number
+              minimum: 0
+              maximum: 2
+            skills:
+              type: number
+              minimum: 0
+              maximum: 2
+            visa:
+              type: number
+              minimum: 0
+              maximum: 2
+          required:
+          - location
+          - remote
+          - salary
+          - seniority
+          - skills
+          - visa
+          description: Per-dimension match scoring weights. NULL when the user has never customised them (scorer falls back to uniform defaults).
+          example:
+            skills: 1
+            location: 1
+            remote: 1
+            seniority: 1
+            salary: 1
+            visa: 1
+        createdAt:
+          type: string
+          description: Persona creation timestamp
+          example: '2026-01-15T12:00:00Z'
+        updatedAt:
+          type: string
+          description: Persona last update timestamp
+          example: '2026-03-10T08:30:00Z'
+      required:
+      - id
+      - userId
+      - presetId
+      - personalDescription
+      - toneInstructions
+      - samplePhrases
+      - generateCoverLetterPerJob
+      - tailorResumePerJob
+      - resumeStrategy
+      - coverLetterStrategy
+      - translationStrategy
+      - mode
+      - allowFabrication
+      - scoringWeights
+      - createdAt
+      - updatedAt
+    UserDocumentListData:
+      type:
+      - object
+      - 'null'
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserDocument'
+        pagination:
+          type: object
+          properties:
+            hasNext:
+              type: boolean
+            hasPrev:
+              type: boolean
+            limit:
+              type: integer
+              exclusiveMinimum: 0
+            page:
+              type: integer
+              exclusiveMinimum: 0
+            totalCount:
+              type: integer
+              minimum: 0
+            totalPages:
+              type: integer
+              minimum: 0
+          required:
+          - hasNext
+          - hasPrev
+          - limit
+          - page
+          - totalCount
+          - totalPages
+          additionalProperties: false
+      required:
+      - items
+      - pagination
+    DailyApplication:
+      type: object
+      properties:
+        count:
+          type: integer
+        date:
+          type: string
+          description: Date in YYYY-MM-DD format
+          example: '2026-03-24'
+      required:
+      - count
+      - date
+      additionalProperties: false
   securitySchemes:
     BearerAuth:
       description: 'Session token from signing in to AI Applyd, sent as `Authorization: Bearer <token>`.'
       scheme: bearer
       type: http
-x-refined-from:
-- aiapplyd-openapi.json
-- aiapplyd-openapi.yml

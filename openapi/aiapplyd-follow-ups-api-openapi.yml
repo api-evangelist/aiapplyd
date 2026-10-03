@@ -1,15 +1,15 @@
 openapi: 3.2.0
 info:
-  title: Aiapplyd Follow Ups API
-  version: 115c47ce
   contact:
     email: support@aiapplyd.com
     name: AI Applyd
     url: https://aiapplyd.com
+  description: 'The AI Applyd API runs the whole job hunt for you: it matches you to roles that fit your profile, rewrites your resume for each posting, writes the cover letter the form asks for, and auto-applies across the major applicant tracking systems.'
   license:
     name: Proprietary
     url: https://aiapplyd.com/legal/terms
-  description: 'Operations tagged follow-ups across 2 of this provider''s published API definitions: aiapplyd-openapi.json, aiapplyd-openapi.yml. Each path carries the servers of the definition it was published in.'
+  title: AI Applyd Follow Ups API
+  version: 115c47ce
 servers:
 - description: Current environment
   url: https://api.aiapplyd.com/api/v1
@@ -74,9 +74,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: getFollowUpsHistory
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /follow-ups:
     get:
       tags:
@@ -109,9 +106,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: getFollowUps
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /follow-ups/{applicationId}/draft:
     get:
       tags:
@@ -154,9 +148,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: getFollowUpsByApplicationIdDraft
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /follow-ups/{applicationId}/sent:
     post:
       tags:
@@ -210,9 +201,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: postFollowUpsByApplicationIdSent
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /follow-ups/{applicationId}/send-gmail:
     post:
       tags:
@@ -266,11 +254,171 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: postFollowUpsByApplicationIdSendGmail
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
 components:
   schemas:
+    FollowUpListItem:
+      type: object
+      properties:
+        applicationResultId:
+          type: integer
+          description: Application result id
+          example: 1234
+          exclusiveMinimum: 0
+        applicationStage:
+          type:
+          - string
+          - 'null'
+          enum:
+          - applied
+          - callback
+          - phone_screen
+          - interview
+          - offered
+          - rejected
+          - no_response
+          - null
+          description: Current stage of the application
+          example: applied
+        company:
+          type:
+          - string
+          - 'null'
+          description: Company name
+          example: Acme Inc.
+        followUpCount:
+          type: integer
+          minimum: 0
+          description: Number of follow-ups already sent on this application
+          example: 1
+        jobTitle:
+          type:
+          - string
+          - 'null'
+          description: Job title
+          example: Senior Backend Engineer
+        jobUrl:
+          type: string
+          description: Original job URL
+          example: https://example.com/jobs/abc
+        lastFollowUpAt:
+          type:
+          - string
+          - 'null'
+          description: ISO timestamp of last recorded follow-up, or null
+        nextFollowUpDueAt:
+          type:
+          - string
+          - 'null'
+          description: ISO timestamp of when next follow-up is due, or null
+        urgency:
+          type: string
+          enum:
+          - urgent
+          - overdue
+          - waiting
+          - cold
+          - none
+          description: Computed urgency tier
+          example: waiting
+      required:
+      - applicationResultId
+      - applicationStage
+      - company
+      - followUpCount
+      - jobTitle
+      - jobUrl
+      - lastFollowUpAt
+      - nextFollowUpDueAt
+      - urgency
+      additionalProperties: false
+    FollowUpHistoryPage:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/FollowUpHistoryItem'
+        nextCursor:
+          type:
+          - integer
+          - 'null'
+          description: Next offset to pass as `cursor`, or `null` on the final page.
+          example: 20
+      required:
+      - items
+      - nextCursor
+      additionalProperties: false
+    FollowUpListResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: '#/components/schemas/FollowUpListItem'
+          required:
+          - items
+          additionalProperties: false
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    ResponseMetadata:
+      type: object
+      properties:
+        duration:
+          type: number
+          description: Request duration in milliseconds
+          example: 150
+          exclusiveMinimum: 0
+        performance:
+          type: object
+          properties:
+            dbQueries:
+              type: integer
+              minimum: 0
+            totalDbTime:
+              type: number
+              minimum: 0
+          description: Performance metrics (preview/local only)
+        requestId:
+          type: string
+          description: Unique request identifier
+          example: req_abc123
+        timestamp:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp
+          example: '2026-09-25T17:29:47.224Z'
+        version:
+          type: string
+          description: API version
+          example: v1
+    MarkFollowUpSentResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/MarkFollowUpSentData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
     SendFollowUpGmailResponse:
       type: object
       properties:
@@ -287,74 +435,31 @@ components:
       - success
       additionalProperties: false
       description: Successful API response
-    FollowUpHistoryItem:
+    SendFollowUpGmailBody:
       type: object
       properties:
-        id:
-          type: integer
-          description: follow_up_event row id
-          example: 4321
-          exclusiveMinimum: 0
-        applicationResultId:
-          type: integer
-          description: Application result the follow-up belongs to
-          example: 1234
-          exclusiveMinimum: 0
-        attemptNumber:
-          type: integer
-          minimum: 1
-          description: 1-indexed cadence attempt this send was
-          example: 1
         body:
           type: string
-          description: The message body that was sent
+          minLength: 20
+          maxLength: 4000
+          description: Plain-text email body to send
           example: Hi Alex, ...
-        channel:
-          type: string
-          enum:
-          - email
-          - linkedin
-          - other
-          description: Channel used to send
-          example: email
-        company:
-          type:
-          - string
-          - 'null'
-          description: Company name of the application, joined for display
-          example: Acme Inc.
-        jobTitle:
-          type:
-          - string
-          - 'null'
-          description: Job title of the application, joined for display
-          example: Senior Backend Engineer
-        recipient:
-          type:
-          - string
-          - 'null'
-          description: Recipient email or LinkedIn handle, when captured
-          example: alex@acme.com
-        sentAt:
-          type: string
-          description: ISO timestamp of when the send was recorded
         subject:
-          type:
-          - string
-          - 'null'
-          description: Subject line (email channel) or null
+          type: string
+          minLength: 1
+          maxLength: 200
+          description: Email subject line
           example: Following up on the Senior Backend Engineer role
+        to:
+          type: string
+          maxLength: 320
+          format: email
+          description: Recipient email address
+          example: alex@acme.com
       required:
-      - id
-      - applicationResultId
-      - attemptNumber
       - body
-      - channel
-      - company
-      - jobTitle
-      - recipient
-      - sentAt
       - subject
+      - to
       additionalProperties: false
     FollowUpDraftResponse:
       type: object
@@ -372,42 +477,107 @@ components:
       - success
       additionalProperties: false
       description: Successful API response
-    MarkFollowUpSentBody:
+    FollowUpDraftData:
       type: object
       properties:
+        applicationResultId:
+          type: integer
+          description: Application result id
+          example: 1234
+          exclusiveMinimum: 0
+        attemptNumber:
+          type: integer
+          minimum: 1
+          description: 1-indexed cadence attempt the draft is for
+          example: 1
         body:
           type: string
-          minLength: 20
-          maxLength: 4000
-          description: The body the user actually sent
-          example: Hi Alex, ...
+          description: Draft body. For LinkedIn channel, capped at 300 chars.
+          example: 'Hi Alex,
+
+
+            ...'
         channel:
           type: string
           enum:
           - email
           - linkedin
           - other
-          description: Channel used to send
+          description: Auto-detected outreach channel (email or linkedin). Drives draft format and the destination of the row-click action in the UI.
           example: email
-        recipient:
+        recipientLinkedinUrl:
           type:
           - string
           - 'null'
-          minLength: 1
-          maxLength: 320
-          description: Recipient email or LinkedIn handle
-          example: alex@acme.com
+          description: LinkedIn URL associated with the recipient, when one is set on the application. Used by the UI to deep-link the row when channel=linkedin.
+          example: https://www.linkedin.com/in/alex-recruiter
         subject:
-          type:
-          - string
-          - 'null'
-          minLength: 1
-          maxLength: 200
-          description: Subject line (email channel)
+          type: string
+          description: Email subject line. Empty string when channel=linkedin.
           example: Following up on the Senior Backend Engineer role
+        qualityWarnings:
+          type: array
+          items:
+            type: object
+            properties:
+              location:
+                type: string
+                enum:
+                - subject
+                - body
+                description: Where an anti-cliché filter warning was raised on a follow-up draft (email subject line or message body).
+                example: body
+              phrase:
+                type: string
+            required:
+            - location
+            - phrase
+          description: Anti-cliché filter warnings. Empty when the draft passed cleanly. Populated when the AI slipped a banned phrase past the retry; the user can choose to send-as-is or re-roll.
+          example: []
       required:
+      - applicationResultId
+      - attemptNumber
       - body
       - channel
+      - recipientLinkedinUrl
+      - subject
+      - qualityWarnings
+      additionalProperties: false
+    MarkFollowUpSentData:
+      type: object
+      properties:
+        applicationResultId:
+          type: integer
+          exclusiveMinimum: 0
+        followUpCount:
+          type: integer
+          minimum: 0
+        followUpEventId:
+          type: integer
+          exclusiveMinimum: 0
+        lastFollowUpAt:
+          type: string
+        nextFollowUpDueAt:
+          type:
+          - string
+          - 'null'
+        urgency:
+          type: string
+          enum:
+          - urgent
+          - overdue
+          - waiting
+          - cold
+          - none
+          description: Urgency tier for the next follow-up nudge on an application
+          example: waiting
+      required:
+      - applicationResultId
+      - followUpCount
+      - followUpEventId
+      - lastFollowUpAt
+      - nextFollowUpDueAt
+      - urgency
       additionalProperties: false
     ApiErrorResponse:
       type: object
@@ -753,183 +923,6 @@ components:
       - error
       - success
       additionalProperties: false
-    MarkFollowUpSentResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/MarkFollowUpSentData'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    FollowUpHistoryPage:
-      type: object
-      properties:
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/FollowUpHistoryItem'
-        nextCursor:
-          type:
-          - integer
-          - 'null'
-          description: Next offset to pass as `cursor`, or `null` on the final page.
-          example: 20
-      required:
-      - items
-      - nextCursor
-      additionalProperties: false
-    SendFollowUpGmailBody:
-      type: object
-      properties:
-        body:
-          type: string
-          minLength: 20
-          maxLength: 4000
-          description: Plain-text email body to send
-          example: Hi Alex, ...
-        subject:
-          type: string
-          minLength: 1
-          maxLength: 200
-          description: Email subject line
-          example: Following up on the Senior Backend Engineer role
-        to:
-          type: string
-          maxLength: 320
-          format: email
-          description: Recipient email address
-          example: alex@acme.com
-      required:
-      - body
-      - subject
-      - to
-      additionalProperties: false
-    FollowUpHistoryResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/FollowUpHistoryPage'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    FollowUpDraftData:
-      type: object
-      properties:
-        applicationResultId:
-          type: integer
-          description: Application result id
-          example: 1234
-          exclusiveMinimum: 0
-        attemptNumber:
-          type: integer
-          minimum: 1
-          description: 1-indexed cadence attempt the draft is for
-          example: 1
-        body:
-          type: string
-          description: Draft body. For LinkedIn channel, capped at 300 chars.
-          example: 'Hi Alex,
-
-
-            ...'
-        channel:
-          type: string
-          enum:
-          - email
-          - linkedin
-          - other
-          description: Auto-detected outreach channel (email or linkedin). Drives draft format and the destination of the row-click action in the UI.
-          example: email
-        recipientLinkedinUrl:
-          type:
-          - string
-          - 'null'
-          description: LinkedIn URL associated with the recipient, when one is set on the application. Used by the UI to deep-link the row when channel=linkedin.
-          example: https://www.linkedin.com/in/alex-recruiter
-        subject:
-          type: string
-          description: Email subject line. Empty string when channel=linkedin.
-          example: Following up on the Senior Backend Engineer role
-        qualityWarnings:
-          type: array
-          items:
-            type: object
-            properties:
-              location:
-                type: string
-                enum:
-                - subject
-                - body
-                description: Where an anti-cliché filter warning was raised on a follow-up draft (email subject line or message body).
-                example: body
-              phrase:
-                type: string
-            required:
-            - location
-            - phrase
-          description: Anti-cliché filter warnings. Empty when the draft passed cleanly. Populated when the AI slipped a banned phrase past the retry; the user can choose to send-as-is or re-roll.
-          example: []
-      required:
-      - applicationResultId
-      - attemptNumber
-      - body
-      - channel
-      - recipientLinkedinUrl
-      - subject
-      - qualityWarnings
-      additionalProperties: false
-    MarkFollowUpSentData:
-      type: object
-      properties:
-        applicationResultId:
-          type: integer
-          exclusiveMinimum: 0
-        followUpCount:
-          type: integer
-          minimum: 0
-        followUpEventId:
-          type: integer
-          exclusiveMinimum: 0
-        lastFollowUpAt:
-          type: string
-        nextFollowUpDueAt:
-          type:
-          - string
-          - 'null'
-        urgency:
-          type: string
-          enum:
-          - urgent
-          - overdue
-          - waiting
-          - cold
-          - none
-          description: Urgency tier for the next follow-up nudge on an application
-          example: waiting
-      required:
-      - applicationResultId
-      - followUpCount
-      - followUpEventId
-      - lastFollowUpAt
-      - nextFollowUpDueAt
-      - urgency
-      additionalProperties: false
     SendFollowUpGmailData:
       type: object
       properties:
@@ -971,125 +964,11 @@ components:
       - nextFollowUpDueAt
       - urgency
       additionalProperties: false
-    FollowUpListItem:
-      type: object
-      properties:
-        applicationResultId:
-          type: integer
-          description: Application result id
-          example: 1234
-          exclusiveMinimum: 0
-        applicationStage:
-          type:
-          - string
-          - 'null'
-          enum:
-          - applied
-          - callback
-          - phone_screen
-          - interview
-          - offered
-          - rejected
-          - no_response
-          - null
-          description: Current stage of the application
-          example: applied
-        company:
-          type:
-          - string
-          - 'null'
-          description: Company name
-          example: Acme Inc.
-        followUpCount:
-          type: integer
-          minimum: 0
-          description: Number of follow-ups already sent on this application
-          example: 1
-        jobTitle:
-          type:
-          - string
-          - 'null'
-          description: Job title
-          example: Senior Backend Engineer
-        jobUrl:
-          type: string
-          description: Original job URL
-          example: https://example.com/jobs/abc
-        lastFollowUpAt:
-          type:
-          - string
-          - 'null'
-          description: ISO timestamp of last recorded follow-up, or null
-        nextFollowUpDueAt:
-          type:
-          - string
-          - 'null'
-          description: ISO timestamp of when next follow-up is due, or null
-        urgency:
-          type: string
-          enum:
-          - urgent
-          - overdue
-          - waiting
-          - cold
-          - none
-          description: Computed urgency tier
-          example: waiting
-      required:
-      - applicationResultId
-      - applicationStage
-      - company
-      - followUpCount
-      - jobTitle
-      - jobUrl
-      - lastFollowUpAt
-      - nextFollowUpDueAt
-      - urgency
-      additionalProperties: false
-    ResponseMetadata:
-      type: object
-      properties:
-        duration:
-          type: number
-          description: Request duration in milliseconds
-          example: 150
-          exclusiveMinimum: 0
-        performance:
-          type: object
-          properties:
-            dbQueries:
-              type: integer
-              minimum: 0
-            totalDbTime:
-              type: number
-              minimum: 0
-          description: Performance metrics (preview/local only)
-        requestId:
-          type: string
-          description: Unique request identifier
-          example: req_abc123
-        timestamp:
-          type: string
-          format: date-time
-          description: ISO 8601 timestamp
-          example: '2026-09-25T17:29:47.224Z'
-        version:
-          type: string
-          description: API version
-          example: v1
-    FollowUpListResponse:
+    FollowUpHistoryResponse:
       type: object
       properties:
         data:
-          type: object
-          properties:
-            items:
-              type: array
-              items:
-                $ref: '#/components/schemas/FollowUpListItem'
-          required:
-          - items
-          additionalProperties: false
+          $ref: '#/components/schemas/FollowUpHistoryPage'
         meta:
           $ref: '#/components/schemas/ResponseMetadata'
         success:
@@ -1101,11 +980,114 @@ components:
       - success
       additionalProperties: false
       description: Successful API response
+    FollowUpHistoryItem:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: follow_up_event row id
+          example: 4321
+          exclusiveMinimum: 0
+        applicationResultId:
+          type: integer
+          description: Application result the follow-up belongs to
+          example: 1234
+          exclusiveMinimum: 0
+        attemptNumber:
+          type: integer
+          minimum: 1
+          description: 1-indexed cadence attempt this send was
+          example: 1
+        body:
+          type: string
+          description: The message body that was sent
+          example: Hi Alex, ...
+        channel:
+          type: string
+          enum:
+          - email
+          - linkedin
+          - other
+          description: Channel used to send
+          example: email
+        company:
+          type:
+          - string
+          - 'null'
+          description: Company name of the application, joined for display
+          example: Acme Inc.
+        jobTitle:
+          type:
+          - string
+          - 'null'
+          description: Job title of the application, joined for display
+          example: Senior Backend Engineer
+        recipient:
+          type:
+          - string
+          - 'null'
+          description: Recipient email or LinkedIn handle, when captured
+          example: alex@acme.com
+        sentAt:
+          type: string
+          description: ISO timestamp of when the send was recorded
+        subject:
+          type:
+          - string
+          - 'null'
+          description: Subject line (email channel) or null
+          example: Following up on the Senior Backend Engineer role
+      required:
+      - id
+      - applicationResultId
+      - attemptNumber
+      - body
+      - channel
+      - company
+      - jobTitle
+      - recipient
+      - sentAt
+      - subject
+      additionalProperties: false
+    MarkFollowUpSentBody:
+      type: object
+      properties:
+        body:
+          type: string
+          minLength: 20
+          maxLength: 4000
+          description: The body the user actually sent
+          example: Hi Alex, ...
+        channel:
+          type: string
+          enum:
+          - email
+          - linkedin
+          - other
+          description: Channel used to send
+          example: email
+        recipient:
+          type:
+          - string
+          - 'null'
+          minLength: 1
+          maxLength: 320
+          description: Recipient email or LinkedIn handle
+          example: alex@acme.com
+        subject:
+          type:
+          - string
+          - 'null'
+          minLength: 1
+          maxLength: 200
+          description: Subject line (email channel)
+          example: Following up on the Senior Backend Engineer role
+      required:
+      - body
+      - channel
+      additionalProperties: false
   securitySchemes:
     BearerAuth:
       description: 'Session token from signing in to AI Applyd, sent as `Authorization: Bearer <token>`.'
       scheme: bearer
       type: http
-x-refined-from:
-- aiapplyd-openapi.json
-- aiapplyd-openapi.yml

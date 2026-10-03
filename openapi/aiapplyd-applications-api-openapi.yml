@@ -1,15 +1,15 @@
 openapi: 3.2.0
 info:
-  title: Aiapplyd Applications API
-  version: 115c47ce
   contact:
     email: support@aiapplyd.com
     name: AI Applyd
     url: https://aiapplyd.com
+  description: 'The AI Applyd API runs the whole job hunt for you: it matches you to roles that fit your profile, rewrites your resume for each posting, writes the cover letter the form asks for, and auto-applies across the major applicant tracking systems.'
   license:
     name: Proprietary
     url: https://aiapplyd.com/legal/terms
-  description: 'Operations tagged applications across 2 of this provider''s published API definitions: aiapplyd-openapi.json, aiapplyd-openapi.yml. Each path carries the servers of the definition it was published in.'
+  title: AI Applyd Applications API
+  version: 115c47ce
 servers:
 - description: Current environment
   url: https://api.aiapplyd.com/api/v1
@@ -153,9 +153,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: getApplications
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /applications/usage:
     get:
       tags:
@@ -188,9 +185,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: getApplicationsUsage
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /applications/prepare:
     post:
       tags:
@@ -234,9 +228,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: postApplicationsPrepare
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /applications/results/approve-batch:
     post:
       tags:
@@ -280,9 +271,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: postApplicationsResultsApproveBatch
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /applications/by-id/{resultId}:
     get:
       tags:
@@ -325,9 +313,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: getApplicationsByIdByResultId
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /applications/{resultId}/approve:
     post:
       tags:
@@ -376,9 +361,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: postApplicationsByResultIdApprove
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /applications/{resultId}/reject:
     post:
       tags:
@@ -427,9 +409,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: postApplicationsByResultIdReject
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /applications/{resultId}/retry:
     post:
       tags:
@@ -478,9 +457,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: postApplicationsByResultIdRetry
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /applications/{resultId}/retry-prep:
     post:
       tags:
@@ -529,9 +505,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: postApplicationsByResultIdRetryPrep
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /applications/{resultId}/cancel:
     post:
       tags:
@@ -580,9 +553,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: postApplicationsByResultIdCancel
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /applications/{resultId}/screenshot/{variant}:
     get:
       tags:
@@ -637,9 +607,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: getApplicationsByResultIdScreenshotByVariant
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /applications/by-job-match/{jobMatchId}:
     get:
       tags:
@@ -682,9 +649,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: getApplicationsByJobMatchByJobMatchId
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /applications/{resultId}/live-view:
     get:
       tags:
@@ -727,9 +691,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: getApplicationsByResultIdLiveView
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /applications/{resultId}/stage:
     patch:
       tags:
@@ -783,9 +744,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: patchApplicationsByResultIdStage
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /applications/{resultId}/extract-form:
     post:
       tags:
@@ -834,9 +792,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: postApplicationsByResultIdExtractForm
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /applications/{resultId}/form-values:
     put:
       tags:
@@ -890,9 +845,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: putApplicationsByResultIdFormValues
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /applications/{resultId}/download/{type}:
     get:
       tags:
@@ -947,9 +899,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: getApplicationsByResultIdDownloadByType
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /applications/{resultId}/submission-info:
     get:
       tags:
@@ -992,9 +941,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: getApplicationsByResultIdSubmissionInfo
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /applications/{resultId}/generate-outreach:
     post:
       tags:
@@ -1043,9 +989,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: postApplicationsByResultIdGenerateOutreach
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /applications/{resultId}/refine:
     post:
       tags:
@@ -1099,9 +1042,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: postApplicationsByResultIdRefine
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /applications/{resultId}/document:
     patch:
       tags:
@@ -1155,9 +1095,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: patchApplicationsByResultIdDocument
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /applications/{resultId}/parse-tailored-resume:
     post:
       tags:
@@ -1206,9 +1143,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: postApplicationsByResultIdParseTailoredResume
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /applications/{resultId}/staleness:
     get:
       tags:
@@ -1251,9 +1185,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: getApplicationsByResultIdStaleness
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /applications/{resultId}/re-prepare:
     post:
       tags:
@@ -1307,9 +1238,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: postApplicationsByResultIdRePrepare
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /applications/{resultId}/switch-document:
     post:
       tags:
@@ -1363,9 +1291,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: postApplicationsByResultIdSwitchDocument
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /applications/{resultId}/negotiate:
     get:
       tags:
@@ -1460,9 +1385,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: postApplicationsByResultIdNegotiate
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /applications/{resultId}/generation-status:
     get:
       tags:
@@ -1505,9 +1427,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: getApplicationsByResultIdGenerationStatus
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /applications/{resultId}/queue-position:
     get:
       tags:
@@ -1550,9 +1469,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: getApplicationsByResultIdQueuePosition
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /applications/pipeline-status:
     get:
       tags:
@@ -1585,9 +1501,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: getApplicationsPipelineStatus
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /applications/{jobId}/level-strategy:
     post:
       tags:
@@ -1641,9 +1554,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: postApplicationsByJobIdLevelStrategy
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /applications/personalization-plan:
     post:
       tags:
@@ -1687,9 +1597,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: postApplicationsPersonalizationPlan
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /applications/recover-stuck:
     post:
       tags:
@@ -1728,9 +1635,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: postApplicationsRecoverStuck
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /applications/{resultId}/ai-edit/open:
     post:
       tags:
@@ -1784,9 +1688,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: postApplicationsByResultIdAiEditOpen
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /applications/{resultId}/ai-edit/rewind:
     post:
       tags:
@@ -1840,9 +1741,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: postApplicationsByResultIdAiEditRewind
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /applications/{resultId}/ai-edit/finalize:
     post:
       tags:
@@ -1896,9 +1794,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: postApplicationsByResultIdAiEditFinalize
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /applications/{resultId}/ai-edit/preview:
     get:
       tags:
@@ -1949,9 +1844,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: getApplicationsByResultIdAiEditPreview
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /applications/{resultId}/ai-edit/available-scopes:
     get:
       tags:
@@ -1994,9 +1886,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: getApplicationsByResultIdAiEditAvailableScopes
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /applications/{resultId}/ats-credentials:
     get:
       tags:
@@ -2061,9 +1950,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: getApplicationsByResultIdAtsCredentials
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /applications/{resultId}/ats-credentials/{credentialId}/reveal:
     post:
       tags:
@@ -2153,34 +2039,32 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: postApplicationsByResultIdAtsCredentialsByCredentialIdReveal
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
 components:
   schemas:
-    PrepareApplicationRequest:
+    ContactTypeMessage:
       type: object
       properties:
-        jobMatchId:
-          type: integer
-          description: ID of the job match to prepare application for
-          example: 42
-          exclusiveMinimum: 0
-        mode:
+        linkedinNote:
           type: string
-          enum:
-          - copilot
-          - auto_approve
-          description: Override mode for this preparation. When "copilot", result is created as pending_review.
-          example: copilot
+          maxLength: 300
+          description: LinkedIn note tailored to this audience (max 300 chars)
+        emailSubject:
+          type: string
+          description: Email subject line for this audience
+        emailBody:
+          type: string
+          description: Email body for this audience
       required:
-      - jobMatchId
+      - linkedinNote
+      - emailSubject
+      - emailBody
       additionalProperties: false
-    NegotiationResponse:
+      description: 'Recruiter outreach: Fit / Proof / "Happy to share my CV"'
+    GenerateOutreachResponse:
       type: object
       properties:
         data:
-          $ref: '#/components/schemas/NegotiationResponseData'
+          $ref: '#/components/schemas/OutreachMessagesData'
         meta:
           $ref: '#/components/schemas/ResponseMetadata'
         success:
@@ -2192,65 +2076,11 @@ components:
       - success
       additionalProperties: false
       description: Successful API response
-    CancelResultData:
-      type: object
-      properties:
-        id:
-          type: integer
-        status:
-          type: string
-          enum:
-          - pending
-          - pending_review
-          - ready_to_submit
-          - applied
-          - applied_unconfirmed
-          - skipped
-          - error
-          - cancelled
-          description: Status of an individual application result
-          example: pending
-      required:
-      - id
-      - status
-      additionalProperties: false
-    ScreeningAnswer:
-      type: object
-      properties:
-        question:
-          type: string
-          maxLength: 2000
-          description: Screening question text
-        answer:
-          type: string
-          maxLength: 10000
-          description: Proposed answer
-      required:
-      - question
-      - answer
-      additionalProperties: false
-    AiEditOpenResponse:
+    RePrepareResponse:
       type: object
       properties:
         data:
-          type: object
-          properties:
-            draft:
-              $ref: '#/components/schemas/AiEditDraft'
-            originalContent:
-              type: string
-            sessionId:
-              type: string
-            templateKey:
-              type: string
-              description: PDF template hint forwarded to the preview renderer. Always "ats-optimized" today.
-              example: ats-optimized
-          required:
-          - draft
-          - originalContent
-          - sessionId
-          - templateKey
-          additionalProperties: false
+          $ref: '#/components/schemas/RePrepareResponseData'
         meta:
           $ref: '#/components/schemas/ResponseMetadata'
         success:
@@ -2262,156 +2092,6 @@ components:
       - success
       additionalProperties: false
       description: Successful API response
-    RecoverStuckResponse:
-      type: object
-      properties:
-        data:
-          type: object
-          properties:
-            id:
-              type: integer
-            recovered:
-              type: integer
-            status:
-              type: string
-              enum:
-              - none_stuck
-              - recovered
-              description: Recovery operation result status
-              example: recovered
-          required:
-          - id
-          - recovered
-          - status
-          additionalProperties: false
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    GenerationStatusData:
-      type: object
-      properties:
-        applicationStage:
-          type: string
-          enum:
-          - applied
-          - callback
-          - phone_screen
-          - interview
-          - offered
-          - rejected
-          - no_response
-          description: Current stage of this application. NULL rows are coalesced to the default `applied` so the client always has a concrete value.
-          example: applied
-        interviewPrepStatus:
-          type: string
-          enum:
-          - idle
-          - generating
-          - completed
-          - failed
-          description: Interview-prep generation lifecycle (idle | generating | completed | failed).
-          example: idle
-        hasInterviewPrep:
-          type: boolean
-          description: True when interview-prep content has been generated and persisted.
-          example: false
-        negotiationStatus:
-          type: string
-          enum:
-          - idle
-          - generating
-          - completed
-          - failed
-          description: Negotiation-coach generation lifecycle (idle | generating | completed | failed).
-          example: idle
-        hasNegotiation:
-          type: boolean
-          description: True when negotiation scripts have been generated and persisted.
-          example: false
-        negotiationUnlocked:
-          type: boolean
-          description: True when `applicationStage === "offered"`. When false the negotiation gate blocks generation; the client should surface "mark as Offered to unlock".
-          example: false
-        jobListingId:
-          type:
-          - integer
-          - 'null'
-          description: PK of the linked job_listing that owns the interview-prep content. NULL when this result is not linked to a job match / listing.
-      required:
-      - applicationStage
-      - interviewPrepStatus
-      - hasInterviewPrep
-      - negotiationStatus
-      - hasNegotiation
-      - negotiationUnlocked
-      - jobListingId
-      additionalProperties: false
-    SwitchDocumentRequest:
-      type: object
-      properties:
-        kind:
-          type: string
-          enum:
-          - resume
-          - cover_letter
-          description: Which bound document to swap on the application result.
-          example: resume
-        target:
-          type: string
-          enum:
-          - base
-          - tailored
-          - document_id
-          description: Where to point the bound document. "base" picks the user's base resume/cover-letter; "tailored" keeps the existing tailored doc; "document_id" requires `documentId` and binds to a user-owned document by id.
-          example: base
-        documentId:
-          type: integer
-          description: Required when target is "document_id"  -  must reference a user-owned document of the matching type.
-          example: 42
-          exclusiveMinimum: 0
-      required:
-      - kind
-      - target
-      additionalProperties: false
-    ResponseMetadata:
-      type: object
-      properties:
-        duration:
-          type: number
-          description: Request duration in milliseconds
-          example: 150
-          exclusiveMinimum: 0
-        performance:
-          type: object
-          properties:
-            dbQueries:
-              type: integer
-              minimum: 0
-            totalDbTime:
-              type: number
-              minimum: 0
-          description: Performance metrics (preview/local only)
-        requestId:
-          type: string
-          description: Unique request identifier
-          example: req_abc123
-        timestamp:
-          type: string
-          format: date-time
-          description: ISO 8601 timestamp
-          example: '2026-09-25T17:29:47.224Z'
-        version:
-          type: string
-          description: API version
-          example: v1
     ApplyDocumentPatchResponse:
       type: object
       properties:
@@ -2475,6 +2155,102 @@ components:
       - success
       additionalProperties: false
       description: Successful API response
+    RefineDocumentRequest:
+      type: object
+      properties:
+        documentType:
+          type: string
+          enum:
+          - resume
+          - cover-letter
+          description: 'Which document to refine: resume or coverLetter'
+          example: resume
+        userInstructions:
+          type: string
+          minLength: 1
+          maxLength: 2000
+          description: Custom instructions for the AI to refine the document
+          example: Emphasize my React and TypeScript experience more. Remove the reference to Python.
+      required:
+      - documentType
+      - userInstructions
+      additionalProperties: false
+    RePrepareRequest:
+      type: object
+      properties:
+        steps:
+          type: array
+          items:
+            type: string
+            enum:
+            - quality_gate
+            - company_intel
+            - tailor_resume
+            - translate
+            - cover_letter
+            description: A single preparation step within the application-preparer pipeline
+            example: tailor_resume
+          maxItems: 5
+          description: Explicit prepare steps to re-run. Omit to use the server-computed stale steps.
+          example:
+          - tailor_resume
+          - cover_letter
+      additionalProperties: false
+      description: Re-prepare request body.
+    NegotiationResponseData:
+      type: object
+      properties:
+        cached:
+          type: boolean
+          description: True when the response was served from KV cache or the persisted column
+          example: false
+        status:
+          type: string
+          enum:
+          - idle
+          - generating
+          - completed
+          - failed
+          description: 'Generation lifecycle status: `completed` on success, `failed` when the last run failed (manual Retry)'
+          example: completed
+        generatedAt:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: ISO-8601 timestamp when the scripts were generated. Null on legacy cached payloads.
+          example: '2026-05-07T12:34:56.000Z'
+        offerContext:
+          $ref: '#/components/schemas/NegotiationOfferContext'
+        scripts:
+          type: array
+          items:
+            $ref: '#/components/schemas/NegotiationScript'
+          maxItems: 5
+          description: 0 to 5 offer-specific negotiation scripts (empty when status is `failed`)
+      required:
+      - cached
+      - status
+      - generatedAt
+      - offerContext
+      - scripts
+      additionalProperties: false
+    ApplicationResultItemResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ApplicationResultData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
     LiveViewData:
       type: object
       properties:
@@ -2503,172 +2279,58 @@ components:
       - reason
       - sessionId
       additionalProperties: false
-    ExperienceEntry:
+    ParsedTailoredResumeEducation:
       type: object
       properties:
-        bullets:
-          type: array
-          items:
-            type: string
-          example:
-          - Led migration of monolithic architecture to microservices, reducing deployment time by 60%
-        company:
+        degree:
           type: string
-          example: Acme Corp
-        current:
-          type:
-          - boolean
-          - 'null'
         endDate:
           type:
           - string
           - 'null'
-          example: 2024-01
+        gpa:
+          type:
+          - string
+          - 'null'
+        highlights:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        institution:
+          type: string
         location:
           type:
           - string
           - 'null'
         startDate:
-          type: string
-          example: 2020-01
-        title:
-          type: string
-          example: Senior Engineer
+          type:
+          - string
+          - 'null'
       required:
-      - bullets
-      - company
-      - startDate
-      - title
+      - degree
+      - institution
       additionalProperties: false
-    AiEditOpenRequest:
+    SuggestedContact:
       type: object
       properties:
-        scope:
-          anyOf:
-          - type: string
-            enum:
-            - tailored_resume
-            - base_resume
-            - cover_letter
-            description: Which document the AI edit session refines.
-            example: tailored_resume
-          - type: string
-            enum:
-            - resume
-          description: Which document the session refines. Accepts the legacy `resume` alias for backwards compatibility (mapped to `tailored_resume`).
-          example: tailored_resume
-      additionalProperties: false
-    RePrepareRequest:
-      type: object
-      properties:
-        steps:
-          type: array
-          items:
-            type: string
-            enum:
-            - quality_gate
-            - company_intel
-            - tailor_resume
-            - translate
-            - cover_letter
-            description: A single preparation step within the application-preparer pipeline
-            example: tailor_resume
-          maxItems: 5
-          description: Explicit prepare steps to re-run. Omit to use the server-computed stale steps.
-          example:
-          - tailor_resume
-          - cover_letter
-      additionalProperties: false
-      description: Re-prepare request body.
-    AiEditAvailableScopesResponse:
-      type: object
-      properties:
-        data:
-          type: object
-          properties:
-            scopes:
-              type: array
-              items:
-                $ref: '#/components/schemas/AiEditAvailableScope'
-          required:
-          - scopes
-          additionalProperties: false
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
+        role:
+          type: string
+          description: Contact role (e.g. Hiring Manager, Recruiter)
+          example: Hiring Manager
+        searchUrl:
+          type: string
+          description: LinkedIn search URL to find this contact
+          example: https://linkedin.com/search/results/people/?keywords=...
+        emailPattern:
+          type: string
+          description: Guessed email pattern for the company
+          example: first.last@company.com
       required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    PersonalizationPlanData:
-      type: object
-      properties:
-        archetype:
-          type: string
-          enum:
-          - ai_platform_llmops
-          - agentic_automation
-          - technical_ai_pm
-          - ai_solutions_architect
-          - ai_forward_deployed
-          - ai_transformation_lead
-          - generic_engineering
-          - generic_product
-          - generic_data
-          - other
-          description: Role archetype tag mirrored from the job match analysis (Block A)
-          example: ai_platform_llmops
-        cvChanges:
-          type: array
-          items:
-            $ref: '#/components/schemas/CvChange'
-          description: Exactly 5 CV changes ordered by priority (high first)
-        generatedAt:
-          type: string
-          format: date-time
-          description: ISO-8601 timestamp when the plan was produced (server-set)
-          example: '2026-05-07T12:00:00.000Z'
-        keywords:
-          type: array
-          items:
-            type: string
-            minLength: 1
-            maxLength: 80
-          minItems: 8
-          maxItems: 15
-          description: 8-15 ATS keywords extracted from the JD
-        linkedinChanges:
-          type: array
-          items:
-            $ref: '#/components/schemas/LinkedinChange'
-          description: Exactly 5 LinkedIn changes ordered by priority (high first)
-      required:
-      - archetype
-      - cvChanges
-      - generatedAt
-      - keywords
-      - linkedinChanges
-      additionalProperties: false
-    AiEditDraftSections:
-      type: object
-      properties:
-        education:
-          type: string
-        experience:
-          type: string
-        skills:
-          type: string
-        summary:
-          type: string
-      required:
-      - education
-      - experience
-      - skills
-      - summary
+      - role
+      - searchUrl
+      - emailPattern
       additionalProperties: false
     NegotiationOfferContext:
       type:
@@ -2713,955 +2375,22 @@ components:
       - marketRangeLow
       additionalProperties: false
       description: Snapshot of the offer the scripts were drafted for. Null on legacy cached payloads.
-    AIResumeData:
-      type:
-      - object
-      - 'null'
-      properties:
-        certifications:
-          type: array
-          items:
-            type: string
-        education:
-          type: array
-          items:
-            $ref: '#/components/schemas/EducationEntry'
-        experience:
-          type: array
-          items:
-            $ref: '#/components/schemas/ExperienceEntry'
-        personalInfo:
-          $ref: '#/components/schemas/PersonalInfo'
-        skills:
-          type: array
-          items:
-            type: string
-        summary:
-          type:
-          - string
-          - 'null'
-    SwitchDocumentResponse:
+    AiEditRewindRequest:
       type: object
       properties:
-        data:
-          $ref: '#/components/schemas/SwitchDocumentResponseData'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    LevelStrategyRequest:
-      type: object
-      properties:
-        archetype:
-          type: string
-          enum:
-          - ai_platform_llmops
-          - agentic_automation
-          - technical_ai_pm
-          - ai_solutions_architect
-          - ai_forward_deployed
-          - ai_transformation_lead
-          - generic_engineering
-          - generic_product
-          - generic_data
-          - other
-          description: Optional archetype hint from Block A of the structured evaluator.
-          example: ai_platform_llmops
-        force:
-          type: boolean
-          default: false
-          description: Bust the KV cache and force a fresh AI generation.
-          example: false
-        jdLevel:
-          type: string
-          enum:
-          - junior
-          - mid
-          - senior
-          - staff
-          - principal
-          - lead-manager
-          description: Detected level of the job description.
-          example: senior
-        userLevel:
-          type: string
-          enum:
-          - junior
-          - mid
-          - senior
-          - staff
-          - principal
-          - lead-manager
-          description: Candidate's natural career level.
-          example: senior
-      required:
-      - jdLevel
-      - userLevel
-      additionalProperties: false
-    ContactTypeMessage:
-      type: object
-      properties:
-        linkedinNote:
-          type: string
-          maxLength: 300
-          description: LinkedIn note tailored to this audience (max 300 chars)
-        emailSubject:
-          type: string
-          description: Email subject line for this audience
-        emailBody:
-          type: string
-          description: Email body for this audience
-      required:
-      - linkedinNote
-      - emailSubject
-      - emailBody
-      additionalProperties: false
-      description: 'Recruiter outreach: Fit / Proof / "Happy to share my CV"'
-    BulkApproveResponse:
-      type: object
-      properties:
-        data:
-          type: object
-          properties:
-            results:
-              type: array
-              items:
-                $ref: '#/components/schemas/BulkApproveResultEntry'
-            totalAttempted:
-              type: integer
-              minimum: 0
-            totalApproved:
-              type: integer
-              minimum: 0
-            failedResultIds:
-              type: array
-              items:
-                type: string
-              description: Result IDs that failed in this batch (subset of `resultIds` from the request). Empty array when every row succeeded.
-          required:
-          - results
-          - totalAttempted
-          - totalApproved
-          - failedResultIds
-          additionalProperties: false
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    ScreenshotInfoData:
-      type: object
-      properties:
-        alreadyAppliedProof:
-          type:
-          - object
-          - 'null'
-          properties:
-            notice:
-              type: string
-              minLength: 1
-              maxLength: 500
-            pageUrl:
-              type:
-              - string
-              - 'null'
-              maxLength: 2048
-            screenshotUrl:
-              type:
-              - string
-              - 'null'
-              maxLength: 2048
-            seenAt:
-              type: string
-              minLength: 1
-            source:
-              type: string
-              enum:
-              - post_submit_page
-              - self_judge
-              - vision_page_text
-          required:
-          - notice
-          - pageUrl
-          - screenshotUrl
-          - seenAt
-          - source
-          description: 'Evidence behind an already_applied verdict: the employer page''s own notice, its URL and the screenshot of that page. Null when the verdict has no employer-page proof. Detail projection only.'
-        committedFields:
-          type:
-          - array
-          - 'null'
-          items:
-            type: object
-            properties:
-              attempt:
-                type: integer
-                minimum: 1
-              enteredValue:
-                type:
-                - string
-                - 'null'
-                maxLength: 512
-              label:
-                type: string
-                minLength: 1
-                maxLength: 200
-              lane:
-                type: string
-                minLength: 1
-                maxLength: 160
-              phase:
-                type: string
-                minLength: 1
-                maxLength: 64
-              provenance:
-                type: string
-                enum:
-                - profile
-                - answer_context
-                - document
-                - derived
-                - generated
-                - guessed
-                - unsourced
-                description: Where the value committed into an employer form came from
-                example: profile
-              source:
-                type: string
-                minLength: 1
-                maxLength: 64
-              value:
-                type:
-                - string
-                - 'null'
-                maxLength: 512
-              valueShape:
-                type: string
-                minLength: 1
-                maxLength: 32
-              verified:
-                type: boolean
-            required:
-            - attempt
-            - label
-            - phase
-            - provenance
-            - value
-            - valueShape
-            - verified
-            additionalProperties: false
-          maxItems: 128
-          description: Per-field record of the values committed into the employer form, with raw value, provenance and a read-back verified flag. A read-back of our own write - never evidence an application landed. Null on historical rows.
-        identityCommitted:
-          type:
-          - object
-          - 'null'
-          properties:
-            email:
-              type:
-              - boolean
-              - 'null'
-            firstName:
-              type:
-              - boolean
-              - 'null'
-            lastName:
-              type:
-              - boolean
-              - 'null'
-          required:
-          - email
-          - firstName
-          - lastName
-          additionalProperties: false
-          description: Which of firstName/lastName/email read back present at the submit click. A read-back of our own write - MUST NEVER be used to score whether an application landed. Per-member null means UNOBSERVED, never false. Null on historical rows.
-        phaseTimings:
-          type:
-          - object
-          - 'null'
-          properties:
-            aggregate:
-              type: integer
-              minimum: 0
-            captchaMs:
-              type: integer
-              minimum: 0
-            currentPhase:
-              type: string
-              enum:
-              - prepare
-              - navigate
-              - login
-              - fill
-              - submit
-              - verify
-              - aggregate
-              - unknown
-              description: Coarse-grained phase where a submission failure occurred
-              example: submit
-            currentPhaseMs:
-              type: integer
-              minimum: 0
-            employerMailWaitMs:
-              type: integer
-              minimum: 0
-            fill:
-              type: integer
-              minimum: 0
-            fillPerAttempt:
-              type: array
-              items:
-                type: integer
-                minimum: 0
-            login:
-              type: integer
-              minimum: 0
-            msToSubmitPress:
-              type: integer
-              minimum: 0
-            navigate:
-              type: integer
-              minimum: 0
-            prepare:
-              type: integer
-              minimum: 0
-            prepareStep:
-              type: string
-              maxLength: 160
-            slowestSteps:
-              type: array
-              items:
-                type: object
-                properties:
-                  ms:
-                    type: integer
-                    minimum: 0
-                  ourMs:
-                    type: integer
-                    minimum: 0
-                  step:
-                    type: string
-                    maxLength: 160
-                  waitedOnEmployerMailMs:
-                    type: integer
-                    minimum: 0
-                required:
-                - ms
-                - step
-                additionalProperties: false
-            submit:
-              type: integer
-              minimum: 0
-            submitPerAttempt:
-              type: array
-              items:
-                type: integer
-                minimum: 0
-            totalMs:
-              type: integer
-              minimum: 0
-            unaccountedMs:
-              type: integer
-              minimum: 0
-            unknown:
-              type: integer
-              minimum: 0
-            verify:
-              type: integer
-              minimum: 0
-          required:
-          - totalMs
-          - unaccountedMs
-          additionalProperties: false
-          description: Per-phase wall clock for the run, keyed on the failure-phase enum, plus totalMs, captchaMs and unaccountedMs. An absent phase key is UNOBSERVED, never zero. Null on historical rows.
-        hasPreFill:
-          type: boolean
-          description: Whether a pre-fill screenshot exists
-        hasPostSubmit:
-          type: boolean
-          description: Whether a post-submit screenshot exists
-        formFieldsLog:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/FormFieldsLogEntry'
-          description: Detailed log of form fields that were filled
-        submissionAttempts:
-          type:
-          - array
-          - 'null'
-          items:
-            anyOf:
-            - type: object
-              properties:
-                detail:
-                  type: string
-                durationMs:
-                  type: integer
-                  minimum: 0
-                error:
-                  type: string
-                replayUrl:
-                  type: string
-                  format: uri
-                screenshotKeys:
-                  type: array
-                  items:
-                    type: string
-                skippedOptionalFieldCount:
-                  type: integer
-                  minimum: 0
-                strategy:
-                  type: string
-                  enum:
-                  - direct_api
-                  - form_post
-                  - linkedin_easy_apply
-                  - indeed_apply
-                  - glassdoor_apply
-                  - ziprecruiter_apply
-                  - authenticated_browser
-                  - workday_navigator
-                  - ai_browser_agent
-                  - email_fallback
-                  description: Strategy used to submit a job application
-                  example: direct_api
-                success:
-                  type: boolean
-                targetUrl:
-                  type: string
-                timestamp:
-                  type: string
-              required:
-              - strategy
-              - success
-              - timestamp
-              additionalProperties: false
-            - type: object
-              properties:
-                detail:
-                  type: string
-                durationMs:
-                  type: integer
-                  minimum: 0
-                error:
-                  type: string
-                phase:
-                  type: string
-                  enum:
-                  - preparation
-                  - submission
-                  - dispatcher
-                  - queue_consumer
-                  - inline_fallback
-                  - orphan_recovery
-                  - unknown
-                strategy:
-                  type: string
-                success:
-                  type: boolean
-                timestamp:
-                  type: string
-              required:
-              - detail
-              - phase
-              - strategy
-              - success
-              - timestamp
-          description: Submission strategy attempts with timestamps
-        activityLog:
-          type:
-          - array
-          - 'null'
-          items:
-            type: object
-            properties:
-              details:
-                type: string
-              durationMs:
-                type: number
-              status:
-                type: string
-                enum:
-                - success
-                - error
-                - info
-                description: Status of an individual step in an activity log
-                example: info
-              step:
-                type: string
-              timestamp:
-                type: string
-            required:
-            - status
-            - step
-            - timestamp
-            additionalProperties: false
-          description: Step-by-step activity timeline
-      required:
-      - hasPreFill
-      - hasPostSubmit
-      - formFieldsLog
-      - submissionAttempts
-      - activityLog
-      additionalProperties: false
-    ExtractFormData:
-      type: object
-      properties:
-        formFields:
-          type: array
-          items:
-            $ref: '#/components/schemas/ExtractFormField'
-        screeningAnswers:
-          type: array
-          items:
-            $ref: '#/components/schemas/ExtractFormScreeningAnswer'
-      required:
-      - formFields
-      - screeningAnswers
-      additionalProperties: false
-    SuggestedContact:
-      type: object
-      properties:
-        role:
-          type: string
-          description: Contact role (e.g. Hiring Manager, Recruiter)
-          example: Hiring Manager
-        searchUrl:
-          type: string
-          description: LinkedIn search URL to find this contact
-          example: https://linkedin.com/search/results/people/?keywords=...
-        emailPattern:
-          type: string
-          description: Guessed email pattern for the company
-          example: first.last@company.com
-      required:
-      - role
-      - searchUrl
-      - emailPattern
-      additionalProperties: false
-    NegotiationFollowUpResponse:
-      type: object
-      properties:
-        response:
-          type: string
-          minLength: 1
-          maxLength: 2000
-          description: Ready-to-paste reply the user can send verbatim
-        trigger:
-          type: string
-          minLength: 1
-          maxLength: 400
-          description: Recruiter pushback this response handles (e.g. "we have a hard cap")
-          example: We do not have room to move on base salary
-      required:
-      - response
-      - trigger
-      additionalProperties: false
-    LiveViewResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/LiveViewData'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    ExtractFormScreeningAnswer:
-      type: object
-      properties:
-        question:
-          type: string
-          maxLength: 2000
-        answer:
-          type: string
-          maxLength: 10000
-        confidence:
-          type: number
-      required:
-      - question
-      - answer
-      - confidence
-      additionalProperties: false
-    AiEditDraft:
-      type: object
-      properties:
-        content:
-          type: string
-        sections:
-          $ref: '#/components/schemas/AiEditDraftSections'
-      required:
-      - content
-      - sections
-      additionalProperties: false
-    RePrepareResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/RePrepareResponseData'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    NegotiationResponseData:
-      type: object
-      properties:
-        cached:
-          type: boolean
-          description: True when the response was served from KV cache or the persisted column
-          example: false
-        status:
-          type: string
-          enum:
-          - idle
-          - generating
-          - completed
-          - failed
-          description: 'Generation lifecycle status: `completed` on success, `failed` when the last run failed (manual Retry)'
-          example: completed
-        generatedAt:
-          type:
-          - string
-          - 'null'
-          format: date-time
-          description: ISO-8601 timestamp when the scripts were generated. Null on legacy cached payloads.
-          example: '2026-05-07T12:34:56.000Z'
-        offerContext:
-          $ref: '#/components/schemas/NegotiationOfferContext'
-        scripts:
-          type: array
-          items:
-            $ref: '#/components/schemas/NegotiationScript'
-          maxItems: 5
-          description: 0 to 5 offer-specific negotiation scripts (empty when status is `failed`)
-      required:
-      - cached
-      - status
-      - generatedAt
-      - offerContext
-      - scripts
-      additionalProperties: false
-    ParseTailoredResumeData:
-      type: object
-      properties:
-        id:
+        messageIdx:
           type: integer
-        certifications:
-          type: array
-          items:
-            type: string
-        education:
-          type: array
-          items:
-            $ref: '#/components/schemas/ParsedTailoredResumeEducation'
-        experience:
-          type: array
-          items:
-            $ref: '#/components/schemas/ParsedTailoredResumeExperience'
-        personalInfo:
-          $ref: '#/components/schemas/ParsedTailoredResumePersonalInfo'
-        skills:
-          type: array
-          items:
-            type: string
-        summary:
-          type:
-          - string
-          - 'null'
-      required:
-      - id
-      - certifications
-      - education
-      - experience
-      - personalInfo
-      - skills
-      additionalProperties: false
-    ApproveResultResponse:
-      type: object
-      properties:
-        data:
-          type: object
-          properties:
-            id:
-              type: integer
-            status:
-              type: string
-              enum:
-              - pending
-              - pending_review
-              - ready_to_submit
-              - applied
-              - applied_unconfirmed
-              - skipped
-              - error
-              - cancelled
-              description: Status of an individual application result
-              example: pending
-          required:
-          - id
-          - status
-          additionalProperties: false
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    ExtractFormResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/ExtractFormData'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    BulkApproveResultEntry:
-      type: object
-      properties:
-        id:
-          type: string
-          description: Result ID echoed back from the request.
-        ok:
-          type: boolean
-        status:
-          type: string
-          enum:
-          - pending
-          - pending_review
-          - ready_to_submit
-          - applied
-          - applied_unconfirmed
-          - skipped
-          - error
-          - cancelled
-          description: New status when ok=true (always ready_to_submit).
-          example: pending
-        reason:
-          type: string
-          description: Machine-readable reason when ok=false (for example "not_pending_review", "platform_unsupported", "preflight_failed", "monthly_cap", or "subscription_required").
-      required:
-      - id
-      - ok
-      additionalProperties: false
-    GenerateOutreachResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/OutreachMessagesData'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    PipelineStatusResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/PipelineStatusData'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    StepPlanResponseData:
-      type: object
-      properties:
-        stepsRun:
-          type: array
-          items:
-            type: string
-            enum:
-            - quality_gate
-            - company_intel
-            - tailor_resume
-            - translate
-            - cover_letter
-            description: A single preparation step within the application-preparer pipeline
-            example: tailor_resume
-        stepsSkipped:
-          type: array
-          items:
-            type: object
-            properties:
-              reason:
-                type: string
-              step:
-                type: string
-                enum:
-                - quality_gate
-                - company_intel
-                - tailor_resume
-                - translate
-                - cover_letter
-                description: A single preparation step within the application-preparer pipeline
-                example: tailor_resume
-            required:
-            - reason
-            - step
-            additionalProperties: false
-            description: A step the server will skip on the next re-prepare run, with a human-readable reason.
-      required:
-      - stepsRun
-      - stepsSkipped
-      additionalProperties: false
-      description: Projected re-prepare plan  -  which stale steps would actually run vs. be skipped (and why) under the user's current AI persona.
-    ScreenshotInfoResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/ScreenshotInfoData'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    RefineDocumentRequest:
-      type: object
-      properties:
-        documentType:
-          type: string
-          enum:
-          - resume
-          - cover-letter
-          description: 'Which document to refine: resume or coverLetter'
-          example: resume
-        userInstructions:
+          minimum: 0
+          description: Drop every step with messageIdx >= this value. messageIdx=0 wipes the session back to originalContent.
+          example: 2
+        sessionId:
           type: string
           minLength: 1
-          maxLength: 2000
-          description: Custom instructions for the AI to refine the document
-          example: Emphasize my React and TypeScript experience more. Remove the reference to Python.
+          maxLength: 64
       required:
-      - documentType
-      - userInstructions
+      - messageIdx
+      - sessionId
       additionalProperties: false
-    LevelStrategyResponseData:
-      type: object
-      properties:
-        cached:
-          type: boolean
-          description: True when the response was served from KV cache.
-          example: false
-        data:
-          $ref: '#/components/schemas/LevelStrategyData'
-      required:
-      - cached
-      - data
-      additionalProperties: false
-    ParsedTailoredResumeEducation:
-      type: object
-      properties:
-        degree:
-          type: string
-        endDate:
-          type:
-          - string
-          - 'null'
-        gpa:
-          type:
-          - string
-          - 'null'
-        highlights:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-        institution:
-          type: string
-        location:
-          type:
-          - string
-          - 'null'
-        startDate:
-          type:
-          - string
-          - 'null'
-      required:
-      - degree
-      - institution
-      additionalProperties: false
-    FormValuesResponse:
-      type: object
-      properties:
-        data:
-          type: object
-          properties:
-            updated:
-              type: boolean
-          required:
-          - updated
-          additionalProperties: false
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
     NegotiationScript:
       type: object
       properties:
@@ -3694,593 +2423,6 @@ components:
       - script
       - situation
       additionalProperties: false
-    NegotiateRegenerateRequest:
-      type: object
-      properties:
-        force:
-          type: boolean
-          default: false
-          description: Bypass the offer-stage gate and bust the KV cache to force a fresh AI generation
-          example: false
-      additionalProperties: false
-    LevelStrategyData:
-      type: object
-      properties:
-        direction:
-          type: string
-          enum:
-          - at_level
-          - stretch_up
-          - downlevel
-          description: Direction of the candidate's natural level relative to the JD level. at_level = match, stretch_up = candidate below JD, downlevel = JD below candidate.
-          example: at_level
-        downlevelPlan:
-          $ref: '#/components/schemas/DownlevelPlan'
-        generatedAt:
-          type: string
-          format: date-time
-          description: ISO-8601 timestamp when the strategy was produced. Server-set.
-          example: '2026-05-07T12:34:56.000Z'
-        jdLevel:
-          type: string
-          enum:
-          - junior
-          - mid
-          - senior
-          - staff
-          - principal
-          - lead-manager
-          description: Candidate or job-description career level used by the level-strategy service.
-          example: senior
-        naturalLevel:
-          type: string
-          enum:
-          - junior
-          - mid
-          - senior
-          - staff
-          - principal
-          - lead-manager
-          description: Candidate or job-description career level used by the level-strategy service.
-          example: senior
-        recommendedFraming:
-          type: string
-          minLength: 1
-          maxLength: 800
-          description: 1 to 3 sentence summary the cover letter / interview prep can pull as the canonical framing line.
-        sellSeniorPlan:
-          $ref: '#/components/schemas/SellSeniorPlan'
-      required:
-      - direction
-      - downlevelPlan
-      - generatedAt
-      - jdLevel
-      - naturalLevel
-      - recommendedFraming
-      - sellSeniorPlan
-      additionalProperties: false
-    UpdateApplicationStageRequest:
-      type: object
-      properties:
-        applicationStage:
-          type: string
-          enum:
-          - applied
-          - callback
-          - phone_screen
-          - interview
-          - offered
-          - rejected
-          - no_response
-          description: Stage of the job application pipeline
-          example: applied
-      required:
-      - applicationStage
-      additionalProperties: false
-    AiEditRewindResponse:
-      type: object
-      properties:
-        data:
-          type: object
-          properties:
-            draft:
-              $ref: '#/components/schemas/AiEditDraft'
-            droppedSteps:
-              type: integer
-              minimum: 0
-            sessionId:
-              type: string
-          required:
-          - draft
-          - droppedSteps
-          - sessionId
-          additionalProperties: false
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    RejectResultResponse:
-      type: object
-      properties:
-        data:
-          type: object
-          properties:
-            id:
-              type: integer
-            status:
-              type: string
-              enum:
-              - pending
-              - pending_review
-              - ready_to_submit
-              - applied
-              - applied_unconfirmed
-              - skipped
-              - error
-              - cancelled
-              description: Status of an individual application result
-              example: pending
-          required:
-          - id
-          - status
-          additionalProperties: false
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    AiEditFinalizeRequest:
-      type: object
-      properties:
-        sessionId:
-          type: string
-          minLength: 1
-          maxLength: 64
-      required:
-      - sessionId
-      additionalProperties: false
-    ApiErrorResponse:
-      type: object
-      properties:
-        error:
-          type: object
-          properties:
-            code:
-              type: string
-            context:
-              oneOf:
-              - type: object
-                properties:
-                  errorType:
-                    type: string
-                    enum:
-                    - validation
-                  field:
-                    type: string
-                  fieldErrors:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        code:
-                          type: string
-                        expected:
-                          type: string
-                        field:
-                          type: string
-                        message:
-                          type: string
-                        received:
-                          type: string
-                      required:
-                      - field
-                      - message
-                  schemaName:
-                    type: string
-                required:
-                - errorType
-              - type: object
-                properties:
-                  attemptedEmail:
-                    type: string
-                    format: email
-                  errorType:
-                    type: string
-                    enum:
-                    - authentication
-                  failureReason:
-                    type: string
-                    enum:
-                    - invalid_credentials
-                    - account_locked
-                    - expired_token
-                    - token_expired
-                    - missing_token
-                    - invalid_token
-                    - session_expired
-                    description: Reason for authentication failure
-                    example: token_expired
-                  ipAddress:
-                    type: string
-                  operation:
-                    type: string
-                  service:
-                    type: string
-                  userAgent:
-                    type: string
-                required:
-                - errorType
-              - type: object
-                properties:
-                  actualPermission:
-                    type: string
-                  errorType:
-                    type: string
-                    enum:
-                    - authorization
-                  requiredPermission:
-                    type: string
-                  resource:
-                    type: string
-                  resourceId:
-                    type: string
-                  userId:
-                    type: string
-                required:
-                - errorType
-              - type: object
-                properties:
-                  constraint:
-                    type: string
-                  errorType:
-                    type: string
-                    enum:
-                    - database
-                  operation:
-                    type: string
-                    enum:
-                    - insert
-                    - update
-                    - delete
-                    - select
-                    - batch
-                    - transaction
-                    - migration
-                    description: Type of database operation
-                    example: select
-                  resourceId:
-                    type: string
-                  sqlState:
-                    type: string
-                  table:
-                    type: string
-                  userId:
-                    type: string
-                required:
-                - errorType
-              - type: object
-                properties:
-                  endpoint:
-                    type: string
-                  errorType:
-                    type: string
-                    enum:
-                    - external_service
-                  httpStatus:
-                    type: number
-                  operation:
-                    type: string
-                  resourceId:
-                    type: string
-                  responseTime:
-                    type: number
-                  retryAttempt:
-                    type: integer
-                  service:
-                    type: string
-                  serviceName:
-                    type: string
-                  userId:
-                    type: string
-                required:
-                - errorType
-              - type: object
-                properties:
-                  errorType:
-                    type: string
-                    enum:
-                    - resource
-                  resource:
-                    type: string
-                  resourceId:
-                    type: string
-                  service:
-                    type: string
-                  userId:
-                    type: string
-                required:
-                - errorType
-              - type: object
-                properties:
-                  errorType:
-                    type: string
-                    enum:
-                    - rate_limit
-                  limit:
-                    type: number
-                  resetTime:
-                    type: string
-                  windowMs:
-                    type: number
-                required:
-                - errorType
-              - type: object
-                properties:
-                  configKey:
-                    type: string
-                  errorType:
-                    type: string
-                    enum:
-                    - configuration
-                  operation:
-                    type: string
-                  service:
-                    type: string
-                required:
-                - errorType
-              description: Type-safe error context information
-              example:
-                errorType: validation
-                fieldErrors:
-                - field: email
-                  message: Invalid email format
-            details:
-              oneOf:
-              - type: object
-                properties:
-                  detailType:
-                    type: string
-                    enum:
-                    - validation
-                  validationErrors:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        code:
-                          type: string
-                        field:
-                          type: string
-                        message:
-                          type: string
-                      required:
-                      - field
-                      - message
-                required:
-                - detailType
-                - validationErrors
-                additionalProperties: false
-              - type: object
-                properties:
-                  detailType:
-                    type: string
-                    enum:
-                    - service_error
-                  originalError:
-                    type: string
-                  serviceName:
-                    type: string
-                required:
-                - detailType
-                - serviceName
-                additionalProperties: false
-              - type: object
-                properties:
-                  currentSize:
-                    type: number
-                  detailType:
-                    type: string
-                    enum:
-                    - batch
-                  originalError:
-                    type: string
-                  statementCount:
-                    type: number
-                required:
-                - detailType
-                additionalProperties: false
-              - type: object
-                properties:
-                  detailType:
-                    type: string
-                    enum:
-                    - rate_limit
-                  limit:
-                    type: number
-                  resetTime:
-                    type: string
-                  windowMs:
-                    type: number
-                required:
-                - detailType
-                - limit
-                - resetTime
-                - windowMs
-                additionalProperties: false
-              - type: object
-                properties:
-                  conflictingField:
-                    type: string
-                  detailType:
-                    type: string
-                    enum:
-                    - resource
-                  resourceId:
-                    anyOf:
-                    - type: string
-                    - type: number
-                  resourceType:
-                    type: string
-                required:
-                - detailType
-                additionalProperties: false
-              - type: object
-                properties:
-                  detailType:
-                    type: string
-                    enum:
-                    - generic
-                  info:
-                    type: string
-                required:
-                - detailType
-                additionalProperties: false
-              - type: object
-                properties:
-                  currentTokens:
-                    type: integer
-                    minimum: 0
-                  detailType:
-                    type: string
-                    enum:
-                    - insufficient_tokens
-                  requiredTokens:
-                    type: integer
-                    minimum: 0
-                required:
-                - currentTokens
-                - detailType
-                - requiredTokens
-                additionalProperties: false
-            message:
-              type: string
-            validation:
-              type: array
-              items:
-                type: object
-                properties:
-                  code:
-                    type: string
-                  field:
-                    type: string
-                  message:
-                    type: string
-                required:
-                - field
-                - message
-                additionalProperties: false
-          required:
-          - code
-          - message
-          additionalProperties: false
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - false
-      required:
-      - error
-      - success
-      additionalProperties: false
-    UpdateApplicationStageResponse:
-      type: object
-      properties:
-        data:
-          type: object
-          properties:
-            applicationStage:
-              type: string
-              enum:
-              - applied
-              - callback
-              - phone_screen
-              - interview
-              - offered
-              - rejected
-              - no_response
-              description: Stage of the job application pipeline
-              example: applied
-            id:
-              type: integer
-          required:
-          - applicationStage
-          - id
-          additionalProperties: false
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    StalenessResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/StalenessResponseData'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    PipelineStatusData:
-      type: object
-      properties:
-        totalWaiting:
-          type: integer
-          minimum: 0
-          description: Platform-wide apply queue depth (every ready_to_submit + submitting row).
-          example: 12
-        mine:
-          type: integer
-          minimum: 0
-          description: How many of the caller's own rows are waiting for a slot or actively submitting.
-          example: 2
-        processing:
-          type: integer
-          minimum: 0
-          description: How many of the caller's rows are actively being submitted right now (subset of `mine`).
-          example: 1
-        position:
-          type: integer
-          minimum: 0
-          description: Frontmost 1-based platform-wide rank of any of the caller's active rows. 1 when one is already processing; the real rank of the caller's oldest waiting row otherwise; 0 when the caller has nothing in the queue.
-          example: 3
-        isActive:
-          type: boolean
-          description: True when the caller has at least one row in the apply queue right now.
-          example: true
-      required:
-      - totalWaiting
-      - mine
-      - processing
-      - position
-      - isActive
-      additionalProperties: false
     DownlevelPlan:
       type:
       - object
@@ -4312,26 +2454,53 @@ components:
       - walkawayConditions
       additionalProperties: false
       description: Non-null only when direction == 'downlevel'.
-    AiEditFinalizeResponse:
+    PersonalizationPlanRequest:
+      type: object
+      properties:
+        jobMatchId:
+          type: integer
+          description: job_matches.id the plan is scoped to
+          example: 1
+          exclusiveMinimum: 0
+      required:
+      - jobMatchId
+      additionalProperties: false
+    ParsedTailoredResumeExperience:
+      type: object
+      properties:
+        bullets:
+          type: array
+          items:
+            type: string
+        company:
+          type: string
+        current:
+          type:
+          - boolean
+          - 'null'
+        endDate:
+          type:
+          - string
+          - 'null'
+        location:
+          type:
+          - string
+          - 'null'
+        startDate:
+          type: string
+        title:
+          type: string
+      required:
+      - bullets
+      - company
+      - startDate
+      - title
+      additionalProperties: false
+    PersonalizationPlanResponse:
       type: object
       properties:
         data:
-          type: object
-          properties:
-            documentId:
-              type: integer
-              exclusiveMinimum: 0
-            resultId:
-              type: integer
-              exclusiveMinimum: 0
-            version:
-              type: integer
-              exclusiveMinimum: 0
-          required:
-          - documentId
-          - resultId
-          - version
-          additionalProperties: false
+          $ref: '#/components/schemas/PersonalizationPlanData'
         meta:
           $ref: '#/components/schemas/ResponseMetadata'
         success:
@@ -4385,34 +2554,32 @@ components:
       - success
       additionalProperties: false
       description: Successful API response
-    ApplicationsUsageResponse:
+    BulkApproveResponse:
       type: object
       properties:
         data:
           type: object
           properties:
-            allowed:
-              type: boolean
-              description: Whether the user can enqueue another auto-apply right now (false = cap reached).
-            limit:
+            results:
+              type: array
+              items:
+                $ref: '#/components/schemas/BulkApproveResultEntry'
+            totalAttempted:
               type: integer
               minimum: 0
-              description: Tier-bound rolling-30d auto-apply cap (e.g. 7 for job_seeker, 100 for hired_in_30, 300 for hired_yesterday).
-              example: 7
-            resetAt:
-              type: string
-              description: ISO timestamp when the current rolling window rolls over (i.e. when the oldest counted apply ages out).
-              example: '2026-05-20T00:00:00.000Z'
-            used:
+            totalApproved:
               type: integer
               minimum: 0
-              description: Auto-apply submissions counted against the rolling-30d cap.
-              example: 3
+            failedResultIds:
+              type: array
+              items:
+                type: string
+              description: Result IDs that failed in this batch (subset of `resultIds` from the request). Empty array when every row succeeded.
           required:
-          - allowed
-          - limit
-          - resetAt
-          - used
+          - results
+          - totalAttempted
+          - totalApproved
+          - failedResultIds
           additionalProperties: false
         meta:
           $ref: '#/components/schemas/ResponseMetadata'
@@ -4425,11 +2592,11 @@ components:
       - success
       additionalProperties: false
       description: Successful API response
-    ApplicationResultItemResponse:
+    CancelResponse:
       type: object
       properties:
         data:
-          $ref: '#/components/schemas/ApplicationResultData'
+          $ref: '#/components/schemas/CancelResultData'
         meta:
           $ref: '#/components/schemas/ResponseMetadata'
         success:
@@ -4441,156 +2608,223 @@ components:
       - success
       additionalProperties: false
       description: Successful API response
-    AiEditRewindRequest:
+    ExtractFormField:
       type: object
       properties:
-        messageIdx:
-          type: integer
-          minimum: 0
-          description: Drop every step with messageIdx >= this value. messageIdx=0 wipes the session back to originalContent.
-          example: 2
-        sessionId:
+        field:
           type: string
-          minLength: 1
-          maxLength: 64
+          maxLength: 500
+        value:
+          type: string
+          maxLength: 10000
+        selector:
+          type:
+          - string
+          - 'null'
+          maxLength: 2000
+        action:
+          type: string
+          maxLength: 100
       required:
-      - messageIdx
-      - sessionId
+      - field
+      - value
+      - selector
+      - action
       additionalProperties: false
-    AtsCredentialSummary:
+    AiEditAvailableScopesResponse:
       type: object
       properties:
-        accountStatus:
-          type: string
+        data:
+          type: object
+          properties:
+            scopes:
+              type: array
+              items:
+                $ref: '#/components/schemas/AiEditAvailableScope'
+          required:
+          - scopes
+          additionalProperties: false
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
           enum:
-          - pending
-          - created
-          - verified
-          - failed
-          description: Lifecycle of an AI-Applyd-created ATS candidate account
-          example: verified
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    ScreenshotInfoResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ScreenshotInfoData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    RePrepareResponseData:
+      type: object
+      properties:
         id:
           type: integer
-          description: Credential row id
-          example: 1
-          exclusiveMinimum: 0
-        loginUrl:
-          type:
-          - string
-          - 'null'
-          description: ATS account login URL
-          example: https://company.wd1.myworkdayjobs.com
-        platform:
-          type: string
-          description: ATS provider
-          example: workday
-        username:
-          type: string
-          description: Account username (the relay alias)
-          example: jane-abc123@relay.example
+        stepsRun:
+          type: array
+          items:
+            type: string
+            enum:
+            - quality_gate
+            - company_intel
+            - tailor_resume
+            - translate
+            - cover_letter
+            description: A single preparation step within the application-preparer pipeline
+            example: tailor_resume
+        stepsSkipped:
+          type: array
+          items:
+            type: object
+            properties:
+              reason:
+                type: string
+              step:
+                type: string
+                enum:
+                - quality_gate
+                - company_intel
+                - tailor_resume
+                - translate
+                - cover_letter
+                description: A single preparation step within the application-preparer pipeline
+                example: tailor_resume
+            required:
+            - reason
+            - step
+            additionalProperties: false
+            description: A step the server will skip on the next re-prepare run, with a human-readable reason.
+        tokensUsed:
+          type: integer
+          minimum: 0
       required:
-      - accountStatus
       - id
-      - loginUrl
-      - platform
-      - username
+      - stepsRun
+      - stepsSkipped
+      - tokensUsed
       additionalProperties: false
-    FormValuesRequest:
+    BulkApproveRequest:
       type: object
       properties:
-        formFields:
+        resultIds:
           type: array
           items:
-            $ref: '#/components/schemas/FormFieldValue'
-          maxItems: 500
-          description: User-reviewed form field values (max 500)
-        screeningAnswers:
-          type: array
-          items:
-            $ref: '#/components/schemas/ScreeningAnswer'
-          maxItems: 200
-          description: User-reviewed screening question answers (max 200)
+            type: string
+            minLength: 1
+          minItems: 1
+          maxItems: 25
+          description: Result IDs to approve in this batch (1 to 25). String-encoded numeric IDs matching the single-row endpoint's URL param shape. Each is approved server-side independently; per-row failures do not abort the batch.
+          example:
+          - '101'
+          - '102'
+          - '103'
       required:
-      - formFields
+      - resultIds
       additionalProperties: false
-    SellSeniorPlan:
-      type:
-      - object
-      - 'null'
+    SingleResultResponse:
+      type: object
       properties:
-        founderAdvantage:
+        data:
+          $ref: '#/components/schemas/SingleResultData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    SwitchDocumentResponseData:
+      type: object
+      properties:
+        documentId:
           type:
-          - string
+          - integer
           - 'null'
-          minLength: 1
-          maxLength: 500
-          description: Ownership-signal framing when the candidate has founder/builder background; null when no such proof point exists in the resume.
-        framingPhrases:
-          type: array
-          items:
-            type: string
-            minLength: 1
-            maxLength: 200
-          minItems: 3
-          maxItems: 5
-          description: 3 to 5 short phrases the candidate can use verbatim to frame seniority claims.
-        leadAchievements:
-          type: array
-          items:
-            type: string
-            minLength: 1
-            maxLength: 280
-          minItems: 3
-          maxItems: 5
-          description: 3 to 5 short bullets of achievements to lead with. MUST cite proof points actually present in the candidate's resume; never invent metrics.
+        id:
+          type: integer
+        kind:
+          type: string
+          enum:
+          - resume
+          - cover_letter
+          description: Which bound document to swap on the application result.
+          example: resume
+        target:
+          type: string
+          enum:
+          - base
+          - tailored
+          - document_id
+          description: Where to point the bound document. "base" picks the user's base resume/cover-letter; "tailored" keeps the existing tailored doc; "document_id" requires `documentId` and binds to a user-owned document by id.
+          example: base
       required:
-      - founderAdvantage
-      - framingPhrases
-      - leadAchievements
+      - documentId
+      - id
+      - kind
+      - target
       additionalProperties: false
-      description: Non-null only when direction is 'at_level' or 'stretch_up'.
-    CvChange:
+    LevelStrategyResponse:
       type: object
       properties:
-        currentState:
-          type: string
-          minLength: 1
-          maxLength: 400
-          description: One-sentence excerpt of what the CV currently has in this section
-        priority:
-          type: string
+        data:
+          $ref: '#/components/schemas/LevelStrategyResponseData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
           enum:
-          - high
-          - medium
-          - low
-          description: How impactful this change is for the targeted role
-          example: high
-        proposedChange:
-          type: string
-          minLength: 1
-          maxLength: 400
-          description: Specific edit to apply, citing JD vocabulary in native tech English
-        rationale:
-          type: string
-          minLength: 1
-          maxLength: 600
-          description: Why this edit closes a gap or amplifies a strength for THIS archetype
-        section:
-          type: string
-          enum:
-          - summary
-          - experience
-          - skills
-          - projects
-          - education
-          description: Resume section the proposed change targets
-          example: summary
+          - true
       required:
-      - currentState
-      - priority
-      - proposedChange
-      - rationale
-      - section
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    SwitchDocumentRequest:
+      type: object
+      properties:
+        kind:
+          type: string
+          enum:
+          - resume
+          - cover_letter
+          description: Which bound document to swap on the application result.
+          example: resume
+        target:
+          type: string
+          enum:
+          - base
+          - tailored
+          - document_id
+          description: Where to point the bound document. "base" picks the user's base resume/cover-letter; "tailored" keeps the existing tailored doc; "document_id" requires `documentId` and binds to a user-owned document by id.
+          example: base
+        documentId:
+          type: integer
+          description: Required when target is "document_id"  -  must reference a user-owned document of the matching type.
+          example: 42
+          exclusiveMinimum: 0
+      required:
+      - kind
+      - target
       additionalProperties: false
     PrepareApplicationResponse:
       type: object
@@ -4608,6 +2842,138 @@ components:
       - success
       additionalProperties: false
       description: Successful API response
+    QueuePositionResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/QueuePositionData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    OutreachMessagesData:
+      type: object
+      properties:
+        linkedinConnectionRequest:
+          type: string
+          description: LinkedIn connection request message (max 300 chars)
+        linkedinFollowUp:
+          type: string
+          description: Follow-up message after connection accepted
+        coldEmail:
+          type: object
+          properties:
+            subject:
+              type: string
+              description: Email subject line
+            body:
+              type: string
+              description: Email body text
+          required:
+          - subject
+          - body
+          additionalProperties: false
+          description: Cold email to hiring manager
+        suggestedContacts:
+          type: array
+          items:
+            $ref: '#/components/schemas/SuggestedContact'
+          description: Suggested contacts to reach out to
+        byContactType:
+          type:
+          - object
+          - 'null'
+          properties:
+            recruiter:
+              $ref: '#/components/schemas/ContactTypeMessage'
+            hiring_manager:
+              allOf:
+              - $ref: '#/components/schemas/ContactTypeMessage'
+              - description: 'Hiring manager outreach: Hook / Proof / conversation invite'
+            peer:
+              allOf:
+              - $ref: '#/components/schemas/ContactTypeMessage'
+              - description: 'Peer / referral angle: Interest / Connection / "Would love your take"'
+            interviewer:
+              allOf:
+              - $ref: '#/components/schemas/ContactTypeMessage'
+              - description: 'Pre-interview prep: Research / Context / "Looking forward to [date]"'
+          required:
+          - recruiter
+          - hiring_manager
+          - peer
+          - interviewer
+          additionalProperties: false
+          description: Per-audience outreach messages keyed by contact type. Null when AI did not emit per-audience variants.
+      required:
+      - linkedinConnectionRequest
+      - linkedinFollowUp
+      - coldEmail
+      - suggestedContacts
+      additionalProperties: false
+    PersonalInfo:
+      type: object
+      properties:
+        email:
+          anyOf:
+          - type: string
+            format: email
+          - type: string
+            enum:
+            - ''
+          - {}
+          example: name@example.com
+        fullName:
+          type:
+          - string
+          - 'null'
+          example: Ada Lovelace
+        linkedin:
+          type:
+          - string
+          - 'null'
+        location:
+          type:
+          - string
+          - 'null'
+          example: San Francisco, CA
+        phone:
+          type:
+          - string
+          - 'null'
+          example: +1 (555) 123-4567
+        title:
+          type:
+          - string
+          - 'null'
+          example: Senior Software Engineer
+        website:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    ExtractFormData:
+      type: object
+      properties:
+        formFields:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExtractFormField'
+        screeningAnswers:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExtractFormScreeningAnswer'
+      required:
+      - formFields
+      - screeningAnswers
+      additionalProperties: false
     SingleResultData:
       type: object
       properties:
@@ -5699,28 +4065,1863 @@ components:
       - submissionVerified
       - landingConfidence
       additionalProperties: false
-    DownlevelAcceptanceCriteria:
+    AiEditOpenRequest:
       type: object
       properties:
-        compFloor:
+        scope:
+          anyOf:
+          - type: string
+            enum:
+            - tailored_resume
+            - base_resume
+            - cover_letter
+            description: Which document the AI edit session refines.
+            example: tailored_resume
+          - type: string
+            enum:
+            - resume
+          description: Which document the session refines. Accepts the legacy `resume` alias for backwards compatibility (mapped to `tailored_resume`).
+          example: tailored_resume
+      additionalProperties: false
+    CvChange:
+      type: object
+      properties:
+        currentState:
           type: string
           minLength: 1
-          maxLength: 280
-          description: Compensation threshold below which the candidate should walk away.
-        reviewMonths:
+          maxLength: 400
+          description: One-sentence excerpt of what the CV currently has in this section
+        priority:
+          type: string
+          enum:
+          - high
+          - medium
+          - low
+          description: How impactful this change is for the targeted role
+          example: high
+        proposedChange:
           type: string
           minLength: 1
-          maxLength: 280
-          description: Specific 6-month (or similar) review clause text the candidate negotiates up front so a level bump is contractually anchored.
-        scopeExpansion:
+          maxLength: 400
+          description: Specific edit to apply, citing JD vocabulary in native tech English
+        rationale:
           type: string
           minLength: 1
-          maxLength: 280
-          description: Concrete scope-expansion path the candidate negotiates as part of accepting the lower level.
+          maxLength: 600
+          description: Why this edit closes a gap or amplifies a strength for THIS archetype
+        section:
+          type: string
+          enum:
+          - summary
+          - experience
+          - skills
+          - projects
+          - education
+          description: Resume section the proposed change targets
+          example: summary
       required:
-      - compFloor
-      - reviewMonths
-      - scopeExpansion
+      - currentState
+      - priority
+      - proposedChange
+      - rationale
+      - section
+      additionalProperties: false
+    AiEditRewindResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            draft:
+              $ref: '#/components/schemas/AiEditDraft'
+            droppedSteps:
+              type: integer
+              minimum: 0
+            sessionId:
+              type: string
+          required:
+          - draft
+          - droppedSteps
+          - sessionId
+          additionalProperties: false
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    ExtractFormResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ExtractFormData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    PersonalizationPlanData:
+      type: object
+      properties:
+        archetype:
+          type: string
+          enum:
+          - ai_platform_llmops
+          - agentic_automation
+          - technical_ai_pm
+          - ai_solutions_architect
+          - ai_forward_deployed
+          - ai_transformation_lead
+          - generic_engineering
+          - generic_product
+          - generic_data
+          - other
+          description: Role archetype tag mirrored from the job match analysis (Block A)
+          example: ai_platform_llmops
+        cvChanges:
+          type: array
+          items:
+            $ref: '#/components/schemas/CvChange'
+          description: Exactly 5 CV changes ordered by priority (high first)
+        generatedAt:
+          type: string
+          format: date-time
+          description: ISO-8601 timestamp when the plan was produced (server-set)
+          example: '2026-05-07T12:00:00.000Z'
+        keywords:
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 80
+          minItems: 8
+          maxItems: 15
+          description: 8-15 ATS keywords extracted from the JD
+        linkedinChanges:
+          type: array
+          items:
+            $ref: '#/components/schemas/LinkedinChange'
+          description: Exactly 5 LinkedIn changes ordered by priority (high first)
+      required:
+      - archetype
+      - cvChanges
+      - generatedAt
+      - keywords
+      - linkedinChanges
+      additionalProperties: false
+    ScreeningAnswer:
+      type: object
+      properties:
+        question:
+          type: string
+          maxLength: 2000
+          description: Screening question text
+        answer:
+          type: string
+          maxLength: 10000
+          description: Proposed answer
+      required:
+      - question
+      - answer
+      additionalProperties: false
+    ParseTailoredResumeResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ParseTailoredResumeData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    ApiErrorResponse:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+            context:
+              oneOf:
+              - type: object
+                properties:
+                  errorType:
+                    type: string
+                    enum:
+                    - validation
+                  field:
+                    type: string
+                  fieldErrors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        code:
+                          type: string
+                        expected:
+                          type: string
+                        field:
+                          type: string
+                        message:
+                          type: string
+                        received:
+                          type: string
+                      required:
+                      - field
+                      - message
+                  schemaName:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  attemptedEmail:
+                    type: string
+                    format: email
+                  errorType:
+                    type: string
+                    enum:
+                    - authentication
+                  failureReason:
+                    type: string
+                    enum:
+                    - invalid_credentials
+                    - account_locked
+                    - expired_token
+                    - token_expired
+                    - missing_token
+                    - invalid_token
+                    - session_expired
+                    description: Reason for authentication failure
+                    example: token_expired
+                  ipAddress:
+                    type: string
+                  operation:
+                    type: string
+                  service:
+                    type: string
+                  userAgent:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  actualPermission:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - authorization
+                  requiredPermission:
+                    type: string
+                  resource:
+                    type: string
+                  resourceId:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  constraint:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - database
+                  operation:
+                    type: string
+                    enum:
+                    - insert
+                    - update
+                    - delete
+                    - select
+                    - batch
+                    - transaction
+                    - migration
+                    description: Type of database operation
+                    example: select
+                  resourceId:
+                    type: string
+                  sqlState:
+                    type: string
+                  table:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  endpoint:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - external_service
+                  httpStatus:
+                    type: number
+                  operation:
+                    type: string
+                  resourceId:
+                    type: string
+                  responseTime:
+                    type: number
+                  retryAttempt:
+                    type: integer
+                  service:
+                    type: string
+                  serviceName:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  errorType:
+                    type: string
+                    enum:
+                    - resource
+                  resource:
+                    type: string
+                  resourceId:
+                    type: string
+                  service:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  errorType:
+                    type: string
+                    enum:
+                    - rate_limit
+                  limit:
+                    type: number
+                  resetTime:
+                    type: string
+                  windowMs:
+                    type: number
+                required:
+                - errorType
+              - type: object
+                properties:
+                  configKey:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - configuration
+                  operation:
+                    type: string
+                  service:
+                    type: string
+                required:
+                - errorType
+              description: Type-safe error context information
+              example:
+                errorType: validation
+                fieldErrors:
+                - field: email
+                  message: Invalid email format
+            details:
+              oneOf:
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - validation
+                  validationErrors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        code:
+                          type: string
+                        field:
+                          type: string
+                        message:
+                          type: string
+                      required:
+                      - field
+                      - message
+                required:
+                - detailType
+                - validationErrors
+                additionalProperties: false
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - service_error
+                  originalError:
+                    type: string
+                  serviceName:
+                    type: string
+                required:
+                - detailType
+                - serviceName
+                additionalProperties: false
+              - type: object
+                properties:
+                  currentSize:
+                    type: number
+                  detailType:
+                    type: string
+                    enum:
+                    - batch
+                  originalError:
+                    type: string
+                  statementCount:
+                    type: number
+                required:
+                - detailType
+                additionalProperties: false
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - rate_limit
+                  limit:
+                    type: number
+                  resetTime:
+                    type: string
+                  windowMs:
+                    type: number
+                required:
+                - detailType
+                - limit
+                - resetTime
+                - windowMs
+                additionalProperties: false
+              - type: object
+                properties:
+                  conflictingField:
+                    type: string
+                  detailType:
+                    type: string
+                    enum:
+                    - resource
+                  resourceId:
+                    anyOf:
+                    - type: string
+                    - type: number
+                  resourceType:
+                    type: string
+                required:
+                - detailType
+                additionalProperties: false
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - generic
+                  info:
+                    type: string
+                required:
+                - detailType
+                additionalProperties: false
+              - type: object
+                properties:
+                  currentTokens:
+                    type: integer
+                    minimum: 0
+                  detailType:
+                    type: string
+                    enum:
+                    - insufficient_tokens
+                  requiredTokens:
+                    type: integer
+                    minimum: 0
+                required:
+                - currentTokens
+                - detailType
+                - requiredTokens
+                additionalProperties: false
+            message:
+              type: string
+            validation:
+              type: array
+              items:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  field:
+                    type: string
+                  message:
+                    type: string
+                required:
+                - field
+                - message
+                additionalProperties: false
+          required:
+          - code
+          - message
+          additionalProperties: false
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - false
+      required:
+      - error
+      - success
+      additionalProperties: false
+    LevelStrategyData:
+      type: object
+      properties:
+        direction:
+          type: string
+          enum:
+          - at_level
+          - stretch_up
+          - downlevel
+          description: Direction of the candidate's natural level relative to the JD level. at_level = match, stretch_up = candidate below JD, downlevel = JD below candidate.
+          example: at_level
+        downlevelPlan:
+          $ref: '#/components/schemas/DownlevelPlan'
+        generatedAt:
+          type: string
+          format: date-time
+          description: ISO-8601 timestamp when the strategy was produced. Server-set.
+          example: '2026-05-07T12:34:56.000Z'
+        jdLevel:
+          type: string
+          enum:
+          - junior
+          - mid
+          - senior
+          - staff
+          - principal
+          - lead-manager
+          description: Candidate or job-description career level used by the level-strategy service.
+          example: senior
+        naturalLevel:
+          type: string
+          enum:
+          - junior
+          - mid
+          - senior
+          - staff
+          - principal
+          - lead-manager
+          description: Candidate or job-description career level used by the level-strategy service.
+          example: senior
+        recommendedFraming:
+          type: string
+          minLength: 1
+          maxLength: 800
+          description: 1 to 3 sentence summary the cover letter / interview prep can pull as the canonical framing line.
+        sellSeniorPlan:
+          $ref: '#/components/schemas/SellSeniorPlan'
+      required:
+      - direction
+      - downlevelPlan
+      - generatedAt
+      - jdLevel
+      - naturalLevel
+      - recommendedFraming
+      - sellSeniorPlan
+      additionalProperties: false
+    UpdateApplicationStageRequest:
+      type: object
+      properties:
+        applicationStage:
+          type: string
+          enum:
+          - applied
+          - callback
+          - phone_screen
+          - interview
+          - offered
+          - rejected
+          - no_response
+          description: Stage of the job application pipeline
+          example: applied
+      required:
+      - applicationStage
+      additionalProperties: false
+    NegotiateRegenerateRequest:
+      type: object
+      properties:
+        force:
+          type: boolean
+          default: false
+          description: Bypass the offer-stage gate and bust the KV cache to force a fresh AI generation
+          example: false
+      additionalProperties: false
+    BulkApproveResultEntry:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Result ID echoed back from the request.
+        ok:
+          type: boolean
+        status:
+          type: string
+          enum:
+          - pending
+          - pending_review
+          - ready_to_submit
+          - applied
+          - applied_unconfirmed
+          - skipped
+          - error
+          - cancelled
+          description: New status when ok=true (always ready_to_submit).
+          example: pending
+        reason:
+          type: string
+          description: Machine-readable reason when ok=false (for example "not_pending_review", "platform_unsupported", "preflight_failed", "monthly_cap", or "subscription_required").
+      required:
+      - id
+      - ok
+      additionalProperties: false
+    ApplyDocumentPatchRequest:
+      type: object
+      properties:
+        documentType:
+          type: string
+          enum:
+          - resume
+          - cover-letter
+          description: 'Which document the applied patch mutated: resume or coverLetter'
+          example: resume
+        content:
+          type: string
+          minLength: 1
+          maxLength: 200000
+          description: Final document markdown after client-applied chat patches
+        patchCount:
+          type: integer
+          minimum: 1
+          maximum: 100
+          description: Number of DocumentPatch entries the client applied to produce `content`
+          example: 3
+        structuredResume:
+          type: object
+          properties:
+            certifications:
+              type: array
+              items:
+                type: string
+            education:
+              type: array
+              items:
+                $ref: '#/components/schemas/EducationEntry'
+            experience:
+              type: array
+              items:
+                $ref: '#/components/schemas/ExperienceEntry'
+            personalInfo:
+              $ref: '#/components/schemas/PersonalInfo'
+            skills:
+              type: array
+              items:
+                type: string
+            summary:
+              type:
+              - string
+              - 'null'
+          additionalProperties: false
+          description: Final structured tailored-resume snapshot. Resume clients send this beside content so section edits remain available to form and template views.
+      required:
+      - documentType
+      - content
+      - patchCount
+      additionalProperties: false
+    QueuePositionData:
+      type: object
+      properties:
+        position:
+          type: integer
+          minimum: 0
+          description: 1-based rank of this row in the dispatcher's oldest-first ordering (created_at ASC) among all platform-wide rows still waiting or submitting. 1 while this row is actively processing. 0 when the row is not queued (terminal, awaiting approval, or still preparing).
+          example: 3
+        aheadCount:
+          type: integer
+          minimum: 0
+          description: How many applications are ahead of this one platform-wide (position - 1).
+          example: 2
+        totalWaiting:
+          type: integer
+          minimum: 0
+          description: Total rows in the apply queue right now (ready_to_submit + submitting, platform-wide).
+          example: 12
+        isProcessing:
+          type: boolean
+          description: True when this row is already being submitted / actively processed by a worker.
+          example: false
+        isDone:
+          type: boolean
+          description: True when the row reached a terminal status (applied / skipped / error / cancelled). The client stops polling once this flips true.
+          example: false
+        estimatedWaitSeconds:
+          type:
+          - integer
+          - 'null'
+          minimum: 0
+          description: Rough seconds until this row's turn. 0 when it is next in line or already processing. Null when the row is not waiting for a slot.
+          example: 360
+      required:
+      - position
+      - aheadCount
+      - totalWaiting
+      - isProcessing
+      - isDone
+      - estimatedWaitSeconds
+      additionalProperties: false
+    CancelResultData:
+      type: object
+      properties:
+        id:
+          type: integer
+        status:
+          type: string
+          enum:
+          - pending
+          - pending_review
+          - ready_to_submit
+          - applied
+          - applied_unconfirmed
+          - skipped
+          - error
+          - cancelled
+          description: Status of an individual application result
+          example: pending
+      required:
+      - id
+      - status
+      additionalProperties: false
+    ApplicationsUsageResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            allowed:
+              type: boolean
+              description: Whether the user can enqueue another auto-apply right now (false = cap reached).
+            limit:
+              type: integer
+              minimum: 0
+              description: Tier-bound rolling-30d auto-apply cap (e.g. 7 for job_seeker, 100 for hired_in_30, 300 for hired_yesterday).
+              example: 7
+            resetAt:
+              type: string
+              description: ISO timestamp when the current rolling window rolls over (i.e. when the oldest counted apply ages out).
+              example: '2026-05-20T00:00:00.000Z'
+            used:
+              type: integer
+              minimum: 0
+              description: Auto-apply submissions counted against the rolling-30d cap.
+              example: 3
+          required:
+          - allowed
+          - limit
+          - resetAt
+          - used
+          additionalProperties: false
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    GenerationStatusResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/GenerationStatusData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    ScreenshotInfoData:
+      type: object
+      properties:
+        alreadyAppliedProof:
+          type:
+          - object
+          - 'null'
+          properties:
+            notice:
+              type: string
+              minLength: 1
+              maxLength: 500
+            pageUrl:
+              type:
+              - string
+              - 'null'
+              maxLength: 2048
+            screenshotUrl:
+              type:
+              - string
+              - 'null'
+              maxLength: 2048
+            seenAt:
+              type: string
+              minLength: 1
+            source:
+              type: string
+              enum:
+              - post_submit_page
+              - self_judge
+              - vision_page_text
+          required:
+          - notice
+          - pageUrl
+          - screenshotUrl
+          - seenAt
+          - source
+          description: 'Evidence behind an already_applied verdict: the employer page''s own notice, its URL and the screenshot of that page. Null when the verdict has no employer-page proof. Detail projection only.'
+        committedFields:
+          type:
+          - array
+          - 'null'
+          items:
+            type: object
+            properties:
+              attempt:
+                type: integer
+                minimum: 1
+              enteredValue:
+                type:
+                - string
+                - 'null'
+                maxLength: 512
+              label:
+                type: string
+                minLength: 1
+                maxLength: 200
+              lane:
+                type: string
+                minLength: 1
+                maxLength: 160
+              phase:
+                type: string
+                minLength: 1
+                maxLength: 64
+              provenance:
+                type: string
+                enum:
+                - profile
+                - answer_context
+                - document
+                - derived
+                - generated
+                - guessed
+                - unsourced
+                description: Where the value committed into an employer form came from
+                example: profile
+              source:
+                type: string
+                minLength: 1
+                maxLength: 64
+              value:
+                type:
+                - string
+                - 'null'
+                maxLength: 512
+              valueShape:
+                type: string
+                minLength: 1
+                maxLength: 32
+              verified:
+                type: boolean
+            required:
+            - attempt
+            - label
+            - phase
+            - provenance
+            - value
+            - valueShape
+            - verified
+            additionalProperties: false
+          maxItems: 128
+          description: Per-field record of the values committed into the employer form, with raw value, provenance and a read-back verified flag. A read-back of our own write - never evidence an application landed. Null on historical rows.
+        identityCommitted:
+          type:
+          - object
+          - 'null'
+          properties:
+            email:
+              type:
+              - boolean
+              - 'null'
+            firstName:
+              type:
+              - boolean
+              - 'null'
+            lastName:
+              type:
+              - boolean
+              - 'null'
+          required:
+          - email
+          - firstName
+          - lastName
+          additionalProperties: false
+          description: Which of firstName/lastName/email read back present at the submit click. A read-back of our own write - MUST NEVER be used to score whether an application landed. Per-member null means UNOBSERVED, never false. Null on historical rows.
+        phaseTimings:
+          type:
+          - object
+          - 'null'
+          properties:
+            aggregate:
+              type: integer
+              minimum: 0
+            captchaMs:
+              type: integer
+              minimum: 0
+            currentPhase:
+              type: string
+              enum:
+              - prepare
+              - navigate
+              - login
+              - fill
+              - submit
+              - verify
+              - aggregate
+              - unknown
+              description: Coarse-grained phase where a submission failure occurred
+              example: submit
+            currentPhaseMs:
+              type: integer
+              minimum: 0
+            employerMailWaitMs:
+              type: integer
+              minimum: 0
+            fill:
+              type: integer
+              minimum: 0
+            fillPerAttempt:
+              type: array
+              items:
+                type: integer
+                minimum: 0
+            login:
+              type: integer
+              minimum: 0
+            msToSubmitPress:
+              type: integer
+              minimum: 0
+            navigate:
+              type: integer
+              minimum: 0
+            prepare:
+              type: integer
+              minimum: 0
+            prepareStep:
+              type: string
+              maxLength: 160
+            slowestSteps:
+              type: array
+              items:
+                type: object
+                properties:
+                  ms:
+                    type: integer
+                    minimum: 0
+                  ourMs:
+                    type: integer
+                    minimum: 0
+                  step:
+                    type: string
+                    maxLength: 160
+                  waitedOnEmployerMailMs:
+                    type: integer
+                    minimum: 0
+                required:
+                - ms
+                - step
+                additionalProperties: false
+            submit:
+              type: integer
+              minimum: 0
+            submitPerAttempt:
+              type: array
+              items:
+                type: integer
+                minimum: 0
+            totalMs:
+              type: integer
+              minimum: 0
+            unaccountedMs:
+              type: integer
+              minimum: 0
+            unknown:
+              type: integer
+              minimum: 0
+            verify:
+              type: integer
+              minimum: 0
+          required:
+          - totalMs
+          - unaccountedMs
+          additionalProperties: false
+          description: Per-phase wall clock for the run, keyed on the failure-phase enum, plus totalMs, captchaMs and unaccountedMs. An absent phase key is UNOBSERVED, never zero. Null on historical rows.
+        hasPreFill:
+          type: boolean
+          description: Whether a pre-fill screenshot exists
+        hasPostSubmit:
+          type: boolean
+          description: Whether a post-submit screenshot exists
+        formFieldsLog:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/FormFieldsLogEntry'
+          description: Detailed log of form fields that were filled
+        submissionAttempts:
+          type:
+          - array
+          - 'null'
+          items:
+            anyOf:
+            - type: object
+              properties:
+                detail:
+                  type: string
+                durationMs:
+                  type: integer
+                  minimum: 0
+                error:
+                  type: string
+                replayUrl:
+                  type: string
+                  format: uri
+                screenshotKeys:
+                  type: array
+                  items:
+                    type: string
+                skippedOptionalFieldCount:
+                  type: integer
+                  minimum: 0
+                strategy:
+                  type: string
+                  enum:
+                  - direct_api
+                  - form_post
+                  - linkedin_easy_apply
+                  - indeed_apply
+                  - glassdoor_apply
+                  - ziprecruiter_apply
+                  - authenticated_browser
+                  - workday_navigator
+                  - ai_browser_agent
+                  - email_fallback
+                  description: Strategy used to submit a job application
+                  example: direct_api
+                success:
+                  type: boolean
+                targetUrl:
+                  type: string
+                timestamp:
+                  type: string
+              required:
+              - strategy
+              - success
+              - timestamp
+              additionalProperties: false
+            - type: object
+              properties:
+                detail:
+                  type: string
+                durationMs:
+                  type: integer
+                  minimum: 0
+                error:
+                  type: string
+                phase:
+                  type: string
+                  enum:
+                  - preparation
+                  - submission
+                  - dispatcher
+                  - queue_consumer
+                  - inline_fallback
+                  - orphan_recovery
+                  - unknown
+                strategy:
+                  type: string
+                success:
+                  type: boolean
+                timestamp:
+                  type: string
+              required:
+              - detail
+              - phase
+              - strategy
+              - success
+              - timestamp
+          description: Submission strategy attempts with timestamps
+        activityLog:
+          type:
+          - array
+          - 'null'
+          items:
+            type: object
+            properties:
+              details:
+                type: string
+              durationMs:
+                type: number
+              status:
+                type: string
+                enum:
+                - success
+                - error
+                - info
+                description: Status of an individual step in an activity log
+                example: info
+              step:
+                type: string
+              timestamp:
+                type: string
+            required:
+            - status
+            - step
+            - timestamp
+            additionalProperties: false
+          description: Step-by-step activity timeline
+      required:
+      - hasPreFill
+      - hasPostSubmit
+      - formFieldsLog
+      - submissionAttempts
+      - activityLog
+      additionalProperties: false
+    AiEditAvailableScope:
+      type: object
+      properties:
+        available:
+          type: boolean
+        reason:
+          type: string
+          maxLength: 200
+          description: Human-readable reason why this scope is unavailable. Only present when `available` is false.
+        scope:
+          type: string
+          enum:
+          - tailored_resume
+          - base_resume
+          - cover_letter
+          description: Which document the AI edit session refines.
+          example: tailored_resume
+      required:
+      - available
+      - scope
+      additionalProperties: false
+    LiveViewResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/LiveViewData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    AiEditOpenResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            draft:
+              $ref: '#/components/schemas/AiEditDraft'
+            originalContent:
+              type: string
+            sessionId:
+              type: string
+            templateKey:
+              type: string
+              description: PDF template hint forwarded to the preview renderer. Always "ats-optimized" today.
+              example: ats-optimized
+          required:
+          - draft
+          - originalContent
+          - sessionId
+          - templateKey
+          additionalProperties: false
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    ExperienceEntry:
+      type: object
+      properties:
+        bullets:
+          type: array
+          items:
+            type: string
+          example:
+          - Led migration of monolithic architecture to microservices, reducing deployment time by 60%
+        company:
+          type: string
+          example: Acme Corp
+        current:
+          type:
+          - boolean
+          - 'null'
+        endDate:
+          type:
+          - string
+          - 'null'
+          example: 2024-01
+        location:
+          type:
+          - string
+          - 'null'
+        startDate:
+          type: string
+          example: 2020-01
+        title:
+          type: string
+          example: Senior Engineer
+      required:
+      - bullets
+      - company
+      - startDate
+      - title
+      additionalProperties: false
+    PipelineStatusResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/PipelineStatusData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    SellSeniorPlan:
+      type:
+      - object
+      - 'null'
+      properties:
+        founderAdvantage:
+          type:
+          - string
+          - 'null'
+          minLength: 1
+          maxLength: 500
+          description: Ownership-signal framing when the candidate has founder/builder background; null when no such proof point exists in the resume.
+        framingPhrases:
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 200
+          minItems: 3
+          maxItems: 5
+          description: 3 to 5 short phrases the candidate can use verbatim to frame seniority claims.
+        leadAchievements:
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 280
+          minItems: 3
+          maxItems: 5
+          description: 3 to 5 short bullets of achievements to lead with. MUST cite proof points actually present in the candidate's resume; never invent metrics.
+      required:
+      - founderAdvantage
+      - framingPhrases
+      - leadAchievements
+      additionalProperties: false
+      description: Non-null only when direction is 'at_level' or 'stretch_up'.
+    AiEditFinalizeResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            documentId:
+              type: integer
+              exclusiveMinimum: 0
+            resultId:
+              type: integer
+              exclusiveMinimum: 0
+            version:
+              type: integer
+              exclusiveMinimum: 0
+          required:
+          - documentId
+          - resultId
+          - version
+          additionalProperties: false
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    LevelStrategyRequest:
+      type: object
+      properties:
+        archetype:
+          type: string
+          enum:
+          - ai_platform_llmops
+          - agentic_automation
+          - technical_ai_pm
+          - ai_solutions_architect
+          - ai_forward_deployed
+          - ai_transformation_lead
+          - generic_engineering
+          - generic_product
+          - generic_data
+          - other
+          description: Optional archetype hint from Block A of the structured evaluator.
+          example: ai_platform_llmops
+        force:
+          type: boolean
+          default: false
+          description: Bust the KV cache and force a fresh AI generation.
+          example: false
+        jdLevel:
+          type: string
+          enum:
+          - junior
+          - mid
+          - senior
+          - staff
+          - principal
+          - lead-manager
+          description: Detected level of the job description.
+          example: senior
+        userLevel:
+          type: string
+          enum:
+          - junior
+          - mid
+          - senior
+          - staff
+          - principal
+          - lead-manager
+          description: Candidate's natural career level.
+          example: senior
+      required:
+      - jdLevel
+      - userLevel
+      additionalProperties: false
+    FormValuesResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            updated:
+              type: boolean
+          required:
+          - updated
+          additionalProperties: false
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    AiEditDraft:
+      type: object
+      properties:
+        content:
+          type: string
+        sections:
+          $ref: '#/components/schemas/AiEditDraftSections'
+      required:
+      - content
+      - sections
+      additionalProperties: false
+    ApproveResultResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            id:
+              type: integer
+            status:
+              type: string
+              enum:
+              - pending
+              - pending_review
+              - ready_to_submit
+              - applied
+              - applied_unconfirmed
+              - skipped
+              - error
+              - cancelled
+              description: Status of an individual application result
+              example: pending
+          required:
+          - id
+          - status
+          additionalProperties: false
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    LevelStrategyResponseData:
+      type: object
+      properties:
+        cached:
+          type: boolean
+          description: True when the response was served from KV cache.
+          example: false
+        data:
+          $ref: '#/components/schemas/LevelStrategyData'
+      required:
+      - cached
+      - data
+      additionalProperties: false
+    FormFieldValue:
+      type: object
+      properties:
+        field:
+          type: string
+          maxLength: 500
+          description: Form field label or name
+          example: First Name
+        value:
+          type: string
+          maxLength: 10000
+          description: Value to fill
+          example: John
+        status:
+          type: string
+          enum:
+          - filled
+          - skipped
+          - error
+          default: filled
+          description: Fill status for this field
+          example: filled
+      required:
+      - field
+      - value
+      additionalProperties: false
+    EducationEntry:
+      type: object
+      properties:
+        degree:
+          type: string
+          example: B.S. Computer Science
+        endDate:
+          type:
+          - string
+          - 'null'
+        gpa:
+          type:
+          - string
+          - 'null'
+        highlights:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        institution:
+          type: string
+          example: MIT
+        location:
+          type:
+          - string
+          - 'null'
+        startDate:
+          type:
+          - string
+          - 'null'
+      required:
+      - degree
+      - institution
+      additionalProperties: false
+    ParsedTailoredResumePersonalInfo:
+      type: object
+      properties:
+        email:
+          type:
+          - string
+          - 'null'
+        fullName:
+          type: string
+        linkedin:
+          type:
+          - string
+          - 'null'
+        location:
+          type:
+          - string
+          - 'null'
+        phone:
+          type:
+          - string
+          - 'null'
+        title:
+          type:
+          - string
+          - 'null'
+        website:
+          type:
+          - string
+          - 'null'
+      required:
+      - fullName
+      additionalProperties: false
+    PrepareApplicationRequest:
+      type: object
+      properties:
+        jobMatchId:
+          type: integer
+          description: ID of the job match to prepare application for
+          example: 42
+          exclusiveMinimum: 0
+        mode:
+          type: string
+          enum:
+          - copilot
+          - auto_approve
+          description: Override mode for this preparation. When "copilot", result is created as pending_review.
+          example: copilot
+      required:
+      - jobMatchId
+      additionalProperties: false
+    AiEditDraftSections:
+      type: object
+      properties:
+        education:
+          type: string
+        experience:
+          type: string
+        skills:
+          type: string
+        summary:
+          type: string
+      required:
+      - education
+      - experience
+      - skills
+      - summary
+      additionalProperties: false
+    UpdateApplicationStageResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            applicationStage:
+              type: string
+              enum:
+              - applied
+              - callback
+              - phone_screen
+              - interview
+              - offered
+              - rejected
+              - no_response
+              description: Stage of the job application pipeline
+              example: applied
+            id:
+              type: integer
+          required:
+          - applicationStage
+          - id
+          additionalProperties: false
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    StepPlanResponseData:
+      type: object
+      properties:
+        stepsRun:
+          type: array
+          items:
+            type: string
+            enum:
+            - quality_gate
+            - company_intel
+            - tailor_resume
+            - translate
+            - cover_letter
+            description: A single preparation step within the application-preparer pipeline
+            example: tailor_resume
+        stepsSkipped:
+          type: array
+          items:
+            type: object
+            properties:
+              reason:
+                type: string
+              step:
+                type: string
+                enum:
+                - quality_gate
+                - company_intel
+                - tailor_resume
+                - translate
+                - cover_letter
+                description: A single preparation step within the application-preparer pipeline
+                example: tailor_resume
+            required:
+            - reason
+            - step
+            additionalProperties: false
+            description: A step the server will skip on the next re-prepare run, with a human-readable reason.
+      required:
+      - stepsRun
+      - stepsSkipped
+      additionalProperties: false
+      description: Projected re-prepare plan  -  which stale steps would actually run vs. be skipped (and why) under the user's current AI persona.
+    ResponseMetadata:
+      type: object
+      properties:
+        duration:
+          type: number
+          description: Request duration in milliseconds
+          example: 150
+          exclusiveMinimum: 0
+        performance:
+          type: object
+          properties:
+            dbQueries:
+              type: integer
+              minimum: 0
+            totalDbTime:
+              type: number
+              minimum: 0
+          description: Performance metrics (preview/local only)
+        requestId:
+          type: string
+          description: Unique request identifier
+          example: req_abc123
+        timestamp:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp
+          example: '2026-09-25T17:29:47.224Z'
+        version:
+          type: string
+          description: API version
+          example: v1
+    RejectResultResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            id:
+              type: integer
+            status:
+              type: string
+              enum:
+              - pending
+              - pending_review
+              - ready_to_submit
+              - applied
+              - applied_unconfirmed
+              - skipped
+              - error
+              - cancelled
+              description: Status of an individual application result
+              example: pending
+          required:
+          - id
+          - status
+          additionalProperties: false
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    AIResumeData:
+      type:
+      - object
+      - 'null'
+      properties:
+        certifications:
+          type: array
+          items:
+            type: string
+        education:
+          type: array
+          items:
+            $ref: '#/components/schemas/EducationEntry'
+        experience:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExperienceEntry'
+        personalInfo:
+          $ref: '#/components/schemas/PersonalInfo'
+        skills:
+          type: array
+          items:
+            type: string
+        summary:
+          type:
+          - string
+          - 'null'
+    ApplicationResultListResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: '#/components/schemas/ApplicationResultData'
+            pagination:
+              type: object
+              properties:
+                hasNext:
+                  type: boolean
+                hasPrev:
+                  type: boolean
+                limit:
+                  type: integer
+                  exclusiveMinimum: 0
+                page:
+                  type: integer
+                  exclusiveMinimum: 0
+                totalCount:
+                  type: integer
+                  minimum: 0
+                totalPages:
+                  type: integer
+                  minimum: 0
+              required:
+              - hasNext
+              - hasPrev
+              - limit
+              - page
+              - totalCount
+              - totalPages
+              additionalProperties: false
+            staleCount:
+              type: integer
+              minimum: 0
+              description: Count of this user's pending_review applications older than the stale window (7d). Drives the FE bulk-approve nudge.
+              example: 0
+          required:
+          - items
+          - pagination
+          - staleCount
+          additionalProperties: false
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    AiEditFinalizeRequest:
+      type: object
+      properties:
+        sessionId:
+          type: string
+          minLength: 1
+          maxLength: 64
+      required:
+      - sessionId
       additionalProperties: false
     ApplicationResultData:
       type: object
@@ -6449,548 +6650,11 @@ components:
       - tokensRefunded
       - refundReason
       additionalProperties: false
-    AiEditAvailableScope:
-      type: object
-      properties:
-        available:
-          type: boolean
-        reason:
-          type: string
-          maxLength: 200
-          description: Human-readable reason why this scope is unavailable. Only present when `available` is false.
-        scope:
-          type: string
-          enum:
-          - tailored_resume
-          - base_resume
-          - cover_letter
-          description: Which document the AI edit session refines.
-          example: tailored_resume
-      required:
-      - available
-      - scope
-      additionalProperties: false
-    OutreachMessagesData:
-      type: object
-      properties:
-        linkedinConnectionRequest:
-          type: string
-          description: LinkedIn connection request message (max 300 chars)
-        linkedinFollowUp:
-          type: string
-          description: Follow-up message after connection accepted
-        coldEmail:
-          type: object
-          properties:
-            subject:
-              type: string
-              description: Email subject line
-            body:
-              type: string
-              description: Email body text
-          required:
-          - subject
-          - body
-          additionalProperties: false
-          description: Cold email to hiring manager
-        suggestedContacts:
-          type: array
-          items:
-            $ref: '#/components/schemas/SuggestedContact'
-          description: Suggested contacts to reach out to
-        byContactType:
-          type:
-          - object
-          - 'null'
-          properties:
-            recruiter:
-              $ref: '#/components/schemas/ContactTypeMessage'
-            hiring_manager:
-              allOf:
-              - $ref: '#/components/schemas/ContactTypeMessage'
-              - description: 'Hiring manager outreach: Hook / Proof / conversation invite'
-            peer:
-              allOf:
-              - $ref: '#/components/schemas/ContactTypeMessage'
-              - description: 'Peer / referral angle: Interest / Connection / "Would love your take"'
-            interviewer:
-              allOf:
-              - $ref: '#/components/schemas/ContactTypeMessage'
-              - description: 'Pre-interview prep: Research / Context / "Looking forward to [date]"'
-          required:
-          - recruiter
-          - hiring_manager
-          - peer
-          - interviewer
-          additionalProperties: false
-          description: Per-audience outreach messages keyed by contact type. Null when AI did not emit per-audience variants.
-      required:
-      - linkedinConnectionRequest
-      - linkedinFollowUp
-      - coldEmail
-      - suggestedContacts
-      additionalProperties: false
-    ExtractFormField:
-      type: object
-      properties:
-        field:
-          type: string
-          maxLength: 500
-        value:
-          type: string
-          maxLength: 10000
-        selector:
-          type:
-          - string
-          - 'null'
-          maxLength: 2000
-        action:
-          type: string
-          maxLength: 100
-      required:
-      - field
-      - value
-      - selector
-      - action
-      additionalProperties: false
-    GenerationStatusResponse:
+    SwitchDocumentResponse:
       type: object
       properties:
         data:
-          $ref: '#/components/schemas/GenerationStatusData'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    PersonalizationPlanRequest:
-      type: object
-      properties:
-        jobMatchId:
-          type: integer
-          description: job_matches.id the plan is scoped to
-          example: 1
-          exclusiveMinimum: 0
-      required:
-      - jobMatchId
-      additionalProperties: false
-    ApplicationResultListResponse:
-      type: object
-      properties:
-        data:
-          type: object
-          properties:
-            items:
-              type: array
-              items:
-                $ref: '#/components/schemas/ApplicationResultData'
-            pagination:
-              type: object
-              properties:
-                hasNext:
-                  type: boolean
-                hasPrev:
-                  type: boolean
-                limit:
-                  type: integer
-                  exclusiveMinimum: 0
-                page:
-                  type: integer
-                  exclusiveMinimum: 0
-                totalCount:
-                  type: integer
-                  minimum: 0
-                totalPages:
-                  type: integer
-                  minimum: 0
-              required:
-              - hasNext
-              - hasPrev
-              - limit
-              - page
-              - totalCount
-              - totalPages
-              additionalProperties: false
-            staleCount:
-              type: integer
-              minimum: 0
-              description: Count of this user's pending_review applications older than the stale window (7d). Drives the FE bulk-approve nudge.
-              example: 0
-          required:
-          - items
-          - pagination
-          - staleCount
-          additionalProperties: false
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    BulkApproveRequest:
-      type: object
-      properties:
-        resultIds:
-          type: array
-          items:
-            type: string
-            minLength: 1
-          minItems: 1
-          maxItems: 25
-          description: Result IDs to approve in this batch (1 to 25). String-encoded numeric IDs matching the single-row endpoint's URL param shape. Each is approved server-side independently; per-row failures do not abort the batch.
-          example:
-          - '101'
-          - '102'
-          - '103'
-      required:
-      - resultIds
-      additionalProperties: false
-    PersonalInfo:
-      type: object
-      properties:
-        email:
-          anyOf:
-          - type: string
-            format: email
-          - type: string
-            enum:
-            - ''
-          - {}
-          example: name@example.com
-        fullName:
-          type:
-          - string
-          - 'null'
-          example: Ada Lovelace
-        linkedin:
-          type:
-          - string
-          - 'null'
-        location:
-          type:
-          - string
-          - 'null'
-          example: San Francisco, CA
-        phone:
-          type:
-          - string
-          - 'null'
-          example: +1 (555) 123-4567
-        title:
-          type:
-          - string
-          - 'null'
-          example: Senior Software Engineer
-        website:
-          type:
-          - string
-          - 'null'
-      additionalProperties: false
-    QueuePositionData:
-      type: object
-      properties:
-        position:
-          type: integer
-          minimum: 0
-          description: 1-based rank of this row in the dispatcher's oldest-first ordering (created_at ASC) among all platform-wide rows still waiting or submitting. 1 while this row is actively processing. 0 when the row is not queued (terminal, awaiting approval, or still preparing).
-          example: 3
-        aheadCount:
-          type: integer
-          minimum: 0
-          description: How many applications are ahead of this one platform-wide (position - 1).
-          example: 2
-        totalWaiting:
-          type: integer
-          minimum: 0
-          description: Total rows in the apply queue right now (ready_to_submit + submitting, platform-wide).
-          example: 12
-        isProcessing:
-          type: boolean
-          description: True when this row is already being submitted / actively processed by a worker.
-          example: false
-        isDone:
-          type: boolean
-          description: True when the row reached a terminal status (applied / skipped / error / cancelled). The client stops polling once this flips true.
-          example: false
-        estimatedWaitSeconds:
-          type:
-          - integer
-          - 'null'
-          minimum: 0
-          description: Rough seconds until this row's turn. 0 when it is next in line or already processing. Null when the row is not waiting for a slot.
-          example: 360
-      required:
-      - position
-      - aheadCount
-      - totalWaiting
-      - isProcessing
-      - isDone
-      - estimatedWaitSeconds
-      additionalProperties: false
-    LevelStrategyResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/LevelStrategyResponseData'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    QueuePositionResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/QueuePositionData'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    PersonalizationPlanResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/PersonalizationPlanData'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    SubmissionInfo:
-      type: object
-      properties:
-        authPlatform:
-          type: string
-          description: Which platform needs auth credentials (e.g. linkedin)
-          example: linkedin
-        canSubmit:
-          type: boolean
-          description: Whether the application can be submitted to this platform
-        hasCredentials:
-          type: boolean
-          description: Whether the user has stored credentials for the required platform
-        platformType:
-          type: string
-          description: Detected submission platform type
-          example: linkedin
-        reason:
-          type: string
-          description: Reason submission is blocked or limited
-        requiresAuth:
-          type: boolean
-          description: Whether the platform requires user authentication credentials
-      required:
-      - canSubmit
-      - platformType
-      additionalProperties: false
-      description: Pre-flight submission requirements and credential status
-    CancelResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/CancelResultData'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    LinkedinChange:
-      type: object
-      properties:
-        currentState:
-          type: string
-          minLength: 1
-          maxLength: 400
-          description: One-sentence excerpt of what the LinkedIn section likely contains. When the profile is not stored, assume a typical career-ops style profile.
-        priority:
-          type: string
-          enum:
-          - high
-          - medium
-          - low
-          description: How impactful this change is for the targeted role
-          example: high
-        proposedChange:
-          type: string
-          minLength: 1
-          maxLength: 400
-          description: Specific edit to apply, citing JD vocabulary in native tech English
-        rationale:
-          type: string
-          minLength: 1
-          maxLength: 600
-          description: Why this edit closes a gap or amplifies a strength for THIS archetype
-        section:
-          type: string
-          enum:
-          - headline
-          - about
-          - featured
-          - experience
-          - skills
-          description: LinkedIn profile section the proposed change targets
-          example: headline
-      required:
-      - currentState
-      - priority
-      - proposedChange
-      - rationale
-      - section
-      additionalProperties: false
-    ParsedTailoredResumeExperience:
-      type: object
-      properties:
-        bullets:
-          type: array
-          items:
-            type: string
-        company:
-          type: string
-        current:
-          type:
-          - boolean
-          - 'null'
-        endDate:
-          type:
-          - string
-          - 'null'
-        location:
-          type:
-          - string
-          - 'null'
-        startDate:
-          type: string
-        title:
-          type: string
-      required:
-      - bullets
-      - company
-      - startDate
-      - title
-      additionalProperties: false
-    FormFieldValue:
-      type: object
-      properties:
-        field:
-          type: string
-          maxLength: 500
-          description: Form field label or name
-          example: First Name
-        value:
-          type: string
-          maxLength: 10000
-          description: Value to fill
-          example: John
-        status:
-          type: string
-          enum:
-          - filled
-          - skipped
-          - error
-          default: filled
-          description: Fill status for this field
-          example: filled
-      required:
-      - field
-      - value
-      additionalProperties: false
-    FormFieldsLogEntry:
-      type: object
-      properties:
-        field:
-          type: string
-        selector:
-          type: string
-        value:
-          type: string
-        action:
-          type: string
-        status:
-          type: string
-          enum:
-          - filled
-          - skipped
-          - error
-          description: Fill status for a form field during AI-powered application
-          example: filled
-      required:
-      - field
-      - selector
-      - value
-      - action
-      - status
-      additionalProperties: false
-    SwitchDocumentResponseData:
-      type: object
-      properties:
-        documentId:
-          type:
-          - integer
-          - 'null'
-        id:
-          type: integer
-        kind:
-          type: string
-          enum:
-          - resume
-          - cover_letter
-          description: Which bound document to swap on the application result.
-          example: resume
-        target:
-          type: string
-          enum:
-          - base
-          - tailored
-          - document_id
-          description: Where to point the bound document. "base" picks the user's base resume/cover-letter; "tailored" keeps the existing tailored doc; "document_id" requires `documentId` and binds to a user-owned document by id.
-          example: base
-      required:
-      - documentId
-      - id
-      - kind
-      - target
-      additionalProperties: false
-    SingleResultResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/SingleResultData'
+          $ref: '#/components/schemas/SwitchDocumentResponseData'
         meta:
           $ref: '#/components/schemas/ResponseMetadata'
         success:
@@ -7059,11 +6723,82 @@ components:
       - stale
       - staleSteps
       additionalProperties: false
-    ParseTailoredResumeResponse:
+    FormValuesRequest:
+      type: object
+      properties:
+        formFields:
+          type: array
+          items:
+            $ref: '#/components/schemas/FormFieldValue'
+          maxItems: 500
+          description: User-reviewed form field values (max 500)
+        screeningAnswers:
+          type: array
+          items:
+            $ref: '#/components/schemas/ScreeningAnswer'
+          maxItems: 200
+          description: User-reviewed screening question answers (max 200)
+      required:
+      - formFields
+      additionalProperties: false
+    NegotiationFollowUpResponse:
+      type: object
+      properties:
+        response:
+          type: string
+          minLength: 1
+          maxLength: 2000
+          description: Ready-to-paste reply the user can send verbatim
+        trigger:
+          type: string
+          minLength: 1
+          maxLength: 400
+          description: Recruiter pushback this response handles (e.g. "we have a hard cap")
+          example: We do not have room to move on base salary
+      required:
+      - response
+      - trigger
+      additionalProperties: false
+    ParseTailoredResumeData:
+      type: object
+      properties:
+        id:
+          type: integer
+        certifications:
+          type: array
+          items:
+            type: string
+        education:
+          type: array
+          items:
+            $ref: '#/components/schemas/ParsedTailoredResumeEducation'
+        experience:
+          type: array
+          items:
+            $ref: '#/components/schemas/ParsedTailoredResumeExperience'
+        personalInfo:
+          $ref: '#/components/schemas/ParsedTailoredResumePersonalInfo'
+        skills:
+          type: array
+          items:
+            type: string
+        summary:
+          type:
+          - string
+          - 'null'
+      required:
+      - id
+      - certifications
+      - education
+      - experience
+      - personalInfo
+      - skills
+      additionalProperties: false
+    NegotiationResponse:
       type: object
       properties:
         data:
-          $ref: '#/components/schemas/ParseTailoredResumeData'
+          $ref: '#/components/schemas/NegotiationResponseData'
         meta:
           $ref: '#/components/schemas/ResponseMetadata'
         success:
@@ -7075,73 +6810,67 @@ components:
       - success
       additionalProperties: false
       description: Successful API response
-    ParsedTailoredResumePersonalInfo:
+    SubmissionInfo:
       type: object
       properties:
-        email:
-          type:
-          - string
-          - 'null'
-        fullName:
+        authPlatform:
           type: string
-        linkedin:
-          type:
-          - string
-          - 'null'
-        location:
-          type:
-          - string
-          - 'null'
-        phone:
-          type:
-          - string
-          - 'null'
-        title:
-          type:
-          - string
-          - 'null'
-        website:
-          type:
-          - string
-          - 'null'
+          description: Which platform needs auth credentials (e.g. linkedin)
+          example: linkedin
+        canSubmit:
+          type: boolean
+          description: Whether the application can be submitted to this platform
+        hasCredentials:
+          type: boolean
+          description: Whether the user has stored credentials for the required platform
+        platformType:
+          type: string
+          description: Detected submission platform type
+          example: linkedin
+        reason:
+          type: string
+          description: Reason submission is blocked or limited
+        requiresAuth:
+          type: boolean
+          description: Whether the platform requires user authentication credentials
       required:
-      - fullName
+      - canSubmit
+      - platformType
       additionalProperties: false
-    EducationEntry:
+      description: Pre-flight submission requirements and credential status
+    RecoverStuckResponse:
       type: object
       properties:
-        degree:
-          type: string
-          example: B.S. Computer Science
-        endDate:
-          type:
-          - string
-          - 'null'
-        gpa:
-          type:
-          - string
-          - 'null'
-        highlights:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-        institution:
-          type: string
-          example: MIT
-        location:
-          type:
-          - string
-          - 'null'
-        startDate:
-          type:
-          - string
-          - 'null'
+        data:
+          type: object
+          properties:
+            id:
+              type: integer
+            recovered:
+              type: integer
+            status:
+              type: string
+              enum:
+              - none_stuck
+              - recovered
+              description: Recovery operation result status
+              example: recovered
+          required:
+          - id
+          - recovered
+          - status
+          additionalProperties: false
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
       required:
-      - degree
-      - institution
+      - data
+      - success
       additionalProperties: false
+      description: Successful API response
     PrepareApplicationData:
       type: object
       properties:
@@ -7185,112 +6914,263 @@ components:
       - preparationStatus
       - runStartedAt
       additionalProperties: false
-    RePrepareResponseData:
+    LinkedinChange:
       type: object
       properties:
-        id:
-          type: integer
-        stepsRun:
-          type: array
-          items:
-            type: string
-            enum:
-            - quality_gate
-            - company_intel
-            - tailor_resume
-            - translate
-            - cover_letter
-            description: A single preparation step within the application-preparer pipeline
-            example: tailor_resume
-        stepsSkipped:
-          type: array
-          items:
-            type: object
-            properties:
-              reason:
-                type: string
-              step:
-                type: string
-                enum:
-                - quality_gate
-                - company_intel
-                - tailor_resume
-                - translate
-                - cover_letter
-                description: A single preparation step within the application-preparer pipeline
-                example: tailor_resume
-            required:
-            - reason
-            - step
-            additionalProperties: false
-            description: A step the server will skip on the next re-prepare run, with a human-readable reason.
-        tokensUsed:
-          type: integer
-          minimum: 0
-      required:
-      - id
-      - stepsRun
-      - stepsSkipped
-      - tokensUsed
-      additionalProperties: false
-    ApplyDocumentPatchRequest:
-      type: object
-      properties:
-        documentType:
-          type: string
-          enum:
-          - resume
-          - cover-letter
-          description: 'Which document the applied patch mutated: resume or coverLetter'
-          example: resume
-        content:
+        currentState:
           type: string
           minLength: 1
-          maxLength: 200000
-          description: Final document markdown after client-applied chat patches
-        patchCount:
-          type: integer
-          minimum: 1
-          maximum: 100
-          description: Number of DocumentPatch entries the client applied to produce `content`
-          example: 3
-        structuredResume:
-          type: object
-          properties:
-            certifications:
-              type: array
-              items:
-                type: string
-            education:
-              type: array
-              items:
-                $ref: '#/components/schemas/EducationEntry'
-            experience:
-              type: array
-              items:
-                $ref: '#/components/schemas/ExperienceEntry'
-            personalInfo:
-              $ref: '#/components/schemas/PersonalInfo'
-            skills:
-              type: array
-              items:
-                type: string
-            summary:
-              type:
-              - string
-              - 'null'
-          additionalProperties: false
-          description: Final structured tailored-resume snapshot. Resume clients send this beside content so section edits remain available to form and template views.
+          maxLength: 400
+          description: One-sentence excerpt of what the LinkedIn section likely contains. When the profile is not stored, assume a typical career-ops style profile.
+        priority:
+          type: string
+          enum:
+          - high
+          - medium
+          - low
+          description: How impactful this change is for the targeted role
+          example: high
+        proposedChange:
+          type: string
+          minLength: 1
+          maxLength: 400
+          description: Specific edit to apply, citing JD vocabulary in native tech English
+        rationale:
+          type: string
+          minLength: 1
+          maxLength: 600
+          description: Why this edit closes a gap or amplifies a strength for THIS archetype
+        section:
+          type: string
+          enum:
+          - headline
+          - about
+          - featured
+          - experience
+          - skills
+          description: LinkedIn profile section the proposed change targets
+          example: headline
       required:
-      - documentType
-      - content
-      - patchCount
+      - currentState
+      - priority
+      - proposedChange
+      - rationale
+      - section
+      additionalProperties: false
+    DownlevelAcceptanceCriteria:
+      type: object
+      properties:
+        compFloor:
+          type: string
+          minLength: 1
+          maxLength: 280
+          description: Compensation threshold below which the candidate should walk away.
+        reviewMonths:
+          type: string
+          minLength: 1
+          maxLength: 280
+          description: Specific 6-month (or similar) review clause text the candidate negotiates up front so a level bump is contractually anchored.
+        scopeExpansion:
+          type: string
+          minLength: 1
+          maxLength: 280
+          description: Concrete scope-expansion path the candidate negotiates as part of accepting the lower level.
+      required:
+      - compFloor
+      - reviewMonths
+      - scopeExpansion
+      additionalProperties: false
+    StalenessResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/StalenessResponseData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    AtsCredentialSummary:
+      type: object
+      properties:
+        accountStatus:
+          type: string
+          enum:
+          - pending
+          - created
+          - verified
+          - failed
+          description: Lifecycle of an AI-Applyd-created ATS candidate account
+          example: verified
+        id:
+          type: integer
+          description: Credential row id
+          example: 1
+          exclusiveMinimum: 0
+        loginUrl:
+          type:
+          - string
+          - 'null'
+          description: ATS account login URL
+          example: https://company.wd1.myworkdayjobs.com
+        platform:
+          type: string
+          description: ATS provider
+          example: workday
+        username:
+          type: string
+          description: Account username (the relay alias)
+          example: jane-abc123@relay.example
+      required:
+      - accountStatus
+      - id
+      - loginUrl
+      - platform
+      - username
+      additionalProperties: false
+    GenerationStatusData:
+      type: object
+      properties:
+        applicationStage:
+          type: string
+          enum:
+          - applied
+          - callback
+          - phone_screen
+          - interview
+          - offered
+          - rejected
+          - no_response
+          description: Current stage of this application. NULL rows are coalesced to the default `applied` so the client always has a concrete value.
+          example: applied
+        interviewPrepStatus:
+          type: string
+          enum:
+          - idle
+          - generating
+          - completed
+          - failed
+          description: Interview-prep generation lifecycle (idle | generating | completed | failed).
+          example: idle
+        hasInterviewPrep:
+          type: boolean
+          description: True when interview-prep content has been generated and persisted.
+          example: false
+        negotiationStatus:
+          type: string
+          enum:
+          - idle
+          - generating
+          - completed
+          - failed
+          description: Negotiation-coach generation lifecycle (idle | generating | completed | failed).
+          example: idle
+        hasNegotiation:
+          type: boolean
+          description: True when negotiation scripts have been generated and persisted.
+          example: false
+        negotiationUnlocked:
+          type: boolean
+          description: True when `applicationStage === "offered"`. When false the negotiation gate blocks generation; the client should surface "mark as Offered to unlock".
+          example: false
+        jobListingId:
+          type:
+          - integer
+          - 'null'
+          description: PK of the linked job_listing that owns the interview-prep content. NULL when this result is not linked to a job match / listing.
+      required:
+      - applicationStage
+      - interviewPrepStatus
+      - hasInterviewPrep
+      - negotiationStatus
+      - hasNegotiation
+      - negotiationUnlocked
+      - jobListingId
+      additionalProperties: false
+    FormFieldsLogEntry:
+      type: object
+      properties:
+        field:
+          type: string
+        selector:
+          type: string
+        value:
+          type: string
+        action:
+          type: string
+        status:
+          type: string
+          enum:
+          - filled
+          - skipped
+          - error
+          description: Fill status for a form field during AI-powered application
+          example: filled
+      required:
+      - field
+      - selector
+      - value
+      - action
+      - status
+      additionalProperties: false
+    ExtractFormScreeningAnswer:
+      type: object
+      properties:
+        question:
+          type: string
+          maxLength: 2000
+        answer:
+          type: string
+          maxLength: 10000
+        confidence:
+          type: number
+      required:
+      - question
+      - answer
+      - confidence
+      additionalProperties: false
+    PipelineStatusData:
+      type: object
+      properties:
+        totalWaiting:
+          type: integer
+          minimum: 0
+          description: Platform-wide apply queue depth (every ready_to_submit + submitting row).
+          example: 12
+        mine:
+          type: integer
+          minimum: 0
+          description: How many of the caller's own rows are waiting for a slot or actively submitting.
+          example: 2
+        processing:
+          type: integer
+          minimum: 0
+          description: How many of the caller's rows are actively being submitted right now (subset of `mine`).
+          example: 1
+        position:
+          type: integer
+          minimum: 0
+          description: Frontmost 1-based platform-wide rank of any of the caller's active rows. 1 when one is already processing; the real rank of the caller's oldest waiting row otherwise; 0 when the caller has nothing in the queue.
+          example: 3
+        isActive:
+          type: boolean
+          description: True when the caller has at least one row in the apply queue right now.
+          example: true
+      required:
+      - totalWaiting
+      - mine
+      - processing
+      - position
+      - isActive
       additionalProperties: false
   securitySchemes:
     BearerAuth:
       description: 'Session token from signing in to AI Applyd, sent as `Authorization: Bearer <token>`.'
       scheme: bearer
       type: http
-x-refined-from:
-- aiapplyd-openapi.json
-- aiapplyd-openapi.yml

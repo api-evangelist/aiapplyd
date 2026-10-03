@@ -1,15 +1,15 @@
 openapi: 3.2.0
 info:
-  title: Aiapplyd Account API
-  version: 115c47ce
   contact:
     email: support@aiapplyd.com
     name: AI Applyd
     url: https://aiapplyd.com
+  description: 'The AI Applyd API runs the whole job hunt for you: it matches you to roles that fit your profile, rewrites your resume for each posting, writes the cover letter the form asks for, and auto-applies across the major applicant tracking systems.'
   license:
     name: Proprietary
     url: https://aiapplyd.com/legal/terms
-  description: 'Operations tagged account across 2 of this provider''s published API definitions: aiapplyd-openapi.json, aiapplyd-openapi.yml. Each path carries the servers of the definition it was published in.'
+  title: AI Applyd Account API
+  version: 115c47ce
 servers:
 - description: Current environment
   url: https://api.aiapplyd.com/api/v1
@@ -129,9 +129,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: deleteAccount
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /account/export:
     get:
       tags:
@@ -389,9 +386,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: getAccountExport
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /account/apple-authorization:
     post:
       tags:
@@ -435,27 +429,44 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: postAccountAppleAuthorization
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
 components:
   schemas:
-    AccountResponse:
+    UpdateAccountRequest:
       type: object
       properties:
-        data:
-          $ref: '#/components/schemas/Account'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
+        company:
+          type: string
+          maxLength: 120
+          description: User-supplied employer name. Pass an empty string to clear.
+          example: Acme Corp
+        locale:
+          type:
+          - string
+          - 'null'
           enum:
-          - true
-      required:
-      - data
-      - success
+          - en
+          - es
+          - de
+          - fr
+          - pt-BR
+          - null
+          description: Language preference. Send null to clear it and negotiate per request.
+          example: de
+        marketingEmailsOptOut:
+          type: boolean
+          description: Opt out of marketing emails
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: User display name
+          example: John Doe
+        phone:
+          type: string
+          maxLength: 20
+          description: User phone number
+          example: '+1234567890'
       additionalProperties: false
-      description: Successful API response
     AccountUpdatedResponse:
       type: object
       properties:
@@ -473,6 +484,182 @@ components:
           required:
           - success
           - message
+          additionalProperties: false
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    ResponseMetadata:
+      type: object
+      properties:
+        duration:
+          type: number
+          description: Request duration in milliseconds
+          example: 150
+          exclusiveMinimum: 0
+        performance:
+          type: object
+          properties:
+            dbQueries:
+              type: integer
+              minimum: 0
+            totalDbTime:
+              type: number
+              minimum: 0
+          description: Performance metrics (preview/local only)
+        requestId:
+          type: string
+          description: Unique request identifier
+          example: req_abc123
+        timestamp:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp
+          example: '2026-09-25T17:29:47.224Z'
+        version:
+          type: string
+          description: API version
+          example: v1
+    AccountDeletedResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            cleanupPending:
+              type: boolean
+              description: Account access is removed; provider or stored-file erasure is still being recovered.
+            message:
+              type: string
+              description: Deletion confirmation message
+              example: Account deleted successfully
+          required:
+          - cleanupPending
+          - message
+          additionalProperties: false
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    Account:
+      type: object
+      properties:
+        id:
+          type: string
+          description: User identifier
+          example: user_123
+        email:
+          type: string
+          format: email
+          description: User email address
+          example: user@example.com
+        name:
+          type:
+          - string
+          - 'null'
+          description: User display name
+          example: John Doe
+        image:
+          type:
+          - string
+          - 'null'
+          description: User avatar URL
+          example: https://example.com/avatar.jpg
+        phone:
+          type:
+          - string
+          - 'null'
+          description: User phone number
+          example: '+1234567890'
+        emailVerified:
+          type:
+          - string
+          - 'null'
+          description: Email verification timestamp
+          example: '2024-01-01T00:00:00Z'
+        marketingEmailsOptOut:
+          type: boolean
+          description: Whether user opted out of marketing emails
+        stripeCustomerId:
+          type:
+          - string
+          - 'null'
+          description: Stripe customer ID
+          example: cus_1234567890
+        company:
+          type:
+          - string
+          - 'null'
+          description: User-supplied current employer (B2B segmentation).
+          example: Acme Corp
+        companySlug:
+          type:
+          - string
+          - 'null'
+          description: Server-derived slug used as PostHog group identifier.
+          example: acme-corp
+        locale:
+          type:
+          - string
+          - 'null'
+          enum:
+          - en
+          - es
+          - de
+          - fr
+          - pt-BR
+          - null
+          description: Saved language preference. NULL means the language is negotiated per request from the URL prefix, the aiapplyd_locale cookie and Accept-Language.
+          example: de
+        createdAt:
+          type: string
+          description: Account creation timestamp
+          example: '2024-01-01T00:00:00Z'
+        updatedAt:
+          type: string
+          description: Last update timestamp
+          example: '2024-01-01T00:00:00Z'
+      required:
+      - id
+      - email
+      - name
+      - image
+      - phone
+      - emailVerified
+      - marketingEmailsOptOut
+      - stripeCustomerId
+      - company
+      - companySlug
+      - locale
+      - createdAt
+      - updatedAt
+      additionalProperties: false
+    AppleAuthorizationStoredResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            stored:
+              type: boolean
+              enum:
+              - true
+          required:
+          - stored
           additionalProperties: false
         meta:
           $ref: '#/components/schemas/ResponseMetadata'
@@ -829,19 +1016,11 @@ components:
       - error
       - success
       additionalProperties: false
-    AppleAuthorizationStoredResponse:
+    AccountResponse:
       type: object
       properties:
         data:
-          type: object
-          properties:
-            stored:
-              type: boolean
-              enum:
-              - true
-          required:
-          - stored
-          additionalProperties: false
+          $ref: '#/components/schemas/Account'
         meta:
           $ref: '#/components/schemas/ResponseMetadata'
         success:
@@ -870,199 +1049,8 @@ components:
       - appleUserId
       - authorizationCode
       additionalProperties: false
-    Account:
-      type: object
-      properties:
-        id:
-          type: string
-          description: User identifier
-          example: user_123
-        email:
-          type: string
-          format: email
-          description: User email address
-          example: user@example.com
-        name:
-          type:
-          - string
-          - 'null'
-          description: User display name
-          example: John Doe
-        image:
-          type:
-          - string
-          - 'null'
-          description: User avatar URL
-          example: https://example.com/avatar.jpg
-        phone:
-          type:
-          - string
-          - 'null'
-          description: User phone number
-          example: '+1234567890'
-        emailVerified:
-          type:
-          - string
-          - 'null'
-          description: Email verification timestamp
-          example: '2024-01-01T00:00:00Z'
-        marketingEmailsOptOut:
-          type: boolean
-          description: Whether user opted out of marketing emails
-        stripeCustomerId:
-          type:
-          - string
-          - 'null'
-          description: Stripe customer ID
-          example: cus_1234567890
-        company:
-          type:
-          - string
-          - 'null'
-          description: User-supplied current employer (B2B segmentation).
-          example: Acme Corp
-        companySlug:
-          type:
-          - string
-          - 'null'
-          description: Server-derived slug used as PostHog group identifier.
-          example: acme-corp
-        locale:
-          type:
-          - string
-          - 'null'
-          enum:
-          - en
-          - es
-          - de
-          - fr
-          - pt-BR
-          - null
-          description: Saved language preference. NULL means the language is negotiated per request from the URL prefix, the aiapplyd_locale cookie and Accept-Language.
-          example: de
-        createdAt:
-          type: string
-          description: Account creation timestamp
-          example: '2024-01-01T00:00:00Z'
-        updatedAt:
-          type: string
-          description: Last update timestamp
-          example: '2024-01-01T00:00:00Z'
-      required:
-      - id
-      - email
-      - name
-      - image
-      - phone
-      - emailVerified
-      - marketingEmailsOptOut
-      - stripeCustomerId
-      - company
-      - companySlug
-      - locale
-      - createdAt
-      - updatedAt
-      additionalProperties: false
-    AccountDeletedResponse:
-      type: object
-      properties:
-        data:
-          type: object
-          properties:
-            cleanupPending:
-              type: boolean
-              description: Account access is removed; provider or stored-file erasure is still being recovered.
-            message:
-              type: string
-              description: Deletion confirmation message
-              example: Account deleted successfully
-          required:
-          - cleanupPending
-          - message
-          additionalProperties: false
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    UpdateAccountRequest:
-      type: object
-      properties:
-        company:
-          type: string
-          maxLength: 120
-          description: User-supplied employer name. Pass an empty string to clear.
-          example: Acme Corp
-        locale:
-          type:
-          - string
-          - 'null'
-          enum:
-          - en
-          - es
-          - de
-          - fr
-          - pt-BR
-          - null
-          description: Language preference. Send null to clear it and negotiate per request.
-          example: de
-        marketingEmailsOptOut:
-          type: boolean
-          description: Opt out of marketing emails
-        name:
-          type: string
-          minLength: 1
-          maxLength: 100
-          description: User display name
-          example: John Doe
-        phone:
-          type: string
-          maxLength: 20
-          description: User phone number
-          example: '+1234567890'
-      additionalProperties: false
-    ResponseMetadata:
-      type: object
-      properties:
-        duration:
-          type: number
-          description: Request duration in milliseconds
-          example: 150
-          exclusiveMinimum: 0
-        performance:
-          type: object
-          properties:
-            dbQueries:
-              type: integer
-              minimum: 0
-            totalDbTime:
-              type: number
-              minimum: 0
-          description: Performance metrics (preview/local only)
-        requestId:
-          type: string
-          description: Unique request identifier
-          example: req_abc123
-        timestamp:
-          type: string
-          format: date-time
-          description: ISO 8601 timestamp
-          example: '2026-09-25T17:29:47.224Z'
-        version:
-          type: string
-          description: API version
-          example: v1
   securitySchemes:
     BearerAuth:
       description: 'Session token from signing in to AI Applyd, sent as `Authorization: Bearer <token>`.'
       scheme: bearer
       type: http
-x-refined-from:
-- aiapplyd-openapi.json
-- aiapplyd-openapi.yml

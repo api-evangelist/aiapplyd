@@ -1,15 +1,15 @@
 openapi: 3.2.0
 info:
-  title: Aiapplyd Onboarding API
-  version: 115c47ce
   contact:
     email: support@aiapplyd.com
     name: AI Applyd
     url: https://aiapplyd.com
+  description: 'The AI Applyd API runs the whole job hunt for you: it matches you to roles that fit your profile, rewrites your resume for each posting, writes the cover letter the form asks for, and auto-applies across the major applicant tracking systems.'
   license:
     name: Proprietary
     url: https://aiapplyd.com/legal/terms
-  description: 'Operations tagged onboarding across 2 of this provider''s published API definitions: aiapplyd-openapi.json, aiapplyd-openapi.yml. Each path carries the servers of the definition it was published in.'
+  title: AI Applyd Onboarding API
+  version: 115c47ce
 servers:
 - description: Current environment
   url: https://api.aiapplyd.com/api/v1
@@ -78,9 +78,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: postOnboardingParseResume
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /onboarding/auto-setup:
     post:
       tags:
@@ -130,9 +127,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: postOnboardingAutoSetup
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /onboarding/discover-status:
     get:
       tags:
@@ -177,9 +171,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: getOnboardingDiscoverStatus
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /onboarding/profile:
     post:
       tags:
@@ -254,9 +245,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: getOnboardingProfile
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /onboarding/resume-prefill:
     get:
       tags:
@@ -289,9 +277,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: getOnboardingResumePrefill
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /onboarding/complete:
     post:
       tags:
@@ -336,9 +321,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: postOnboardingComplete
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /onboarding/escrow:
     post:
       tags:
@@ -370,9 +352,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: postOnboardingEscrow
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /onboarding/escrow/redeem:
     post:
       tags:
@@ -410,9 +389,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: postOnboardingEscrowRedeem
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
 components:
   schemas:
     AutoSetupPreferencesData:
@@ -473,6 +449,1679 @@ components:
       - salaryMin
       - targetRoles
       - updatedAt
+      additionalProperties: false
+    ParseResumeResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ParsedResumeData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    ResponseMetadata:
+      type: object
+      properties:
+        duration:
+          type: number
+          description: Request duration in milliseconds
+          example: 150
+          exclusiveMinimum: 0
+        performance:
+          type: object
+          properties:
+            dbQueries:
+              type: integer
+              minimum: 0
+            totalDbTime:
+              type: number
+              minimum: 0
+          description: Performance metrics (preview/local only)
+        requestId:
+          type: string
+          description: Unique request identifier
+          example: req_abc123
+        timestamp:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp
+          example: '2026-09-25T17:29:47.224Z'
+        version:
+          type: string
+          description: API version
+          example: v1
+    RedeemOnboardingEscrowResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/RedeemOnboardingEscrowPayload'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    AutoSetupData:
+      type: object
+      properties:
+        discoverStatusKey:
+          type:
+          - string
+          - 'null'
+          description: KV key the frontend can poll via GET /onboarding/discover-status to track background match discovery. Null when no discovery was triggered.
+          example: onboarding:discover:user_abc123
+        preferences:
+          $ref: '#/components/schemas/AutoSetupPreferencesData'
+        scrapeStatus:
+          type: string
+          enum:
+          - triggered
+          - skipped
+          - failed
+          description: Whether initial job scrape was triggered
+          example: triggered
+        userUpdated:
+          type: boolean
+          description: Whether the user account was updated
+          example: true
+      required:
+      - discoverStatusKey
+      - preferences
+      - scrapeStatus
+      - userUpdated
+      additionalProperties: false
+    MintOnboardingEscrowResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/MintOnboardingEscrowPayload'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    ParsedResumeData:
+      type: object
+      properties:
+        addressLine1:
+          type:
+          - string
+          - 'null'
+          description: Street + number exactly as printed, or null
+          example: Hauptstrasse 12
+        city:
+          type:
+          - string
+          - 'null'
+          description: City from resume
+          example: San Francisco
+        companySize:
+          type: array
+          items:
+            type: string
+          description: 'AI-inferred company size preferences: startup, small, medium, large, enterprise'
+          example:
+          - startup
+          - medium
+        country:
+          type:
+          - string
+          - 'null'
+          description: Country from resume
+          example: United States
+        currentJobTitle:
+          type:
+          - string
+          - 'null'
+          description: Current or most recent job title
+          example: Senior Software Engineer
+        documentId:
+          type: integer
+          description: ID of the saved user document
+          example: 42
+        education:
+          type: array
+          items:
+            $ref: '#/components/schemas/EducationItem'
+          description: Education history extracted from resume
+        educationLevel:
+          type:
+          - string
+          - 'null'
+          description: 'AI-inferred education level: high_school, associate, bachelor, master, doctorate'
+          example: bachelor
+        email:
+          type:
+          - string
+          - 'null'
+          description: Email address from resume
+          example: john.doe@example.com
+        experienceLevel:
+          type:
+          - string
+          - 'null'
+          description: 'AI-inferred experience level: entry, mid, senior, lead, executive'
+          example: senior
+        fieldEvidence:
+          type: array
+          items:
+            $ref: '#/components/schemas/ResumeFieldEvidence'
+          description: Verbatim quotes the model offers for contact and level facts
+        firstName:
+          type:
+          - string
+          - 'null'
+          description: First name parsed from full name
+          example: John
+        fullName:
+          type:
+          - string
+          - 'null'
+          description: Full name from resume
+          example: John Doe
+        githubUrl:
+          type:
+          - string
+          - 'null'
+          description: GitHub profile URL exactly as printed, or null
+          example: https://github.com/johndoe
+        industries:
+          type: array
+          items:
+            type: string
+          description: AI-inferred industries from work history
+          example:
+          - Software & SaaS
+          - AI & Machine Learning
+        jobTypes:
+          type: array
+          items:
+            type: string
+          description: 'AI-inferred job types: full_time, part_time, contract, freelance, internship, temporary'
+          example:
+          - full_time
+        lastName:
+          type:
+          - string
+          - 'null'
+          description: Last name parsed from full name
+          example: Doe
+        linkedinUrl:
+          type:
+          - string
+          - 'null'
+          description: LinkedIn profile URL exactly as printed, or null
+          example: https://www.linkedin.com/in/johndoe
+        phone:
+          type:
+          - string
+          - 'null'
+          description: Phone number from resume
+          example: +1-555-123-4567
+        portfolioUrl:
+          type:
+          - string
+          - 'null'
+          description: Personal website / portfolio URL exactly as printed, or null
+          example: https://johndoe.dev
+        prefill:
+          $ref: '#/components/schemas/ResumePrefill'
+        professionalSummary:
+          type:
+          - string
+          - 'null'
+          description: Professional summary or objective
+          example: Experienced full-stack engineer with 8 years building scalable web applications.
+        skills:
+          type: array
+          items:
+            type: string
+          description: Skills extracted from resume
+          example:
+          - TypeScript
+          - React
+          - Node.js
+          - PostgreSQL
+        state:
+          type:
+          - string
+          - 'null'
+          description: State/province from resume
+          example: California
+        suggestedJobTitles:
+          type: array
+          items:
+            type: string
+          description: Suggested job titles based on experience
+          example:
+          - Senior Software Engineer
+          - Full Stack Developer
+          - Tech Lead
+        suggestedLocations:
+          type: array
+          items:
+            type: string
+          description: Suggested job search locations based on resume
+          example:
+          - San Francisco, CA
+          - Remote
+        workExperience:
+          type: array
+          items:
+            $ref: '#/components/schemas/WorkExperienceItem'
+          description: Work experience history extracted from resume
+        yearsOfExperience:
+          type:
+          - integer
+          - 'null'
+          description: Estimated total years of experience (whole number)
+          example: 8
+        zipCode:
+          type:
+          - string
+          - 'null'
+          description: ZIP/postal code from resume
+          example: '94105'
+      required:
+      - city
+      - companySize
+      - country
+      - currentJobTitle
+      - documentId
+      - education
+      - educationLevel
+      - email
+      - experienceLevel
+      - firstName
+      - fullName
+      - industries
+      - jobTypes
+      - lastName
+      - phone
+      - professionalSummary
+      - skills
+      - state
+      - suggestedJobTitles
+      - suggestedLocations
+      - workExperience
+      - yearsOfExperience
+      - zipCode
+      additionalProperties: false
+    OnboardingSoftFilled:
+      type: object
+      properties:
+        targetRoles:
+          type: boolean
+        locations:
+          type: boolean
+        salaryMin:
+          type: boolean
+        salaryMax:
+          type: boolean
+        experienceLevels:
+          type: boolean
+        remoteGlobal:
+          type: boolean
+        personaCreated:
+          type: boolean
+        minMatchScore:
+          type: boolean
+        dailyLimit:
+          type: boolean
+        scoringWeights:
+          type: boolean
+      required:
+      - targetRoles
+      - locations
+      - salaryMin
+      - salaryMax
+      - experienceLevels
+      - remoteGlobal
+      - personaCreated
+      - minMatchScore
+      - dailyLimit
+      - scoringWeights
+    OnboardingProfileResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/OnboardingProfileData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    DiscoverStatusResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/DiscoverStatusData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    ResumePrefillResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ResumePrefillData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    AutoSetupRequest:
+      type: object
+      properties:
+        city:
+          type:
+          - string
+          - 'null'
+          description: City from parsed resume
+          example: San Francisco
+        country:
+          type:
+          - string
+          - 'null'
+          description: Country from parsed resume
+          example: United States
+        documentId:
+          type: integer
+          description: ID of the parsed resume document (optional for manual entry)
+          example: 42
+          exclusiveMinimum: 0
+        email:
+          type:
+          - string
+          - 'null'
+          description: Email from parsed resume
+          example: john.doe@example.com
+        experienceLevel:
+          type: string
+          enum:
+          - entry
+          - mid
+          - senior
+          - lead
+          - executive
+          description: Inferred experience level (DEPRECATED scalar  -  prefer `experienceLevels`). When `experienceLevels` is present it wins; the scalar is mirrored from its first element.
+          example: senior
+        experienceLevels:
+          type: array
+          items:
+            type: string
+            enum:
+            - entry
+            - mid
+            - senior
+            - lead
+            - executive
+            description: Professional experience level
+            example: mid
+          description: Inferred experience levels (multi-select). The résumé parser pre-selects ONE as primary; the user can add more. Empty/omitted = no seniority constraint.
+          example:
+          - mid
+          - senior
+        remoteGlobal:
+          type: boolean
+          description: Accept worldwide "Remote  -  Anywhere (Global)" jobs from any region. Set via the location picker's Remote-Anywhere option. Independent of workStyles "remote" (region-restricted).
+          example: false
+        fullName:
+          type:
+          - string
+          - 'null'
+          description: Full name from parsed resume
+          example: John Doe
+        phone:
+          type:
+          - string
+          - 'null'
+          description: Phone number from parsed resume
+          example: +1-555-123-4567
+        benefits:
+          type: array
+          items:
+            type: string
+          description: Must-have job benefits
+          example:
+          - health_insurance
+          - remote_work
+        companySize:
+          type: array
+          items:
+            type: string
+          description: Preferred company sizes
+          example:
+          - startup
+          - medium
+        educationLevel:
+          type: string
+          description: Minimum education level filter
+          example: bachelor
+        industries:
+          type: array
+          items:
+            type: string
+          description: Industries inferred from work experience
+          example:
+          - Technology
+          - Finance
+          - Healthcare
+        jobTypes:
+          type: array
+          items:
+            type: string
+          description: Preferred job types
+          example:
+          - full_time
+          - contract
+        salaryCurrency:
+          type: string
+          enum:
+          - usd
+          - eur
+          - gbp
+          - cad
+          - aud
+          - inr
+          description: Currency for the salary band (converted to USD for matching). Defaults to usd.
+          example: eur
+        salaryMax:
+          type: integer
+          description: Maximum desired salary (in salaryCurrency)
+          example: 200000
+          exclusiveMinimum: 0
+        salaryMin:
+          type: integer
+          description: Minimum desired salary (in salaryCurrency)
+          example: 80000
+          exclusiveMinimum: 0
+        visaSponsorship:
+          type: string
+          description: Visa sponsorship preference
+          example: any
+        skills:
+          type: array
+          items:
+            type: string
+          description: Skills extracted from resume
+          example:
+          - TypeScript
+          - React
+          - Node.js
+        state:
+          type:
+          - string
+          - 'null'
+          description: State/province from resume
+          example: California
+        suggestedJobTitles:
+          type: array
+          items:
+            type: string
+          minItems: 1
+          maxItems: 5
+          description: 'Suggested job titles based on resume (max 5). Empty arrays and placeholder values ("anywhere", "any", ...) are rejected: a specific title is required to scope the job search.'
+          example:
+          - Senior Software Engineer
+          - Full Stack Developer
+        suggestedLocations:
+          type: array
+          items:
+            type: string
+          minItems: 1
+          maxItems: 5
+          description: 'Suggested job search locations as "City, Country" or "Country" (max 5). Middle admin segments (state/province) are stripped on ingest. Empty arrays and placeholder values ("anywhere", "any", ...) are rejected: a specific location is required to scope the job search.'
+          example:
+          - San Francisco, United States
+          - Berlin, Germany
+        workStyles:
+          type: array
+          items:
+            type: string
+            enum:
+            - onsite
+            - hybrid
+            - remote
+            description: User's preferred work style, physical mode only, no geo scoping
+            example: remote
+          minItems: 1
+          description: Preferred work styles (onsite/hybrid/remote), multi-select, at least 1 required
+          example:
+          - remote
+          - hybrid
+      required:
+      - city
+      - country
+      - email
+      - fullName
+      - phone
+      - skills
+      - state
+      - suggestedJobTitles
+      - suggestedLocations
+      - workStyles
+      additionalProperties: false
+    RedeemOnboardingEscrowPayload:
+      type: object
+      properties:
+        answers:
+          allOf:
+          - $ref: '#/components/schemas/OnboardingProfileUpsert'
+          - description: The escrowed answers, or null when this reference resolves to nothing.
+        screen:
+          type:
+          - integer
+          - 'null'
+          description: Furthest pre-auth screen reached, or null alongside a null answers.
+          example: 18
+      required:
+      - answers
+      - screen
+    ResumePrefillData:
+      type: object
+      properties:
+        documentId:
+          type:
+          - integer
+          - 'null'
+          description: The base resume the prefill came from, or null when there is none
+          example: 42
+        jobPreferenceFields:
+          type: array
+          items:
+            type: string
+            enum:
+            - locations
+            - experienceLevels
+            - skills
+            - targetRoles
+            description: A job-preference field a verified resume prefill may fill when the user left it blank
+            example: locations
+          description: Job-preference fields whose saved value is still the one seeded from the resume
+          example:
+          - locations
+          - skills
+        profileFields:
+          type: array
+          items:
+            type: string
+            enum:
+            - addressLine1
+            - city
+            - state
+            - country
+            - zipCode
+            - phone
+            - linkedinUrl
+            - githubUrl
+            - portfolioUrl
+            - currentEmployer
+            - highestEducation
+            - yearsOfExperience
+            description: An application-profile field a verified resume prefill may fill
+            example: city
+          description: Application-profile fields whose saved value still equals the verified resume value
+          example:
+          - city
+          - country
+          - linkedinUrl
+        resumeLocations:
+          type: array
+          items:
+            type: string
+          description: Canonical cities from the resume (home first, then past roles), max 5, offered as opt-in location chips
+          example:
+          - Berlin, Germany
+          - Munich, Germany
+        seedableSkillsCount:
+          type: integer
+          minimum: 0
+          description: How many resume skills the seed would write (deduped, spoken languages removed, capped)
+          example: 12
+        status:
+          type: string
+          enum:
+          - none
+          - pending
+          - ready
+          - failed
+          description: 'Lifecycle of the base resume prefill: none (no resume), pending (parsing), ready, failed'
+          example: ready
+      required:
+      - documentId
+      - jobPreferenceFields
+      - profileFields
+      - resumeLocations
+      - seedableSkillsCount
+      - status
+      additionalProperties: false
+    ResumeFieldEvidence:
+      type: object
+      properties:
+        confidence:
+          type: string
+          enum:
+          - high
+          - medium
+          - low
+          description: 'How the value was read: high/medium when printed in the resume, low when inferred'
+          example: high
+        field:
+          type: string
+          enum:
+          - addressLine1
+          - city
+          - state
+          - country
+          - zipCode
+          - phone
+          - email
+          - linkedinUrl
+          - githubUrl
+          - portfolioUrl
+          - currentEmployer
+          - educationLevel
+          description: A parsed resume fact the model must back with a verbatim quote from the resume
+          example: city
+        quote:
+          type:
+          - string
+          - 'null'
+          description: The exact contiguous resume text that contains the value (<=160 chars), or null
+          example: Berlin, Germany | +49 176 1234 5678
+      required:
+      - confidence
+      - field
+      - quote
+      additionalProperties: false
+    WorkExperienceItem:
+      type: object
+      properties:
+        company:
+          type: string
+          description: Company name
+          example: Acme Corp
+        current:
+          type: boolean
+          description: Whether this is the current position
+          example: false
+        description:
+          type:
+          - string
+          - 'null'
+          description: Role description or achievements
+          example: Led a team of 5 engineers building microservices
+        endDate:
+          type:
+          - string
+          - 'null'
+          description: End date (free-form from resume)
+          example: Dec 2023
+        location:
+          type:
+          - string
+          - 'null'
+          description: City of this role exactly as printed on the resume
+          example: Berlin
+        startDate:
+          type:
+          - string
+          - 'null'
+          description: Start date (free-form from resume)
+          example: Jan 2020
+        title:
+          type: string
+          description: Job title
+          example: Senior Software Engineer
+      required:
+      - company
+      - current
+      - description
+      - endDate
+      - startDate
+      - title
+      additionalProperties: false
+    MintOnboardingEscrowBody:
+      type: object
+      properties:
+        answers:
+          type: object
+          properties:
+            activelyLooking:
+              type: boolean
+            attributionSource:
+              type: string
+              enum:
+              - social
+              - influencer
+              - friend
+              - search
+              - ad
+              - other
+              description: How the user discovered AI Applyd
+              example: search
+            blockers:
+              type: array
+              items:
+                type: string
+                enum:
+                - not_applying_enough
+                - cant_land_interviews
+                - not_ready_yet
+                - lack_great_offers
+                description: A blocker the user feels is hindering their job search
+                example: not_applying_enough
+              maxItems: 3
+            categories:
+              type: array
+              items:
+                type: string
+                enum:
+                - software_engineering
+                - healthcare
+                - consulting
+                - data
+                - design
+                - finance
+                - legal
+                - hr
+                - marketing
+                - operations_strategy
+                - product
+                - sales
+                - customer_success
+                - security
+                - misc_engineering
+                description: Coarse career-field category for onboarding role discovery
+                example: software_engineering
+              maxItems: 3
+            customRoles:
+              type: array
+              items:
+                type: string
+                minLength: 1
+                maxLength: 120
+              maxItems: 5
+            experienceBand:
+              type: string
+              enum:
+              - internship
+              - entry
+              - junior
+              - mid
+              - senior
+              - expert
+              description: Onboarding-facing experience band picked by the user
+              example: mid
+            experienceBands:
+              type: array
+              items:
+                type: string
+                enum:
+                - internship
+                - entry
+                - junior
+                - mid
+                - senior
+                - expert
+                description: Onboarding-facing experience band picked by the user
+                example: mid
+              maxItems: 6
+            goal:
+              type: string
+              enum:
+              - land_asap
+              - make_more_money
+              - land_dream_job
+              description: The user's primary job-search goal
+              example: land_asap
+            importance:
+              type: array
+              items:
+                type: string
+                enum:
+                - meaningful_work
+                - experienced_leaders
+                - top_investors
+                - wear_many_hats
+                - smart_people
+                - challenging_work
+                - growing_fast
+                - cool_startup
+                - stable_company
+                - innovative_tech
+                - flexible_hours
+                - great_benefits
+                description: A factor the user cares about most in their next role
+                example: meaningful_work
+              maxItems: 3
+            interviewsPerWeekTarget:
+              type: integer
+              minimum: 0
+              maximum: 50
+            jobTimeline:
+              type: string
+              enum:
+              - one_month
+              - three_months
+              - six_months
+              - twelve_months_plus
+              description: How soon the user wants to land a new role
+              example: three_months
+            locations:
+              type: array
+              items:
+                type: string
+                minLength: 1
+                maxLength: 160
+              maxItems: 5
+            motivations:
+              type: array
+              items:
+                type: string
+                enum:
+                - more_money
+                - support_family
+                - exciting_job
+                - get_time_back
+                description: A motivation driving the user's job search
+                example: more_money
+              maxItems: 3
+            referralCodeUsed:
+              type: string
+              minLength: 1
+              maxLength: 64
+            remoteGlobal:
+              type: boolean
+            roles:
+              type: array
+              items:
+                type: string
+                minLength: 1
+                maxLength: 120
+              maxItems: 5
+            salaryCurrency:
+              type: string
+              enum:
+              - usd
+              - eur
+              - gbp
+              - cad
+              - aud
+              - inr
+              description: Currency for salary values
+              example: usd
+            salaryMax:
+              type: number
+              minimum: 0
+            salaryMin:
+              type: number
+              minimum: 0
+            triedOtherApps:
+              type: boolean
+          additionalProperties: false
+        screen:
+          type: integer
+          minimum: 1
+          maximum: 64
+          description: Furthest pre-auth screen reached, so the return leg resumes in place.
+          example: 18
+      required:
+      - answers
+      - screen
+      additionalProperties: false
+    AutoSetupResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/AutoSetupData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    DiscoverStatusData:
+      type: object
+      properties:
+        completedAt:
+          type: integer
+          description: Epoch ms when the job completed (success only)
+          example: 1729500000000
+        error:
+          type: string
+          description: Error message if the discovery failed
+          example: OpenRouter timeout
+        failedAt:
+          type: integer
+          description: Epoch ms when the job failed
+          example: 1729500000000
+        startedAt:
+          type: integer
+          description: Epoch ms when the job was kicked off
+          example: 1729500000000
+        status:
+          type: string
+          enum:
+          - processing
+          - completed
+          - failed
+          - unknown
+          description: Status of the background match-discovery job kicked off by auto-setup
+          example: processing
+      required:
+      - status
+      additionalProperties: false
+    OnboardingProfileData:
+      type: object
+      properties:
+        activelyLooking:
+          type:
+          - boolean
+          - 'null'
+        triedOtherApps:
+          type:
+          - boolean
+          - 'null'
+        importance:
+          type: array
+          items:
+            type: string
+            enum:
+            - meaningful_work
+            - experienced_leaders
+            - top_investors
+            - wear_many_hats
+            - smart_people
+            - challenging_work
+            - growing_fast
+            - cool_startup
+            - stable_company
+            - innovative_tech
+            - flexible_hours
+            - great_benefits
+            description: A factor the user cares about most in their next role
+            example: meaningful_work
+        categories:
+          type: array
+          items:
+            type: string
+            enum:
+            - software_engineering
+            - healthcare
+            - consulting
+            - data
+            - design
+            - finance
+            - legal
+            - hr
+            - marketing
+            - operations_strategy
+            - product
+            - sales
+            - customer_success
+            - security
+            - misc_engineering
+            description: Coarse career-field category for onboarding role discovery
+            example: software_engineering
+        roles:
+          type: array
+          items:
+            type: string
+        customRoles:
+          type: array
+          items:
+            type: string
+        experienceBand:
+          type:
+          - string
+          - 'null'
+          enum:
+          - internship
+          - entry
+          - junior
+          - mid
+          - senior
+          - expert
+          - null
+          description: Onboarding-facing experience band picked by the user
+          example: mid
+        experienceBands:
+          type: array
+          items:
+            type: string
+            enum:
+            - internship
+            - entry
+            - junior
+            - mid
+            - senior
+            - expert
+            description: Onboarding-facing experience band picked by the user
+            example: mid
+        locations:
+          type: array
+          items:
+            type: string
+        remoteGlobal:
+          type: boolean
+        country:
+          type:
+          - string
+          - 'null'
+        salaryMin:
+          type:
+          - number
+          - 'null'
+        salaryMax:
+          type:
+          - number
+          - 'null'
+        salaryCurrency:
+          type:
+          - string
+          - 'null'
+        goal:
+          type:
+          - string
+          - 'null'
+          enum:
+          - land_asap
+          - make_more_money
+          - land_dream_job
+          - null
+          description: The user's primary job-search goal
+          example: land_asap
+        interviewsPerWeekTarget:
+          type:
+          - integer
+          - 'null'
+        jobTimeline:
+          type:
+          - string
+          - 'null'
+          enum:
+          - one_month
+          - three_months
+          - six_months
+          - twelve_months_plus
+          - null
+          description: How soon the user wants to land a new role
+          example: three_months
+        blockers:
+          type: array
+          items:
+            type: string
+            enum:
+            - not_applying_enough
+            - cant_land_interviews
+            - not_ready_yet
+            - lack_great_offers
+            description: A blocker the user feels is hindering their job search
+            example: not_applying_enough
+        motivations:
+          type: array
+          items:
+            type: string
+            enum:
+            - more_money
+            - support_family
+            - exciting_job
+            - get_time_back
+            description: A motivation driving the user's job search
+            example: more_money
+        attributionSource:
+          type:
+          - string
+          - 'null'
+          enum:
+          - social
+          - influencer
+          - friend
+          - search
+          - ad
+          - other
+          - null
+          description: How the user discovered AI Applyd
+          example: search
+        referralCodeUsed:
+          type:
+          - string
+          - 'null'
+        resumeDeferred:
+          type: boolean
+        fullLegalName:
+          type:
+          - string
+          - 'null'
+        phone:
+          type:
+          - string
+          - 'null'
+        completedSteps:
+          type: array
+          items:
+            type: string
+            enum:
+            - upload-resume
+            - set-preferences
+            - connect-platform
+            - discover-jobs
+            description: Step identifier in the dashboard onboarding / readiness checklist
+            example: upload-resume
+        finalizedAt:
+          type:
+          - string
+          - 'null'
+      required:
+      - activelyLooking
+      - triedOtherApps
+      - importance
+      - categories
+      - roles
+      - customRoles
+      - experienceBand
+      - experienceBands
+      - locations
+      - remoteGlobal
+      - country
+      - salaryMin
+      - salaryMax
+      - salaryCurrency
+      - goal
+      - interviewsPerWeekTarget
+      - jobTimeline
+      - blockers
+      - motivations
+      - attributionSource
+      - referralCodeUsed
+      - resumeDeferred
+      - fullLegalName
+      - phone
+      - completedSteps
+      - finalizedAt
+    RedeemOnboardingEscrowBody:
+      type: object
+      properties:
+        ref:
+          type: string
+          minLength: 8
+          maxLength: 120
+          description: The reference handed back by the mint and carried in the auth callback URL.
+          example: 9f1c8b3e-4d2a-4c77-9a5e-0b2f6d1e8a44
+      required:
+      - ref
+      additionalProperties: false
+    MintOnboardingEscrowPayload:
+      type: object
+      properties:
+        ref:
+          type: string
+          description: Opaque SERVER-minted escrow reference. Thread this into the auth callback URL. A client-supplied reference is never honoured.
+          example: 9f1c8b3e-4d2a-4c77-9a5e-0b2f6d1e8a44
+      required:
+      - ref
+    EducationItem:
+      type: object
+      properties:
+        degree:
+          type: string
+          description: Degree or certification name
+          example: B.S. Computer Science
+        institution:
+          type: string
+          description: School or institution name
+          example: MIT
+        year:
+          type:
+          - string
+          - 'null'
+          description: Graduation year or date range
+          example: '2018'
+      required:
+      - degree
+      - institution
+      - year
+      additionalProperties: false
+    OnboardingCompleteData:
+      type: object
+      properties:
+        onboardingCompleted:
+          type: boolean
+          enum:
+          - true
+        softFilled:
+          $ref: '#/components/schemas/OnboardingSoftFilled'
+        initialMatchCount:
+          type: integer
+          minimum: 0
+      required:
+      - onboardingCompleted
+      - softFilled
+      - initialMatchCount
+    ResumePrefill:
+      type: object
+      properties:
+        addressLine1:
+          type:
+          - string
+          - 'null'
+        city:
+          type:
+          - string
+          - 'null'
+        country:
+          type:
+          - string
+          - 'null'
+        currentEmployer:
+          type:
+          - string
+          - 'null'
+        githubUrl:
+          type:
+          - string
+          - 'null'
+        highestEducation:
+          type:
+          - string
+          - 'null'
+          enum:
+          - high_school
+          - associate
+          - bachelor
+          - master
+          - doctorate
+          - any
+          - null
+          description: Education level requirement
+          example: any
+        homeLocation:
+          type:
+          - string
+          - 'null'
+        linkedinUrl:
+          type:
+          - string
+          - 'null'
+        ownTitles:
+          type: array
+          items:
+            type: string
+        phone:
+          type:
+          - string
+          - 'null'
+        portfolioUrl:
+          type:
+          - string
+          - 'null'
+        seeded:
+          type: object
+          properties:
+            jobPreferences:
+              type: object
+              properties:
+                locations:
+                  type: boolean
+                  enum:
+                  - true
+                experienceLevels:
+                  type: boolean
+                  enum:
+                  - true
+                skills:
+                  type: boolean
+                  enum:
+                  - true
+                targetRoles:
+                  type: boolean
+                  enum:
+                  - true
+            profile:
+              type: object
+              properties:
+                addressLine1:
+                  type: boolean
+                  enum:
+                  - true
+                city:
+                  type: boolean
+                  enum:
+                  - true
+                state:
+                  type: boolean
+                  enum:
+                  - true
+                country:
+                  type: boolean
+                  enum:
+                  - true
+                zipCode:
+                  type: boolean
+                  enum:
+                  - true
+                phone:
+                  type: boolean
+                  enum:
+                  - true
+                linkedinUrl:
+                  type: boolean
+                  enum:
+                  - true
+                githubUrl:
+                  type: boolean
+                  enum:
+                  - true
+                portfolioUrl:
+                  type: boolean
+                  enum:
+                  - true
+                currentEmployer:
+                  type: boolean
+                  enum:
+                  - true
+                highestEducation:
+                  type: boolean
+                  enum:
+                  - true
+                yearsOfExperience:
+                  type: boolean
+                  enum:
+                  - true
+          additionalProperties: false
+        state:
+          type:
+          - string
+          - 'null'
+        workHistoryLocations:
+          type: array
+          items:
+            type: string
+        yearsOfExperience:
+          type:
+          - integer
+          - 'null'
+        zipCode:
+          type:
+          - string
+          - 'null'
+      required:
+      - addressLine1
+      - city
+      - country
+      - currentEmployer
+      - githubUrl
+      - highestEducation
+      - homeLocation
+      - linkedinUrl
+      - ownTitles
+      - phone
+      - portfolioUrl
+      - state
+      - workHistoryLocations
+      - yearsOfExperience
+      - zipCode
+      additionalProperties: false
+    OnboardingCompleteResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/OnboardingCompleteData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    OnboardingProfileUpsert:
+      type: object
+      properties:
+        activelyLooking:
+          type: boolean
+        triedOtherApps:
+          type: boolean
+        importance:
+          type: array
+          items:
+            type: string
+            enum:
+            - meaningful_work
+            - experienced_leaders
+            - top_investors
+            - wear_many_hats
+            - smart_people
+            - challenging_work
+            - growing_fast
+            - cool_startup
+            - stable_company
+            - innovative_tech
+            - flexible_hours
+            - great_benefits
+            description: A factor the user cares about most in their next role
+            example: meaningful_work
+          maxItems: 3
+        categories:
+          type: array
+          items:
+            type: string
+            enum:
+            - software_engineering
+            - healthcare
+            - consulting
+            - data
+            - design
+            - finance
+            - legal
+            - hr
+            - marketing
+            - operations_strategy
+            - product
+            - sales
+            - customer_success
+            - security
+            - misc_engineering
+            description: Coarse career-field category for onboarding role discovery
+            example: software_engineering
+          maxItems: 3
+        roles:
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 120
+          maxItems: 5
+        customRoles:
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 120
+          maxItems: 5
+        experienceBand:
+          type: string
+          enum:
+          - internship
+          - entry
+          - junior
+          - mid
+          - senior
+          - expert
+          description: Onboarding-facing experience band picked by the user
+          example: mid
+        experienceBands:
+          type: array
+          items:
+            type: string
+            enum:
+            - internship
+            - entry
+            - junior
+            - mid
+            - senior
+            - expert
+            description: Onboarding-facing experience band picked by the user
+            example: mid
+          maxItems: 6
+        locations:
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 160
+          maxItems: 5
+        remoteGlobal:
+          type: boolean
+        country:
+          type: string
+          minLength: 1
+          maxLength: 80
+        salaryMin:
+          type: number
+          minimum: 0
+        salaryMax:
+          type: number
+          minimum: 0
+        salaryCurrency:
+          type: string
+          enum:
+          - usd
+          - eur
+          - gbp
+          - cad
+          - aud
+          - inr
+          description: Currency for salary values
+          example: usd
+        goal:
+          type: string
+          enum:
+          - land_asap
+          - make_more_money
+          - land_dream_job
+          description: The user's primary job-search goal
+          example: land_asap
+        interviewsPerWeekTarget:
+          type: integer
+          minimum: 0
+          maximum: 50
+        jobTimeline:
+          type: string
+          enum:
+          - one_month
+          - three_months
+          - six_months
+          - twelve_months_plus
+          description: How soon the user wants to land a new role
+          example: three_months
+        blockers:
+          type: array
+          items:
+            type: string
+            enum:
+            - not_applying_enough
+            - cant_land_interviews
+            - not_ready_yet
+            - lack_great_offers
+            description: A blocker the user feels is hindering their job search
+            example: not_applying_enough
+          maxItems: 3
+        motivations:
+          type: array
+          items:
+            type: string
+            enum:
+            - more_money
+            - support_family
+            - exciting_job
+            - get_time_back
+            description: A motivation driving the user's job search
+            example: more_money
+          maxItems: 3
+        attributionSource:
+          type: string
+          enum:
+          - social
+          - influencer
+          - friend
+          - search
+          - ad
+          - other
+          description: How the user discovered AI Applyd
+          example: search
+        referralCodeUsed:
+          type: string
+          minLength: 1
+          maxLength: 64
+        resumeDeferred:
+          type: boolean
+        fullLegalName:
+          type: string
+          minLength: 1
+          maxLength: 120
+        phone:
+          type: string
+          minLength: 1
+          maxLength: 40
+        completedSteps:
+          type: array
+          items:
+            type: string
+            enum:
+            - upload-resume
+            - set-preferences
+            - connect-platform
+            - discover-jobs
+            description: Step identifier in the dashboard onboarding / readiness checklist
+            example: upload-resume
       additionalProperties: false
     CompleteOnboardingRequest:
       type: object
@@ -827,1684 +2476,8 @@ components:
       - error
       - success
       additionalProperties: false
-    ResumePrefillResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/ResumePrefillData'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    ParsedResumeData:
-      type: object
-      properties:
-        addressLine1:
-          type:
-          - string
-          - 'null'
-          description: Street + number exactly as printed, or null
-          example: Hauptstrasse 12
-        city:
-          type:
-          - string
-          - 'null'
-          description: City from resume
-          example: San Francisco
-        companySize:
-          type: array
-          items:
-            type: string
-          description: 'AI-inferred company size preferences: startup, small, medium, large, enterprise'
-          example:
-          - startup
-          - medium
-        country:
-          type:
-          - string
-          - 'null'
-          description: Country from resume
-          example: United States
-        currentJobTitle:
-          type:
-          - string
-          - 'null'
-          description: Current or most recent job title
-          example: Senior Software Engineer
-        documentId:
-          type: integer
-          description: ID of the saved user document
-          example: 42
-        education:
-          type: array
-          items:
-            $ref: '#/components/schemas/EducationItem'
-          description: Education history extracted from resume
-        educationLevel:
-          type:
-          - string
-          - 'null'
-          description: 'AI-inferred education level: high_school, associate, bachelor, master, doctorate'
-          example: bachelor
-        email:
-          type:
-          - string
-          - 'null'
-          description: Email address from resume
-          example: john.doe@example.com
-        experienceLevel:
-          type:
-          - string
-          - 'null'
-          description: 'AI-inferred experience level: entry, mid, senior, lead, executive'
-          example: senior
-        fieldEvidence:
-          type: array
-          items:
-            $ref: '#/components/schemas/ResumeFieldEvidence'
-          description: Verbatim quotes the model offers for contact and level facts
-        firstName:
-          type:
-          - string
-          - 'null'
-          description: First name parsed from full name
-          example: John
-        fullName:
-          type:
-          - string
-          - 'null'
-          description: Full name from resume
-          example: John Doe
-        githubUrl:
-          type:
-          - string
-          - 'null'
-          description: GitHub profile URL exactly as printed, or null
-          example: https://github.com/johndoe
-        industries:
-          type: array
-          items:
-            type: string
-          description: AI-inferred industries from work history
-          example:
-          - Software & SaaS
-          - AI & Machine Learning
-        jobTypes:
-          type: array
-          items:
-            type: string
-          description: 'AI-inferred job types: full_time, part_time, contract, freelance, internship, temporary'
-          example:
-          - full_time
-        lastName:
-          type:
-          - string
-          - 'null'
-          description: Last name parsed from full name
-          example: Doe
-        linkedinUrl:
-          type:
-          - string
-          - 'null'
-          description: LinkedIn profile URL exactly as printed, or null
-          example: https://www.linkedin.com/in/johndoe
-        phone:
-          type:
-          - string
-          - 'null'
-          description: Phone number from resume
-          example: +1-555-123-4567
-        portfolioUrl:
-          type:
-          - string
-          - 'null'
-          description: Personal website / portfolio URL exactly as printed, or null
-          example: https://johndoe.dev
-        prefill:
-          $ref: '#/components/schemas/ResumePrefill'
-        professionalSummary:
-          type:
-          - string
-          - 'null'
-          description: Professional summary or objective
-          example: Experienced full-stack engineer with 8 years building scalable web applications.
-        skills:
-          type: array
-          items:
-            type: string
-          description: Skills extracted from resume
-          example:
-          - TypeScript
-          - React
-          - Node.js
-          - PostgreSQL
-        state:
-          type:
-          - string
-          - 'null'
-          description: State/province from resume
-          example: California
-        suggestedJobTitles:
-          type: array
-          items:
-            type: string
-          description: Suggested job titles based on experience
-          example:
-          - Senior Software Engineer
-          - Full Stack Developer
-          - Tech Lead
-        suggestedLocations:
-          type: array
-          items:
-            type: string
-          description: Suggested job search locations based on resume
-          example:
-          - San Francisco, CA
-          - Remote
-        workExperience:
-          type: array
-          items:
-            $ref: '#/components/schemas/WorkExperienceItem'
-          description: Work experience history extracted from resume
-        yearsOfExperience:
-          type:
-          - integer
-          - 'null'
-          description: Estimated total years of experience (whole number)
-          example: 8
-        zipCode:
-          type:
-          - string
-          - 'null'
-          description: ZIP/postal code from resume
-          example: '94105'
-      required:
-      - city
-      - companySize
-      - country
-      - currentJobTitle
-      - documentId
-      - education
-      - educationLevel
-      - email
-      - experienceLevel
-      - firstName
-      - fullName
-      - industries
-      - jobTypes
-      - lastName
-      - phone
-      - professionalSummary
-      - skills
-      - state
-      - suggestedJobTitles
-      - suggestedLocations
-      - workExperience
-      - yearsOfExperience
-      - zipCode
-      additionalProperties: false
-    ResponseMetadata:
-      type: object
-      properties:
-        duration:
-          type: number
-          description: Request duration in milliseconds
-          example: 150
-          exclusiveMinimum: 0
-        performance:
-          type: object
-          properties:
-            dbQueries:
-              type: integer
-              minimum: 0
-            totalDbTime:
-              type: number
-              minimum: 0
-          description: Performance metrics (preview/local only)
-        requestId:
-          type: string
-          description: Unique request identifier
-          example: req_abc123
-        timestamp:
-          type: string
-          format: date-time
-          description: ISO 8601 timestamp
-          example: '2026-09-25T17:29:47.224Z'
-        version:
-          type: string
-          description: API version
-          example: v1
-    ResumePrefillData:
-      type: object
-      properties:
-        documentId:
-          type:
-          - integer
-          - 'null'
-          description: The base resume the prefill came from, or null when there is none
-          example: 42
-        jobPreferenceFields:
-          type: array
-          items:
-            type: string
-            enum:
-            - locations
-            - experienceLevels
-            - skills
-            - targetRoles
-            description: A job-preference field a verified resume prefill may fill when the user left it blank
-            example: locations
-          description: Job-preference fields whose saved value is still the one seeded from the resume
-          example:
-          - locations
-          - skills
-        profileFields:
-          type: array
-          items:
-            type: string
-            enum:
-            - addressLine1
-            - city
-            - state
-            - country
-            - zipCode
-            - phone
-            - linkedinUrl
-            - githubUrl
-            - portfolioUrl
-            - currentEmployer
-            - highestEducation
-            - yearsOfExperience
-            description: An application-profile field a verified resume prefill may fill
-            example: city
-          description: Application-profile fields whose saved value still equals the verified resume value
-          example:
-          - city
-          - country
-          - linkedinUrl
-        resumeLocations:
-          type: array
-          items:
-            type: string
-          description: Canonical cities from the resume (home first, then past roles), max 5, offered as opt-in location chips
-          example:
-          - Berlin, Germany
-          - Munich, Germany
-        seedableSkillsCount:
-          type: integer
-          minimum: 0
-          description: How many resume skills the seed would write (deduped, spoken languages removed, capped)
-          example: 12
-        status:
-          type: string
-          enum:
-          - none
-          - pending
-          - ready
-          - failed
-          description: 'Lifecycle of the base resume prefill: none (no resume), pending (parsing), ready, failed'
-          example: ready
-      required:
-      - documentId
-      - jobPreferenceFields
-      - profileFields
-      - resumeLocations
-      - seedableSkillsCount
-      - status
-      additionalProperties: false
-    AutoSetupRequest:
-      type: object
-      properties:
-        city:
-          type:
-          - string
-          - 'null'
-          description: City from parsed resume
-          example: San Francisco
-        country:
-          type:
-          - string
-          - 'null'
-          description: Country from parsed resume
-          example: United States
-        documentId:
-          type: integer
-          description: ID of the parsed resume document (optional for manual entry)
-          example: 42
-          exclusiveMinimum: 0
-        email:
-          type:
-          - string
-          - 'null'
-          description: Email from parsed resume
-          example: john.doe@example.com
-        experienceLevel:
-          type: string
-          enum:
-          - entry
-          - mid
-          - senior
-          - lead
-          - executive
-          description: Inferred experience level (DEPRECATED scalar  -  prefer `experienceLevels`). When `experienceLevels` is present it wins; the scalar is mirrored from its first element.
-          example: senior
-        experienceLevels:
-          type: array
-          items:
-            type: string
-            enum:
-            - entry
-            - mid
-            - senior
-            - lead
-            - executive
-            description: Professional experience level
-            example: mid
-          description: Inferred experience levels (multi-select). The résumé parser pre-selects ONE as primary; the user can add more. Empty/omitted = no seniority constraint.
-          example:
-          - mid
-          - senior
-        remoteGlobal:
-          type: boolean
-          description: Accept worldwide "Remote  -  Anywhere (Global)" jobs from any region. Set via the location picker's Remote-Anywhere option. Independent of workStyles "remote" (region-restricted).
-          example: false
-        fullName:
-          type:
-          - string
-          - 'null'
-          description: Full name from parsed resume
-          example: John Doe
-        phone:
-          type:
-          - string
-          - 'null'
-          description: Phone number from parsed resume
-          example: +1-555-123-4567
-        benefits:
-          type: array
-          items:
-            type: string
-          description: Must-have job benefits
-          example:
-          - health_insurance
-          - remote_work
-        companySize:
-          type: array
-          items:
-            type: string
-          description: Preferred company sizes
-          example:
-          - startup
-          - medium
-        educationLevel:
-          type: string
-          description: Minimum education level filter
-          example: bachelor
-        industries:
-          type: array
-          items:
-            type: string
-          description: Industries inferred from work experience
-          example:
-          - Technology
-          - Finance
-          - Healthcare
-        jobTypes:
-          type: array
-          items:
-            type: string
-          description: Preferred job types
-          example:
-          - full_time
-          - contract
-        salaryCurrency:
-          type: string
-          enum:
-          - usd
-          - eur
-          - gbp
-          - cad
-          - aud
-          - inr
-          description: Currency for the salary band (converted to USD for matching). Defaults to usd.
-          example: eur
-        salaryMax:
-          type: integer
-          description: Maximum desired salary (in salaryCurrency)
-          example: 200000
-          exclusiveMinimum: 0
-        salaryMin:
-          type: integer
-          description: Minimum desired salary (in salaryCurrency)
-          example: 80000
-          exclusiveMinimum: 0
-        visaSponsorship:
-          type: string
-          description: Visa sponsorship preference
-          example: any
-        skills:
-          type: array
-          items:
-            type: string
-          description: Skills extracted from resume
-          example:
-          - TypeScript
-          - React
-          - Node.js
-        state:
-          type:
-          - string
-          - 'null'
-          description: State/province from resume
-          example: California
-        suggestedJobTitles:
-          type: array
-          items:
-            type: string
-          minItems: 1
-          maxItems: 5
-          description: 'Suggested job titles based on resume (max 5). Empty arrays and placeholder values ("anywhere", "any", ...) are rejected: a specific title is required to scope the job search.'
-          example:
-          - Senior Software Engineer
-          - Full Stack Developer
-        suggestedLocations:
-          type: array
-          items:
-            type: string
-          minItems: 1
-          maxItems: 5
-          description: 'Suggested job search locations as "City, Country" or "Country" (max 5). Middle admin segments (state/province) are stripped on ingest. Empty arrays and placeholder values ("anywhere", "any", ...) are rejected: a specific location is required to scope the job search.'
-          example:
-          - San Francisco, United States
-          - Berlin, Germany
-        workStyles:
-          type: array
-          items:
-            type: string
-            enum:
-            - onsite
-            - hybrid
-            - remote
-            description: User's preferred work style, physical mode only, no geo scoping
-            example: remote
-          minItems: 1
-          description: Preferred work styles (onsite/hybrid/remote), multi-select, at least 1 required
-          example:
-          - remote
-          - hybrid
-      required:
-      - city
-      - country
-      - email
-      - fullName
-      - phone
-      - skills
-      - state
-      - suggestedJobTitles
-      - suggestedLocations
-      - workStyles
-      additionalProperties: false
-    OnboardingCompleteResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/OnboardingCompleteData'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    OnboardingProfileResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/OnboardingProfileData'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    OnboardingCompleteData:
-      type: object
-      properties:
-        onboardingCompleted:
-          type: boolean
-          enum:
-          - true
-        softFilled:
-          $ref: '#/components/schemas/OnboardingSoftFilled'
-        initialMatchCount:
-          type: integer
-          minimum: 0
-      required:
-      - onboardingCompleted
-      - softFilled
-      - initialMatchCount
-    OnboardingSoftFilled:
-      type: object
-      properties:
-        targetRoles:
-          type: boolean
-        locations:
-          type: boolean
-        salaryMin:
-          type: boolean
-        salaryMax:
-          type: boolean
-        experienceLevels:
-          type: boolean
-        remoteGlobal:
-          type: boolean
-        personaCreated:
-          type: boolean
-        minMatchScore:
-          type: boolean
-        dailyLimit:
-          type: boolean
-        scoringWeights:
-          type: boolean
-      required:
-      - targetRoles
-      - locations
-      - salaryMin
-      - salaryMax
-      - experienceLevels
-      - remoteGlobal
-      - personaCreated
-      - minMatchScore
-      - dailyLimit
-      - scoringWeights
-    OnboardingProfileData:
-      type: object
-      properties:
-        activelyLooking:
-          type:
-          - boolean
-          - 'null'
-        triedOtherApps:
-          type:
-          - boolean
-          - 'null'
-        importance:
-          type: array
-          items:
-            type: string
-            enum:
-            - meaningful_work
-            - experienced_leaders
-            - top_investors
-            - wear_many_hats
-            - smart_people
-            - challenging_work
-            - growing_fast
-            - cool_startup
-            - stable_company
-            - innovative_tech
-            - flexible_hours
-            - great_benefits
-            description: A factor the user cares about most in their next role
-            example: meaningful_work
-        categories:
-          type: array
-          items:
-            type: string
-            enum:
-            - software_engineering
-            - healthcare
-            - consulting
-            - data
-            - design
-            - finance
-            - legal
-            - hr
-            - marketing
-            - operations_strategy
-            - product
-            - sales
-            - customer_success
-            - security
-            - misc_engineering
-            description: Coarse career-field category for onboarding role discovery
-            example: software_engineering
-        roles:
-          type: array
-          items:
-            type: string
-        customRoles:
-          type: array
-          items:
-            type: string
-        experienceBand:
-          type:
-          - string
-          - 'null'
-          enum:
-          - internship
-          - entry
-          - junior
-          - mid
-          - senior
-          - expert
-          - null
-          description: Onboarding-facing experience band picked by the user
-          example: mid
-        experienceBands:
-          type: array
-          items:
-            type: string
-            enum:
-            - internship
-            - entry
-            - junior
-            - mid
-            - senior
-            - expert
-            description: Onboarding-facing experience band picked by the user
-            example: mid
-        locations:
-          type: array
-          items:
-            type: string
-        remoteGlobal:
-          type: boolean
-        country:
-          type:
-          - string
-          - 'null'
-        salaryMin:
-          type:
-          - number
-          - 'null'
-        salaryMax:
-          type:
-          - number
-          - 'null'
-        salaryCurrency:
-          type:
-          - string
-          - 'null'
-        goal:
-          type:
-          - string
-          - 'null'
-          enum:
-          - land_asap
-          - make_more_money
-          - land_dream_job
-          - null
-          description: The user's primary job-search goal
-          example: land_asap
-        interviewsPerWeekTarget:
-          type:
-          - integer
-          - 'null'
-        jobTimeline:
-          type:
-          - string
-          - 'null'
-          enum:
-          - one_month
-          - three_months
-          - six_months
-          - twelve_months_plus
-          - null
-          description: How soon the user wants to land a new role
-          example: three_months
-        blockers:
-          type: array
-          items:
-            type: string
-            enum:
-            - not_applying_enough
-            - cant_land_interviews
-            - not_ready_yet
-            - lack_great_offers
-            description: A blocker the user feels is hindering their job search
-            example: not_applying_enough
-        motivations:
-          type: array
-          items:
-            type: string
-            enum:
-            - more_money
-            - support_family
-            - exciting_job
-            - get_time_back
-            description: A motivation driving the user's job search
-            example: more_money
-        attributionSource:
-          type:
-          - string
-          - 'null'
-          enum:
-          - social
-          - influencer
-          - friend
-          - search
-          - ad
-          - other
-          - null
-          description: How the user discovered AI Applyd
-          example: search
-        referralCodeUsed:
-          type:
-          - string
-          - 'null'
-        resumeDeferred:
-          type: boolean
-        fullLegalName:
-          type:
-          - string
-          - 'null'
-        phone:
-          type:
-          - string
-          - 'null'
-        completedSteps:
-          type: array
-          items:
-            type: string
-            enum:
-            - upload-resume
-            - set-preferences
-            - connect-platform
-            - discover-jobs
-            description: Step identifier in the dashboard onboarding / readiness checklist
-            example: upload-resume
-        finalizedAt:
-          type:
-          - string
-          - 'null'
-      required:
-      - activelyLooking
-      - triedOtherApps
-      - importance
-      - categories
-      - roles
-      - customRoles
-      - experienceBand
-      - experienceBands
-      - locations
-      - remoteGlobal
-      - country
-      - salaryMin
-      - salaryMax
-      - salaryCurrency
-      - goal
-      - interviewsPerWeekTarget
-      - jobTimeline
-      - blockers
-      - motivations
-      - attributionSource
-      - referralCodeUsed
-      - resumeDeferred
-      - fullLegalName
-      - phone
-      - completedSteps
-      - finalizedAt
-    ResumePrefill:
-      type: object
-      properties:
-        addressLine1:
-          type:
-          - string
-          - 'null'
-        city:
-          type:
-          - string
-          - 'null'
-        country:
-          type:
-          - string
-          - 'null'
-        currentEmployer:
-          type:
-          - string
-          - 'null'
-        githubUrl:
-          type:
-          - string
-          - 'null'
-        highestEducation:
-          type:
-          - string
-          - 'null'
-          enum:
-          - high_school
-          - associate
-          - bachelor
-          - master
-          - doctorate
-          - any
-          - null
-          description: Education level requirement
-          example: any
-        homeLocation:
-          type:
-          - string
-          - 'null'
-        linkedinUrl:
-          type:
-          - string
-          - 'null'
-        ownTitles:
-          type: array
-          items:
-            type: string
-        phone:
-          type:
-          - string
-          - 'null'
-        portfolioUrl:
-          type:
-          - string
-          - 'null'
-        seeded:
-          type: object
-          properties:
-            jobPreferences:
-              type: object
-              properties:
-                locations:
-                  type: boolean
-                  enum:
-                  - true
-                experienceLevels:
-                  type: boolean
-                  enum:
-                  - true
-                skills:
-                  type: boolean
-                  enum:
-                  - true
-                targetRoles:
-                  type: boolean
-                  enum:
-                  - true
-            profile:
-              type: object
-              properties:
-                addressLine1:
-                  type: boolean
-                  enum:
-                  - true
-                city:
-                  type: boolean
-                  enum:
-                  - true
-                state:
-                  type: boolean
-                  enum:
-                  - true
-                country:
-                  type: boolean
-                  enum:
-                  - true
-                zipCode:
-                  type: boolean
-                  enum:
-                  - true
-                phone:
-                  type: boolean
-                  enum:
-                  - true
-                linkedinUrl:
-                  type: boolean
-                  enum:
-                  - true
-                githubUrl:
-                  type: boolean
-                  enum:
-                  - true
-                portfolioUrl:
-                  type: boolean
-                  enum:
-                  - true
-                currentEmployer:
-                  type: boolean
-                  enum:
-                  - true
-                highestEducation:
-                  type: boolean
-                  enum:
-                  - true
-                yearsOfExperience:
-                  type: boolean
-                  enum:
-                  - true
-          additionalProperties: false
-        state:
-          type:
-          - string
-          - 'null'
-        workHistoryLocations:
-          type: array
-          items:
-            type: string
-        yearsOfExperience:
-          type:
-          - integer
-          - 'null'
-        zipCode:
-          type:
-          - string
-          - 'null'
-      required:
-      - addressLine1
-      - city
-      - country
-      - currentEmployer
-      - githubUrl
-      - highestEducation
-      - homeLocation
-      - linkedinUrl
-      - ownTitles
-      - phone
-      - portfolioUrl
-      - state
-      - workHistoryLocations
-      - yearsOfExperience
-      - zipCode
-      additionalProperties: false
-    MintOnboardingEscrowResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/MintOnboardingEscrowPayload'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    MintOnboardingEscrowPayload:
-      type: object
-      properties:
-        ref:
-          type: string
-          description: Opaque SERVER-minted escrow reference. Thread this into the auth callback URL. A client-supplied reference is never honoured.
-          example: 9f1c8b3e-4d2a-4c77-9a5e-0b2f6d1e8a44
-      required:
-      - ref
-    RedeemOnboardingEscrowBody:
-      type: object
-      properties:
-        ref:
-          type: string
-          minLength: 8
-          maxLength: 120
-          description: The reference handed back by the mint and carried in the auth callback URL.
-          example: 9f1c8b3e-4d2a-4c77-9a5e-0b2f6d1e8a44
-      required:
-      - ref
-      additionalProperties: false
-    ResumeFieldEvidence:
-      type: object
-      properties:
-        confidence:
-          type: string
-          enum:
-          - high
-          - medium
-          - low
-          description: 'How the value was read: high/medium when printed in the resume, low when inferred'
-          example: high
-        field:
-          type: string
-          enum:
-          - addressLine1
-          - city
-          - state
-          - country
-          - zipCode
-          - phone
-          - email
-          - linkedinUrl
-          - githubUrl
-          - portfolioUrl
-          - currentEmployer
-          - educationLevel
-          description: A parsed resume fact the model must back with a verbatim quote from the resume
-          example: city
-        quote:
-          type:
-          - string
-          - 'null'
-          description: The exact contiguous resume text that contains the value (<=160 chars), or null
-          example: Berlin, Germany | +49 176 1234 5678
-      required:
-      - confidence
-      - field
-      - quote
-      additionalProperties: false
-    RedeemOnboardingEscrowResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/RedeemOnboardingEscrowPayload'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    OnboardingProfileUpsert:
-      type: object
-      properties:
-        activelyLooking:
-          type: boolean
-        triedOtherApps:
-          type: boolean
-        importance:
-          type: array
-          items:
-            type: string
-            enum:
-            - meaningful_work
-            - experienced_leaders
-            - top_investors
-            - wear_many_hats
-            - smart_people
-            - challenging_work
-            - growing_fast
-            - cool_startup
-            - stable_company
-            - innovative_tech
-            - flexible_hours
-            - great_benefits
-            description: A factor the user cares about most in their next role
-            example: meaningful_work
-          maxItems: 3
-        categories:
-          type: array
-          items:
-            type: string
-            enum:
-            - software_engineering
-            - healthcare
-            - consulting
-            - data
-            - design
-            - finance
-            - legal
-            - hr
-            - marketing
-            - operations_strategy
-            - product
-            - sales
-            - customer_success
-            - security
-            - misc_engineering
-            description: Coarse career-field category for onboarding role discovery
-            example: software_engineering
-          maxItems: 3
-        roles:
-          type: array
-          items:
-            type: string
-            minLength: 1
-            maxLength: 120
-          maxItems: 5
-        customRoles:
-          type: array
-          items:
-            type: string
-            minLength: 1
-            maxLength: 120
-          maxItems: 5
-        experienceBand:
-          type: string
-          enum:
-          - internship
-          - entry
-          - junior
-          - mid
-          - senior
-          - expert
-          description: Onboarding-facing experience band picked by the user
-          example: mid
-        experienceBands:
-          type: array
-          items:
-            type: string
-            enum:
-            - internship
-            - entry
-            - junior
-            - mid
-            - senior
-            - expert
-            description: Onboarding-facing experience band picked by the user
-            example: mid
-          maxItems: 6
-        locations:
-          type: array
-          items:
-            type: string
-            minLength: 1
-            maxLength: 160
-          maxItems: 5
-        remoteGlobal:
-          type: boolean
-        country:
-          type: string
-          minLength: 1
-          maxLength: 80
-        salaryMin:
-          type: number
-          minimum: 0
-        salaryMax:
-          type: number
-          minimum: 0
-        salaryCurrency:
-          type: string
-          enum:
-          - usd
-          - eur
-          - gbp
-          - cad
-          - aud
-          - inr
-          description: Currency for salary values
-          example: usd
-        goal:
-          type: string
-          enum:
-          - land_asap
-          - make_more_money
-          - land_dream_job
-          description: The user's primary job-search goal
-          example: land_asap
-        interviewsPerWeekTarget:
-          type: integer
-          minimum: 0
-          maximum: 50
-        jobTimeline:
-          type: string
-          enum:
-          - one_month
-          - three_months
-          - six_months
-          - twelve_months_plus
-          description: How soon the user wants to land a new role
-          example: three_months
-        blockers:
-          type: array
-          items:
-            type: string
-            enum:
-            - not_applying_enough
-            - cant_land_interviews
-            - not_ready_yet
-            - lack_great_offers
-            description: A blocker the user feels is hindering their job search
-            example: not_applying_enough
-          maxItems: 3
-        motivations:
-          type: array
-          items:
-            type: string
-            enum:
-            - more_money
-            - support_family
-            - exciting_job
-            - get_time_back
-            description: A motivation driving the user's job search
-            example: more_money
-          maxItems: 3
-        attributionSource:
-          type: string
-          enum:
-          - social
-          - influencer
-          - friend
-          - search
-          - ad
-          - other
-          description: How the user discovered AI Applyd
-          example: search
-        referralCodeUsed:
-          type: string
-          minLength: 1
-          maxLength: 64
-        resumeDeferred:
-          type: boolean
-        fullLegalName:
-          type: string
-          minLength: 1
-          maxLength: 120
-        phone:
-          type: string
-          minLength: 1
-          maxLength: 40
-        completedSteps:
-          type: array
-          items:
-            type: string
-            enum:
-            - upload-resume
-            - set-preferences
-            - connect-platform
-            - discover-jobs
-            description: Step identifier in the dashboard onboarding / readiness checklist
-            example: upload-resume
-      additionalProperties: false
-    AutoSetupResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/AutoSetupData'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    DiscoverStatusData:
-      type: object
-      properties:
-        completedAt:
-          type: integer
-          description: Epoch ms when the job completed (success only)
-          example: 1729500000000
-        error:
-          type: string
-          description: Error message if the discovery failed
-          example: OpenRouter timeout
-        failedAt:
-          type: integer
-          description: Epoch ms when the job failed
-          example: 1729500000000
-        startedAt:
-          type: integer
-          description: Epoch ms when the job was kicked off
-          example: 1729500000000
-        status:
-          type: string
-          enum:
-          - processing
-          - completed
-          - failed
-          - unknown
-          description: Status of the background match-discovery job kicked off by auto-setup
-          example: processing
-      required:
-      - status
-      additionalProperties: false
-    RedeemOnboardingEscrowPayload:
-      type: object
-      properties:
-        answers:
-          allOf:
-          - $ref: '#/components/schemas/OnboardingProfileUpsert'
-          - description: The escrowed answers, or null when this reference resolves to nothing.
-        screen:
-          type:
-          - integer
-          - 'null'
-          description: Furthest pre-auth screen reached, or null alongside a null answers.
-          example: 18
-      required:
-      - answers
-      - screen
-    DiscoverStatusResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/DiscoverStatusData'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    WorkExperienceItem:
-      type: object
-      properties:
-        company:
-          type: string
-          description: Company name
-          example: Acme Corp
-        current:
-          type: boolean
-          description: Whether this is the current position
-          example: false
-        description:
-          type:
-          - string
-          - 'null'
-          description: Role description or achievements
-          example: Led a team of 5 engineers building microservices
-        endDate:
-          type:
-          - string
-          - 'null'
-          description: End date (free-form from resume)
-          example: Dec 2023
-        location:
-          type:
-          - string
-          - 'null'
-          description: City of this role exactly as printed on the resume
-          example: Berlin
-        startDate:
-          type:
-          - string
-          - 'null'
-          description: Start date (free-form from resume)
-          example: Jan 2020
-        title:
-          type: string
-          description: Job title
-          example: Senior Software Engineer
-      required:
-      - company
-      - current
-      - description
-      - endDate
-      - startDate
-      - title
-      additionalProperties: false
-    AutoSetupData:
-      type: object
-      properties:
-        discoverStatusKey:
-          type:
-          - string
-          - 'null'
-          description: KV key the frontend can poll via GET /onboarding/discover-status to track background match discovery. Null when no discovery was triggered.
-          example: onboarding:discover:user_abc123
-        preferences:
-          $ref: '#/components/schemas/AutoSetupPreferencesData'
-        scrapeStatus:
-          type: string
-          enum:
-          - triggered
-          - skipped
-          - failed
-          description: Whether initial job scrape was triggered
-          example: triggered
-        userUpdated:
-          type: boolean
-          description: Whether the user account was updated
-          example: true
-      required:
-      - discoverStatusKey
-      - preferences
-      - scrapeStatus
-      - userUpdated
-      additionalProperties: false
-    ParseResumeResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/ParsedResumeData'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    EducationItem:
-      type: object
-      properties:
-        degree:
-          type: string
-          description: Degree or certification name
-          example: B.S. Computer Science
-        institution:
-          type: string
-          description: School or institution name
-          example: MIT
-        year:
-          type:
-          - string
-          - 'null'
-          description: Graduation year or date range
-          example: '2018'
-      required:
-      - degree
-      - institution
-      - year
-      additionalProperties: false
-    MintOnboardingEscrowBody:
-      type: object
-      properties:
-        answers:
-          type: object
-          properties:
-            activelyLooking:
-              type: boolean
-            attributionSource:
-              type: string
-              enum:
-              - social
-              - influencer
-              - friend
-              - search
-              - ad
-              - other
-              description: How the user discovered AI Applyd
-              example: search
-            blockers:
-              type: array
-              items:
-                type: string
-                enum:
-                - not_applying_enough
-                - cant_land_interviews
-                - not_ready_yet
-                - lack_great_offers
-                description: A blocker the user feels is hindering their job search
-                example: not_applying_enough
-              maxItems: 3
-            categories:
-              type: array
-              items:
-                type: string
-                enum:
-                - software_engineering
-                - healthcare
-                - consulting
-                - data
-                - design
-                - finance
-                - legal
-                - hr
-                - marketing
-                - operations_strategy
-                - product
-                - sales
-                - customer_success
-                - security
-                - misc_engineering
-                description: Coarse career-field category for onboarding role discovery
-                example: software_engineering
-              maxItems: 3
-            customRoles:
-              type: array
-              items:
-                type: string
-                minLength: 1
-                maxLength: 120
-              maxItems: 5
-            experienceBand:
-              type: string
-              enum:
-              - internship
-              - entry
-              - junior
-              - mid
-              - senior
-              - expert
-              description: Onboarding-facing experience band picked by the user
-              example: mid
-            experienceBands:
-              type: array
-              items:
-                type: string
-                enum:
-                - internship
-                - entry
-                - junior
-                - mid
-                - senior
-                - expert
-                description: Onboarding-facing experience band picked by the user
-                example: mid
-              maxItems: 6
-            goal:
-              type: string
-              enum:
-              - land_asap
-              - make_more_money
-              - land_dream_job
-              description: The user's primary job-search goal
-              example: land_asap
-            importance:
-              type: array
-              items:
-                type: string
-                enum:
-                - meaningful_work
-                - experienced_leaders
-                - top_investors
-                - wear_many_hats
-                - smart_people
-                - challenging_work
-                - growing_fast
-                - cool_startup
-                - stable_company
-                - innovative_tech
-                - flexible_hours
-                - great_benefits
-                description: A factor the user cares about most in their next role
-                example: meaningful_work
-              maxItems: 3
-            interviewsPerWeekTarget:
-              type: integer
-              minimum: 0
-              maximum: 50
-            jobTimeline:
-              type: string
-              enum:
-              - one_month
-              - three_months
-              - six_months
-              - twelve_months_plus
-              description: How soon the user wants to land a new role
-              example: three_months
-            locations:
-              type: array
-              items:
-                type: string
-                minLength: 1
-                maxLength: 160
-              maxItems: 5
-            motivations:
-              type: array
-              items:
-                type: string
-                enum:
-                - more_money
-                - support_family
-                - exciting_job
-                - get_time_back
-                description: A motivation driving the user's job search
-                example: more_money
-              maxItems: 3
-            referralCodeUsed:
-              type: string
-              minLength: 1
-              maxLength: 64
-            remoteGlobal:
-              type: boolean
-            roles:
-              type: array
-              items:
-                type: string
-                minLength: 1
-                maxLength: 120
-              maxItems: 5
-            salaryCurrency:
-              type: string
-              enum:
-              - usd
-              - eur
-              - gbp
-              - cad
-              - aud
-              - inr
-              description: Currency for salary values
-              example: usd
-            salaryMax:
-              type: number
-              minimum: 0
-            salaryMin:
-              type: number
-              minimum: 0
-            triedOtherApps:
-              type: boolean
-          additionalProperties: false
-        screen:
-          type: integer
-          minimum: 1
-          maximum: 64
-          description: Furthest pre-auth screen reached, so the return leg resumes in place.
-          example: 18
-      required:
-      - answers
-      - screen
-      additionalProperties: false
   securitySchemes:
     BearerAuth:
       description: 'Session token from signing in to AI Applyd, sent as `Authorization: Bearer <token>`.'
       scheme: bearer
       type: http
-x-refined-from:
-- aiapplyd-openapi.json
-- aiapplyd-openapi.yml

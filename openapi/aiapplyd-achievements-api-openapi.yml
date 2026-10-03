@@ -1,15 +1,15 @@
 openapi: 3.2.0
 info:
-  title: Aiapplyd Achievements API
-  version: 115c47ce
   contact:
     email: support@aiapplyd.com
     name: AI Applyd
     url: https://aiapplyd.com
+  description: 'The AI Applyd API runs the whole job hunt for you: it matches you to roles that fit your profile, rewrites your resume for each posting, writes the cover letter the form asks for, and auto-applies across the major applicant tracking systems.'
   license:
     name: Proprietary
     url: https://aiapplyd.com/legal/terms
-  description: 'Operations tagged achievements across 2 of this provider''s published API definitions: aiapplyd-openapi.json, aiapplyd-openapi.yml. Each path carries the servers of the definition it was published in.'
+  title: AI Applyd Achievements API
+  version: 115c47ce
 servers:
 - description: Current environment
   url: https://api.aiapplyd.com/api/v1
@@ -50,27 +50,99 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: getAchievements
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
 components:
   schemas:
-    AchievementsResponse:
+    AchievementsData:
       type: object
       properties:
-        data:
-          $ref: '#/components/schemas/AchievementsData'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
+        achievements:
+          type: array
+          items:
+            $ref: '#/components/schemas/Achievement'
+          description: Every achievement, unlocked and locked, in unlock order.
+        unlockedCount:
+          type: integer
+          description: How many are unlocked
+          example: 3
+        totalCount:
+          type: integer
+          description: How many exist in total
+          example: 6
       required:
-      - data
-      - success
+      - achievements
+      - unlockedCount
+      - totalCount
       additionalProperties: false
-      description: Successful API response
+    ResponseMetadata:
+      type: object
+      properties:
+        duration:
+          type: number
+          description: Request duration in milliseconds
+          example: 150
+          exclusiveMinimum: 0
+        performance:
+          type: object
+          properties:
+            dbQueries:
+              type: integer
+              minimum: 0
+            totalDbTime:
+              type: number
+              minimum: 0
+          description: Performance metrics (preview/local only)
+        requestId:
+          type: string
+          description: Unique request identifier
+          example: req_abc123
+        timestamp:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp
+          example: '2026-09-25T17:29:47.224Z'
+        version:
+          type: string
+          description: API version
+          example: v1
+    Achievement:
+      type: object
+      properties:
+        key:
+          type: string
+          enum:
+          - account_created
+          - resume_uploaded
+          - first_save
+          - first_application
+          - ten_applications
+          - first_reply
+          - first_interview
+          - first_offer
+          description: Stable identifier for an unlockable achievement
+          example: first_application
+        unlocked:
+          type: boolean
+          description: Whether the user has earned this. Once true, never returns to false.
+        unlockedAt:
+          type:
+          - string
+          - 'null'
+          description: ISO timestamp of the FIRST time this was earned; null while locked.
+        progress:
+          type: integer
+          description: Units achieved so far toward `target`. Clamped to target.
+          example: 3
+        target:
+          type: integer
+          description: Units needed. 1 for binary achievements.
+          example: 10
+      required:
+      - key
+      - unlocked
+      - unlockedAt
+      - progress
+      - target
+      additionalProperties: false
     ApiErrorResponse:
       type: object
       properties:
@@ -415,102 +487,24 @@ components:
       - error
       - success
       additionalProperties: false
-    Achievement:
+    AchievementsResponse:
       type: object
       properties:
-        key:
-          type: string
-          enum:
-          - account_created
-          - resume_uploaded
-          - first_save
-          - first_application
-          - ten_applications
-          - first_reply
-          - first_interview
-          - first_offer
-          description: Stable identifier for an unlockable achievement
-          example: first_application
-        unlocked:
+        data:
+          $ref: '#/components/schemas/AchievementsData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
           type: boolean
-          description: Whether the user has earned this. Once true, never returns to false.
-        unlockedAt:
-          type:
-          - string
-          - 'null'
-          description: ISO timestamp of the FIRST time this was earned; null while locked.
-        progress:
-          type: integer
-          description: Units achieved so far toward `target`. Clamped to target.
-          example: 3
-        target:
-          type: integer
-          description: Units needed. 1 for binary achievements.
-          example: 10
+          enum:
+          - true
       required:
-      - key
-      - unlocked
-      - unlockedAt
-      - progress
-      - target
+      - data
+      - success
       additionalProperties: false
-    AchievementsData:
-      type: object
-      properties:
-        achievements:
-          type: array
-          items:
-            $ref: '#/components/schemas/Achievement'
-          description: Every achievement, unlocked and locked, in unlock order.
-        unlockedCount:
-          type: integer
-          description: How many are unlocked
-          example: 3
-        totalCount:
-          type: integer
-          description: How many exist in total
-          example: 6
-      required:
-      - achievements
-      - unlockedCount
-      - totalCount
-      additionalProperties: false
-    ResponseMetadata:
-      type: object
-      properties:
-        duration:
-          type: number
-          description: Request duration in milliseconds
-          example: 150
-          exclusiveMinimum: 0
-        performance:
-          type: object
-          properties:
-            dbQueries:
-              type: integer
-              minimum: 0
-            totalDbTime:
-              type: number
-              minimum: 0
-          description: Performance metrics (preview/local only)
-        requestId:
-          type: string
-          description: Unique request identifier
-          example: req_abc123
-        timestamp:
-          type: string
-          format: date-time
-          description: ISO 8601 timestamp
-          example: '2026-09-25T17:29:47.224Z'
-        version:
-          type: string
-          description: API version
-          example: v1
+      description: Successful API response
   securitySchemes:
     BearerAuth:
       description: 'Session token from signing in to AI Applyd, sent as `Authorization: Bearer <token>`.'
       scheme: bearer
       type: http
-x-refined-from:
-- aiapplyd-openapi.json
-- aiapplyd-openapi.yml

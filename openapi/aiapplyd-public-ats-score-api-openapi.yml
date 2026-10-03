@@ -1,15 +1,15 @@
 openapi: 3.2.0
 info:
-  title: Aiapplyd Public Ats Score API
-  version: 115c47ce
   contact:
     email: support@aiapplyd.com
     name: AI Applyd
     url: https://aiapplyd.com
+  description: 'The AI Applyd API runs the whole job hunt for you: it matches you to roles that fit your profile, rewrites your resume for each posting, writes the cover letter the form asks for, and auto-applies across the major applicant tracking systems.'
   license:
     name: Proprietary
     url: https://aiapplyd.com/legal/terms
-  description: 'Operations tagged public-ats-score across 2 of this provider''s published API definitions: aiapplyd-openapi.json, aiapplyd-openapi.yml. Each path carries the servers of the definition it was published in.'
+  title: AI Applyd Public Ats Score API
+  version: 115c47ce
 servers:
 - description: Current environment
   url: https://api.aiapplyd.com/api/v1
@@ -49,9 +49,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: postPublicAtsScore
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /public/ats-score/upload:
     post:
       tags:
@@ -93,11 +90,122 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: postPublicAtsScoreUpload
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
 components:
   schemas:
+    AnonymousAtsScoreResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/AnonymousAtsScorePayload'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    ResponseMetadata:
+      type: object
+      properties:
+        duration:
+          type: number
+          description: Request duration in milliseconds
+          example: 150
+          exclusiveMinimum: 0
+        performance:
+          type: object
+          properties:
+            dbQueries:
+              type: integer
+              minimum: 0
+            totalDbTime:
+              type: number
+              minimum: 0
+          description: Performance metrics (preview/local only)
+        requestId:
+          type: string
+          description: Unique request identifier
+          example: req_abc123
+        timestamp:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp
+          example: '2026-09-25T17:29:47.224Z'
+        version:
+          type: string
+          description: API version
+          example: v1
+    AnonymousAtsScorePayload:
+      type: object
+      properties:
+        matchingKeywords:
+          type: array
+          items:
+            type: string
+          maxItems: 3
+          description: Top 3 strongest keyword matches between the resume and JD. Empty array when no JD was provided.
+          example:
+          - TypeScript
+          - React
+          - Node.js
+        missingKeywords:
+          type: array
+          items:
+            type: string
+          maxItems: 3
+          description: Top 3 most important JD keywords missing from the resume. Empty array when no JD was provided.
+          example:
+          - GraphQL
+          - CI/CD
+          - Kubernetes
+        modelName:
+          type: string
+          description: Free-tier OpenRouter model that produced this score. Surfaced for transparency, not used by the client.
+          example: nvidia/nemotron-3-nano-30b-a3b:free
+        overallScore:
+          type: integer
+          minimum: 0
+          maximum: 100
+          description: Overall ATS compatibility score (0-100).
+          example: 72
+        resumeHash:
+          type: string
+          description: SHA-256 prefix of the resume text. Used as an idempotency key for the per-resume rate limit.
+          example: 3f4c7a8e1b2d5f6a
+      required:
+      - matchingKeywords
+      - missingKeywords
+      - modelName
+      - overallScore
+      - resumeHash
+      additionalProperties: false
+    AnonymousAtsScoreRequest:
+      type: object
+      properties:
+        jobDescription:
+          type: string
+          minLength: 50
+          maxLength: 30000
+          description: Optional job description text. When omitted the score is generic ATS compatibility only.
+          example: We are looking for a senior backend engineer with 5+ years of TypeScript and PostgreSQL experience...
+        resumeText:
+          type: string
+          minLength: 100
+          maxLength: 50000
+          description: Plain-text resume content. The web client extracts this from PDF/DOCX uploads via the bundled unpdf/docx parsers before calling this endpoint, OR sends pasted text directly.
+          example: 'Jane Doe - Senior Software Engineer
+
+
+            Experience
+
+            - Built distributed systems at Acme Corp...'
+      required:
+      - resumeText
+      additionalProperties: false
     ApiErrorResponse:
       type: object
       properties:
@@ -442,125 +550,8 @@ components:
       - error
       - success
       additionalProperties: false
-    AnonymousAtsScoreResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/AnonymousAtsScorePayload'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    AnonymousAtsScoreRequest:
-      type: object
-      properties:
-        jobDescription:
-          type: string
-          minLength: 50
-          maxLength: 30000
-          description: Optional job description text. When omitted the score is generic ATS compatibility only.
-          example: We are looking for a senior backend engineer with 5+ years of TypeScript and PostgreSQL experience...
-        resumeText:
-          type: string
-          minLength: 100
-          maxLength: 50000
-          description: Plain-text resume content. The web client extracts this from PDF/DOCX uploads via the bundled unpdf/docx parsers before calling this endpoint, OR sends pasted text directly.
-          example: 'Jane Doe - Senior Software Engineer
-
-
-            Experience
-
-            - Built distributed systems at Acme Corp...'
-      required:
-      - resumeText
-      additionalProperties: false
-    AnonymousAtsScorePayload:
-      type: object
-      properties:
-        matchingKeywords:
-          type: array
-          items:
-            type: string
-          maxItems: 3
-          description: Top 3 strongest keyword matches between the resume and JD. Empty array when no JD was provided.
-          example:
-          - TypeScript
-          - React
-          - Node.js
-        missingKeywords:
-          type: array
-          items:
-            type: string
-          maxItems: 3
-          description: Top 3 most important JD keywords missing from the resume. Empty array when no JD was provided.
-          example:
-          - GraphQL
-          - CI/CD
-          - Kubernetes
-        modelName:
-          type: string
-          description: Free-tier OpenRouter model that produced this score. Surfaced for transparency, not used by the client.
-          example: nvidia/nemotron-3-nano-30b-a3b:free
-        overallScore:
-          type: integer
-          minimum: 0
-          maximum: 100
-          description: Overall ATS compatibility score (0-100).
-          example: 72
-        resumeHash:
-          type: string
-          description: SHA-256 prefix of the resume text. Used as an idempotency key for the per-resume rate limit.
-          example: 3f4c7a8e1b2d5f6a
-      required:
-      - matchingKeywords
-      - missingKeywords
-      - modelName
-      - overallScore
-      - resumeHash
-      additionalProperties: false
-    ResponseMetadata:
-      type: object
-      properties:
-        duration:
-          type: number
-          description: Request duration in milliseconds
-          example: 150
-          exclusiveMinimum: 0
-        performance:
-          type: object
-          properties:
-            dbQueries:
-              type: integer
-              minimum: 0
-            totalDbTime:
-              type: number
-              minimum: 0
-          description: Performance metrics (preview/local only)
-        requestId:
-          type: string
-          description: Unique request identifier
-          example: req_abc123
-        timestamp:
-          type: string
-          format: date-time
-          description: ISO 8601 timestamp
-          example: '2026-09-25T17:29:47.224Z'
-        version:
-          type: string
-          description: API version
-          example: v1
   securitySchemes:
     BearerAuth:
       description: 'Session token from signing in to AI Applyd, sent as `Authorization: Bearer <token>`.'
       scheme: bearer
       type: http
-x-refined-from:
-- aiapplyd-openapi.json
-- aiapplyd-openapi.yml

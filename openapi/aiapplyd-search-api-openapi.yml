@@ -1,15 +1,15 @@
 openapi: 3.2.0
 info:
-  title: Aiapplyd Search API
-  version: 115c47ce
   contact:
     email: support@aiapplyd.com
     name: AI Applyd
     url: https://aiapplyd.com
+  description: 'The AI Applyd API runs the whole job hunt for you: it matches you to roles that fit your profile, rewrites your resume for each posting, writes the cover letter the form asks for, and auto-applies across the major applicant tracking systems.'
   license:
     name: Proprietary
     url: https://aiapplyd.com/legal/terms
-  description: 'Operations tagged search across 2 of this provider''s published API definitions: aiapplyd-openapi.json, aiapplyd-openapi.yml. Each path carries the servers of the definition it was published in.'
+  title: AI Applyd Search API
+  version: 115c47ce
 servers:
 - description: Current environment
   url: https://api.aiapplyd.com/api/v1
@@ -61,9 +61,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: postSearchDescribe
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /search/describe/from-resume:
     post:
       tags:
@@ -108,11 +105,397 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: postSearchDescribeFromResume
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
 components:
   schemas:
+    SearchConfig:
+      type: object
+      properties:
+        targetRoles:
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 120
+          maxItems: 5
+        locations:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            minLength: 1
+            maxLength: 160
+          maxItems: 5
+        workStyles:
+          type: array
+          items:
+            type: string
+            enum:
+            - onsite
+            - hybrid
+            - remote
+            description: User's preferred work style, physical mode only, no geo scoping
+            example: remote
+          maxItems: 3
+        experienceLevels:
+          type: array
+          items:
+            type: string
+            enum:
+            - entry
+            - mid
+            - senior
+            - lead
+            - executive
+            description: Professional experience level
+            example: mid
+          maxItems: 3
+        remoteGlobal:
+          type:
+          - boolean
+          - 'null'
+        salaryMin:
+          type:
+          - integer
+          - 'null'
+          minimum: 0
+        salaryMax:
+          type:
+          - integer
+          - 'null'
+          minimum: 0
+        visaSponsorship:
+          type:
+          - string
+          - 'null'
+          enum:
+          - required
+          - preferred
+          - not_needed
+          - any
+          - null
+          description: Visa sponsorship preference
+          example: any
+        presetId:
+          type: string
+          enum:
+          - balanced
+          - the_professional
+          - the_conversationalist
+          - the_storyteller
+          - the_closer
+          - the_enthusiast
+          - custom
+          description: AI communication style preset for generated content
+          example: balanced
+        minMatchScore:
+          type: integer
+          minimum: 0
+          maximum: 100
+        dailyLimit:
+          type: integer
+          minimum: 1
+          maximum: 50
+        coverLetterStrategy:
+          type: string
+          enum:
+          - 'off'
+          - use_base
+          - tailor_base
+          - generate_new
+          description: 'How AI handles cover letters: off, use base as-is, tailor base per job, or generate new per job'
+          example: generate_new
+        resumeStrategy:
+          type: string
+          enum:
+          - base
+          - tailor
+          description: 'How AI handles your resume per application: base (as-is) or tailor (customized per job)'
+          example: tailor
+      additionalProperties: false
+    SearchDescribeFromResumeResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/DescribeSearchResult'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    SearchDescribeResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/DescribeSearchResult'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    EducationItem:
+      type: object
+      properties:
+        degree:
+          type: string
+          description: Degree or certification name
+          example: B.S. Computer Science
+        institution:
+          type: string
+          description: School or institution name
+          example: MIT
+        year:
+          type:
+          - string
+          - 'null'
+          description: Graduation year or date range
+          example: '2018'
+      required:
+      - degree
+      - institution
+      - year
+      additionalProperties: false
+    ResumePrefill:
+      type: object
+      properties:
+        addressLine1:
+          type:
+          - string
+          - 'null'
+        city:
+          type:
+          - string
+          - 'null'
+        country:
+          type:
+          - string
+          - 'null'
+        currentEmployer:
+          type:
+          - string
+          - 'null'
+        githubUrl:
+          type:
+          - string
+          - 'null'
+        highestEducation:
+          type:
+          - string
+          - 'null'
+          enum:
+          - high_school
+          - associate
+          - bachelor
+          - master
+          - doctorate
+          - any
+          - null
+          description: Education level requirement
+          example: any
+        homeLocation:
+          type:
+          - string
+          - 'null'
+        linkedinUrl:
+          type:
+          - string
+          - 'null'
+        ownTitles:
+          type: array
+          items:
+            type: string
+        phone:
+          type:
+          - string
+          - 'null'
+        portfolioUrl:
+          type:
+          - string
+          - 'null'
+        seeded:
+          type: object
+          properties:
+            jobPreferences:
+              type: object
+              properties:
+                locations:
+                  type: boolean
+                  enum:
+                  - true
+                experienceLevels:
+                  type: boolean
+                  enum:
+                  - true
+                skills:
+                  type: boolean
+                  enum:
+                  - true
+                targetRoles:
+                  type: boolean
+                  enum:
+                  - true
+            profile:
+              type: object
+              properties:
+                addressLine1:
+                  type: boolean
+                  enum:
+                  - true
+                city:
+                  type: boolean
+                  enum:
+                  - true
+                state:
+                  type: boolean
+                  enum:
+                  - true
+                country:
+                  type: boolean
+                  enum:
+                  - true
+                zipCode:
+                  type: boolean
+                  enum:
+                  - true
+                phone:
+                  type: boolean
+                  enum:
+                  - true
+                linkedinUrl:
+                  type: boolean
+                  enum:
+                  - true
+                githubUrl:
+                  type: boolean
+                  enum:
+                  - true
+                portfolioUrl:
+                  type: boolean
+                  enum:
+                  - true
+                currentEmployer:
+                  type: boolean
+                  enum:
+                  - true
+                highestEducation:
+                  type: boolean
+                  enum:
+                  - true
+                yearsOfExperience:
+                  type: boolean
+                  enum:
+                  - true
+          additionalProperties: false
+        state:
+          type:
+          - string
+          - 'null'
+        workHistoryLocations:
+          type: array
+          items:
+            type: string
+        yearsOfExperience:
+          type:
+          - integer
+          - 'null'
+        zipCode:
+          type:
+          - string
+          - 'null'
+      required:
+      - addressLine1
+      - city
+      - country
+      - currentEmployer
+      - githubUrl
+      - highestEducation
+      - homeLocation
+      - linkedinUrl
+      - ownTitles
+      - phone
+      - portfolioUrl
+      - state
+      - workHistoryLocations
+      - yearsOfExperience
+      - zipCode
+      additionalProperties: false
+    ResponseMetadata:
+      type: object
+      properties:
+        duration:
+          type: number
+          description: Request duration in milliseconds
+          example: 150
+          exclusiveMinimum: 0
+        performance:
+          type: object
+          properties:
+            dbQueries:
+              type: integer
+              minimum: 0
+            totalDbTime:
+              type: number
+              minimum: 0
+          description: Performance metrics (preview/local only)
+        requestId:
+          type: string
+          description: Unique request identifier
+          example: req_abc123
+        timestamp:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp
+          example: '2026-09-25T17:29:47.224Z'
+        version:
+          type: string
+          description: API version
+          example: v1
+    DescribeSearchResult:
+      type: object
+      properties:
+        config:
+          $ref: '#/components/schemas/SearchConfig'
+        summary:
+          type: string
+          maxLength: 600
+        understood:
+          type: boolean
+      required:
+      - config
+      - summary
+      - understood
+    SearchDescribeRequest:
+      type: object
+      properties:
+        message:
+          type: string
+          minLength: 1
+          maxLength: 2000
+          description: Natural-language description of the job search the user wants.
+          example: Remote senior backend roles in the US paying at least $180k
+        priorConfig:
+          allOf:
+          - $ref: '#/components/schemas/SearchConfig'
+          - description: Config produced by the previous describe turn (conversation memory).
+        currentConfig:
+          allOf:
+          - $ref: '#/components/schemas/SearchConfig'
+          - description: The user's current live search config, so the model only changes what was asked.
+      required:
+      - message
+      additionalProperties: false
     ApiErrorResponse:
       type: object
       properties:
@@ -457,228 +840,6 @@ components:
       - error
       - success
       additionalProperties: false
-    EducationItem:
-      type: object
-      properties:
-        degree:
-          type: string
-          description: Degree or certification name
-          example: B.S. Computer Science
-        institution:
-          type: string
-          description: School or institution name
-          example: MIT
-        year:
-          type:
-          - string
-          - 'null'
-          description: Graduation year or date range
-          example: '2018'
-      required:
-      - degree
-      - institution
-      - year
-      additionalProperties: false
-    ResumePrefill:
-      type: object
-      properties:
-        addressLine1:
-          type:
-          - string
-          - 'null'
-        city:
-          type:
-          - string
-          - 'null'
-        country:
-          type:
-          - string
-          - 'null'
-        currentEmployer:
-          type:
-          - string
-          - 'null'
-        githubUrl:
-          type:
-          - string
-          - 'null'
-        highestEducation:
-          type:
-          - string
-          - 'null'
-          enum:
-          - high_school
-          - associate
-          - bachelor
-          - master
-          - doctorate
-          - any
-          - null
-          description: Education level requirement
-          example: any
-        homeLocation:
-          type:
-          - string
-          - 'null'
-        linkedinUrl:
-          type:
-          - string
-          - 'null'
-        ownTitles:
-          type: array
-          items:
-            type: string
-        phone:
-          type:
-          - string
-          - 'null'
-        portfolioUrl:
-          type:
-          - string
-          - 'null'
-        seeded:
-          type: object
-          properties:
-            jobPreferences:
-              type: object
-              properties:
-                locations:
-                  type: boolean
-                  enum:
-                  - true
-                experienceLevels:
-                  type: boolean
-                  enum:
-                  - true
-                skills:
-                  type: boolean
-                  enum:
-                  - true
-                targetRoles:
-                  type: boolean
-                  enum:
-                  - true
-            profile:
-              type: object
-              properties:
-                addressLine1:
-                  type: boolean
-                  enum:
-                  - true
-                city:
-                  type: boolean
-                  enum:
-                  - true
-                state:
-                  type: boolean
-                  enum:
-                  - true
-                country:
-                  type: boolean
-                  enum:
-                  - true
-                zipCode:
-                  type: boolean
-                  enum:
-                  - true
-                phone:
-                  type: boolean
-                  enum:
-                  - true
-                linkedinUrl:
-                  type: boolean
-                  enum:
-                  - true
-                githubUrl:
-                  type: boolean
-                  enum:
-                  - true
-                portfolioUrl:
-                  type: boolean
-                  enum:
-                  - true
-                currentEmployer:
-                  type: boolean
-                  enum:
-                  - true
-                highestEducation:
-                  type: boolean
-                  enum:
-                  - true
-                yearsOfExperience:
-                  type: boolean
-                  enum:
-                  - true
-          additionalProperties: false
-        state:
-          type:
-          - string
-          - 'null'
-        workHistoryLocations:
-          type: array
-          items:
-            type: string
-        yearsOfExperience:
-          type:
-          - integer
-          - 'null'
-        zipCode:
-          type:
-          - string
-          - 'null'
-      required:
-      - addressLine1
-      - city
-      - country
-      - currentEmployer
-      - githubUrl
-      - highestEducation
-      - homeLocation
-      - linkedinUrl
-      - ownTitles
-      - phone
-      - portfolioUrl
-      - state
-      - workHistoryLocations
-      - yearsOfExperience
-      - zipCode
-      additionalProperties: false
-    SearchDescribeRequest:
-      type: object
-      properties:
-        message:
-          type: string
-          minLength: 1
-          maxLength: 2000
-          description: Natural-language description of the job search the user wants.
-          example: Remote senior backend roles in the US paying at least $180k
-        priorConfig:
-          allOf:
-          - $ref: '#/components/schemas/SearchConfig'
-          - description: Config produced by the previous describe turn (conversation memory).
-        currentConfig:
-          allOf:
-          - $ref: '#/components/schemas/SearchConfig'
-          - description: The user's current live search config, so the model only changes what was asked.
-      required:
-      - message
-      additionalProperties: false
-    SearchDescribeFromResumeResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/DescribeSearchResult'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
     ResumeFieldEvidence:
       type: object
       properties:
@@ -717,6 +878,60 @@ components:
       - confidence
       - field
       - quote
+      additionalProperties: false
+    SearchDescribeFromResumeRequest:
+      type: object
+      properties:
+        parsedData:
+          allOf:
+          - $ref: '#/components/schemas/ParsedResumeData'
+          - description: Resume data parsed client-side (temporary upload or picked document). When omitted, the endpoint derives from the latest READY base resume.
+    WorkExperienceItem:
+      type: object
+      properties:
+        company:
+          type: string
+          description: Company name
+          example: Acme Corp
+        current:
+          type: boolean
+          description: Whether this is the current position
+          example: false
+        description:
+          type:
+          - string
+          - 'null'
+          description: Role description or achievements
+          example: Led a team of 5 engineers building microservices
+        endDate:
+          type:
+          - string
+          - 'null'
+          description: End date (free-form from resume)
+          example: Dec 2023
+        location:
+          type:
+          - string
+          - 'null'
+          description: City of this role exactly as printed on the resume
+          example: Berlin
+        startDate:
+          type:
+          - string
+          - 'null'
+          description: Start date (free-form from resume)
+          example: Jan 2020
+        title:
+          type: string
+          description: Job title
+          example: Senior Software Engineer
+      required:
+      - company
+      - current
+      - description
+      - endDate
+      - startDate
+      - title
       additionalProperties: false
     ParsedResumeData:
       type: object
@@ -925,232 +1140,8 @@ components:
       - yearsOfExperience
       - zipCode
       additionalProperties: false
-    WorkExperienceItem:
-      type: object
-      properties:
-        company:
-          type: string
-          description: Company name
-          example: Acme Corp
-        current:
-          type: boolean
-          description: Whether this is the current position
-          example: false
-        description:
-          type:
-          - string
-          - 'null'
-          description: Role description or achievements
-          example: Led a team of 5 engineers building microservices
-        endDate:
-          type:
-          - string
-          - 'null'
-          description: End date (free-form from resume)
-          example: Dec 2023
-        location:
-          type:
-          - string
-          - 'null'
-          description: City of this role exactly as printed on the resume
-          example: Berlin
-        startDate:
-          type:
-          - string
-          - 'null'
-          description: Start date (free-form from resume)
-          example: Jan 2020
-        title:
-          type: string
-          description: Job title
-          example: Senior Software Engineer
-      required:
-      - company
-      - current
-      - description
-      - endDate
-      - startDate
-      - title
-      additionalProperties: false
-    SearchDescribeFromResumeRequest:
-      type: object
-      properties:
-        parsedData:
-          allOf:
-          - $ref: '#/components/schemas/ParsedResumeData'
-          - description: Resume data parsed client-side (temporary upload or picked document). When omitted, the endpoint derives from the latest READY base resume.
-    DescribeSearchResult:
-      type: object
-      properties:
-        config:
-          $ref: '#/components/schemas/SearchConfig'
-        summary:
-          type: string
-          maxLength: 600
-        understood:
-          type: boolean
-      required:
-      - config
-      - summary
-      - understood
-    SearchDescribeResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/DescribeSearchResult'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    SearchConfig:
-      type: object
-      properties:
-        targetRoles:
-          type: array
-          items:
-            type: string
-            minLength: 1
-            maxLength: 120
-          maxItems: 5
-        locations:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-            minLength: 1
-            maxLength: 160
-          maxItems: 5
-        workStyles:
-          type: array
-          items:
-            type: string
-            enum:
-            - onsite
-            - hybrid
-            - remote
-            description: User's preferred work style, physical mode only, no geo scoping
-            example: remote
-          maxItems: 3
-        experienceLevels:
-          type: array
-          items:
-            type: string
-            enum:
-            - entry
-            - mid
-            - senior
-            - lead
-            - executive
-            description: Professional experience level
-            example: mid
-          maxItems: 3
-        remoteGlobal:
-          type:
-          - boolean
-          - 'null'
-        salaryMin:
-          type:
-          - integer
-          - 'null'
-          minimum: 0
-        salaryMax:
-          type:
-          - integer
-          - 'null'
-          minimum: 0
-        visaSponsorship:
-          type:
-          - string
-          - 'null'
-          enum:
-          - required
-          - preferred
-          - not_needed
-          - any
-          - null
-          description: Visa sponsorship preference
-          example: any
-        presetId:
-          type: string
-          enum:
-          - balanced
-          - the_professional
-          - the_conversationalist
-          - the_storyteller
-          - the_closer
-          - the_enthusiast
-          - custom
-          description: AI communication style preset for generated content
-          example: balanced
-        minMatchScore:
-          type: integer
-          minimum: 0
-          maximum: 100
-        dailyLimit:
-          type: integer
-          minimum: 1
-          maximum: 50
-        coverLetterStrategy:
-          type: string
-          enum:
-          - 'off'
-          - use_base
-          - tailor_base
-          - generate_new
-          description: 'How AI handles cover letters: off, use base as-is, tailor base per job, or generate new per job'
-          example: generate_new
-        resumeStrategy:
-          type: string
-          enum:
-          - base
-          - tailor
-          description: 'How AI handles your resume per application: base (as-is) or tailor (customized per job)'
-          example: tailor
-      additionalProperties: false
-    ResponseMetadata:
-      type: object
-      properties:
-        duration:
-          type: number
-          description: Request duration in milliseconds
-          example: 150
-          exclusiveMinimum: 0
-        performance:
-          type: object
-          properties:
-            dbQueries:
-              type: integer
-              minimum: 0
-            totalDbTime:
-              type: number
-              minimum: 0
-          description: Performance metrics (preview/local only)
-        requestId:
-          type: string
-          description: Unique request identifier
-          example: req_abc123
-        timestamp:
-          type: string
-          format: date-time
-          description: ISO 8601 timestamp
-          example: '2026-09-25T17:29:47.224Z'
-        version:
-          type: string
-          description: API version
-          example: v1
   securitySchemes:
     BearerAuth:
       description: 'Session token from signing in to AI Applyd, sent as `Authorization: Bearer <token>`.'
       scheme: bearer
       type: http
-x-refined-from:
-- aiapplyd-openapi.json
-- aiapplyd-openapi.yml

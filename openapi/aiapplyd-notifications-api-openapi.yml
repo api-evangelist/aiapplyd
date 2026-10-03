@@ -1,15 +1,15 @@
 openapi: 3.2.0
 info:
-  title: Aiapplyd Notifications API
-  version: 115c47ce
   contact:
     email: support@aiapplyd.com
     name: AI Applyd
     url: https://aiapplyd.com
+  description: 'The AI Applyd API runs the whole job hunt for you: it matches you to roles that fit your profile, rewrites your resume for each posting, writes the cover letter the form asks for, and auto-applies across the major applicant tracking systems.'
   license:
     name: Proprietary
     url: https://aiapplyd.com/legal/terms
-  description: 'Operations tagged notifications across 2 of this provider''s published API definitions: aiapplyd-openapi.json, aiapplyd-openapi.yml. Each path carries the servers of the definition it was published in.'
+  title: AI Applyd Notifications API
+  version: 115c47ce
 servers:
 - description: Current environment
   url: https://api.aiapplyd.com/api/v1
@@ -61,9 +61,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: postNotificationsPushToken
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /notifications/push-token/unregister:
     post:
       tags:
@@ -107,9 +104,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: postNotificationsPushTokenUnregister
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /notifications:
     get:
       tags:
@@ -158,9 +152,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: getNotifications
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /notifications/read:
     patch:
       tags:
@@ -204,9 +195,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: patchNotificationsRead
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
   /notifications/dismiss:
     patch:
       tags:
@@ -250,11 +238,427 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: patchNotificationsDismiss
-    servers:
-    - description: Current environment
-      url: https://api.aiapplyd.com/api/v1
 components:
   schemas:
+    DocumentUploadedNotificationContent:
+      type: object
+      properties:
+        kind:
+          type: string
+          enum:
+          - document_uploaded
+        payload:
+          $ref: '#/components/schemas/DocumentUploadedNotificationPayload'
+      required:
+      - kind
+      - payload
+      additionalProperties: false
+    PushTokenResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            success:
+              type: boolean
+              enum:
+              - true
+          required:
+          - success
+          additionalProperties: false
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    ResponseMetadata:
+      type: object
+      properties:
+        duration:
+          type: number
+          description: Request duration in milliseconds
+          example: 150
+          exclusiveMinimum: 0
+        performance:
+          type: object
+          properties:
+            dbQueries:
+              type: integer
+              minimum: 0
+            totalDbTime:
+              type: number
+              minimum: 0
+          description: Performance metrics (preview/local only)
+        requestId:
+          type: string
+          description: Unique request identifier
+          example: req_abc123
+        timestamp:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp
+          example: '2026-09-25T17:29:47.224Z'
+        version:
+          type: string
+          description: API version
+          example: v1
+    DocumentUploadedNotificationPayload:
+      type: object
+      properties:
+        documentId:
+          type: integer
+          description: Owned user_document row id
+          example: 42
+          exclusiveMinimum: 0
+        documentType:
+          type: string
+          enum:
+          - cover_letter
+          - resume
+          - custom
+          - tailored_resume
+          - translation
+          - match_report
+          description: Type of document (cover letter, resume, custom, tailored resume, translation, or match report)
+          example: cover_letter
+      required:
+      - documentId
+      - documentType
+      additionalProperties: false
+    NotificationFeedItem:
+      oneOf:
+      - allOf:
+        - $ref: '#/components/schemas/ApplicationReadyToSendNotificationContent'
+        - type: object
+          properties:
+            createdAt:
+              type: string
+              description: Database timestamp when this machine fact was first recorded
+            id:
+              type: integer
+              description: Durable notification row id
+              example: 42
+              exclusiveMinimum: 0
+            readAt:
+              type:
+              - string
+              - 'null'
+              description: Timestamp when the user read this row, or null while unread
+          required:
+          - createdAt
+          - id
+          - readAt
+          additionalProperties: false
+      - allOf:
+        - $ref: '#/components/schemas/ApplicationSubmittedNotificationContent'
+        - type: object
+          properties:
+            createdAt:
+              type: string
+              description: Database timestamp when this machine fact was first recorded
+            id:
+              type: integer
+              description: Durable notification row id
+              example: 42
+              exclusiveMinimum: 0
+            readAt:
+              type:
+              - string
+              - 'null'
+              description: Timestamp when the user read this row, or null while unread
+          required:
+          - createdAt
+          - id
+          - readAt
+          additionalProperties: false
+      - allOf:
+        - $ref: '#/components/schemas/EmployerReceiptConfirmedNotificationContent'
+        - type: object
+          properties:
+            createdAt:
+              type: string
+              description: Database timestamp when this machine fact was first recorded
+            id:
+              type: integer
+              description: Durable notification row id
+              example: 42
+              exclusiveMinimum: 0
+            readAt:
+              type:
+              - string
+              - 'null'
+              description: Timestamp when the user read this row, or null while unread
+          required:
+          - createdAt
+          - id
+          - readAt
+          additionalProperties: false
+      - allOf:
+        - $ref: '#/components/schemas/ApplicationFailedNotificationContent'
+        - type: object
+          properties:
+            createdAt:
+              type: string
+              description: Database timestamp when this machine fact was first recorded
+            id:
+              type: integer
+              description: Durable notification row id
+              example: 42
+              exclusiveMinimum: 0
+            readAt:
+              type:
+              - string
+              - 'null'
+              description: Timestamp when the user read this row, or null while unread
+          required:
+          - createdAt
+          - id
+          - readAt
+          additionalProperties: false
+      - allOf:
+        - $ref: '#/components/schemas/MatchesReadyNotificationContent'
+        - type: object
+          properties:
+            createdAt:
+              type: string
+              description: Database timestamp when this machine fact was first recorded
+            id:
+              type: integer
+              description: Durable notification row id
+              example: 42
+              exclusiveMinimum: 0
+            readAt:
+              type:
+              - string
+              - 'null'
+              description: Timestamp when the user read this row, or null while unread
+          required:
+          - createdAt
+          - id
+          - readAt
+          additionalProperties: false
+      - allOf:
+        - $ref: '#/components/schemas/AchievementUnlockedNotificationContent'
+        - type: object
+          properties:
+            createdAt:
+              type: string
+              description: Database timestamp when this machine fact was first recorded
+            id:
+              type: integer
+              description: Durable notification row id
+              example: 42
+              exclusiveMinimum: 0
+            readAt:
+              type:
+              - string
+              - 'null'
+              description: Timestamp when the user read this row, or null while unread
+          required:
+          - createdAt
+          - id
+          - readAt
+          additionalProperties: false
+      - allOf:
+        - $ref: '#/components/schemas/DocumentUploadedNotificationContent'
+        - type: object
+          properties:
+            createdAt:
+              type: string
+              description: Database timestamp when this machine fact was first recorded
+            id:
+              type: integer
+              description: Durable notification row id
+              example: 42
+              exclusiveMinimum: 0
+            readAt:
+              type:
+              - string
+              - 'null'
+              description: Timestamp when the user read this row, or null while unread
+          required:
+          - createdAt
+          - id
+          - readAt
+          additionalProperties: false
+      - allOf:
+        - $ref: '#/components/schemas/DocumentAtsScoredNotificationContent'
+        - type: object
+          properties:
+            createdAt:
+              type: string
+              description: Database timestamp when this machine fact was first recorded
+            id:
+              type: integer
+              description: Durable notification row id
+              example: 42
+              exclusiveMinimum: 0
+            readAt:
+              type:
+              - string
+              - 'null'
+              description: Timestamp when the user read this row, or null while unread
+          required:
+          - createdAt
+          - id
+          - readAt
+          additionalProperties: false
+      - allOf:
+        - $ref: '#/components/schemas/DocumentTranslationReadyNotificationContent'
+        - type: object
+          properties:
+            createdAt:
+              type: string
+              description: Database timestamp when this machine fact was first recorded
+            id:
+              type: integer
+              description: Durable notification row id
+              example: 42
+              exclusiveMinimum: 0
+            readAt:
+              type:
+              - string
+              - 'null'
+              description: Timestamp when the user read this row, or null while unread
+          required:
+          - createdAt
+          - id
+          - readAt
+          additionalProperties: false
+    NotificationMutationResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/NotificationMutationData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    DocumentTranslationReadyNotificationContent:
+      type: object
+      properties:
+        kind:
+          type: string
+          enum:
+          - document_translation_ready
+        payload:
+          $ref: '#/components/schemas/DocumentTranslationReadyNotificationPayload'
+      required:
+      - kind
+      - payload
+      additionalProperties: false
+    NotificationIdsRequest:
+      type: object
+      properties:
+        ids:
+          type: array
+          items:
+            type: integer
+            exclusiveMinimum: 0
+          minItems: 1
+          maxItems: 50
+          description: Owned notification row ids to update. Foreign IDs are ignored.
+          example:
+          - 41
+          - 42
+      required:
+      - ids
+      additionalProperties: false
+    DocumentTranslationReadyNotificationPayload:
+      type: object
+      properties:
+        documentId:
+          type: integer
+          description: Owned user_document row id
+          example: 42
+          exclusiveMinimum: 0
+        targetLanguage:
+          type: string
+          minLength: 1
+          maxLength: 50
+          description: Stable translation target value used by the document request
+          example: German
+      required:
+      - documentId
+      - targetLanguage
+      additionalProperties: false
+    MatchesReadyNotificationContent:
+      type: object
+      properties:
+        kind:
+          type: string
+          enum:
+          - matches_ready
+        payload:
+          $ref: '#/components/schemas/MatchesReadyNotificationPayload'
+      required:
+      - kind
+      - payload
+      additionalProperties: false
+    ApplicationSubmittedNotificationContent:
+      type: object
+      properties:
+        kind:
+          type: string
+          enum:
+          - application_submitted
+        payload:
+          $ref: '#/components/schemas/ApplicationSubmittedNotificationPayload'
+      required:
+      - kind
+      - payload
+      additionalProperties: false
+    DeletePushTokenRequest:
+      type: object
+      properties:
+        token:
+          type: string
+          minLength: 1
+          maxLength: 200
+          pattern: ^Expo(?:nent)?PushToken\[[^\][\s]+\]$
+          description: Expo push token issued by getExpoPushTokenAsync()
+          example: ExponentPushToken[xxxxxxxxxxxxxxxxxxxxxx]
+      required:
+      - token
+      additionalProperties: false
+    EmployerReceiptConfirmedNotificationPayload:
+      type: object
+      properties:
+        applicationResultId:
+          type: integer
+          description: Owned application_result row id
+          example: 1540
+          exclusiveMinimum: 0
+        company:
+          type: string
+          minLength: 1
+          maxLength: 200
+          description: Employer name as it was at the moment of the event
+          example: Trading 212
+        jobTitle:
+          type: string
+          minLength: 1
+          maxLength: 200
+          description: Job title as it was at the moment of the event
+          example: Staff Frontend Engineer
+      required:
+      - applicationResultId
+      - company
+      - jobTitle
+      additionalProperties: false
     ApplicationFailedNotificationContent:
       type: object
       properties:
@@ -267,6 +671,204 @@ components:
       required:
       - kind
       - payload
+      additionalProperties: false
+    DocumentAtsScoredNotificationContent:
+      type: object
+      properties:
+        kind:
+          type: string
+          enum:
+          - document_ats_scored
+        payload:
+          $ref: '#/components/schemas/DocumentAtsScoredNotificationPayload'
+      required:
+      - kind
+      - payload
+      additionalProperties: false
+    DocumentAtsScoredNotificationPayload:
+      type: object
+      properties:
+        documentId:
+          type: integer
+          description: Owned user_document row id
+          example: 42
+          exclusiveMinimum: 0
+        overallScore:
+          type: number
+          minimum: 0
+          maximum: 100
+          description: Persisted ATS score from 0 to 100
+          example: 84
+      required:
+      - documentId
+      - overallScore
+      additionalProperties: false
+    EmployerReceiptConfirmedNotificationContent:
+      type: object
+      properties:
+        kind:
+          type: string
+          enum:
+          - employer_receipt_confirmed
+        payload:
+          $ref: '#/components/schemas/EmployerReceiptConfirmedNotificationPayload'
+      required:
+      - kind
+      - payload
+      additionalProperties: false
+    NotificationMutationData:
+      type: object
+      properties:
+        updated:
+          type: integer
+          minimum: 0
+      required:
+      - updated
+      additionalProperties: false
+    AchievementUnlockedNotificationContent:
+      type: object
+      properties:
+        kind:
+          type: string
+          enum:
+          - achievement_unlocked
+        payload:
+          $ref: '#/components/schemas/AchievementUnlockedNotificationPayload'
+      required:
+      - kind
+      - payload
+      additionalProperties: false
+    RegisterPushTokenRequest:
+      type: object
+      properties:
+        platform:
+          type: string
+          enum:
+          - ios
+          - android
+          - web
+          - unknown
+          description: Operating system of the device holding the push token
+          example: ios
+        token:
+          type: string
+          minLength: 1
+          maxLength: 200
+          pattern: ^Expo(?:nent)?PushToken\[[^\][\s]+\]$
+          description: Expo push token issued by getExpoPushTokenAsync()
+          example: ExponentPushToken[xxxxxxxxxxxxxxxxxxxxxx]
+      required:
+      - token
+      additionalProperties: false
+    ApplicationReadyToSendNotificationPayload:
+      type: object
+      properties:
+        applicationResultId:
+          type: integer
+          description: Owned application_result row id
+          example: 1540
+          exclusiveMinimum: 0
+        company:
+          type: string
+          minLength: 1
+          maxLength: 200
+          description: Employer name as it was at the moment of the event
+          example: Trading 212
+        jobTitle:
+          type: string
+          minLength: 1
+          maxLength: 200
+          description: Job title as it was at the moment of the event
+          example: Staff Frontend Engineer
+      required:
+      - applicationResultId
+      - company
+      - jobTitle
+      additionalProperties: false
+    NotificationFeedResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/NotificationFeedData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    ApplicationFailedNotificationPayload:
+      type: object
+      properties:
+        applicationResultId:
+          type: integer
+          description: Owned application_result row id
+          example: 1540
+          exclusiveMinimum: 0
+        company:
+          type: string
+          minLength: 1
+          maxLength: 200
+          description: Employer name as it was at the moment of the event
+          example: Trading 212
+        jobTitle:
+          type: string
+          minLength: 1
+          maxLength: 200
+          description: Job title as it was at the moment of the event
+          example: Staff Frontend Engineer
+      required:
+      - applicationResultId
+      - company
+      - jobTitle
+      additionalProperties: false
+    ApplicationSubmittedNotificationPayload:
+      type: object
+      properties:
+        applicationResultId:
+          type: integer
+          description: Owned application_result row id
+          example: 1540
+          exclusiveMinimum: 0
+        company:
+          type: string
+          minLength: 1
+          maxLength: 200
+          description: Employer name as it was at the moment of the event
+          example: Trading 212
+        jobTitle:
+          type: string
+          minLength: 1
+          maxLength: 200
+          description: Job title as it was at the moment of the event
+          example: Staff Frontend Engineer
+      required:
+      - applicationResultId
+      - company
+      - jobTitle
+      additionalProperties: false
+    AchievementUnlockedNotificationPayload:
+      type: object
+      properties:
+        achievementKey:
+          type: string
+          enum:
+          - account_created
+          - resume_uploaded
+          - first_save
+          - first_application
+          - ten_applications
+          - first_reply
+          - first_interview
+          - first_offer
+          description: Stable identifier for an unlockable achievement
+          example: first_application
+      required:
+      - achievementKey
       additionalProperties: false
     ApiErrorResponse:
       type: object
@@ -612,93 +1214,6 @@ components:
       - error
       - success
       additionalProperties: false
-    NotificationMutationResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/NotificationMutationData'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    NotificationMutationData:
-      type: object
-      properties:
-        updated:
-          type: integer
-          minimum: 0
-      required:
-      - updated
-      additionalProperties: false
-    ResponseMetadata:
-      type: object
-      properties:
-        duration:
-          type: number
-          description: Request duration in milliseconds
-          example: 150
-          exclusiveMinimum: 0
-        performance:
-          type: object
-          properties:
-            dbQueries:
-              type: integer
-              minimum: 0
-            totalDbTime:
-              type: number
-              minimum: 0
-          description: Performance metrics (preview/local only)
-        requestId:
-          type: string
-          description: Unique request identifier
-          example: req_abc123
-        timestamp:
-          type: string
-          format: date-time
-          description: ISO 8601 timestamp
-          example: '2026-09-25T17:29:47.224Z'
-        version:
-          type: string
-          description: API version
-          example: v1
-    DeletePushTokenRequest:
-      type: object
-      properties:
-        token:
-          type: string
-          minLength: 1
-          maxLength: 200
-          pattern: ^Expo(?:nent)?PushToken\[[^\][\s]+\]$
-          description: Expo push token issued by getExpoPushTokenAsync()
-          example: ExponentPushToken[xxxxxxxxxxxxxxxxxxxxxx]
-      required:
-      - token
-      additionalProperties: false
-    DocumentAtsScoredNotificationPayload:
-      type: object
-      properties:
-        documentId:
-          type: integer
-          description: Owned user_document row id
-          example: 42
-          exclusiveMinimum: 0
-        overallScore:
-          type: number
-          minimum: 0
-          maximum: 100
-          description: Persisted ATS score from 0 to 100
-          example: 84
-      required:
-      - documentId
-      - overallScore
-      additionalProperties: false
     ApplicationReadyToSendNotificationContent:
       type: object
       properties:
@@ -708,296 +1223,6 @@ components:
           - application_ready_to_send
         payload:
           $ref: '#/components/schemas/ApplicationReadyToSendNotificationPayload'
-      required:
-      - kind
-      - payload
-      additionalProperties: false
-    NotificationFeedResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/NotificationFeedData'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    NotificationFeedItem:
-      oneOf:
-      - allOf:
-        - $ref: '#/components/schemas/ApplicationReadyToSendNotificationContent'
-        - type: object
-          properties:
-            createdAt:
-              type: string
-              description: Database timestamp when this machine fact was first recorded
-            id:
-              type: integer
-              description: Durable notification row id
-              example: 42
-              exclusiveMinimum: 0
-            readAt:
-              type:
-              - string
-              - 'null'
-              description: Timestamp when the user read this row, or null while unread
-          required:
-          - createdAt
-          - id
-          - readAt
-          additionalProperties: false
-      - allOf:
-        - $ref: '#/components/schemas/ApplicationSubmittedNotificationContent'
-        - type: object
-          properties:
-            createdAt:
-              type: string
-              description: Database timestamp when this machine fact was first recorded
-            id:
-              type: integer
-              description: Durable notification row id
-              example: 42
-              exclusiveMinimum: 0
-            readAt:
-              type:
-              - string
-              - 'null'
-              description: Timestamp when the user read this row, or null while unread
-          required:
-          - createdAt
-          - id
-          - readAt
-          additionalProperties: false
-      - allOf:
-        - $ref: '#/components/schemas/EmployerReceiptConfirmedNotificationContent'
-        - type: object
-          properties:
-            createdAt:
-              type: string
-              description: Database timestamp when this machine fact was first recorded
-            id:
-              type: integer
-              description: Durable notification row id
-              example: 42
-              exclusiveMinimum: 0
-            readAt:
-              type:
-              - string
-              - 'null'
-              description: Timestamp when the user read this row, or null while unread
-          required:
-          - createdAt
-          - id
-          - readAt
-          additionalProperties: false
-      - allOf:
-        - $ref: '#/components/schemas/ApplicationFailedNotificationContent'
-        - type: object
-          properties:
-            createdAt:
-              type: string
-              description: Database timestamp when this machine fact was first recorded
-            id:
-              type: integer
-              description: Durable notification row id
-              example: 42
-              exclusiveMinimum: 0
-            readAt:
-              type:
-              - string
-              - 'null'
-              description: Timestamp when the user read this row, or null while unread
-          required:
-          - createdAt
-          - id
-          - readAt
-          additionalProperties: false
-      - allOf:
-        - $ref: '#/components/schemas/MatchesReadyNotificationContent'
-        - type: object
-          properties:
-            createdAt:
-              type: string
-              description: Database timestamp when this machine fact was first recorded
-            id:
-              type: integer
-              description: Durable notification row id
-              example: 42
-              exclusiveMinimum: 0
-            readAt:
-              type:
-              - string
-              - 'null'
-              description: Timestamp when the user read this row, or null while unread
-          required:
-          - createdAt
-          - id
-          - readAt
-          additionalProperties: false
-      - allOf:
-        - $ref: '#/components/schemas/AchievementUnlockedNotificationContent'
-        - type: object
-          properties:
-            createdAt:
-              type: string
-              description: Database timestamp when this machine fact was first recorded
-            id:
-              type: integer
-              description: Durable notification row id
-              example: 42
-              exclusiveMinimum: 0
-            readAt:
-              type:
-              - string
-              - 'null'
-              description: Timestamp when the user read this row, or null while unread
-          required:
-          - createdAt
-          - id
-          - readAt
-          additionalProperties: false
-      - allOf:
-        - $ref: '#/components/schemas/DocumentUploadedNotificationContent'
-        - type: object
-          properties:
-            createdAt:
-              type: string
-              description: Database timestamp when this machine fact was first recorded
-            id:
-              type: integer
-              description: Durable notification row id
-              example: 42
-              exclusiveMinimum: 0
-            readAt:
-              type:
-              - string
-              - 'null'
-              description: Timestamp when the user read this row, or null while unread
-          required:
-          - createdAt
-          - id
-          - readAt
-          additionalProperties: false
-      - allOf:
-        - $ref: '#/components/schemas/DocumentAtsScoredNotificationContent'
-        - type: object
-          properties:
-            createdAt:
-              type: string
-              description: Database timestamp when this machine fact was first recorded
-            id:
-              type: integer
-              description: Durable notification row id
-              example: 42
-              exclusiveMinimum: 0
-            readAt:
-              type:
-              - string
-              - 'null'
-              description: Timestamp when the user read this row, or null while unread
-          required:
-          - createdAt
-          - id
-          - readAt
-          additionalProperties: false
-      - allOf:
-        - $ref: '#/components/schemas/DocumentTranslationReadyNotificationContent'
-        - type: object
-          properties:
-            createdAt:
-              type: string
-              description: Database timestamp when this machine fact was first recorded
-            id:
-              type: integer
-              description: Durable notification row id
-              example: 42
-              exclusiveMinimum: 0
-            readAt:
-              type:
-              - string
-              - 'null'
-              description: Timestamp when the user read this row, or null while unread
-          required:
-          - createdAt
-          - id
-          - readAt
-          additionalProperties: false
-    ApplicationReadyToSendNotificationPayload:
-      type: object
-      properties:
-        applicationResultId:
-          type: integer
-          description: Owned application_result row id
-          example: 1540
-          exclusiveMinimum: 0
-        company:
-          type: string
-          minLength: 1
-          maxLength: 200
-          description: Employer name as it was at the moment of the event
-          example: Trading 212
-        jobTitle:
-          type: string
-          minLength: 1
-          maxLength: 200
-          description: Job title as it was at the moment of the event
-          example: Staff Frontend Engineer
-      required:
-      - applicationResultId
-      - company
-      - jobTitle
-      additionalProperties: false
-    DocumentUploadedNotificationContent:
-      type: object
-      properties:
-        kind:
-          type: string
-          enum:
-          - document_uploaded
-        payload:
-          $ref: '#/components/schemas/DocumentUploadedNotificationPayload'
-      required:
-      - kind
-      - payload
-      additionalProperties: false
-    DocumentUploadedNotificationPayload:
-      type: object
-      properties:
-        documentId:
-          type: integer
-          description: Owned user_document row id
-          example: 42
-          exclusiveMinimum: 0
-        documentType:
-          type: string
-          enum:
-          - cover_letter
-          - resume
-          - custom
-          - tailored_resume
-          - translation
-          - match_report
-          description: Type of document (cover letter, resume, custom, tailored resume, translation, or match report)
-          example: cover_letter
-      required:
-      - documentId
-      - documentType
-      additionalProperties: false
-    AchievementUnlockedNotificationContent:
-      type: object
-      properties:
-        kind:
-          type: string
-          enum:
-          - achievement_unlocked
-        payload:
-          $ref: '#/components/schemas/AchievementUnlockedNotificationPayload'
       required:
       - kind
       - payload
@@ -1022,82 +1247,6 @@ components:
       - items
       - unreadCount
       additionalProperties: false
-    ApplicationSubmittedNotificationPayload:
-      type: object
-      properties:
-        applicationResultId:
-          type: integer
-          description: Owned application_result row id
-          example: 1540
-          exclusiveMinimum: 0
-        company:
-          type: string
-          minLength: 1
-          maxLength: 200
-          description: Employer name as it was at the moment of the event
-          example: Trading 212
-        jobTitle:
-          type: string
-          minLength: 1
-          maxLength: 200
-          description: Job title as it was at the moment of the event
-          example: Staff Frontend Engineer
-      required:
-      - applicationResultId
-      - company
-      - jobTitle
-      additionalProperties: false
-    ApplicationFailedNotificationPayload:
-      type: object
-      properties:
-        applicationResultId:
-          type: integer
-          description: Owned application_result row id
-          example: 1540
-          exclusiveMinimum: 0
-        company:
-          type: string
-          minLength: 1
-          maxLength: 200
-          description: Employer name as it was at the moment of the event
-          example: Trading 212
-        jobTitle:
-          type: string
-          minLength: 1
-          maxLength: 200
-          description: Job title as it was at the moment of the event
-          example: Staff Frontend Engineer
-      required:
-      - applicationResultId
-      - company
-      - jobTitle
-      additionalProperties: false
-    DocumentAtsScoredNotificationContent:
-      type: object
-      properties:
-        kind:
-          type: string
-          enum:
-          - document_ats_scored
-        payload:
-          $ref: '#/components/schemas/DocumentAtsScoredNotificationPayload'
-      required:
-      - kind
-      - payload
-      additionalProperties: false
-    ApplicationSubmittedNotificationContent:
-      type: object
-      properties:
-        kind:
-          type: string
-          enum:
-          - application_submitted
-        payload:
-          $ref: '#/components/schemas/ApplicationSubmittedNotificationPayload'
-      required:
-      - kind
-      - payload
-      additionalProperties: false
     MatchesReadyNotificationPayload:
       type: object
       properties:
@@ -1109,175 +1258,8 @@ components:
       required:
       - count
       additionalProperties: false
-    NotificationIdsRequest:
-      type: object
-      properties:
-        ids:
-          type: array
-          items:
-            type: integer
-            exclusiveMinimum: 0
-          minItems: 1
-          maxItems: 50
-          description: Owned notification row ids to update. Foreign IDs are ignored.
-          example:
-          - 41
-          - 42
-      required:
-      - ids
-      additionalProperties: false
-    EmployerReceiptConfirmedNotificationPayload:
-      type: object
-      properties:
-        applicationResultId:
-          type: integer
-          description: Owned application_result row id
-          example: 1540
-          exclusiveMinimum: 0
-        company:
-          type: string
-          minLength: 1
-          maxLength: 200
-          description: Employer name as it was at the moment of the event
-          example: Trading 212
-        jobTitle:
-          type: string
-          minLength: 1
-          maxLength: 200
-          description: Job title as it was at the moment of the event
-          example: Staff Frontend Engineer
-      required:
-      - applicationResultId
-      - company
-      - jobTitle
-      additionalProperties: false
-    PushTokenResponse:
-      type: object
-      properties:
-        data:
-          type: object
-          properties:
-            success:
-              type: boolean
-              enum:
-              - true
-          required:
-          - success
-          additionalProperties: false
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    MatchesReadyNotificationContent:
-      type: object
-      properties:
-        kind:
-          type: string
-          enum:
-          - matches_ready
-        payload:
-          $ref: '#/components/schemas/MatchesReadyNotificationPayload'
-      required:
-      - kind
-      - payload
-      additionalProperties: false
-    EmployerReceiptConfirmedNotificationContent:
-      type: object
-      properties:
-        kind:
-          type: string
-          enum:
-          - employer_receipt_confirmed
-        payload:
-          $ref: '#/components/schemas/EmployerReceiptConfirmedNotificationPayload'
-      required:
-      - kind
-      - payload
-      additionalProperties: false
-    DocumentTranslationReadyNotificationContent:
-      type: object
-      properties:
-        kind:
-          type: string
-          enum:
-          - document_translation_ready
-        payload:
-          $ref: '#/components/schemas/DocumentTranslationReadyNotificationPayload'
-      required:
-      - kind
-      - payload
-      additionalProperties: false
-    DocumentTranslationReadyNotificationPayload:
-      type: object
-      properties:
-        documentId:
-          type: integer
-          description: Owned user_document row id
-          example: 42
-          exclusiveMinimum: 0
-        targetLanguage:
-          type: string
-          minLength: 1
-          maxLength: 50
-          description: Stable translation target value used by the document request
-          example: German
-      required:
-      - documentId
-      - targetLanguage
-      additionalProperties: false
-    RegisterPushTokenRequest:
-      type: object
-      properties:
-        platform:
-          type: string
-          enum:
-          - ios
-          - android
-          - web
-          - unknown
-          description: Operating system of the device holding the push token
-          example: ios
-        token:
-          type: string
-          minLength: 1
-          maxLength: 200
-          pattern: ^Expo(?:nent)?PushToken\[[^\][\s]+\]$
-          description: Expo push token issued by getExpoPushTokenAsync()
-          example: ExponentPushToken[xxxxxxxxxxxxxxxxxxxxxx]
-      required:
-      - token
-      additionalProperties: false
-    AchievementUnlockedNotificationPayload:
-      type: object
-      properties:
-        achievementKey:
-          type: string
-          enum:
-          - account_created
-          - resume_uploaded
-          - first_save
-          - first_application
-          - ten_applications
-          - first_reply
-          - first_interview
-          - first_offer
-          description: Stable identifier for an unlockable achievement
-          example: first_application
-      required:
-      - achievementKey
-      additionalProperties: false
   securitySchemes:
     BearerAuth:
       description: 'Session token from signing in to AI Applyd, sent as `Authorization: Bearer <token>`.'
       scheme: bearer
       type: http
-x-refined-from:
-- aiapplyd-openapi.json
-- aiapplyd-openapi.yml
