@@ -1,0 +1,21 @@
+{
+  "repo": "aiapplyd",
+  "feeds": [
+    {
+      "source": "https://aiapplyd.com/faq",
+      "feed_url": "https://aiapplyd.com/blog/rss.xml",
+      "title": "",
+      "saved": 0,
+      "method": "discovered"
+    },
+    {
+      "source": "https://aiapplyd.com/blog/rss.xml",
+      "feed_url": "https://aiapplyd.com/blog/rss.xml",
+      "title": "",
+      "saved": 0,
+      "method": "feed"
+    }
+  ],
+  "post_count": 50,
+  "fetched": "2026-10-03T12:30:02Z"
+}

@@ -74,6 +74,9 @@ maintainers:
   email: support@aiapplyd.com
 
 common:
+- type: CapabilityMap
+  url: capabilities/aiapplyd-capability-edges.yml
+  name: AI Applyd Business Capability Map
 - type: AgentSkill
   url: skills/_index.yml
 - type: SecurityTxt
@@ -203,6 +206,8 @@ apis:
   humanURL: https://api.aiapplyd.com/api/v1/scalar
   baseURL: https://api.aiapplyd.com/api/v1
   tags:
+  - Account
+  tags_raw:
   - account
   properties:
   - type: OpenAPI
@@ -223,6 +228,8 @@ apis:
   humanURL: https://api.aiapplyd.com/api/v1/scalar
   baseURL: https://api.aiapplyd.com/api/v1
   tags:
+  - Achievements
+  tags_raw:
   - achievements
   properties:
   - type: OpenAPI
@@ -243,6 +250,8 @@ apis:
   humanURL: https://api.aiapplyd.com/api/v1/scalar
   baseURL: https://api.aiapplyd.com/api/v1
   tags:
+  - Artificial Intelligence
+  tags_raw:
   - ai
   properties:
   - type: OpenAPI
@@ -263,6 +272,8 @@ apis:
   humanURL: https://api.aiapplyd.com/api/v1/scalar
   baseURL: https://api.aiapplyd.com/api/v1
   tags:
+  - AI Persona
+  tags_raw:
   - ai-persona
   properties:
   - type: OpenAPI
@@ -283,6 +294,8 @@ apis:
   humanURL: https://api.aiapplyd.com/api/v1/scalar
   baseURL: https://api.aiapplyd.com/api/v1
   tags:
+  - Analytics
+  tags_raw:
   - analytics
   properties:
   - type: OpenAPI
@@ -303,6 +316,8 @@ apis:
   humanURL: https://api.aiapplyd.com/api/v1/scalar
   baseURL: https://api.aiapplyd.com/api/v1
   tags:
+  - ApplicationProfile
+  tags_raw:
   - application-profile
   properties:
   - type: OpenAPI
@@ -323,6 +338,8 @@ apis:
   humanURL: https://api.aiapplyd.com/api/v1/scalar
   baseURL: https://api.aiapplyd.com/api/v1
   tags:
+  - Application
+  tags_raw:
   - applications
   properties:
   - type: OpenAPI
@@ -343,6 +360,8 @@ apis:
   humanURL: https://api.aiapplyd.com/api/v1/scalar
   baseURL: https://api.aiapplyd.com/api/v1
   tags:
+  - Applicant Tracking
+  tags_raw:
   - ats
   properties:
   - type: OpenAPI
@@ -363,6 +382,8 @@ apis:
   humanURL: https://api.aiapplyd.com/api/v1/scalar
   baseURL: https://api.aiapplyd.com/api/v1
   tags:
+  - Authentication
+  tags_raw:
   - auth
   properties:
   - type: OpenAPI
@@ -383,6 +404,8 @@ apis:
   humanURL: https://api.aiapplyd.com/api/v1/scalar
   baseURL: https://api.aiapplyd.com/api/v1
   tags:
+  - Billing
+  tags_raw:
   - billing
   properties:
   - type: OpenAPI
@@ -403,6 +426,8 @@ apis:
   humanURL: https://api.aiapplyd.com/api/v1/scalar
   baseURL: https://api.aiapplyd.com/api/v1
   tags:
+  - Blog
+  tags_raw:
   - blog
   properties:
   - type: OpenAPI
@@ -423,6 +448,8 @@ apis:
   humanURL: https://api.aiapplyd.com/api/v1/scalar
   baseURL: https://api.aiapplyd.com/api/v1
   tags:
+  - Companies
+  tags_raw:
   - companies
   properties:
   - type: OpenAPI
@@ -443,6 +470,8 @@ apis:
   humanURL: https://api.aiapplyd.com/api/v1/scalar
   baseURL: https://api.aiapplyd.com/api/v1
   tags:
+  - Dashboards
+  tags_raw:
   - dashboard
   properties:
   - type: OpenAPI
@@ -463,6 +492,8 @@ apis:
   humanURL: https://api.aiapplyd.com/api/v1/scalar
   baseURL: https://api.aiapplyd.com/api/v1
   tags:
+  - Email Preferences
+  tags_raw:
   - email-preferences
   properties:
   - type: OpenAPI
@@ -483,6 +514,8 @@ apis:
   humanURL: https://api.aiapplyd.com/api/v1/scalar
   baseURL: https://api.aiapplyd.com/api/v1
   tags:
+  - Follow-ups
+  tags_raw:
   - follow-ups
   properties:
   - type: OpenAPI
@@ -503,6 +536,8 @@ apis:
   humanURL: https://api.aiapplyd.com/api/v1/scalar
   baseURL: https://api.aiapplyd.com/api/v1
   tags:
+  - Integration
+  tags_raw:
   - integrations
   properties:
   - type: OpenAPI
@@ -543,6 +578,8 @@ apis:
   humanURL: https://api.aiapplyd.com/api/v1/scalar
   baseURL: https://api.aiapplyd.com/api/v1
   tags:
+  - Job
+  tags_raw:
   - jobs
   properties:
   - type: OpenAPI
@@ -563,6 +600,8 @@ apis:
   humanURL: https://api.aiapplyd.com/api/v1/scalar
   baseURL: https://api.aiapplyd.com/api/v1
   tags:
+  - Location
+  tags_raw:
   - locations
   properties:
   - type: OpenAPI
@@ -583,6 +622,8 @@ apis:
   humanURL: https://api.aiapplyd.com/api/v1/scalar
   baseURL: https://api.aiapplyd.com/api/v1
   tags:
+  - MCP
+  tags_raw:
   - mcp
   properties:
   - type: OpenAPI
@@ -603,6 +644,8 @@ apis:
   humanURL: https://api.aiapplyd.com/api/v1/scalar
   baseURL: https://api.aiapplyd.com/api/v1
   tags:
+  - Notification
+  tags_raw:
   - notifications
   properties:
   - type: OpenAPI
@@ -623,6 +666,8 @@ apis:
   humanURL: https://api.aiapplyd.com/api/v1/scalar
   baseURL: https://api.aiapplyd.com/api/v1
   tags:
+  - Observability
+  tags_raw:
   - observability
   properties:
   - type: OpenAPI
@@ -643,6 +688,8 @@ apis:
   humanURL: https://api.aiapplyd.com/api/v1/scalar
   baseURL: https://api.aiapplyd.com/api/v1
   tags:
+  - Onboarding
+  tags_raw:
   - onboarding
   properties:
   - type: OpenAPI
@@ -663,6 +710,8 @@ apis:
   humanURL: https://api.aiapplyd.com/api/v1/scalar
   baseURL: https://api.aiapplyd.com/api/v1
   tags:
+  - Outreach
+  tags_raw:
   - outreach
   properties:
   - type: OpenAPI
@@ -683,6 +732,8 @@ apis:
   humanURL: https://api.aiapplyd.com/api/v1/scalar
   baseURL: https://api.aiapplyd.com/api/v1
   tags:
+  - Overview
+  tags_raw:
   - overview
   properties:
   - type: OpenAPI
@@ -703,6 +754,8 @@ apis:
   humanURL: https://api.aiapplyd.com/api/v1/scalar
   baseURL: https://api.aiapplyd.com/api/v1
   tags:
+  - Pricing
+  tags_raw:
   - pricing
   properties:
   - type: OpenAPI
@@ -843,6 +896,8 @@ apis:
   humanURL: https://api.aiapplyd.com/api/v1/scalar
   baseURL: https://api.aiapplyd.com/api/v1
   tags:
+  - Referrals
+  tags_raw:
   - referrals
   properties:
   - type: OpenAPI
@@ -903,6 +958,8 @@ apis:
   humanURL: https://api.aiapplyd.com/api/v1/scalar
   baseURL: https://api.aiapplyd.com/api/v1
   tags:
+  - Reviews
+  tags_raw:
   - reviews
   properties:
   - type: OpenAPI
@@ -923,6 +980,8 @@ apis:
   humanURL: https://api.aiapplyd.com/api/v1/scalar
   baseURL: https://api.aiapplyd.com/api/v1
   tags:
+  - Saved Searches
+  tags_raw:
   - saved-searches
   properties:
   - type: OpenAPI
@@ -943,6 +1002,8 @@ apis:
   humanURL: https://api.aiapplyd.com/api/v1/scalar
   baseURL: https://api.aiapplyd.com/api/v1
   tags:
+  - Search
+  tags_raw:
   - search
   properties:
   - type: OpenAPI
@@ -983,6 +1044,8 @@ apis:
   humanURL: https://api.aiapplyd.com/api/v1/scalar
   baseURL: https://api.aiapplyd.com/api/v1
   tags:
+  - Support
+  tags_raw:
   - support
   properties:
   - type: OpenAPI
@@ -1003,6 +1066,8 @@ apis:
   humanURL: https://api.aiapplyd.com/api/v1/scalar
   baseURL: https://api.aiapplyd.com/api/v1
   tags:
+  - System
+  tags_raw:
   - system
   properties:
   - type: OpenAPI
@@ -1023,6 +1088,8 @@ apis:
   humanURL: https://api.aiapplyd.com/api/v1/scalar
   baseURL: https://api.aiapplyd.com/api/v1
   tags:
+  - Tracking
+  tags_raw:
   - tracking
   properties:
   - type: OpenAPI
@@ -1043,6 +1110,8 @@ apis:
   humanURL: https://api.aiapplyd.com/api/v1/scalar
   baseURL: https://api.aiapplyd.com/api/v1
   tags:
+  - User Documents
+  tags_raw:
   - user-documents
   properties:
   - type: OpenAPI
@@ -1063,6 +1132,8 @@ apis:
   humanURL: https://api.aiapplyd.com/api/v1/scalar
   baseURL: https://api.aiapplyd.com/api/v1
   tags:
+  - User Preferences
+  tags_raw:
   - user-preferences
   properties:
   - type: OpenAPI
@@ -1083,6 +1154,8 @@ apis:
   humanURL: https://aiapplyd.com/mcps
   baseURL: https://mcp.aiapplyd.com/mcp
   tags:
+  - LinkedIn
+  tags_raw:
   - Linked In
   properties:
   - type: OpenAPI
