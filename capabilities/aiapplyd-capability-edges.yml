@@ -1,0 +1,68 @@
+slug: aiapplyd
+provider: AI Applyd
+generated_by: planning/capability-mapping/scripts/classify_capabilities.py
+model: claude-opus-5
+frame:
+- Software & Technology
+min_confidence: 0.7
+capability_model:
+  source: https://github.com/vincentmakes/turbo-ea-capabilities
+  license: CC-BY-4.0
+  attribution: Turbo EA Capabilities by Vincent Verdet — Turbo EA, https://github.com/vincentmakes/turbo-ea-capabilities,
+    CC BY 4.0
+  notice: NOTICE
+edge_count: 5
+edges:
+- tag: Billing
+  spec_file: aiapplyd-billing-api-openapi.yml
+  capability_id: BC-4250
+  capability_id_l1: BC-4250
+  capability_name: Subscription Billing & Revenue Management
+  confidence: 0.8
+  evidence: GET /billing/subscription — "Get Subscription"; GET /billing/invoices — "Get Invoices"; "Switch
+    Subscription Plan"; "Get Action Usage and Limits"; "Accept native token-pack purchase"
+  reason: Operations cover checkout/payment collection, invoice retrieval, usage metering against limits
+    and plan switch/cancel — subscription billing and revenue management for the SaaS. Spans several sub-capabilities
+    (invoicing, payment collection, usage metering), so only the L1 is asserted.
+- tag: blog
+  spec_file: aiapplyd-blog-api-openapi.yml
+  capability_id: BC-400.70
+  capability_id_l1: BC-400
+  capability_name: Content Marketing Management
+  confidence: 0.8
+  evidence: GET /blog/posts 'List Blog Posts'; 'Get Featured Posts'; 'List Categories'; 'Get Blog Author';
+    schemas BlogPost, BlogAuthor, CategoryCount
+  reason: A read-only editorial content surface — posts, authors, categories, featured and related posts
+    — which is the vendor's published marketing content. Maps to Content Marketing Management (editorial
+    planning, production, distribution); some chance it is better read as general digital/web marketing,
+    hence 0.8.
+- tag: Support
+  spec_file: aiapplyd-support-api-openapi.yml
+  capability_id: BC-430.10
+  capability_id_l1: BC-430
+  capability_name: Customer Inquiry Management
+  confidence: 0.75
+  evidence: POST /support  Submit Support Request; POST /support/public-content-report  Report public
+    user-authored content
+  reason: Captures inbound support requests and content reports from users for handling by the vendor
+    — inbound contact intake and routing.
+- tag: Reviews
+  spec_file: aiapplyd-reviews-api-openapi.yml
+  capability_id: BC-430.50
+  capability_id_l1: BC-430
+  capability_name: Customer Feedback Management
+  confidence: 0.7
+  evidence: GET /reviews/me  Get my review; POST /reviews/me  Submit or update my review; schema UpsertOwnReview
+  reason: Lets a user submit and update their own review of the service — collection of voice-of-customer
+    feedback. Narrow surface (own review only), so moderate confidence.
+- tag: public-cancellation
+  spec_file: aiapplyd-public-cancellation-api-openapi.yml
+  capability_id: BC-4240.60
+  capability_id_l1: BC-4240
+  capability_name: Cancellation & Termination
+  confidence: 0.7
+  evidence: POST /public-cancellation/request 'Request Cancellation Link'; POST /public-cancellation/confirm
+    'Confirm Cancellation'
+  reason: A two-step tokenised self-service cancellation flow for a paying customer of this SaaS, matching
+    Cancellation & Termination in the subscription lifecycle. Residual ambiguity over whether 'cancellation'
+    means subscription cancellation or account deletion keeps this at 0.7.
