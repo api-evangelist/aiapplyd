@@ -59,3 +59,29 @@ plans:
   alternative_price_text: $37.99/week, billed weekly
 note: Plans price the consumer job-application product; the MCP server and API come with the account. Prices exclude
   VAT/sales tax.
+x-canonical:
+  generated: '2026-10-08'
+  vocabulary: all/0-working/economics/plans-canonical.yml
+  models:
+  - free
+  - subscription
+  units: []
+  plans:
+  - name: Free (Job Seeker)
+    access: other
+    model: free
+    model_how: derived
+    units: []
+    periods: []
+  - name: Hired in 30
+    access: other
+    model: subscription
+    model_how: derived
+    units: []
+    periods: []
+  - name: Hired Yesterday
+    access: other
+    model: subscription
+    model_how: derived
+    units: []
+    periods: []
