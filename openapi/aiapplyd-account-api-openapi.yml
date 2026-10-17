@@ -467,22 +467,21 @@ components:
           description: User phone number
           example: '+1234567890'
       additionalProperties: false
-    AccountUpdatedResponse:
+    AccountDeletedResponse:
       type: object
       properties:
         data:
           type: object
           properties:
-            success:
+            cleanupPending:
               type: boolean
-              enum:
-              - true
+              description: Account access is removed; provider or stored-file erasure is still being recovered.
             message:
               type: string
-              description: Update confirmation message
-              example: Account updated successfully
+              description: Deletion confirmation message
+              example: Account deleted successfully
           required:
-          - success
+          - cleanupPending
           - message
           additionalProperties: false
         meta:
@@ -496,6 +495,23 @@ components:
       - success
       additionalProperties: false
       description: Successful API response
+    StoreAppleAuthorizationRequest:
+      type: object
+      properties:
+        appleUserId:
+          type: string
+          minLength: 1
+          maxLength: 255
+          description: Stable Apple user identifier returned by the native credential
+        authorizationCode:
+          type: string
+          minLength: 1
+          maxLength: 4096
+          description: Single-use native Apple authorization code
+      required:
+      - appleUserId
+      - authorizationCode
+      additionalProperties: false
     ResponseMetadata:
       type: object
       properties:
@@ -527,23 +543,11 @@ components:
           type: string
           description: API version
           example: v1
-    AccountDeletedResponse:
+    AccountResponse:
       type: object
       properties:
         data:
-          type: object
-          properties:
-            cleanupPending:
-              type: boolean
-              description: Account access is removed; provider or stored-file erasure is still being recovered.
-            message:
-              type: string
-              description: Deletion confirmation message
-              example: Account deleted successfully
-          required:
-          - cleanupPending
-          - message
-          additionalProperties: false
+          $ref: '#/components/schemas/Account'
         meta:
           $ref: '#/components/schemas/ResponseMetadata'
         success:
@@ -660,6 +664,35 @@ components:
               - true
           required:
           - stored
+          additionalProperties: false
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    AccountUpdatedResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            success:
+              type: boolean
+              enum:
+              - true
+            message:
+              type: string
+              description: Update confirmation message
+              example: Account updated successfully
+          required:
+          - success
+          - message
           additionalProperties: false
         meta:
           $ref: '#/components/schemas/ResponseMetadata'
@@ -1015,39 +1048,6 @@ components:
       required:
       - error
       - success
-      additionalProperties: false
-    AccountResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/Account'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    StoreAppleAuthorizationRequest:
-      type: object
-      properties:
-        appleUserId:
-          type: string
-          minLength: 1
-          maxLength: 255
-          description: Stable Apple user identifier returned by the native credential
-        authorizationCode:
-          type: string
-          minLength: 1
-          maxLength: 4096
-          description: Single-use native Apple authorization code
-      required:
-      - appleUserId
-      - authorizationCode
       additionalProperties: false
   securitySchemes:
     BearerAuth:

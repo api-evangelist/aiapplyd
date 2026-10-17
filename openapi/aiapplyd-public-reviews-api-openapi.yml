@@ -57,6 +57,49 @@ paths:
       operationId: getPublicReviews
 components:
   schemas:
+    PublicReview:
+      type: object
+      properties:
+        body:
+          type: string
+          description: The review text, as written by the reviewer.
+          example: I stopped writing cover letters by hand and started getting replies within a fortnight.
+        createdAt:
+          type: string
+          description: When the review was written (ISO-8601). Feeds `datePublished` in the Review markup.
+          example: '2026-08-31T09:15:00.000Z'
+        displayName:
+          type: string
+          description: The credit the reviewer chose for themselves. Feeds `author.name` in the Review markup.
+          example: Ava K.
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+          description: Star rating, 1-5. Feeds `reviewRating.ratingValue`.
+          example: 5
+      required:
+      - body
+      - createdAt
+      - displayName
+      - rating
+      additionalProperties: false
+    PublicReviewsResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/PublicReviewsPayload'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
     ResponseMetadata:
       type: object
       properties:
@@ -88,32 +131,15 @@ components:
           type: string
           description: API version
           example: v1
-    PublicReview:
+    PublicReviewsPayload:
       type: object
       properties:
-        body:
-          type: string
-          description: The review text, as written by the reviewer.
-          example: I stopped writing cover letters by hand and started getting replies within a fortnight.
-        createdAt:
-          type: string
-          description: When the review was written (ISO-8601). Feeds `datePublished` in the Review markup.
-          example: '2026-08-31T09:15:00.000Z'
-        displayName:
-          type: string
-          description: The credit the reviewer chose for themselves. Feeds `author.name` in the Review markup.
-          example: Ava K.
-        rating:
-          type: integer
-          minimum: 1
-          maximum: 5
-          description: Star rating, 1-5. Feeds `reviewRating.ratingValue`.
-          example: 5
+        reviews:
+          type: array
+          items:
+            $ref: '#/components/schemas/PublicReview'
       required:
-      - body
-      - createdAt
-      - displayName
-      - rating
+      - reviews
       additionalProperties: false
     ApiErrorResponse:
       type: object
@@ -458,32 +484,6 @@ components:
       required:
       - error
       - success
-      additionalProperties: false
-    PublicReviewsResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/PublicReviewsPayload'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    PublicReviewsPayload:
-      type: object
-      properties:
-        reviews:
-          type: array
-          items:
-            $ref: '#/components/schemas/PublicReview'
-      required:
-      - reviews
       additionalProperties: false
   securitySchemes:
     BearerAuth:

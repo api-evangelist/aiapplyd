@@ -136,6 +136,182 @@ components:
           type: string
           description: API version
           example: v1
+    CompanyProfile:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Company identifier
+          example: 1
+        name:
+          type: string
+          description: Company name
+          example: Google
+        domain:
+          type:
+          - string
+          - 'null'
+          description: Company domain
+          example: google.com
+        industry:
+          type:
+          - string
+          - 'null'
+          description: Company industry
+          example: Technology
+        size:
+          type:
+          - string
+          - 'null'
+          description: Company size
+          example: enterprise
+        atsPlatform:
+          type:
+          - string
+          - 'null'
+          description: ATS platform
+          example: Greenhouse
+        boardUrl:
+          type:
+          - string
+          - 'null'
+          description: Job board URL
+          example: https://careers.google.com
+        careerPageUrl:
+          type:
+          - string
+          - 'null'
+          description: Career page URL
+          example: https://careers.google.com
+        glassdoorUrl:
+          type:
+          - string
+          - 'null'
+          description: Glassdoor URL
+          example: https://www.glassdoor.com/Overview/Google
+        linkedinCompanyUrl:
+          type:
+          - string
+          - 'null'
+          description: LinkedIn URL
+          example: https://www.linkedin.com/company/google
+        teamPageUrl:
+          type:
+          - string
+          - 'null'
+          description: Team page URL
+          example: https://about.google.com/team
+        emailPattern:
+          type:
+          - string
+          - 'null'
+          description: Email pattern
+          example: firstname.lastname@google.com
+        techStack:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: Tech stack
+          example:
+          - Go
+          - Python
+        missionSummary:
+          type:
+          - string
+          - 'null'
+          description: Mission summary
+        valuesSummary:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: Company values
+        talkingPoints:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: Interview talking points
+        socialLinks:
+          type:
+          - object
+          - 'null'
+          properties:
+            crunchbase:
+              type:
+              - string
+              - 'null'
+            github:
+              type:
+              - string
+              - 'null'
+            glassdoor:
+              type:
+              - string
+              - 'null'
+            linkedin:
+              type:
+              - string
+              - 'null'
+            twitter:
+              type:
+              - string
+              - 'null'
+          required:
+          - crunchbase
+          - github
+          - glassdoor
+          - linkedin
+          - twitter
+          additionalProperties: false
+          description: Social media links
+          example:
+            crunchbase: null
+            github: https://github.com/google
+            glassdoor: null
+            linkedin: https://www.linkedin.com/company/google
+            twitter: null
+        logoUrl:
+          type:
+          - string
+          - 'null'
+          description: Logo URL
+        researchGeneratedAt:
+          type:
+          - string
+          - 'null'
+          description: When research was generated
+        lastScrapedAt:
+          type:
+          - string
+          - 'null'
+          description: When data was scraped
+      required:
+      - id
+      - name
+      - domain
+      - industry
+      - size
+      - atsPlatform
+      - boardUrl
+      - careerPageUrl
+      - glassdoorUrl
+      - linkedinCompanyUrl
+      - teamPageUrl
+      - emailPattern
+      - techStack
+      - missionSummary
+      - valuesSummary
+      - talkingPoints
+      - socialLinks
+      - logoUrl
+      - researchGeneratedAt
+      - lastScrapedAt
+      additionalProperties: false
     CompanyProfileResponse:
       type: object
       properties:
@@ -495,182 +671,6 @@ components:
       required:
       - error
       - success
-      additionalProperties: false
-    CompanyProfile:
-      type: object
-      properties:
-        id:
-          type: integer
-          description: Company identifier
-          example: 1
-        name:
-          type: string
-          description: Company name
-          example: Google
-        domain:
-          type:
-          - string
-          - 'null'
-          description: Company domain
-          example: google.com
-        industry:
-          type:
-          - string
-          - 'null'
-          description: Company industry
-          example: Technology
-        size:
-          type:
-          - string
-          - 'null'
-          description: Company size
-          example: enterprise
-        atsPlatform:
-          type:
-          - string
-          - 'null'
-          description: ATS platform
-          example: Greenhouse
-        boardUrl:
-          type:
-          - string
-          - 'null'
-          description: Job board URL
-          example: https://careers.google.com
-        careerPageUrl:
-          type:
-          - string
-          - 'null'
-          description: Career page URL
-          example: https://careers.google.com
-        glassdoorUrl:
-          type:
-          - string
-          - 'null'
-          description: Glassdoor URL
-          example: https://www.glassdoor.com/Overview/Google
-        linkedinCompanyUrl:
-          type:
-          - string
-          - 'null'
-          description: LinkedIn URL
-          example: https://www.linkedin.com/company/google
-        teamPageUrl:
-          type:
-          - string
-          - 'null'
-          description: Team page URL
-          example: https://about.google.com/team
-        emailPattern:
-          type:
-          - string
-          - 'null'
-          description: Email pattern
-          example: firstname.lastname@google.com
-        techStack:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-          description: Tech stack
-          example:
-          - Go
-          - Python
-        missionSummary:
-          type:
-          - string
-          - 'null'
-          description: Mission summary
-        valuesSummary:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-          description: Company values
-        talkingPoints:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-          description: Interview talking points
-        socialLinks:
-          type:
-          - object
-          - 'null'
-          properties:
-            crunchbase:
-              type:
-              - string
-              - 'null'
-            github:
-              type:
-              - string
-              - 'null'
-            glassdoor:
-              type:
-              - string
-              - 'null'
-            linkedin:
-              type:
-              - string
-              - 'null'
-            twitter:
-              type:
-              - string
-              - 'null'
-          required:
-          - crunchbase
-          - github
-          - glassdoor
-          - linkedin
-          - twitter
-          additionalProperties: false
-          description: Social media links
-          example:
-            crunchbase: null
-            github: https://github.com/google
-            glassdoor: null
-            linkedin: https://www.linkedin.com/company/google
-            twitter: null
-        logoUrl:
-          type:
-          - string
-          - 'null'
-          description: Logo URL
-        researchGeneratedAt:
-          type:
-          - string
-          - 'null'
-          description: When research was generated
-        lastScrapedAt:
-          type:
-          - string
-          - 'null'
-          description: When data was scraped
-      required:
-      - id
-      - name
-      - domain
-      - industry
-      - size
-      - atsPlatform
-      - boardUrl
-      - careerPageUrl
-      - glassdoorUrl
-      - linkedinCompanyUrl
-      - teamPageUrl
-      - emailPattern
-      - techStack
-      - missionSummary
-      - valuesSummary
-      - talkingPoints
-      - socialLinks
-      - logoUrl
-      - researchGeneratedAt
-      - lastScrapedAt
       additionalProperties: false
   securitySchemes:
     BearerAuth:

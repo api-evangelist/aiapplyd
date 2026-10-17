@@ -173,6 +173,22 @@ paths:
       operationId: getTrackingActivityByJobListingId
 components:
   schemas:
+    ActivityTimelineResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ActivityTimelineData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
     ActivityEntryData:
       type: object
       properties:
@@ -253,6 +269,147 @@ components:
       - sourceType
       - title
       - userId
+      additionalProperties: false
+    ActivitySummaryResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ActivitySummaryData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    ActivityFeedData:
+      type: object
+      properties:
+        entries:
+          type: array
+          items:
+            $ref: '#/components/schemas/ActivityFeedEntryData'
+        total:
+          type: integer
+          description: Total number of entries
+      required:
+      - entries
+      - total
+      additionalProperties: false
+    ResponseMetadata:
+      type: object
+      properties:
+        duration:
+          type: number
+          description: Request duration in milliseconds
+          example: 150
+          exclusiveMinimum: 0
+        performance:
+          type: object
+          properties:
+            dbQueries:
+              type: integer
+              minimum: 0
+            totalDbTime:
+              type: number
+              minimum: 0
+          description: Performance metrics (preview/local only)
+        requestId:
+          type: string
+          description: Unique request identifier
+          example: req_abc123
+        timestamp:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp
+          example: '2026-09-25T17:29:47.224Z'
+        version:
+          type: string
+          description: API version
+          example: v1
+    ActivityFeedResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ActivityFeedData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    ActivityByKind:
+      type: object
+      properties:
+        application_submitted:
+          type: integer
+          minimum: 0
+        document_sent:
+          type: integer
+          minimum: 0
+        draft_created:
+          type: integer
+          minimum: 0
+        email_received:
+          type: integer
+          minimum: 0
+        email_sent:
+          type: integer
+          minimum: 0
+        follow_up_needed:
+          type: integer
+          minimum: 0
+        ghosting_detected:
+          type: integer
+          minimum: 0
+        interview_cancelled:
+          type: integer
+          minimum: 0
+        interview_coaching_sent:
+          type: integer
+          minimum: 0
+        interview_rescheduled:
+          type: integer
+          minimum: 0
+        interview_scheduled:
+          type: integer
+          minimum: 0
+        stage_changed:
+          type: integer
+          minimum: 0
+        withdrawal_sent:
+          type: integer
+          minimum: 0
+      additionalProperties: false
+      description: Count of activity entries per event type (keys mirror ActivityEventType)
+    ActivitySummaryData:
+      type: object
+      properties:
+        byKind:
+          $ref: '#/components/schemas/ActivityByKind'
+        last7d:
+          type: integer
+          minimum: 0
+          description: Total activity entries in the last 7 days
+          example: 12
+        totalEvents:
+          type: integer
+          minimum: 0
+          description: Total activity entries across all time
+          example: 87
+      required:
+      - byKind
+      - last7d
+      - totalEvents
       additionalProperties: false
     ActivityFeedEntryData:
       type: object
@@ -347,69 +504,20 @@ components:
       - company
       - jobTitle
       additionalProperties: false
-    ResponseMetadata:
+    ActivityTimelineData:
       type: object
       properties:
-        duration:
-          type: number
-          description: Request duration in milliseconds
-          example: 150
-          exclusiveMinimum: 0
-        performance:
-          type: object
-          properties:
-            dbQueries:
-              type: integer
-              minimum: 0
-            totalDbTime:
-              type: number
-              minimum: 0
-          description: Performance metrics (preview/local only)
-        requestId:
-          type: string
-          description: Unique request identifier
-          example: req_abc123
-        timestamp:
-          type: string
-          format: date-time
-          description: ISO 8601 timestamp
-          example: '2026-09-25T17:29:47.224Z'
-        version:
-          type: string
-          description: API version
-          example: v1
-    ActivitySummaryResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/ActivitySummaryData'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
+        entries:
+          type: array
+          items:
+            $ref: '#/components/schemas/ActivityEntryData'
+        total:
+          type: integer
+          description: Total number of entries
       required:
-      - data
-      - success
+      - entries
+      - total
       additionalProperties: false
-      description: Successful API response
-    ActivityFeedResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/ActivityFeedData'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
     ApiErrorResponse:
       type: object
       properties:
@@ -754,114 +862,6 @@ components:
       - error
       - success
       additionalProperties: false
-    ActivityTimelineResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/ActivityTimelineData'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    ActivityTimelineData:
-      type: object
-      properties:
-        entries:
-          type: array
-          items:
-            $ref: '#/components/schemas/ActivityEntryData'
-        total:
-          type: integer
-          description: Total number of entries
-      required:
-      - entries
-      - total
-      additionalProperties: false
-    ActivitySummaryData:
-      type: object
-      properties:
-        byKind:
-          $ref: '#/components/schemas/ActivityByKind'
-        last7d:
-          type: integer
-          minimum: 0
-          description: Total activity entries in the last 7 days
-          example: 12
-        totalEvents:
-          type: integer
-          minimum: 0
-          description: Total activity entries across all time
-          example: 87
-      required:
-      - byKind
-      - last7d
-      - totalEvents
-      additionalProperties: false
-    ActivityFeedData:
-      type: object
-      properties:
-        entries:
-          type: array
-          items:
-            $ref: '#/components/schemas/ActivityFeedEntryData'
-        total:
-          type: integer
-          description: Total number of entries
-      required:
-      - entries
-      - total
-      additionalProperties: false
-    ActivityByKind:
-      type: object
-      properties:
-        application_submitted:
-          type: integer
-          minimum: 0
-        document_sent:
-          type: integer
-          minimum: 0
-        draft_created:
-          type: integer
-          minimum: 0
-        email_received:
-          type: integer
-          minimum: 0
-        email_sent:
-          type: integer
-          minimum: 0
-        follow_up_needed:
-          type: integer
-          minimum: 0
-        ghosting_detected:
-          type: integer
-          minimum: 0
-        interview_cancelled:
-          type: integer
-          minimum: 0
-        interview_coaching_sent:
-          type: integer
-          minimum: 0
-        interview_rescheduled:
-          type: integer
-          minimum: 0
-        interview_scheduled:
-          type: integer
-          minimum: 0
-        stage_changed:
-          type: integer
-          minimum: 0
-        withdrawal_sent:
-          type: integer
-          minimum: 0
-      additionalProperties: false
-      description: Count of activity entries per event type (keys mirror ActivityEventType)
   securitySchemes:
     BearerAuth:
       description: 'Session token from signing in to AI Applyd, sent as `Authorization: Bearer <token>`.'

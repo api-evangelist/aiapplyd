@@ -107,22 +107,6 @@ paths:
       operationId: postSupport
 components:
   schemas:
-    SubmitSupportResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/SubmitSupportData'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
     SubmitPublicContentReportData:
       type: object
       properties:
@@ -141,98 +125,6 @@ components:
       - reportId
       - status
       - success
-      additionalProperties: false
-    ResponseMetadata:
-      type: object
-      properties:
-        duration:
-          type: number
-          description: Request duration in milliseconds
-          example: 150
-          exclusiveMinimum: 0
-        performance:
-          type: object
-          properties:
-            dbQueries:
-              type: integer
-              minimum: 0
-            totalDbTime:
-              type: number
-              minimum: 0
-          description: Performance metrics (preview/local only)
-        requestId:
-          type: string
-          description: Unique request identifier
-          example: req_abc123
-        timestamp:
-          type: string
-          format: date-time
-          description: ISO 8601 timestamp
-          example: '2026-09-25T17:29:47.224Z'
-        version:
-          type: string
-          description: API version
-          example: v1
-    SubmitSupportRequest:
-      type: object
-      properties:
-        category:
-          type: string
-          maxLength: 50
-        clientRequestId:
-          type: string
-          format: uuid
-          description: Stable UUID for one canonical authored draft, reused across manual retries
-          example: 8a0e5486-7708-41ba-86de-ccfa104a8c52
-        description:
-          type: string
-          minLength: 10
-          maxLength: 2000
-        rating:
-          type: number
-          minimum: 1
-          maximum: 5
-        title:
-          type: string
-          minLength: 3
-          maxLength: 200
-        type:
-          type: string
-          enum:
-          - issue
-          - feature_request
-          - feedback
-          description: Type of support request submitted by the user
-          example: issue
-        websiteUrl:
-          anyOf:
-          - type: string
-            format: uri
-          - type: string
-            enum:
-            - ''
-        severity:
-          type: string
-          enum:
-          - low
-          - medium
-          - high
-          - critical
-          description: Self-reported severity of the submission
-          example: medium
-        attachmentUrls:
-          type: array
-          items:
-            type: string
-            format: uri
-          maxItems: 10
-          description: Public URLs of screenshots or attachments the user uploaded before submitting
-          example:
-          - https://cdn.example.com/screenshots/abc.png
-      required:
-      - clientRequestId
-      - description
-      - type
       additionalProperties: false
     ApiErrorResponse:
       type: object
@@ -578,6 +470,114 @@ components:
       - error
       - success
       additionalProperties: false
+    SubmitSupportRequest:
+      type: object
+      properties:
+        category:
+          type: string
+          maxLength: 50
+        clientRequestId:
+          type: string
+          format: uuid
+          description: Stable UUID for one canonical authored draft, reused across manual retries
+          example: 8a0e5486-7708-41ba-86de-ccfa104a8c52
+        description:
+          type: string
+          minLength: 10
+          maxLength: 2000
+        rating:
+          type: number
+          minimum: 1
+          maximum: 5
+        title:
+          type: string
+          minLength: 3
+          maxLength: 200
+        type:
+          type: string
+          enum:
+          - issue
+          - feature_request
+          - feedback
+          description: Type of support request submitted by the user
+          example: issue
+        websiteUrl:
+          anyOf:
+          - type: string
+            format: uri
+          - type: string
+            enum:
+            - ''
+        severity:
+          type: string
+          enum:
+          - low
+          - medium
+          - high
+          - critical
+          description: Self-reported severity of the submission
+          example: medium
+        attachmentUrls:
+          type: array
+          items:
+            type: string
+            format: uri
+          maxItems: 10
+          description: Public URLs of screenshots or attachments the user uploaded before submitting
+          example:
+          - https://cdn.example.com/screenshots/abc.png
+      required:
+      - clientRequestId
+      - description
+      - type
+      additionalProperties: false
+    ResponseMetadata:
+      type: object
+      properties:
+        duration:
+          type: number
+          description: Request duration in milliseconds
+          example: 150
+          exclusiveMinimum: 0
+        performance:
+          type: object
+          properties:
+            dbQueries:
+              type: integer
+              minimum: 0
+            totalDbTime:
+              type: number
+              minimum: 0
+          description: Performance metrics (preview/local only)
+        requestId:
+          type: string
+          description: Unique request identifier
+          example: req_abc123
+        timestamp:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp
+          example: '2026-09-25T17:29:47.224Z'
+        version:
+          type: string
+          description: API version
+          example: v1
+    SubmitPublicContentReportResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/SubmitPublicContentReportData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
     SubmitPublicContentReport:
       type: object
       properties:
@@ -628,6 +628,22 @@ components:
       - shareToken
       - targetType
       additionalProperties: false
+    SubmitSupportResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/SubmitSupportData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
     SubmitSupportData:
       type: object
       properties:
@@ -651,22 +667,6 @@ components:
       - success
       - ticketId
       additionalProperties: false
-    SubmitPublicContentReportResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/SubmitPublicContentReportData'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
   securitySchemes:
     BearerAuth:
       description: 'Session token from signing in to AI Applyd, sent as `Authorization: Bearer <token>`.'

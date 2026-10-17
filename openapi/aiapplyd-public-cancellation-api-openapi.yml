@@ -87,69 +87,6 @@ paths:
       operationId: postPublicCancellationConfirm
 components:
   schemas:
-    ResponseMetadata:
-      type: object
-      properties:
-        duration:
-          type: number
-          description: Request duration in milliseconds
-          example: 150
-          exclusiveMinimum: 0
-        performance:
-          type: object
-          properties:
-            dbQueries:
-              type: integer
-              minimum: 0
-            totalDbTime:
-              type: number
-              minimum: 0
-          description: Performance metrics (preview/local only)
-        requestId:
-          type: string
-          description: Unique request identifier
-          example: req_abc123
-        timestamp:
-          type: string
-          format: date-time
-          description: ISO 8601 timestamp
-          example: '2026-09-25T17:29:47.224Z'
-        version:
-          type: string
-          description: API version
-          example: v1
-    ConfirmCancellationData:
-      type: object
-      properties:
-        accessEndsAt:
-          type:
-          - string
-          - 'null'
-        alreadyCancelled:
-          type: boolean
-        message:
-          type: string
-      required:
-      - accessEndsAt
-      - alreadyCancelled
-      - message
-      additionalProperties: false
-    RequestCancellationResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/RequestCancellationData'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
     RequestCancellationData:
       type: object
       properties:
@@ -502,6 +439,37 @@ components:
       - error
       - success
       additionalProperties: false
+    ResponseMetadata:
+      type: object
+      properties:
+        duration:
+          type: number
+          description: Request duration in milliseconds
+          example: 150
+          exclusiveMinimum: 0
+        performance:
+          type: object
+          properties:
+            dbQueries:
+              type: integer
+              minimum: 0
+            totalDbTime:
+              type: number
+              minimum: 0
+          description: Performance metrics (preview/local only)
+        requestId:
+          type: string
+          description: Unique request identifier
+          example: req_abc123
+        timestamp:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp
+          example: '2026-09-25T17:29:47.224Z'
+        version:
+          type: string
+          description: API version
+          example: v1
     RequestCancellation:
       type: object
       properties:
@@ -512,6 +480,38 @@ components:
           example: user@example.com
       required:
       - email
+      additionalProperties: false
+    RequestCancellationResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/RequestCancellationData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    ConfirmCancellationData:
+      type: object
+      properties:
+        accessEndsAt:
+          type:
+          - string
+          - 'null'
+        alreadyCancelled:
+          type: boolean
+        message:
+          type: string
+      required:
+      - accessEndsAt
+      - alreadyCancelled
+      - message
       additionalProperties: false
     ConfirmCancellationResponse:
       type: object

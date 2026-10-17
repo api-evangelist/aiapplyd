@@ -52,58 +52,22 @@ paths:
       operationId: getAchievements
 components:
   schemas:
-    AchievementsData:
+    AchievementsResponse:
       type: object
       properties:
-        achievements:
-          type: array
-          items:
-            $ref: '#/components/schemas/Achievement'
-          description: Every achievement, unlocked and locked, in unlock order.
-        unlockedCount:
-          type: integer
-          description: How many are unlocked
-          example: 3
-        totalCount:
-          type: integer
-          description: How many exist in total
-          example: 6
+        data:
+          $ref: '#/components/schemas/AchievementsData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
       required:
-      - achievements
-      - unlockedCount
-      - totalCount
+      - data
+      - success
       additionalProperties: false
-    ResponseMetadata:
-      type: object
-      properties:
-        duration:
-          type: number
-          description: Request duration in milliseconds
-          example: 150
-          exclusiveMinimum: 0
-        performance:
-          type: object
-          properties:
-            dbQueries:
-              type: integer
-              minimum: 0
-            totalDbTime:
-              type: number
-              minimum: 0
-          description: Performance metrics (preview/local only)
-        requestId:
-          type: string
-          description: Unique request identifier
-          example: req_abc123
-        timestamp:
-          type: string
-          format: date-time
-          description: ISO 8601 timestamp
-          example: '2026-09-25T17:29:47.224Z'
-        version:
-          type: string
-          description: API version
-          example: v1
+      description: Successful API response
     Achievement:
       type: object
       properties:
@@ -143,6 +107,37 @@ components:
       - progress
       - target
       additionalProperties: false
+    ResponseMetadata:
+      type: object
+      properties:
+        duration:
+          type: number
+          description: Request duration in milliseconds
+          example: 150
+          exclusiveMinimum: 0
+        performance:
+          type: object
+          properties:
+            dbQueries:
+              type: integer
+              minimum: 0
+            totalDbTime:
+              type: number
+              minimum: 0
+          description: Performance metrics (preview/local only)
+        requestId:
+          type: string
+          description: Unique request identifier
+          example: req_abc123
+        timestamp:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp
+          example: '2026-09-25T17:29:47.224Z'
+        version:
+          type: string
+          description: API version
+          example: v1
     ApiErrorResponse:
       type: object
       properties:
@@ -487,22 +482,27 @@ components:
       - error
       - success
       additionalProperties: false
-    AchievementsResponse:
+    AchievementsData:
       type: object
       properties:
-        data:
-          $ref: '#/components/schemas/AchievementsData'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
+        achievements:
+          type: array
+          items:
+            $ref: '#/components/schemas/Achievement'
+          description: Every achievement, unlocked and locked, in unlock order.
+        unlockedCount:
+          type: integer
+          description: How many are unlocked
+          example: 3
+        totalCount:
+          type: integer
+          description: How many exist in total
+          example: 6
       required:
-      - data
-      - success
+      - achievements
+      - unlockedCount
+      - totalCount
       additionalProperties: false
-      description: Successful API response
   securitySchemes:
     BearerAuth:
       description: 'Session token from signing in to AI Applyd, sent as `Authorization: Bearer <token>`.'

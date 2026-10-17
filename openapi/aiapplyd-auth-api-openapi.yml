@@ -59,22 +59,6 @@ paths:
       operationId: postAuthTestLogin
 components:
   schemas:
-    TestLoginResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/TestLoginData'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
     ResponseMetadata:
       type: object
       properties:
@@ -106,6 +90,17 @@ components:
           type: string
           description: API version
           example: v1
+    TestLoginBody:
+      type: object
+      properties:
+        userId:
+          type: string
+          minLength: 1
+          description: Target user id. Must have `is_test_user = 1` in the user table.
+          example: test-sarah-chen-00000000-0000-0000-0000-000000000001
+      required:
+      - userId
+      additionalProperties: false
     TestLoginData:
       type: object
       properties:
@@ -127,17 +122,22 @@ components:
       - userId
       - sessionToken
       additionalProperties: false
-    TestLoginBody:
+    TestLoginResponse:
       type: object
       properties:
-        userId:
-          type: string
-          minLength: 1
-          description: Target user id. Must have `is_test_user = 1` in the user table.
-          example: test-sarah-chen-00000000-0000-0000-0000-000000000001
+        data:
+          $ref: '#/components/schemas/TestLoginData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
       required:
-      - userId
+      - data
+      - success
       additionalProperties: false
+      description: Successful API response
     ApiErrorResponse:
       type: object
       properties:

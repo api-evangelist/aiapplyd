@@ -222,101 +222,11 @@ paths:
       operationId: getLocationsInitialSuggestions
 components:
   schemas:
-    LocationInitialSuggestions:
-      type: object
-      properties:
-        ipCountry:
-          type:
-          - string
-          - 'null'
-          minLength: 2
-          maxLength: 2
-          description: ISO-3166-1 alpha-2 country code inferred from request IP. Null when CF does not expose cf.country (local dev).
-          example: US
-        popularByCountry:
-          type: array
-          items:
-            $ref: '#/components/schemas/LocationCountryGroup'
-          description: Top popular cities grouped by country, ordered by country population weight. Pre-populated dropdown fallback.
-      required:
-      - ipCountry
-      - popularByCountry
-      additionalProperties: false
-    ResponseMetadata:
-      type: object
-      properties:
-        duration:
-          type: number
-          description: Request duration in milliseconds
-          example: 150
-          exclusiveMinimum: 0
-        performance:
-          type: object
-          properties:
-            dbQueries:
-              type: integer
-              minimum: 0
-            totalDbTime:
-              type: number
-              minimum: 0
-          description: Performance metrics (preview/local only)
-        requestId:
-          type: string
-          description: Unique request identifier
-          example: req_abc123
-        timestamp:
-          type: string
-          format: date-time
-          description: ISO 8601 timestamp
-          example: '2026-09-25T17:29:47.224Z'
-        version:
-          type: string
-          description: API version
-          example: v1
-    PopularCountriesPage:
-      type: object
-      properties:
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/CountrySummary'
-          description: Countries for this page, ordered by aggregate population DESC.
-        nextCursor:
-          type:
-          - integer
-          - 'null'
-          description: Next offset to pass as `cursor`, or `null` on the final page.
-          example: 30
-      required:
-      - items
-      - nextCursor
-      additionalProperties: false
-    LocationCountryGroup:
-      type: object
-      properties:
-        countryCode:
-          type: string
-          description: ISO-3166-1 alpha-2 country code (upper-case).
-          example: US
-        countryName:
-          type: string
-          description: Human-readable country name.
-          example: United States
-        cities:
-          type: array
-          items:
-            $ref: '#/components/schemas/Location'
-          description: Cities belonging to this country, ordered by population desc.
-      required:
-      - countryCode
-      - countryName
-      - cities
-      additionalProperties: false
-    PopularCountriesResponse:
+    LocationInitialSuggestionsResponse:
       type: object
       properties:
         data:
-          $ref: '#/components/schemas/PopularCountriesPage'
+          $ref: '#/components/schemas/LocationInitialSuggestions'
         meta:
           $ref: '#/components/schemas/ResponseMetadata'
         success:
@@ -328,98 +238,6 @@ components:
       - success
       additionalProperties: false
       description: Successful API response
-    Location:
-      type: object
-      properties:
-        adminName1:
-          type: string
-          description: Primary administrative division (state/province). Empty string for country rows.
-          example: California
-        country:
-          type: string
-          description: Country name
-          example: United States
-        countryCode:
-          type: string
-          description: ISO 3166-1 alpha-2 country code
-          example: US
-        flagEmoji:
-          type:
-          - string
-          - 'null'
-          description: Flag emoji for the country (e.g. 🇺🇸). May be null/absent for legacy rows.
-          example: 🇺🇸
-        lat:
-          type: number
-          description: Latitude coordinate
-          example: 37.7749
-        lng:
-          type: number
-          description: Longitude coordinate
-          example: -122.4194
-        name:
-          type: string
-          description: City/place name
-          example: San Francisco
-        population:
-          type: integer
-          description: Population count (sum of city populations for country rows).
-          example: 884363
-        stateCode:
-          type:
-          - string
-          - 'null'
-          description: 'ISO admin1 code (machine key for the state/province). Populated on `type: "state"` rows and optionally on city rows; null/absent for country rows and legacy entries.'
-          example: CA
-        type:
-          type: string
-          enum:
-          - country
-          - state
-          - city
-          description: 'Row kind: "country" (ISO country row seeded in 0045), "state" (synthesized admin1 row, adminName1 populated, name empty), or "city" (cities15000).'
-          example: city
-      required:
-      - adminName1
-      - country
-      - countryCode
-      - lat
-      - lng
-      - name
-      - population
-      - type
-      additionalProperties: false
-    CountrySummary:
-      type: object
-      properties:
-        countryCode:
-          type: string
-          description: ISO-3166-1 alpha-2 country code.
-          example: US
-        countryName:
-          type: string
-          description: Human-readable country name.
-          example: United States
-        flagEmoji:
-          type:
-          - string
-          - 'null'
-          description: Regional-indicator flag emoji. May be null for legacy rows.
-          example: 🇺🇸
-        cityCount:
-          type: integer
-          description: Number of distinct cities we have catalogued for this country. Surfaces as a hint in the drill-in header.
-          example: 84
-        population:
-          type: integer
-          description: Sum of city populations in this country (ranking signal).
-          example: 175000000
-      required:
-      - countryCode
-      - countryName
-      - cityCount
-      - population
-      additionalProperties: false
     ApiErrorResponse:
       type: object
       properties:
@@ -764,40 +582,27 @@ components:
       - error
       - success
       additionalProperties: false
-    PopularLocationsResponse:
+    LocationCountryGroup:
       type: object
       properties:
-        data:
-          $ref: '#/components/schemas/PopularLocationsPage'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    LocationSearchResponse:
-      type: object
-      properties:
-        data:
+        countryCode:
+          type: string
+          description: ISO-3166-1 alpha-2 country code (upper-case).
+          example: US
+        countryName:
+          type: string
+          description: Human-readable country name.
+          example: United States
+        cities:
           type: array
           items:
             $ref: '#/components/schemas/Location'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
+          description: Cities belonging to this country, ordered by population desc.
       required:
-      - data
-      - success
+      - countryCode
+      - countryName
+      - cities
       additionalProperties: false
-      description: Successful API response
     PopularLocationsPage:
       type: object
       properties:
@@ -816,11 +621,206 @@ components:
       - items
       - nextCursor
       additionalProperties: false
-    LocationInitialSuggestionsResponse:
+    Location:
+      type: object
+      properties:
+        adminName1:
+          type: string
+          description: Primary administrative division (state/province). Empty string for country rows.
+          example: California
+        country:
+          type: string
+          description: Country name
+          example: United States
+        countryCode:
+          type: string
+          description: ISO 3166-1 alpha-2 country code
+          example: US
+        flagEmoji:
+          type:
+          - string
+          - 'null'
+          description: Flag emoji for the country (e.g. 🇺🇸). May be null/absent for legacy rows.
+          example: 🇺🇸
+        lat:
+          type: number
+          description: Latitude coordinate
+          example: 37.7749
+        lng:
+          type: number
+          description: Longitude coordinate
+          example: -122.4194
+        name:
+          type: string
+          description: City/place name
+          example: San Francisco
+        population:
+          type: integer
+          description: Population count (sum of city populations for country rows).
+          example: 884363
+        stateCode:
+          type:
+          - string
+          - 'null'
+          description: 'ISO admin1 code (machine key for the state/province). Populated on `type: "state"` rows and optionally on city rows; null/absent for country rows and legacy entries.'
+          example: CA
+        type:
+          type: string
+          enum:
+          - country
+          - state
+          - city
+          description: 'Row kind: "country" (ISO country row seeded in 0045), "state" (synthesized admin1 row, adminName1 populated, name empty), or "city" (cities15000).'
+          example: city
+      required:
+      - adminName1
+      - country
+      - countryCode
+      - lat
+      - lng
+      - name
+      - population
+      - type
+      additionalProperties: false
+    ResponseMetadata:
+      type: object
+      properties:
+        duration:
+          type: number
+          description: Request duration in milliseconds
+          example: 150
+          exclusiveMinimum: 0
+        performance:
+          type: object
+          properties:
+            dbQueries:
+              type: integer
+              minimum: 0
+            totalDbTime:
+              type: number
+              minimum: 0
+          description: Performance metrics (preview/local only)
+        requestId:
+          type: string
+          description: Unique request identifier
+          example: req_abc123
+        timestamp:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp
+          example: '2026-09-25T17:29:47.224Z'
+        version:
+          type: string
+          description: API version
+          example: v1
+    PopularCountriesPage:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/CountrySummary'
+          description: Countries for this page, ordered by aggregate population DESC.
+        nextCursor:
+          type:
+          - integer
+          - 'null'
+          description: Next offset to pass as `cursor`, or `null` on the final page.
+          example: 30
+      required:
+      - items
+      - nextCursor
+      additionalProperties: false
+    CountrySummary:
+      type: object
+      properties:
+        countryCode:
+          type: string
+          description: ISO-3166-1 alpha-2 country code.
+          example: US
+        countryName:
+          type: string
+          description: Human-readable country name.
+          example: United States
+        flagEmoji:
+          type:
+          - string
+          - 'null'
+          description: Regional-indicator flag emoji. May be null for legacy rows.
+          example: 🇺🇸
+        cityCount:
+          type: integer
+          description: Number of distinct cities we have catalogued for this country. Surfaces as a hint in the drill-in header.
+          example: 84
+        population:
+          type: integer
+          description: Sum of city populations in this country (ranking signal).
+          example: 175000000
+      required:
+      - countryCode
+      - countryName
+      - cityCount
+      - population
+      additionalProperties: false
+    PopularLocationsResponse:
       type: object
       properties:
         data:
-          $ref: '#/components/schemas/LocationInitialSuggestions'
+          $ref: '#/components/schemas/PopularLocationsPage'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    PopularCountriesResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/PopularCountriesPage'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    LocationInitialSuggestions:
+      type: object
+      properties:
+        ipCountry:
+          type:
+          - string
+          - 'null'
+          minLength: 2
+          maxLength: 2
+          description: ISO-3166-1 alpha-2 country code inferred from request IP. Null when CF does not expose cf.country (local dev).
+          example: US
+        popularByCountry:
+          type: array
+          items:
+            $ref: '#/components/schemas/LocationCountryGroup'
+          description: Top popular cities grouped by country, ordered by country population weight. Pre-populated dropdown fallback.
+      required:
+      - ipCountry
+      - popularByCountry
+      additionalProperties: false
+    LocationSearchResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Location'
         meta:
           $ref: '#/components/schemas/ResponseMetadata'
         success:

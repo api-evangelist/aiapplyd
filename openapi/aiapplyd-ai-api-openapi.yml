@@ -274,11 +274,133 @@ paths:
       operationId: getAiQuota
 components:
   schemas:
-    QualityCheckResponse:
+    QualityCheckData:
+      type: object
+      properties:
+        matchConfidence:
+          type: integer
+          minimum: 0
+          maximum: 100
+        matchingSkills:
+          type: array
+          items:
+            type: string
+        missingSkills:
+          type: array
+          items:
+            type: string
+        recommendation:
+          type: string
+          enum:
+          - apply
+          - review
+          - skip
+          description: AI recommendation for whether to apply to a job
+          example: apply
+        suggestions:
+          type: array
+          items:
+            type: string
+      required:
+      - matchConfidence
+      - matchingSkills
+      - missingSkills
+      - recommendation
+      - suggestions
+      additionalProperties: false
+    ConfigListResponse:
       type: object
       properties:
         data:
-          $ref: '#/components/schemas/QualityCheckData'
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: '#/components/schemas/ApplicationConfigData'
+            pagination:
+              type: object
+              properties:
+                hasNext:
+                  type: boolean
+                hasPrev:
+                  type: boolean
+                limit:
+                  type: integer
+                  description: Positive integer
+                  example: 1
+                  exclusiveMinimum: 0
+                page:
+                  type: integer
+                  description: Positive integer
+                  example: 1
+                  exclusiveMinimum: 0
+                pages:
+                  type: integer
+                  description: Positive integer
+                  example: 1
+                  exclusiveMinimum: 0
+                total:
+                  type: integer
+                  minimum: 0
+                  description: Non-negative integer
+                  example: 0
+              required:
+              - hasNext
+              - hasPrev
+              - limit
+              - page
+              - pages
+              - total
+              additionalProperties: false
+          required:
+          - items
+          - pagination
+          additionalProperties: false
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Paginated response with items and pagination metadata
+    QuotaPeriodInfo:
+      type: object
+      properties:
+        limit:
+          type: number
+          description: Max allowed per period
+          example: 5
+        remaining:
+          type: number
+          description: Remaining in current period
+          example: 3
+        resetAt:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: When the period resets (null if not exhausted)
+          example: '2026-04-01T00:00:00.000Z'
+        used:
+          type: number
+          description: Used in current period
+          example: 2
+      required:
+      - limit
+      - remaining
+      - resetAt
+      - used
+      additionalProperties: false
+    RunApplicationsResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/RunApplicationsData'
         meta:
           $ref: '#/components/schemas/ResponseMetadata'
         success:
@@ -290,26 +412,44 @@ components:
       - success
       additionalProperties: false
       description: Successful API response
-    QualityCheckRequest:
+    QualityStatsData:
       type: object
       properties:
-        jobDescription:
-          type: string
-          minLength: 1
-          maxLength: 5000
-          description: Job description text to evaluate
-          example: We are looking for a Senior Software Engineer with 5+ years of experience...
-        resumeContent:
-          type: string
-          maxLength: 10000
-          description: Resume content to match against the job description
+        approved:
+          type: integer
+        averageConfidence:
+          type:
+          - number
+          - 'null'
+        blocked:
+          type: integer
+        flagged:
+          type: integer
+        totalChecked:
+          type: integer
       required:
-      - jobDescription
+      - approved
+      - averageConfidence
+      - blocked
+      - flagged
+      - totalChecked
       additionalProperties: false
-    EnsureConfigRequest:
+    QualityStatsResponse:
       type: object
-      properties: {}
+      properties:
+        data:
+          $ref: '#/components/schemas/QualityStatsData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
       additionalProperties: false
+      description: Successful API response
     ResponseMetadata:
       type: object
       properties:
@@ -341,6 +481,34 @@ components:
           type: string
           description: API version
           example: v1
+    FreeApplicationsAllowance:
+      type: object
+      properties:
+        limit:
+          type: integer
+          minimum: 0
+          description: Preparations a free account may run inside the rolling window.
+          example: 3
+        remaining:
+          type: integer
+          minimum: 0
+          description: Preparations left. Zero means the swipe must be refused before it fires.
+          example: 0
+        resetAt:
+          type: string
+          description: ISO timestamp the oldest consumed attempt ages out.
+          example: '2026-10-01T00:00:00.000Z'
+        used:
+          type: integer
+          minimum: 0
+          description: Preparations already consumed. Failed preparations are NOT counted.
+          example: 3
+      required:
+      - limit
+      - remaining
+      - resetAt
+      - used
+      additionalProperties: false
     ApplicationConfigData:
       type: object
       properties:
@@ -391,34 +559,6 @@ components:
       - totalSkipped
       - totalSubmitConfirmed
       - totalSubmitClicked
-      additionalProperties: false
-    QuotaPeriodInfo:
-      type: object
-      properties:
-        limit:
-          type: number
-          description: Max allowed per period
-          example: 5
-        remaining:
-          type: number
-          description: Remaining in current period
-          example: 3
-        resetAt:
-          type:
-          - string
-          - 'null'
-          format: date-time
-          description: When the period resets (null if not exhausted)
-          example: '2026-04-01T00:00:00.000Z'
-        used:
-          type: number
-          description: Used in current period
-          example: 2
-      required:
-      - limit
-      - remaining
-      - resetAt
-      - used
       additionalProperties: false
     ApplicationQuotaResponse:
       type: object
@@ -484,39 +624,15 @@ components:
       - success
       additionalProperties: false
       description: Successful API response
-    FreeApplicationsAllowance:
+    EnsureConfigRequest:
       type: object
-      properties:
-        limit:
-          type: integer
-          minimum: 0
-          description: Preparations a free account may run inside the rolling window.
-          example: 3
-        remaining:
-          type: integer
-          minimum: 0
-          description: Preparations left. Zero means the swipe must be refused before it fires.
-          example: 0
-        resetAt:
-          type: string
-          description: ISO timestamp the oldest consumed attempt ages out.
-          example: '2026-10-01T00:00:00.000Z'
-        used:
-          type: integer
-          minimum: 0
-          description: Preparations already consumed. Failed preparations are NOT counted.
-          example: 3
-      required:
-      - limit
-      - remaining
-      - resetAt
-      - used
+      properties: {}
       additionalProperties: false
-    RunApplicationsResponse:
+    QualityCheckResponse:
       type: object
       properties:
         data:
-          $ref: '#/components/schemas/RunApplicationsData'
+          $ref: '#/components/schemas/QualityCheckData'
         meta:
           $ref: '#/components/schemas/ResponseMetadata'
         success:
@@ -598,22 +714,34 @@ components:
       - success
       additionalProperties: false
       description: Successful API response
-    QualityStatsResponse:
+    RunApplicationsData:
       type: object
       properties:
-        data:
-          $ref: '#/components/schemas/QualityStatsData'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
+        processed:
+          type: integer
+        applied:
+          type: integer
+        skipped:
+          type: integer
+        errors:
+          type: integer
+        pendingReview:
+          type: integer
+        status:
+          type: string
           enum:
-          - true
+          - processing
+          - completed
+          - no_matches
+          description: Processing status. "processing" means heavy work was offloaded to background.
+          example: processing
       required:
-      - data
-      - success
+      - processed
+      - applied
+      - skipped
+      - errors
+      - pendingReview
       additionalProperties: false
-      description: Successful API response
     ApiErrorResponse:
       type: object
       properties:
@@ -958,149 +1086,21 @@ components:
       - error
       - success
       additionalProperties: false
-    ConfigListResponse:
+    QualityCheckRequest:
       type: object
       properties:
-        data:
-          type: object
-          properties:
-            items:
-              type: array
-              items:
-                $ref: '#/components/schemas/ApplicationConfigData'
-            pagination:
-              type: object
-              properties:
-                hasNext:
-                  type: boolean
-                hasPrev:
-                  type: boolean
-                limit:
-                  type: integer
-                  description: Positive integer
-                  example: 1
-                  exclusiveMinimum: 0
-                page:
-                  type: integer
-                  description: Positive integer
-                  example: 1
-                  exclusiveMinimum: 0
-                pages:
-                  type: integer
-                  description: Positive integer
-                  example: 1
-                  exclusiveMinimum: 0
-                total:
-                  type: integer
-                  minimum: 0
-                  description: Non-negative integer
-                  example: 0
-              required:
-              - hasNext
-              - hasPrev
-              - limit
-              - page
-              - pages
-              - total
-              additionalProperties: false
-          required:
-          - items
-          - pagination
-          additionalProperties: false
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Paginated response with items and pagination metadata
-    QualityStatsData:
-      type: object
-      properties:
-        approved:
-          type: integer
-        averageConfidence:
-          type:
-          - number
-          - 'null'
-        blocked:
-          type: integer
-        flagged:
-          type: integer
-        totalChecked:
-          type: integer
-      required:
-      - approved
-      - averageConfidence
-      - blocked
-      - flagged
-      - totalChecked
-      additionalProperties: false
-    QualityCheckData:
-      type: object
-      properties:
-        matchConfidence:
-          type: integer
-          minimum: 0
-          maximum: 100
-        matchingSkills:
-          type: array
-          items:
-            type: string
-        missingSkills:
-          type: array
-          items:
-            type: string
-        recommendation:
+        jobDescription:
           type: string
-          enum:
-          - apply
-          - review
-          - skip
-          description: AI recommendation for whether to apply to a job
-          example: apply
-        suggestions:
-          type: array
-          items:
-            type: string
-      required:
-      - matchConfidence
-      - matchingSkills
-      - missingSkills
-      - recommendation
-      - suggestions
-      additionalProperties: false
-    RunApplicationsData:
-      type: object
-      properties:
-        processed:
-          type: integer
-        applied:
-          type: integer
-        skipped:
-          type: integer
-        errors:
-          type: integer
-        pendingReview:
-          type: integer
-        status:
+          minLength: 1
+          maxLength: 5000
+          description: Job description text to evaluate
+          example: We are looking for a Senior Software Engineer with 5+ years of experience...
+        resumeContent:
           type: string
-          enum:
-          - processing
-          - completed
-          - no_matches
-          description: Processing status. "processing" means heavy work was offloaded to background.
-          example: processing
+          maxLength: 10000
+          description: Resume content to match against the job description
       required:
-      - processed
-      - applied
-      - skipped
-      - errors
-      - pendingReview
+      - jobDescription
       additionalProperties: false
   securitySchemes:
     BearerAuth:

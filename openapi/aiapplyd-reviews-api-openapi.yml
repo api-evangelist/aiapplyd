@@ -95,28 +95,6 @@ paths:
       operationId: postReviewsMe
 components:
   schemas:
-    OwnReviewResponse:
-      type: object
-      properties:
-        data:
-          type: object
-          properties:
-            review:
-              $ref: '#/components/schemas/OwnReviewData'
-          required:
-          - review
-          additionalProperties: false
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
     ResponseMetadata:
       type: object
       properties:
@@ -148,37 +126,6 @@ components:
           type: string
           description: API version
           example: v1
-    UpsertOwnReview:
-      type: object
-      properties:
-        body:
-          type: string
-          minLength: 40
-          maxLength: 2000
-          description: The review itself, in the reviewer's own words.
-          example: I stopped writing cover letters by hand and started getting replies within a fortnight.
-        consentToPublish:
-          type: boolean
-          description: Explicit permission to publish these words, this name and this rating on the public site. Required on every submit - it is never inherited from a previous version of the review.
-          example: true
-        displayName:
-          type: string
-          minLength: 2
-          maxLength: 80
-          description: What the reviewer wants to be credited as. Their choice, never their account name.
-          example: Ava K.
-        rating:
-          type: integer
-          minimum: 1
-          maximum: 5
-          description: Star rating, 1-5 inclusive.
-          example: 5
-      required:
-      - body
-      - consentToPublish
-      - displayName
-      - rating
-      additionalProperties: false
     OwnReviewData:
       type:
       - object
@@ -227,6 +174,59 @@ components:
       - status
       - updatedAt
       additionalProperties: false
+    UpsertOwnReview:
+      type: object
+      properties:
+        body:
+          type: string
+          minLength: 40
+          maxLength: 2000
+          description: The review itself, in the reviewer's own words.
+          example: I stopped writing cover letters by hand and started getting replies within a fortnight.
+        consentToPublish:
+          type: boolean
+          description: Explicit permission to publish these words, this name and this rating on the public site. Required on every submit - it is never inherited from a previous version of the review.
+          example: true
+        displayName:
+          type: string
+          minLength: 2
+          maxLength: 80
+          description: What the reviewer wants to be credited as. Their choice, never their account name.
+          example: Ava K.
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+          description: Star rating, 1-5 inclusive.
+          example: 5
+      required:
+      - body
+      - consentToPublish
+      - displayName
+      - rating
+      additionalProperties: false
+    OwnReviewResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            review:
+              $ref: '#/components/schemas/OwnReviewData'
+          required:
+          - review
+          additionalProperties: false
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
     ApiErrorResponse:
       type: object
       properties:

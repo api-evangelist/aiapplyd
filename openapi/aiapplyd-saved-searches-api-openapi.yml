@@ -194,22 +194,24 @@ paths:
       operationId: deleteSavedSearchesById
 components:
   schemas:
-    SavedSearchResponse:
+    UpdateSavedSearch:
       type: object
       properties:
-        data:
-          $ref: '#/components/schemas/SavedSearchData'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
+        alertsEnabled:
           type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
+          description: Toggle email alerts
+          example: false
+        criteria:
+          allOf:
+          - $ref: '#/components/schemas/SavedSearchCriteria'
+          - description: Replacement filter criteria snapshot
+        name:
+          type: string
+          minLength: 1
+          maxLength: 120
+          description: New label for the saved search
+          example: Remote staff backend
       additionalProperties: false
-      description: Successful API response
     ResponseMetadata:
       type: object
       properties:
@@ -241,40 +243,11 @@ components:
           type: string
           description: API version
           example: v1
-    CreateSavedSearch:
-      type: object
-      properties:
-        alertsEnabled:
-          type: boolean
-          description: Enable email alerts for this search (default true)
-          example: true
-        criteria:
-          allOf:
-          - $ref: '#/components/schemas/SavedSearchCriteria'
-          - description: Filter criteria snapshot to save
-        name:
-          type: string
-          minLength: 1
-          maxLength: 120
-          description: User-facing label for the saved search
-          example: Remote senior backend
-      required:
-      - criteria
-      - name
-      additionalProperties: false
-    SavedSearchListResponse:
+    SavedSearchResponse:
       type: object
       properties:
         data:
-          type: object
-          properties:
-            items:
-              type: array
-              items:
-                $ref: '#/components/schemas/SavedSearchData'
-          required:
-          - items
-          additionalProperties: false
+          $ref: '#/components/schemas/SavedSearchData'
         meta:
           $ref: '#/components/schemas/ResponseMetadata'
         success:
@@ -310,23 +283,260 @@ components:
       - success
       additionalProperties: false
       description: Successful API response
-    UpdateSavedSearch:
+    SavedSearchData:
       type: object
       properties:
         alertsEnabled:
           type: boolean
-          description: Toggle email alerts
+          description: Whether email alerts fire for this saved search
+          example: true
+        createdAt:
+          type: string
+          description: Creation timestamp (ISO-8601)
+          example: '2026-01-15T12:00:00Z'
+        criteria:
+          $ref: '#/components/schemas/SavedSearchCriteria'
+        id:
+          type: integer
+          description: Saved search identifier
+          example: 12
+        lastAlertedAt:
+          type:
+          - string
+          - 'null'
+          description: Timestamp of the last alert email sent (null until first alert)
+          example: '2026-03-10T08:30:00Z'
+        name:
+          type: string
+          description: User-facing label for the saved search
+          example: Remote senior backend
+        updatedAt:
+          type: string
+          description: Last update timestamp (ISO-8601)
+          example: '2026-03-10T08:30:00Z'
+        userId:
+          type: string
+          description: Owner user identifier
+          example: user_123
+      required:
+      - alertsEnabled
+      - createdAt
+      - criteria
+      - id
+      - lastAlertedAt
+      - name
+      - updatedAt
+      - userId
+      additionalProperties: false
+    SavedSearchListResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: '#/components/schemas/SavedSearchData'
+          required:
+          - items
+          additionalProperties: false
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    SavedSearchCriteria:
+      type: object
+      properties:
+        benefits:
+          type: array
+          items:
+            type: string
+            maxLength: 120
+          maxItems: 100
+          description: Must-have job benefits
+          example:
+          - health_insurance
+          - remote_work
+        companySize:
+          type: array
+          items:
+            type: string
+            maxLength: 60
+          maxItems: 100
+          description: Preferred company sizes
+          example:
+          - startup
+          - small
+        educationLevel:
+          type: string
+          maxLength: 60
+          description: Minimum education level filter
+          example: bachelor
+        excludeIndustries:
+          type: array
+          items:
+            type: string
+            maxLength: 120
+          maxItems: 100
+          description: Industries to exclude from matches
+          example:
+          - Government & Public Sector
+        experienceLevel:
+          type: string
+          enum:
+          - entry
+          - mid
+          - senior
+          - lead
+          - executive
+          description: Target experience level (DEPRECATED scalar  -  prefer `experienceLevels`). Kept so older saved-search blobs keep parsing under `.strict()`.
+          example: senior
+        experienceLevels:
+          type: array
+          items:
+            type: string
+            enum:
+            - entry
+            - mid
+            - senior
+            - lead
+            - executive
+            description: Professional experience level
+            example: mid
+          description: Target experience levels (multi-select). Readers fall back to wrapping the legacy `experienceLevel` scalar when absent.
+          example:
+          - mid
+          - senior
+        includeRemote:
+          type: boolean
+          description: Include remote/anywhere jobs even when specific locations are set
+          example: true
+        industries:
+          type: array
+          items:
+            type: string
+            maxLength: 120
+          maxItems: 100
+          description: Target industries
+          example:
+          - Technology
+          - Finance
+        jobTypes:
+          type: array
+          items:
+            type: string
+            maxLength: 60
+          maxItems: 100
+          description: Preferred job types
+          example:
+          - full_time
+          - contract
+        locations:
+          type: array
+          items:
+            type: string
+            maxLength: 200
+          maxItems: 100
+          description: Preferred locations as "City, Country" or "Country"
+          example:
+          - San Francisco, United States
+          - Berlin, Germany
+        remoteGlobal:
+          type: boolean
+          description: Accept worldwide "Remote - Anywhere (Global)" jobs. Absent on searches saved before 2026-09-24.
           example: false
+        salaryCurrency:
+          type: string
+          enum:
+          - usd
+          - eur
+          - gbp
+          - cad
+          - aud
+          - inr
+          description: Currency the salary band is expressed in. Absent on searches saved before 2026-09-24.
+          example: eur
+        salaryMax:
+          type: number
+          minimum: 0
+          description: Maximum salary requirement
+          example: 200000
+        salaryMin:
+          type: number
+          minimum: 0
+          description: Minimum salary requirement (USD/year)
+          example: 100000
+        skills:
+          type: array
+          items:
+            type: string
+            maxLength: 120
+          maxItems: 100
+          description: User skills (from resume or manual entry)
+          example:
+          - TypeScript
+          - React
+          - Node.js
+        targetRoles:
+          type: array
+          items:
+            type: string
+            maxLength: 200
+          maxItems: 100
+          description: Target role titles
+          example:
+          - Software Engineer
+          - Full Stack Developer
+        visaSponsorship:
+          type: string
+          maxLength: 60
+          description: Visa sponsorship preference
+          example: required
+        workStyles:
+          type: array
+          items:
+            type: string
+            enum:
+            - onsite
+            - hybrid
+            - remote
+            description: User's preferred work style, physical mode only, no geo scoping
+            example: remote
+          maxItems: 8
+          description: Preferred work styles (onsite/hybrid/remote)
+          example:
+          - remote
+          - hybrid
+      additionalProperties: false
+      description: Filter criteria snapshot (mirrors job match preference filters)
+    CreateSavedSearch:
+      type: object
+      properties:
+        alertsEnabled:
+          type: boolean
+          description: Enable email alerts for this search (default true)
+          example: true
         criteria:
           allOf:
           - $ref: '#/components/schemas/SavedSearchCriteria'
-          - description: Replacement filter criteria snapshot
+          - description: Filter criteria snapshot to save
         name:
           type: string
           minLength: 1
           maxLength: 120
-          description: New label for the saved search
-          example: Remote staff backend
+          description: User-facing label for the saved search
+          example: Remote senior backend
+      required:
+      - criteria
+      - name
       additionalProperties: false
     ApiErrorResponse:
       type: object
@@ -671,216 +881,6 @@ components:
       required:
       - error
       - success
-      additionalProperties: false
-    SavedSearchCriteria:
-      type: object
-      properties:
-        benefits:
-          type: array
-          items:
-            type: string
-            maxLength: 120
-          maxItems: 100
-          description: Must-have job benefits
-          example:
-          - health_insurance
-          - remote_work
-        companySize:
-          type: array
-          items:
-            type: string
-            maxLength: 60
-          maxItems: 100
-          description: Preferred company sizes
-          example:
-          - startup
-          - small
-        educationLevel:
-          type: string
-          maxLength: 60
-          description: Minimum education level filter
-          example: bachelor
-        excludeIndustries:
-          type: array
-          items:
-            type: string
-            maxLength: 120
-          maxItems: 100
-          description: Industries to exclude from matches
-          example:
-          - Government & Public Sector
-        experienceLevel:
-          type: string
-          enum:
-          - entry
-          - mid
-          - senior
-          - lead
-          - executive
-          description: Target experience level (DEPRECATED scalar  -  prefer `experienceLevels`). Kept so older saved-search blobs keep parsing under `.strict()`.
-          example: senior
-        experienceLevels:
-          type: array
-          items:
-            type: string
-            enum:
-            - entry
-            - mid
-            - senior
-            - lead
-            - executive
-            description: Professional experience level
-            example: mid
-          description: Target experience levels (multi-select). Readers fall back to wrapping the legacy `experienceLevel` scalar when absent.
-          example:
-          - mid
-          - senior
-        includeRemote:
-          type: boolean
-          description: Include remote/anywhere jobs even when specific locations are set
-          example: true
-        industries:
-          type: array
-          items:
-            type: string
-            maxLength: 120
-          maxItems: 100
-          description: Target industries
-          example:
-          - Technology
-          - Finance
-        jobTypes:
-          type: array
-          items:
-            type: string
-            maxLength: 60
-          maxItems: 100
-          description: Preferred job types
-          example:
-          - full_time
-          - contract
-        locations:
-          type: array
-          items:
-            type: string
-            maxLength: 200
-          maxItems: 100
-          description: Preferred locations as "City, Country" or "Country"
-          example:
-          - San Francisco, United States
-          - Berlin, Germany
-        remoteGlobal:
-          type: boolean
-          description: Accept worldwide "Remote - Anywhere (Global)" jobs. Absent on searches saved before 2026-09-24.
-          example: false
-        salaryCurrency:
-          type: string
-          enum:
-          - usd
-          - eur
-          - gbp
-          - cad
-          - aud
-          - inr
-          description: Currency the salary band is expressed in. Absent on searches saved before 2026-09-24.
-          example: eur
-        salaryMax:
-          type: number
-          minimum: 0
-          description: Maximum salary requirement
-          example: 200000
-        salaryMin:
-          type: number
-          minimum: 0
-          description: Minimum salary requirement (USD/year)
-          example: 100000
-        skills:
-          type: array
-          items:
-            type: string
-            maxLength: 120
-          maxItems: 100
-          description: User skills (from resume or manual entry)
-          example:
-          - TypeScript
-          - React
-          - Node.js
-        targetRoles:
-          type: array
-          items:
-            type: string
-            maxLength: 200
-          maxItems: 100
-          description: Target role titles
-          example:
-          - Software Engineer
-          - Full Stack Developer
-        visaSponsorship:
-          type: string
-          maxLength: 60
-          description: Visa sponsorship preference
-          example: required
-        workStyles:
-          type: array
-          items:
-            type: string
-            enum:
-            - onsite
-            - hybrid
-            - remote
-            description: User's preferred work style, physical mode only, no geo scoping
-            example: remote
-          maxItems: 8
-          description: Preferred work styles (onsite/hybrid/remote)
-          example:
-          - remote
-          - hybrid
-      additionalProperties: false
-      description: Filter criteria snapshot (mirrors job match preference filters)
-    SavedSearchData:
-      type: object
-      properties:
-        alertsEnabled:
-          type: boolean
-          description: Whether email alerts fire for this saved search
-          example: true
-        createdAt:
-          type: string
-          description: Creation timestamp (ISO-8601)
-          example: '2026-01-15T12:00:00Z'
-        criteria:
-          $ref: '#/components/schemas/SavedSearchCriteria'
-        id:
-          type: integer
-          description: Saved search identifier
-          example: 12
-        lastAlertedAt:
-          type:
-          - string
-          - 'null'
-          description: Timestamp of the last alert email sent (null until first alert)
-          example: '2026-03-10T08:30:00Z'
-        name:
-          type: string
-          description: User-facing label for the saved search
-          example: Remote senior backend
-        updatedAt:
-          type: string
-          description: Last update timestamp (ISO-8601)
-          example: '2026-03-10T08:30:00Z'
-        userId:
-          type: string
-          description: Owner user identifier
-          example: user_123
-      required:
-      - alertsEnabled
-      - createdAt
-      - criteria
-      - id
-      - lastAlertedAt
-      - name
-      - updatedAt
-      - userId
       additionalProperties: false
   securitySchemes:
     BearerAuth:

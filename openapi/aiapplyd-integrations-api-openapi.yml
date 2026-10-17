@@ -190,11 +190,40 @@ paths:
       operationId: postIntegrationsGoogleDisconnect
 components:
   schemas:
-    GoogleStatusResponse:
+    GoogleConnectData:
+      type: object
+      properties:
+        authUrl:
+          type: string
+          format: uri
+          description: Google authorization URL to redirect / open the user to
+          example: https://accounts.google.com/o/oauth2/v2/auth?...
+      required:
+      - authUrl
+      additionalProperties: false
+    GoogleDisconnectData:
+      type: object
+      properties:
+        disconnected:
+          type: boolean
+          description: True when the connection row was removed (or already absent)
+          example: true
+        service:
+          type: string
+          enum:
+          - gmail
+          - calendar
+          description: Service within an integration provider the user opted into
+          example: gmail
+      required:
+      - disconnected
+      - service
+      additionalProperties: false
+    GoogleConnectResponse:
       type: object
       properties:
         data:
-          $ref: '#/components/schemas/GoogleStatusData'
+          $ref: '#/components/schemas/GoogleConnectData'
         meta:
           $ref: '#/components/schemas/ResponseMetadata'
         success:
@@ -248,6 +277,35 @@ components:
       - calendar
       - gmail
       additionalProperties: false
+    GoogleDisconnectBody:
+      type: object
+      properties:
+        service:
+          type: string
+          enum:
+          - gmail
+          - calendar
+          description: Service within an integration provider the user opted into
+          example: gmail
+      required:
+      - service
+      additionalProperties: false
+    GoogleDisconnectResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/GoogleDisconnectData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
     GoogleServiceStatus:
       type: object
       properties:
@@ -273,29 +331,11 @@ components:
       - email
       - scopes
       additionalProperties: false
-    GoogleDisconnectData:
-      type: object
-      properties:
-        disconnected:
-          type: boolean
-          description: True when the connection row was removed (or already absent)
-          example: true
-        service:
-          type: string
-          enum:
-          - gmail
-          - calendar
-          description: Service within an integration provider the user opted into
-          example: gmail
-      required:
-      - disconnected
-      - service
-      additionalProperties: false
-    GoogleConnectResponse:
+    GoogleStatusResponse:
       type: object
       properties:
         data:
-          $ref: '#/components/schemas/GoogleConnectData'
+          $ref: '#/components/schemas/GoogleStatusData'
         meta:
           $ref: '#/components/schemas/ResponseMetadata'
         success:
@@ -307,17 +347,6 @@ components:
       - success
       additionalProperties: false
       description: Successful API response
-    GoogleConnectData:
-      type: object
-      properties:
-        authUrl:
-          type: string
-          format: uri
-          description: Google authorization URL to redirect / open the user to
-          example: https://accounts.google.com/o/oauth2/v2/auth?...
-      required:
-      - authUrl
-      additionalProperties: false
     ApiErrorResponse:
       type: object
       properties:
@@ -661,35 +690,6 @@ components:
       required:
       - error
       - success
-      additionalProperties: false
-    GoogleDisconnectResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/GoogleDisconnectData'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    GoogleDisconnectBody:
-      type: object
-      properties:
-        service:
-          type: string
-          enum:
-          - gmail
-          - calendar
-          description: Service within an integration provider the user opted into
-          example: gmail
-      required:
-      - service
       additionalProperties: false
   securitySchemes:
     BearerAuth:

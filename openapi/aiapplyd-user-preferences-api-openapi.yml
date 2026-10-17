@@ -94,22 +94,169 @@ paths:
       operationId: patchUserPreferences
 components:
   schemas:
-    PatchUserPreferencesResponse:
+    UserPreferencesData:
+      type:
+      - object
+      - 'null'
+      properties:
+        applicationProfile:
+          $ref: '#/components/schemas/ApplicationProfileData'
+        jobMatchPreferences:
+          $ref: '#/components/schemas/JobMatchPreferencesData'
+        aiPersona:
+          $ref: '#/components/schemas/AIPersonaData'
+      required:
+      - applicationProfile
+      - jobMatchPreferences
+      - aiPersona
+    JobMatchPreferencesData:
       type: object
       properties:
-        data:
-          $ref: '#/components/schemas/PatchUserPreferencesData'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
+        benefits:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        companySize:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        createdAt:
+          type:
+          - string
+          - 'null'
+        educationLevel:
+          type:
+          - string
+          - 'null'
+        excludeIndustries:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        experienceLevel:
+          type:
+          - string
+          - 'null'
+        experienceLevels:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        id:
+          type: integer
+        includeRemote:
           type: boolean
+        industries:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        isActive:
+          type: boolean
+        jobTypes:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        locations:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        remoteGlobal:
+          type: boolean
+        salaryCurrency:
+          type: string
           enum:
-          - true
+          - usd
+          - eur
+          - gbp
+          - cad
+          - aud
+          - inr
+          description: Currency for salary values
+          example: usd
+        salaryMax:
+          type:
+          - number
+          - 'null'
+        salaryMin:
+          type:
+          - number
+          - 'null'
+        skills:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        targetRoles:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        updatedAt:
+          type:
+          - string
+          - 'null'
+        visaSponsorship:
+          type:
+          - string
+          - 'null'
+        workStyles:
+          type: array
+          items:
+            type: string
+            enum:
+            - onsite
+            - hybrid
+            - remote
+            description: User's preferred work style, physical mode only, no geo scoping
+            example: remote
       required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
+      - benefits
+      - companySize
+      - createdAt
+      - educationLevel
+      - excludeIndustries
+      - experienceLevel
+      - experienceLevels
+      - id
+      - includeRemote
+      - industries
+      - isActive
+      - jobTypes
+      - locations
+      - remoteGlobal
+      - salaryCurrency
+      - salaryMax
+      - salaryMin
+      - skills
+      - targetRoles
+      - updatedAt
+      - visaSponsorship
+      - workStyles
+    PatchUserPreferencesData:
+      allOf:
+      - $ref: '#/components/schemas/UserPreferencesData'
+      - type: object
+        properties:
+          prefsChanged:
+            type: boolean
+            description: True only when this PATCH changed at least one job_match_preference column AND started a match rebuild. False for an unchanged or persona/profile-only save, when the post-write prefs read failed, and when an earlier save's rebuild was already running (no rebuild started for this request).
+            example: true
+        required:
+        - prefsChanged
     ResponseMetadata:
       type: object
       properties:
@@ -141,6 +288,582 @@ components:
           type: string
           description: API version
           example: v1
+    ApplicationProfileData:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Application profile identifier
+          example: abc-123
+        userId:
+          type: string
+          description: User identifier
+          example: user_abc123
+        phone:
+          type:
+          - string
+          - 'null'
+          description: Phone number
+          example: +1-555-123-4567
+        addressLine1:
+          type:
+          - string
+          - 'null'
+          description: Address line 1
+          example: 123 Main St
+        addressLine2:
+          type:
+          - string
+          - 'null'
+          description: Address line 2
+          example: Apt 4B
+        city:
+          type:
+          - string
+          - 'null'
+          description: City
+          example: San Francisco
+        state:
+          type:
+          - string
+          - 'null'
+          description: State or province
+          example: CA
+        zipCode:
+          type:
+          - string
+          - 'null'
+          description: ZIP or postal code
+          example: '94105'
+        country:
+          type:
+          - string
+          - 'null'
+          description: Country
+          example: US
+        linkedinUrl:
+          type:
+          - string
+          - 'null'
+          description: LinkedIn profile URL
+          example: https://linkedin.com/in/johndoe
+        portfolioUrl:
+          type:
+          - string
+          - 'null'
+          description: Portfolio website URL
+          example: https://johndoe.dev
+        githubUrl:
+          type:
+          - string
+          - 'null'
+          description: GitHub profile URL
+          example: https://github.com/johndoe
+        currentEmployer:
+          type:
+          - string
+          - 'null'
+          description: Current employer / company. Helps tailor recommendations; unlocks team analytics if the company onboards.
+          example: Acme Corp
+        dateOfBirth:
+          type:
+          - string
+          - 'null'
+          description: Date of birth (ISO 8601 date string)
+          example: '1995-06-15'
+        workAuthorization:
+          type:
+          - string
+          - 'null'
+          enum:
+          - us_citizen
+          - permanent_resident
+          - visa_holder
+          - require_sponsorship
+          - other
+          - null
+          description: Work authorization status
+          example: us_citizen
+        willingToRelocate:
+          type: boolean
+          description: Willing to relocate for a job
+          example: false
+        relocationLocations:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: Preferred relocation locations as "City, Country" or "Country". Middle admin segments stripped on read.
+          example:
+          - New York, United States
+          - Austin, United States
+        salaryCurrency:
+          type:
+          - string
+          - 'null'
+          enum:
+          - usd
+          - eur
+          - gbp
+          - cad
+          - aud
+          - inr
+          - null
+          description: Salary currency
+          example: usd
+        availableStartDate:
+          type:
+          - string
+          - 'null'
+          description: Earliest available start date (ISO 8601 date string)
+          example: '2026-04-01'
+        noticePeriod:
+          type:
+          - string
+          - 'null'
+          enum:
+          - immediately
+          - two_weeks
+          - one_month
+          - two_months
+          - three_months
+          - flexible
+          - null
+          description: Notice period before starting new position
+          example: two_weeks
+        personalNarrative:
+          type:
+          - string
+          - 'null'
+          description: Free-form narrative about gaps / transitions / short stints. Drives interview-prep red-flag question generation (F8).
+          example: Took a 14-month gap in 2024 for caregiving; returning with a refreshed cloud certification.
+        travelWillingness:
+          type:
+          - string
+          - 'null'
+          enum:
+          - none
+          - up_to_25
+          - up_to_50
+          - up_to_75
+          - up_to_100
+          - null
+          description: Willingness to travel for work
+          example: up_to_25
+        securityClearance:
+          type:
+          - string
+          - 'null'
+          enum:
+          - none
+          - confidential
+          - secret
+          - top_secret
+          - ts_sci
+          - prefer_not_to_say
+          - null
+          description: Security clearance level
+          example: none
+        restrictiveCovenantStatus:
+          type:
+          - string
+          - 'null'
+          enum:
+          - 'yes'
+          - 'no'
+          - prefer_not_to_say
+          - null
+          description: Currently subject to a non-compete / non-solicit / restrictive covenant with a former employer
+          example: 'no'
+        criminalRecordStatus:
+          type:
+          - string
+          - 'null'
+          enum:
+          - 'yes'
+          - 'no'
+          - prefer_not_to_say
+          - null
+          description: Has a criminal conviction they are legally required to disclose
+          example: 'no'
+        backgroundCheckConsent:
+          type:
+          - string
+          - 'null'
+          enum:
+          - 'yes'
+          - 'no'
+          - prefer_not_to_say
+          - null
+          description: Consents to a background / reference / credit check or drug screen where the role requires one
+          example: 'yes'
+        relatedToEmployeeStatus:
+          type:
+          - string
+          - 'null'
+          enum:
+          - 'yes'
+          - 'no'
+          - prefer_not_to_say
+          - null
+          description: 'Has a family member or close personal relationship with an employee of a company they apply to. Global, not per-employer: only a "no" is committable on a form.'
+          example: 'no'
+        exportControlUsPerson:
+          type:
+          - string
+          - 'null'
+          enum:
+          - 'yes'
+          - 'no'
+          - prefer_not_to_say
+          - null
+          description: Is a U.S. person for export-control (ITAR / EAR) purposes. The only declaration whose "yes" is the permissive answer.
+          example: 'yes'
+        highestEducation:
+          type:
+          - string
+          - 'null'
+          enum:
+          - high_school
+          - associate
+          - bachelor
+          - master
+          - doctorate
+          - any
+          - null
+          description: Highest education level completed
+          example: bachelor
+        yearsOfExperience:
+          type:
+          - integer
+          - 'null'
+          description: Total years of professional experience
+          example: 5
+        veteranStatus:
+          type:
+          - string
+          - 'null'
+          enum:
+          - not_a_veteran
+          - veteran
+          - disabled_veteran
+          - recently_separated_veteran
+          - active_duty_wartime_veteran
+          - armed_forces_service_medal_veteran
+          - prefer_not_to_say
+          - null
+          description: Veteran status for EEO forms
+          example: prefer_not_to_say
+        disabilityStatus:
+          type:
+          - string
+          - 'null'
+          enum:
+          - 'yes'
+          - 'no'
+          - prefer_not_to_say
+          - null
+          description: Disability status for EEO forms
+          example: prefer_not_to_say
+        gender:
+          type:
+          - string
+          - 'null'
+          enum:
+          - male
+          - female
+          - non_binary
+          - prefer_not_to_say
+          - other
+          - null
+          description: Gender for EEO forms
+          example: prefer_not_to_say
+        ethnicity:
+          type:
+          - string
+          - 'null'
+          enum:
+          - american_indian_or_alaska_native
+          - asian
+          - black_or_african_american
+          - hispanic_or_latino
+          - native_hawaiian_or_pacific_islander
+          - white
+          - two_or_more_races
+          - prefer_not_to_say
+          - other
+          - null
+          description: Ethnicity for EEO forms
+          example: prefer_not_to_say
+        sexualOrientation:
+          type:
+          - string
+          - 'null'
+          enum:
+          - heterosexual
+          - gay_or_lesbian
+          - bisexual
+          - prefer_not_to_say
+          - other
+          - null
+          description: Sexual orientation for EEO forms
+          example: prefer_not_to_say
+        pronouns:
+          type:
+          - string
+          - 'null'
+          maxLength: 40
+          description: Preferred pronouns, self-described free text. Never inferred from a name or from `gender`.
+          example: she/her
+        applyReadiness:
+          type: object
+          properties:
+            missingRequiredForApply:
+              type: array
+              items:
+                type: string
+                enum:
+                - zip_code
+                - state
+                - country
+                description: An application_profile column an employer form can require and that we never invent
+                example: zip_code
+              description: Profile columns an employer form can require that are empty. We never invent these; the user fills them.
+              example:
+              - zip_code
+              - state
+          required:
+          - missingRequiredForApply
+          description: Required-for-apply columns that are still empty
+        addressCompleteness:
+          type: object
+          properties:
+            city:
+              type: boolean
+            complete:
+              type: boolean
+            country:
+              type: boolean
+            postalCode:
+              type: boolean
+            state:
+              type: boolean
+            street:
+              type: boolean
+          required:
+          - city
+          - complete
+          - country
+          - postalCode
+          - state
+          - street
+        createdAt:
+          type: string
+          description: Profile creation timestamp
+          example: '2026-01-15T12:00:00Z'
+        updatedAt:
+          type: string
+          description: Profile last update timestamp
+          example: '2026-03-10T08:30:00Z'
+      required:
+      - id
+      - userId
+      - phone
+      - addressLine1
+      - addressLine2
+      - city
+      - state
+      - zipCode
+      - country
+      - linkedinUrl
+      - portfolioUrl
+      - githubUrl
+      - currentEmployer
+      - dateOfBirth
+      - workAuthorization
+      - willingToRelocate
+      - relocationLocations
+      - salaryCurrency
+      - availableStartDate
+      - noticePeriod
+      - personalNarrative
+      - travelWillingness
+      - securityClearance
+      - restrictiveCovenantStatus
+      - criminalRecordStatus
+      - backgroundCheckConsent
+      - relatedToEmployeeStatus
+      - exportControlUsPerson
+      - highestEducation
+      - yearsOfExperience
+      - veteranStatus
+      - disabilityStatus
+      - gender
+      - ethnicity
+      - sexualOrientation
+      - pronouns
+      - applyReadiness
+      - addressCompleteness
+      - createdAt
+      - updatedAt
+    AIPersonaData:
+      type: object
+      properties:
+        id:
+          type: string
+          description: AI persona identifier
+          example: abc-123
+        userId:
+          type: string
+          description: User identifier
+          example: user_abc123
+        presetId:
+          type: string
+          enum:
+          - balanced
+          - the_professional
+          - the_conversationalist
+          - the_storyteller
+          - the_closer
+          - the_enthusiast
+          - custom
+          description: Selected persona preset
+          example: balanced
+        personalDescription:
+          type:
+          - string
+          - 'null'
+          description: Free text about the user for AI personalization
+          example: Senior engineer with 10 years in fintech
+        toneInstructions:
+          type:
+          - string
+          - 'null'
+          description: Custom rules for AI tone and style
+          example: Always mention my passion for open-source
+        samplePhrases:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: Example phrases the user would naturally use
+          example:
+          - Let me walk you through my approach
+          - I thrive in fast-paced environments
+        generateCoverLetterPerJob:
+          type: boolean
+          description: Whether AI generates a cover letter for each job application
+          example: true
+        tailorResumePerJob:
+          type: boolean
+          description: Whether AI tailors resume for each job application
+          example: true
+        resumeStrategy:
+          type: string
+          enum:
+          - base
+          - tailor
+          description: Resume handling strategy
+          example: tailor
+        coverLetterStrategy:
+          type: string
+          enum:
+          - 'off'
+          - use_base
+          - tailor_base
+          - generate_new
+          description: Cover letter handling strategy
+          example: generate_new
+        translationStrategy:
+          type: string
+          enum:
+          - 'off'
+          - translate
+          - translate_and_tailor
+          description: Translation strategy
+          example: 'off'
+        mode:
+          type: string
+          enum:
+          - copilot
+          - auto_approve
+          description: 'Application mode: copilot (review before submitting) or auto_approve (submits automatically)'
+          example: copilot
+        allowFabrication:
+          type: boolean
+          description: Fill-gaps for the apply agent, enabled by default. When true, a required field the agent cannot take directly from profile facts is sourced real-data-first (the resume, tailored resume, and cover letter for this application, then job preferences, then profile) and only fabricated as a last resort, marked as assumed. When false (explicit opt-out), it never fabricates such an answer. Contact/identity completion (phone, city, postal, profile links) always completes required fields and is not governed by this flag.
+          example: true
+        scoringWeights:
+          type:
+          - object
+          - 'null'
+          properties:
+            location:
+              type: number
+              minimum: 0
+              maximum: 2
+            remote:
+              type: number
+              minimum: 0
+              maximum: 2
+            salary:
+              type: number
+              minimum: 0
+              maximum: 2
+            seniority:
+              type: number
+              minimum: 0
+              maximum: 2
+            skills:
+              type: number
+              minimum: 0
+              maximum: 2
+            visa:
+              type: number
+              minimum: 0
+              maximum: 2
+          required:
+          - location
+          - remote
+          - salary
+          - seniority
+          - skills
+          - visa
+          description: Per-dimension match scoring weights. NULL when the user has never customised them (scorer falls back to uniform defaults).
+          example:
+            skills: 1
+            location: 1
+            remote: 1
+            seniority: 1
+            salary: 1
+            visa: 1
+        createdAt:
+          type: string
+          description: Persona creation timestamp
+          example: '2026-01-15T12:00:00Z'
+        updatedAt:
+          type: string
+          description: Persona last update timestamp
+          example: '2026-03-10T08:30:00Z'
+      required:
+      - id
+      - userId
+      - presetId
+      - personalDescription
+      - toneInstructions
+      - samplePhrases
+      - generateCoverLetterPerJob
+      - tailorResumePerJob
+      - resumeStrategy
+      - coverLetterStrategy
+      - translationStrategy
+      - mode
+      - allowFabrication
+      - scoringWeights
+      - createdAt
+      - updatedAt
     UserPreferencesResponse:
       type: object
       properties:
@@ -754,588 +1477,22 @@ components:
           additionalProperties: false
           description: Partial ai_persona patch. Strategy enums win over legacy booleans via mirrorLegacyBooleans().
       additionalProperties: false
-    JobMatchPreferencesData:
+    PatchUserPreferencesResponse:
       type: object
       properties:
-        benefits:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-        companySize:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-        createdAt:
-          type:
-          - string
-          - 'null'
-        educationLevel:
-          type:
-          - string
-          - 'null'
-        excludeIndustries:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-        experienceLevel:
-          type:
-          - string
-          - 'null'
-        experienceLevels:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-        id:
-          type: integer
-        includeRemote:
+        data:
+          $ref: '#/components/schemas/PatchUserPreferencesData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
           type: boolean
-        industries:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-        isActive:
-          type: boolean
-        jobTypes:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-        locations:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-        remoteGlobal:
-          type: boolean
-        salaryCurrency:
-          type: string
           enum:
-          - usd
-          - eur
-          - gbp
-          - cad
-          - aud
-          - inr
-          description: Currency for salary values
-          example: usd
-        salaryMax:
-          type:
-          - number
-          - 'null'
-        salaryMin:
-          type:
-          - number
-          - 'null'
-        skills:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-        targetRoles:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-        updatedAt:
-          type:
-          - string
-          - 'null'
-        visaSponsorship:
-          type:
-          - string
-          - 'null'
-        workStyles:
-          type: array
-          items:
-            type: string
-            enum:
-            - onsite
-            - hybrid
-            - remote
-            description: User's preferred work style, physical mode only, no geo scoping
-            example: remote
+          - true
       required:
-      - benefits
-      - companySize
-      - createdAt
-      - educationLevel
-      - excludeIndustries
-      - experienceLevel
-      - experienceLevels
-      - id
-      - includeRemote
-      - industries
-      - isActive
-      - jobTypes
-      - locations
-      - remoteGlobal
-      - salaryCurrency
-      - salaryMax
-      - salaryMin
-      - skills
-      - targetRoles
-      - updatedAt
-      - visaSponsorship
-      - workStyles
-    ApplicationProfileData:
-      type: object
-      properties:
-        id:
-          type: string
-          description: Application profile identifier
-          example: abc-123
-        userId:
-          type: string
-          description: User identifier
-          example: user_abc123
-        phone:
-          type:
-          - string
-          - 'null'
-          description: Phone number
-          example: +1-555-123-4567
-        addressLine1:
-          type:
-          - string
-          - 'null'
-          description: Address line 1
-          example: 123 Main St
-        addressLine2:
-          type:
-          - string
-          - 'null'
-          description: Address line 2
-          example: Apt 4B
-        city:
-          type:
-          - string
-          - 'null'
-          description: City
-          example: San Francisco
-        state:
-          type:
-          - string
-          - 'null'
-          description: State or province
-          example: CA
-        zipCode:
-          type:
-          - string
-          - 'null'
-          description: ZIP or postal code
-          example: '94105'
-        country:
-          type:
-          - string
-          - 'null'
-          description: Country
-          example: US
-        linkedinUrl:
-          type:
-          - string
-          - 'null'
-          description: LinkedIn profile URL
-          example: https://linkedin.com/in/johndoe
-        portfolioUrl:
-          type:
-          - string
-          - 'null'
-          description: Portfolio website URL
-          example: https://johndoe.dev
-        githubUrl:
-          type:
-          - string
-          - 'null'
-          description: GitHub profile URL
-          example: https://github.com/johndoe
-        currentEmployer:
-          type:
-          - string
-          - 'null'
-          description: Current employer / company. Helps tailor recommendations; unlocks team analytics if the company onboards.
-          example: Acme Corp
-        dateOfBirth:
-          type:
-          - string
-          - 'null'
-          description: Date of birth (ISO 8601 date string)
-          example: '1995-06-15'
-        workAuthorization:
-          type:
-          - string
-          - 'null'
-          enum:
-          - us_citizen
-          - permanent_resident
-          - visa_holder
-          - require_sponsorship
-          - other
-          - null
-          description: Work authorization status
-          example: us_citizen
-        willingToRelocate:
-          type: boolean
-          description: Willing to relocate for a job
-          example: false
-        relocationLocations:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-          description: Preferred relocation locations as "City, Country" or "Country". Middle admin segments stripped on read.
-          example:
-          - New York, United States
-          - Austin, United States
-        salaryCurrency:
-          type:
-          - string
-          - 'null'
-          enum:
-          - usd
-          - eur
-          - gbp
-          - cad
-          - aud
-          - inr
-          - null
-          description: Salary currency
-          example: usd
-        availableStartDate:
-          type:
-          - string
-          - 'null'
-          description: Earliest available start date (ISO 8601 date string)
-          example: '2026-04-01'
-        noticePeriod:
-          type:
-          - string
-          - 'null'
-          enum:
-          - immediately
-          - two_weeks
-          - one_month
-          - two_months
-          - three_months
-          - flexible
-          - null
-          description: Notice period before starting new position
-          example: two_weeks
-        personalNarrative:
-          type:
-          - string
-          - 'null'
-          description: Free-form narrative about gaps / transitions / short stints. Drives interview-prep red-flag question generation (F8).
-          example: Took a 14-month gap in 2024 for caregiving; returning with a refreshed cloud certification.
-        travelWillingness:
-          type:
-          - string
-          - 'null'
-          enum:
-          - none
-          - up_to_25
-          - up_to_50
-          - up_to_75
-          - up_to_100
-          - null
-          description: Willingness to travel for work
-          example: up_to_25
-        securityClearance:
-          type:
-          - string
-          - 'null'
-          enum:
-          - none
-          - confidential
-          - secret
-          - top_secret
-          - ts_sci
-          - prefer_not_to_say
-          - null
-          description: Security clearance level
-          example: none
-        restrictiveCovenantStatus:
-          type:
-          - string
-          - 'null'
-          enum:
-          - 'yes'
-          - 'no'
-          - prefer_not_to_say
-          - null
-          description: Currently subject to a non-compete / non-solicit / restrictive covenant with a former employer
-          example: 'no'
-        criminalRecordStatus:
-          type:
-          - string
-          - 'null'
-          enum:
-          - 'yes'
-          - 'no'
-          - prefer_not_to_say
-          - null
-          description: Has a criminal conviction they are legally required to disclose
-          example: 'no'
-        backgroundCheckConsent:
-          type:
-          - string
-          - 'null'
-          enum:
-          - 'yes'
-          - 'no'
-          - prefer_not_to_say
-          - null
-          description: Consents to a background / reference / credit check or drug screen where the role requires one
-          example: 'yes'
-        relatedToEmployeeStatus:
-          type:
-          - string
-          - 'null'
-          enum:
-          - 'yes'
-          - 'no'
-          - prefer_not_to_say
-          - null
-          description: 'Has a family member or close personal relationship with an employee of a company they apply to. Global, not per-employer: only a "no" is committable on a form.'
-          example: 'no'
-        exportControlUsPerson:
-          type:
-          - string
-          - 'null'
-          enum:
-          - 'yes'
-          - 'no'
-          - prefer_not_to_say
-          - null
-          description: Is a U.S. person for export-control (ITAR / EAR) purposes. The only declaration whose "yes" is the permissive answer.
-          example: 'yes'
-        highestEducation:
-          type:
-          - string
-          - 'null'
-          enum:
-          - high_school
-          - associate
-          - bachelor
-          - master
-          - doctorate
-          - any
-          - null
-          description: Highest education level completed
-          example: bachelor
-        yearsOfExperience:
-          type:
-          - integer
-          - 'null'
-          description: Total years of professional experience
-          example: 5
-        veteranStatus:
-          type:
-          - string
-          - 'null'
-          enum:
-          - not_a_veteran
-          - veteran
-          - disabled_veteran
-          - recently_separated_veteran
-          - active_duty_wartime_veteran
-          - armed_forces_service_medal_veteran
-          - prefer_not_to_say
-          - null
-          description: Veteran status for EEO forms
-          example: prefer_not_to_say
-        disabilityStatus:
-          type:
-          - string
-          - 'null'
-          enum:
-          - 'yes'
-          - 'no'
-          - prefer_not_to_say
-          - null
-          description: Disability status for EEO forms
-          example: prefer_not_to_say
-        gender:
-          type:
-          - string
-          - 'null'
-          enum:
-          - male
-          - female
-          - non_binary
-          - prefer_not_to_say
-          - other
-          - null
-          description: Gender for EEO forms
-          example: prefer_not_to_say
-        ethnicity:
-          type:
-          - string
-          - 'null'
-          enum:
-          - american_indian_or_alaska_native
-          - asian
-          - black_or_african_american
-          - hispanic_or_latino
-          - native_hawaiian_or_pacific_islander
-          - white
-          - two_or_more_races
-          - prefer_not_to_say
-          - other
-          - null
-          description: Ethnicity for EEO forms
-          example: prefer_not_to_say
-        sexualOrientation:
-          type:
-          - string
-          - 'null'
-          enum:
-          - heterosexual
-          - gay_or_lesbian
-          - bisexual
-          - prefer_not_to_say
-          - other
-          - null
-          description: Sexual orientation for EEO forms
-          example: prefer_not_to_say
-        pronouns:
-          type:
-          - string
-          - 'null'
-          maxLength: 40
-          description: Preferred pronouns, self-described free text. Never inferred from a name or from `gender`.
-          example: she/her
-        applyReadiness:
-          type: object
-          properties:
-            missingRequiredForApply:
-              type: array
-              items:
-                type: string
-                enum:
-                - zip_code
-                - state
-                - country
-                description: An application_profile column an employer form can require and that we never invent
-                example: zip_code
-              description: Profile columns an employer form can require that are empty. We never invent these; the user fills them.
-              example:
-              - zip_code
-              - state
-          required:
-          - missingRequiredForApply
-          description: Required-for-apply columns that are still empty
-        addressCompleteness:
-          type: object
-          properties:
-            city:
-              type: boolean
-            complete:
-              type: boolean
-            country:
-              type: boolean
-            postalCode:
-              type: boolean
-            state:
-              type: boolean
-            street:
-              type: boolean
-          required:
-          - city
-          - complete
-          - country
-          - postalCode
-          - state
-          - street
-        createdAt:
-          type: string
-          description: Profile creation timestamp
-          example: '2026-01-15T12:00:00Z'
-        updatedAt:
-          type: string
-          description: Profile last update timestamp
-          example: '2026-03-10T08:30:00Z'
-      required:
-      - id
-      - userId
-      - phone
-      - addressLine1
-      - addressLine2
-      - city
-      - state
-      - zipCode
-      - country
-      - linkedinUrl
-      - portfolioUrl
-      - githubUrl
-      - currentEmployer
-      - dateOfBirth
-      - workAuthorization
-      - willingToRelocate
-      - relocationLocations
-      - salaryCurrency
-      - availableStartDate
-      - noticePeriod
-      - personalNarrative
-      - travelWillingness
-      - securityClearance
-      - restrictiveCovenantStatus
-      - criminalRecordStatus
-      - backgroundCheckConsent
-      - relatedToEmployeeStatus
-      - exportControlUsPerson
-      - highestEducation
-      - yearsOfExperience
-      - veteranStatus
-      - disabilityStatus
-      - gender
-      - ethnicity
-      - sexualOrientation
-      - pronouns
-      - applyReadiness
-      - addressCompleteness
-      - createdAt
-      - updatedAt
-    PatchUserPreferencesData:
-      allOf:
-      - $ref: '#/components/schemas/UserPreferencesData'
-      - type: object
-        properties:
-          prefsChanged:
-            type: boolean
-            description: True only when this PATCH changed at least one job_match_preference column AND started a match rebuild. False for an unchanged or persona/profile-only save, when the post-write prefs read failed, and when an earlier save's rebuild was already running (no rebuild started for this request).
-            example: true
-        required:
-        - prefsChanged
-    UserPreferencesData:
-      type:
-      - object
-      - 'null'
-      properties:
-        applicationProfile:
-          $ref: '#/components/schemas/ApplicationProfileData'
-        jobMatchPreferences:
-          $ref: '#/components/schemas/JobMatchPreferencesData'
-        aiPersona:
-          $ref: '#/components/schemas/AIPersonaData'
-      required:
-      - applicationProfile
-      - jobMatchPreferences
-      - aiPersona
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
     ApiErrorResponse:
       type: object
       properties:
@@ -1680,163 +1837,6 @@ components:
       - error
       - success
       additionalProperties: false
-    AIPersonaData:
-      type: object
-      properties:
-        id:
-          type: string
-          description: AI persona identifier
-          example: abc-123
-        userId:
-          type: string
-          description: User identifier
-          example: user_abc123
-        presetId:
-          type: string
-          enum:
-          - balanced
-          - the_professional
-          - the_conversationalist
-          - the_storyteller
-          - the_closer
-          - the_enthusiast
-          - custom
-          description: Selected persona preset
-          example: balanced
-        personalDescription:
-          type:
-          - string
-          - 'null'
-          description: Free text about the user for AI personalization
-          example: Senior engineer with 10 years in fintech
-        toneInstructions:
-          type:
-          - string
-          - 'null'
-          description: Custom rules for AI tone and style
-          example: Always mention my passion for open-source
-        samplePhrases:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-          description: Example phrases the user would naturally use
-          example:
-          - Let me walk you through my approach
-          - I thrive in fast-paced environments
-        generateCoverLetterPerJob:
-          type: boolean
-          description: Whether AI generates a cover letter for each job application
-          example: true
-        tailorResumePerJob:
-          type: boolean
-          description: Whether AI tailors resume for each job application
-          example: true
-        resumeStrategy:
-          type: string
-          enum:
-          - base
-          - tailor
-          description: Resume handling strategy
-          example: tailor
-        coverLetterStrategy:
-          type: string
-          enum:
-          - 'off'
-          - use_base
-          - tailor_base
-          - generate_new
-          description: Cover letter handling strategy
-          example: generate_new
-        translationStrategy:
-          type: string
-          enum:
-          - 'off'
-          - translate
-          - translate_and_tailor
-          description: Translation strategy
-          example: 'off'
-        mode:
-          type: string
-          enum:
-          - copilot
-          - auto_approve
-          description: 'Application mode: copilot (review before submitting) or auto_approve (submits automatically)'
-          example: copilot
-        allowFabrication:
-          type: boolean
-          description: Fill-gaps for the apply agent, enabled by default. When true, a required field the agent cannot take directly from profile facts is sourced real-data-first (the resume, tailored resume, and cover letter for this application, then job preferences, then profile) and only fabricated as a last resort, marked as assumed. When false (explicit opt-out), it never fabricates such an answer. Contact/identity completion (phone, city, postal, profile links) always completes required fields and is not governed by this flag.
-          example: true
-        scoringWeights:
-          type:
-          - object
-          - 'null'
-          properties:
-            location:
-              type: number
-              minimum: 0
-              maximum: 2
-            remote:
-              type: number
-              minimum: 0
-              maximum: 2
-            salary:
-              type: number
-              minimum: 0
-              maximum: 2
-            seniority:
-              type: number
-              minimum: 0
-              maximum: 2
-            skills:
-              type: number
-              minimum: 0
-              maximum: 2
-            visa:
-              type: number
-              minimum: 0
-              maximum: 2
-          required:
-          - location
-          - remote
-          - salary
-          - seniority
-          - skills
-          - visa
-          description: Per-dimension match scoring weights. NULL when the user has never customised them (scorer falls back to uniform defaults).
-          example:
-            skills: 1
-            location: 1
-            remote: 1
-            seniority: 1
-            salary: 1
-            visa: 1
-        createdAt:
-          type: string
-          description: Persona creation timestamp
-          example: '2026-01-15T12:00:00Z'
-        updatedAt:
-          type: string
-          description: Persona last update timestamp
-          example: '2026-03-10T08:30:00Z'
-      required:
-      - id
-      - userId
-      - presetId
-      - personalDescription
-      - toneInstructions
-      - samplePhrases
-      - generateCoverLetterPerJob
-      - tailorResumePerJob
-      - resumeStrategy
-      - coverLetterStrategy
-      - translationStrategy
-      - mode
-      - allowFabrication
-      - scoringWeights
-      - createdAt
-      - updatedAt
   securitySchemes:
     BearerAuth:
       description: 'Session token from signing in to AI Applyd, sent as `Authorization: Bearer <token>`.'

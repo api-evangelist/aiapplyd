@@ -206,22 +206,6 @@ paths:
       operationId: postEmailPreferencesOneClick
 components:
   schemas:
-    EmailPreferencesUpdatedResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/EmailPreferencesData'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
     UpdateEmailPreferences:
       type: object
       properties:
@@ -254,6 +238,22 @@ components:
           description: Receive the weekly recap of your matches and applications
           example: true
       additionalProperties: false
+    EmailPreferencesResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/EmailPreferencesData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
     EmailPreferencesData:
       type: object
       properties:
@@ -300,22 +300,6 @@ components:
       - weeklyRecap
       - email
       additionalProperties: false
-    EmailPreferencesResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/EmailPreferencesData'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
     ResponseMetadata:
       type: object
       properties:
@@ -347,6 +331,22 @@ components:
           type: string
           description: API version
           example: v1
+    EmailPreferencesUpdatedResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/EmailPreferencesData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
     ApiErrorResponse:
       type: object
       properties:

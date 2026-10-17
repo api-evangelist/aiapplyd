@@ -127,42 +127,113 @@ paths:
       operationId: postAnalyticsRecommendationsApply
 components:
   schemas:
-    ResponseMetadata:
+    Recommendation:
       type: object
       properties:
-        duration:
-          type: number
-          description: Request duration in milliseconds
-          example: 150
-          exclusiveMinimum: 0
-        performance:
+        action:
+          type: string
+          description: One concrete action the user can take next. Phrased as an imperative.
+          example: Filter out roles with match score below 4.0 - none have progressed.
+        actionPayload:
+          type: object
+          additionalProperties: {}
+          description: Per-action JSON payload. Empty / omitted for noop actions or legacy text-only recs.
+          example:
+            threshold: 4
+        actionType:
+          type: string
+          enum:
+          - raise_score_floor
+          - filter_remote_policy
+          - deprioritize_archetype
+          - noop
+          description: Structured action enum. Absent / `noop` means the recommendation is informational only (no Apply button).
+          example: raise_score_floor
+        appliedAt:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: When this recommendation's target state was already in effect at analysis time. Null / absent = still actionable.
+          example: '2026-05-10T12:34:56.000Z'
+        impact:
+          type: string
+          enum:
+          - high
+          - medium
+          - low
+          description: Coarse expected-impact bucket for a recommendation. Computed from sample size + outcome shift, not author-supplied.
+          example: high
+        reasoning:
+          type: string
+          description: 'Why this recommendation: which signal in the data triggered it (counts, share, conversion deltas).'
+          example: 12 of 12 applications below 4.0 ended in no_response or rejection.
+        template:
+          $ref: '#/components/schemas/RecommendationTemplate'
+      required:
+      - action
+      - impact
+      - reasoning
+      - template
+      additionalProperties: false
+    PatternAnalysisData:
+      type: object
+      properties:
+        blockers:
+          type: array
+          items:
+            $ref: '#/components/schemas/BlockerRow'
+          description: Top blockers ordered by count desc.
+        funnel:
           type: object
           properties:
-            dbQueries:
-              type: integer
-              minimum: 0
-            totalDbTime:
-              type: number
-              minimum: 0
-          description: Performance metrics (preview/local only)
-        requestId:
-          type: string
-          description: Unique request identifier
-          example: req_abc123
-        timestamp:
-          type: string
-          format: date-time
-          description: ISO 8601 timestamp
-          example: '2026-09-25T17:29:47.224Z'
-        version:
-          type: string
-          description: API version
-          example: v1
-    PatternAnalysisResponse:
+            byArchetype:
+              type: array
+              items:
+                $ref: '#/components/schemas/ArchetypeFunnelRow'
+            byRemotePolicy:
+              type: array
+              items:
+                $ref: '#/components/schemas/RemotePolicyFunnelRow'
+            byScoreBucket:
+              type: array
+              items:
+                $ref: '#/components/schemas/ScoreBucketFunnelRow'
+          required:
+          - byArchetype
+          - byRemotePolicy
+          - byScoreBucket
+          additionalProperties: false
+        recommendations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Recommendation'
+          description: Recommendations ordered by impact (high → low) and tie-broken by sample size.
+        scoreFloor:
+          type:
+          - number
+          - 'null'
+          example: 4.2
+        skillGaps:
+          type: array
+          items:
+            $ref: '#/components/schemas/SkillGapRow'
+          description: Skill slugs over-represented in negative outcomes.
+        totalApplications:
+          type: integer
+      required:
+      - blockers
+      - funnel
+      - recommendations
+      - scoreFloor
+      - skillGaps
+      - totalApplications
+      additionalProperties: false
+    AnalyticsResponse:
       type: object
       properties:
         data:
-          $ref: '#/components/schemas/PatternAnalysisResult'
+          $ref: '#/components/schemas/AnalyticsData'
         meta:
           $ref: '#/components/schemas/ResponseMetadata'
         success:
@@ -174,6 +245,43 @@ components:
       - success
       additionalProperties: false
       description: Successful API response
+    ScoreBucketFunnelRow:
+      type: object
+      properties:
+        bucket:
+          type: string
+          enum:
+          - lt_3
+          - 3_to_4
+          - 4_to_4_5
+          - gte_4_5
+          description: Match-score band for funnel breakdowns. Stored as a stable slug so the FE label can change without breaking the API contract.
+          example: gte_4_5
+        conversionRate:
+          type: number
+        progressed:
+          type: integer
+        total:
+          type: integer
+      required:
+      - bucket
+      - conversionRate
+      - progressed
+      - total
+      additionalProperties: false
+    DailyApplication:
+      type: object
+      properties:
+        count:
+          type: integer
+        date:
+          type: string
+          description: Date in YYYY-MM-DD format
+          example: '2026-03-24'
+      required:
+      - count
+      - date
+      additionalProperties: false
     MatchQualityWeek:
       type: object
       properties:
@@ -195,6 +303,234 @@ components:
       - fair
       - strong
       - week
+      additionalProperties: false
+    PatternAnalysisResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/PatternAnalysisResult'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    ArchetypeFunnelRow:
+      type: object
+      properties:
+        archetype:
+          type: string
+          enum:
+          - software_engineer_frontend
+          - software_engineer_backend
+          - software_engineer_fullstack
+          - software_engineer_mobile
+          - software_engineer_embedded
+          - software_engineer_games
+          - software_engineer_generic
+          - devops_sre
+          - platform_infra
+          - security_engineer
+          - qa_test
+          - data_engineer
+          - data_scientist
+          - data_analyst
+          - ml_engineer
+          - ai_research
+          - product_manager
+          - project_program_manager
+          - designer_product
+          - designer_ux_research
+          - designer_visual
+          - engineering_manager
+          - technical_writer
+          - developer_advocate
+          - solutions_engineer
+          - support_engineer
+          - sales
+          - marketing
+          - operations
+          - executive
+          - finance
+          - legal
+          - hr_recruiting
+          - customer_success
+          - healthcare
+          - creative-design
+          - trades-manual
+          - education
+          - hospitality
+          - logistics-supply
+          - manufacturing
+          - gov-nonprofit
+          - marketing-sales
+          - consulting
+          - retail
+          - insurance
+          - admin_office
+          - other
+          - robotics_engineer
+          - control_systems_engineer
+          - mechatronics_engineer
+          - firmware_engineer
+          - fpga_engineer
+          - hardware_engineer
+          - electrical_engineer
+          - rf_engineer
+          - analog_engineer
+          - biomedical_engineer
+          - aerospace_engineer
+          - avionics_engineer
+          - simulation_engineer
+          - computer_vision_engineer
+          - autonomous_vehicles_engineer
+          - graphics_engineer
+          - blockchain_engineer
+          - smart_contract_engineer
+          - game_designer
+          - ios_engineer
+          - android_engineer
+          - mlops_engineer
+          - ai_infrastructure_engineer
+          - llm_engineer
+          - prompt_engineer
+          - research_engineer
+          - applied_scientist
+          - cloud_architect
+          - solutions_architect
+          - enterprise_architect
+          - release_engineer
+          - network_engineer
+          - systems_engineer
+          - database_administrator
+          - appsec_engineer
+          - pentest_engineer
+          - soc_analyst
+          - incident_responder
+          - analytics_engineer
+          - data_architect
+          - bioinformatics_engineer
+          - computational_biologist
+          - quant_analyst
+          - quant_developer
+          - trading_systems_engineer
+          - risk_analyst
+          - sdet
+          - automation_engineer
+          - product_manager_growth
+          - ux_writer
+          - content_designer
+          - design_engineer
+          - documentation_engineer
+          - customer_engineer
+          - implementation_engineer
+          - civil_engineer
+          - mechanical_engineer
+          description: Canonical role family for matching
+          example: software_engineer_frontend
+        conversionRate:
+          type: number
+          description: progressed / total expressed as a 0..1 ratio. Rounded to 3 decimals.
+          example: 0.214
+        progressed:
+          type: integer
+        total:
+          type: integer
+      required:
+      - archetype
+      - conversionRate
+      - progressed
+      - total
+      additionalProperties: false
+    OutcomeMetrics:
+      type: object
+      properties:
+        emailResponseRate:
+          type: number
+          description: Share of classified inbound job emails that carry a positive signal (interview / scheduling / offer), as a percentage. 0 when no emails are classified.
+          example: 42.5
+        interviewsBooked:
+          type: integer
+          description: Applications that reached an interview-booked outcome (stage phone_screen/interview, or interview_booked_at set).
+          example: 3
+        nextInterviewResultId:
+          type:
+          - integer
+          - 'null'
+          description: Application-result id behind the SOONEST upcoming interview event, for the applications deep-link. Null when that event has no application behind it; absent on payloads that do not resolve it.
+          example: 1481
+        offers:
+          type: integer
+          description: Applications with an offer outcome (applicationStage = offered).
+          example: 1
+        positiveEmailSignals:
+          type: integer
+          description: Count of inbound emails classified as a positive signal (interview_invite / scheduling / reschedule / offer_letter).
+          example: 5
+        upcomingInterviews:
+          type: integer
+          description: Synced calendar events flagged as interviews whose start time is in the future.
+          example: 2
+      required:
+      - emailResponseRate
+      - interviewsBooked
+      - offers
+      - positiveEmailSignals
+      - upcomingInterviews
+      additionalProperties: false
+      description: Real-outcome success metrics from the email + calendar pipeline (interviews booked, offers, upcoming interviews, email response rate).
+    PatternAnalysisReady:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/PatternAnalysisData'
+        status:
+          type: string
+          enum:
+          - ready
+      required:
+      - data
+      - status
+      additionalProperties: false
+    ApplyRecommendationResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ApplyRecommendationResult'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    PatternAnalysisInsufficient:
+      type: object
+      properties:
+        current:
+          type: integer
+          description: Number of applications the user currently has past Evaluated.
+        status:
+          type: string
+          enum:
+          - insufficient_data
+        threshold:
+          type: number
+          enum:
+          - 5
+      required:
+      - current
+      - status
+      - threshold
       additionalProperties: false
     AnalyticsData:
       type:
@@ -388,217 +724,6 @@ components:
       - totalJobs
       - unactionedHighMatches
       - weeklyApplications
-    AnalyticsResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/AnalyticsData'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    PatternAnalysisResult:
-      oneOf:
-      - $ref: '#/components/schemas/PatternAnalysisReady'
-      - $ref: '#/components/schemas/PatternAnalysisInsufficient'
-      discriminator:
-        propertyName: status
-        mapping:
-          ready: '#/components/schemas/PatternAnalysisReady'
-          insufficient_data: '#/components/schemas/PatternAnalysisInsufficient'
-    ApplyRecommendationRequest:
-      oneOf:
-      - type: object
-        properties:
-          actionPayload:
-            type: object
-            properties:
-              threshold:
-                type: number
-                minimum: 0
-                maximum: 100
-            required:
-            - threshold
-            additionalProperties: false
-          actionType:
-            type: string
-            enum:
-            - raise_score_floor
-        required:
-        - actionPayload
-        - actionType
-        additionalProperties: false
-      - type: object
-        properties:
-          actionPayload:
-            type: object
-            properties:
-              policy:
-                type: string
-                enum:
-                - onsite
-                - hybrid
-                - remote
-                description: User's preferred work style, physical mode only, no geo scoping
-                example: remote
-            required:
-            - policy
-            additionalProperties: false
-          actionType:
-            type: string
-            enum:
-            - filter_remote_policy
-        required:
-        - actionPayload
-        - actionType
-        additionalProperties: false
-      - type: object
-        properties:
-          actionPayload:
-            type: object
-            properties:
-              archetype:
-                type: string
-                enum:
-                - software_engineer_frontend
-                - software_engineer_backend
-                - software_engineer_fullstack
-                - software_engineer_mobile
-                - software_engineer_embedded
-                - software_engineer_games
-                - software_engineer_generic
-                - devops_sre
-                - platform_infra
-                - security_engineer
-                - qa_test
-                - data_engineer
-                - data_scientist
-                - data_analyst
-                - ml_engineer
-                - ai_research
-                - product_manager
-                - project_program_manager
-                - designer_product
-                - designer_ux_research
-                - designer_visual
-                - engineering_manager
-                - technical_writer
-                - developer_advocate
-                - solutions_engineer
-                - support_engineer
-                - sales
-                - marketing
-                - operations
-                - executive
-                - finance
-                - legal
-                - hr_recruiting
-                - customer_success
-                - healthcare
-                - creative-design
-                - trades-manual
-                - education
-                - hospitality
-                - logistics-supply
-                - manufacturing
-                - gov-nonprofit
-                - marketing-sales
-                - consulting
-                - retail
-                - insurance
-                - admin_office
-                - other
-                - robotics_engineer
-                - control_systems_engineer
-                - mechatronics_engineer
-                - firmware_engineer
-                - fpga_engineer
-                - hardware_engineer
-                - electrical_engineer
-                - rf_engineer
-                - analog_engineer
-                - biomedical_engineer
-                - aerospace_engineer
-                - avionics_engineer
-                - simulation_engineer
-                - computer_vision_engineer
-                - autonomous_vehicles_engineer
-                - graphics_engineer
-                - blockchain_engineer
-                - smart_contract_engineer
-                - game_designer
-                - ios_engineer
-                - android_engineer
-                - mlops_engineer
-                - ai_infrastructure_engineer
-                - llm_engineer
-                - prompt_engineer
-                - research_engineer
-                - applied_scientist
-                - cloud_architect
-                - solutions_architect
-                - enterprise_architect
-                - release_engineer
-                - network_engineer
-                - systems_engineer
-                - database_administrator
-                - appsec_engineer
-                - pentest_engineer
-                - soc_analyst
-                - incident_responder
-                - analytics_engineer
-                - data_architect
-                - bioinformatics_engineer
-                - computational_biologist
-                - quant_analyst
-                - quant_developer
-                - trading_systems_engineer
-                - risk_analyst
-                - sdet
-                - automation_engineer
-                - product_manager_growth
-                - ux_writer
-                - content_designer
-                - design_engineer
-                - documentation_engineer
-                - customer_engineer
-                - implementation_engineer
-                - civil_engineer
-                - mechanical_engineer
-                description: Canonical role family for matching
-                example: software_engineer_frontend
-            required:
-            - archetype
-            additionalProperties: false
-          actionType:
-            type: string
-            enum:
-            - deprioritize_archetype
-        required:
-        - actionPayload
-        - actionType
-        additionalProperties: false
-      - type: object
-        properties:
-          actionPayload:
-            type: object
-            properties: {}
-            additionalProperties: false
-          actionType:
-            type: string
-            enum:
-            - noop
-        required:
-        - actionType
-        additionalProperties: false
-      description: Recommendation action with discriminated payload by actionType.
     BlockerRow:
       type: object
       properties:
@@ -626,205 +751,6 @@ components:
       - reason
       - share
       additionalProperties: false
-    PatternAnalysisData:
-      type: object
-      properties:
-        blockers:
-          type: array
-          items:
-            $ref: '#/components/schemas/BlockerRow'
-          description: Top blockers ordered by count desc.
-        funnel:
-          type: object
-          properties:
-            byArchetype:
-              type: array
-              items:
-                $ref: '#/components/schemas/ArchetypeFunnelRow'
-            byRemotePolicy:
-              type: array
-              items:
-                $ref: '#/components/schemas/RemotePolicyFunnelRow'
-            byScoreBucket:
-              type: array
-              items:
-                $ref: '#/components/schemas/ScoreBucketFunnelRow'
-          required:
-          - byArchetype
-          - byRemotePolicy
-          - byScoreBucket
-          additionalProperties: false
-        recommendations:
-          type: array
-          items:
-            $ref: '#/components/schemas/Recommendation'
-          description: Recommendations ordered by impact (high → low) and tie-broken by sample size.
-        scoreFloor:
-          type:
-          - number
-          - 'null'
-          example: 4.2
-        skillGaps:
-          type: array
-          items:
-            $ref: '#/components/schemas/SkillGapRow'
-          description: Skill slugs over-represented in negative outcomes.
-        totalApplications:
-          type: integer
-      required:
-      - blockers
-      - funnel
-      - recommendations
-      - scoreFloor
-      - skillGaps
-      - totalApplications
-      additionalProperties: false
-    PatternAnalysisInsufficient:
-      type: object
-      properties:
-        current:
-          type: integer
-          description: Number of applications the user currently has past Evaluated.
-        status:
-          type: string
-          enum:
-          - insufficient_data
-        threshold:
-          type: number
-          enum:
-          - 5
-      required:
-      - current
-      - status
-      - threshold
-      additionalProperties: false
-    ArchetypeFunnelRow:
-      type: object
-      properties:
-        archetype:
-          type: string
-          enum:
-          - software_engineer_frontend
-          - software_engineer_backend
-          - software_engineer_fullstack
-          - software_engineer_mobile
-          - software_engineer_embedded
-          - software_engineer_games
-          - software_engineer_generic
-          - devops_sre
-          - platform_infra
-          - security_engineer
-          - qa_test
-          - data_engineer
-          - data_scientist
-          - data_analyst
-          - ml_engineer
-          - ai_research
-          - product_manager
-          - project_program_manager
-          - designer_product
-          - designer_ux_research
-          - designer_visual
-          - engineering_manager
-          - technical_writer
-          - developer_advocate
-          - solutions_engineer
-          - support_engineer
-          - sales
-          - marketing
-          - operations
-          - executive
-          - finance
-          - legal
-          - hr_recruiting
-          - customer_success
-          - healthcare
-          - creative-design
-          - trades-manual
-          - education
-          - hospitality
-          - logistics-supply
-          - manufacturing
-          - gov-nonprofit
-          - marketing-sales
-          - consulting
-          - retail
-          - insurance
-          - admin_office
-          - other
-          - robotics_engineer
-          - control_systems_engineer
-          - mechatronics_engineer
-          - firmware_engineer
-          - fpga_engineer
-          - hardware_engineer
-          - electrical_engineer
-          - rf_engineer
-          - analog_engineer
-          - biomedical_engineer
-          - aerospace_engineer
-          - avionics_engineer
-          - simulation_engineer
-          - computer_vision_engineer
-          - autonomous_vehicles_engineer
-          - graphics_engineer
-          - blockchain_engineer
-          - smart_contract_engineer
-          - game_designer
-          - ios_engineer
-          - android_engineer
-          - mlops_engineer
-          - ai_infrastructure_engineer
-          - llm_engineer
-          - prompt_engineer
-          - research_engineer
-          - applied_scientist
-          - cloud_architect
-          - solutions_architect
-          - enterprise_architect
-          - release_engineer
-          - network_engineer
-          - systems_engineer
-          - database_administrator
-          - appsec_engineer
-          - pentest_engineer
-          - soc_analyst
-          - incident_responder
-          - analytics_engineer
-          - data_architect
-          - bioinformatics_engineer
-          - computational_biologist
-          - quant_analyst
-          - quant_developer
-          - trading_systems_engineer
-          - risk_analyst
-          - sdet
-          - automation_engineer
-          - product_manager_growth
-          - ux_writer
-          - content_designer
-          - design_engineer
-          - documentation_engineer
-          - customer_engineer
-          - implementation_engineer
-          - civil_engineer
-          - mechanical_engineer
-          description: Canonical role family for matching
-          example: software_engineer_frontend
-        conversionRate:
-          type: number
-          description: progressed / total expressed as a 0..1 ratio. Rounded to 3 decimals.
-          example: 0.214
-        progressed:
-          type: integer
-        total:
-          type: integer
-      required:
-      - archetype
-      - conversionRate
-      - progressed
-      - total
-      additionalProperties: false
     RemotePolicyFunnelRow:
       type: object
       properties:
@@ -851,113 +777,6 @@ components:
       - progressed
       - total
       - workArrangement
-      additionalProperties: false
-    PatternAnalysisReady:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/PatternAnalysisData'
-        status:
-          type: string
-          enum:
-          - ready
-      required:
-      - data
-      - status
-      additionalProperties: false
-    OutcomeMetrics:
-      type: object
-      properties:
-        emailResponseRate:
-          type: number
-          description: Share of classified inbound job emails that carry a positive signal (interview / scheduling / offer), as a percentage. 0 when no emails are classified.
-          example: 42.5
-        interviewsBooked:
-          type: integer
-          description: Applications that reached an interview-booked outcome (stage phone_screen/interview, or interview_booked_at set).
-          example: 3
-        nextInterviewResultId:
-          type:
-          - integer
-          - 'null'
-          description: Application-result id behind the SOONEST upcoming interview event, for the applications deep-link. Null when that event has no application behind it; absent on payloads that do not resolve it.
-          example: 1481
-        offers:
-          type: integer
-          description: Applications with an offer outcome (applicationStage = offered).
-          example: 1
-        positiveEmailSignals:
-          type: integer
-          description: Count of inbound emails classified as a positive signal (interview_invite / scheduling / reschedule / offer_letter).
-          example: 5
-        upcomingInterviews:
-          type: integer
-          description: Synced calendar events flagged as interviews whose start time is in the future.
-          example: 2
-      required:
-      - emailResponseRate
-      - interviewsBooked
-      - offers
-      - positiveEmailSignals
-      - upcomingInterviews
-      additionalProperties: false
-      description: Real-outcome success metrics from the email + calendar pipeline (interviews booked, offers, upcoming interviews, email response rate).
-    ApplyRecommendationResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/ApplyRecommendationResult'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    ApplyRecommendationResult:
-      type: object
-      properties:
-        changed:
-          type: boolean
-          description: True when the executor mutated state. False = idempotent no-op (already applied).
-        message:
-          type: string
-          description: Human-readable summary of what happened.
-        ok:
-          type: boolean
-          description: True when the executor accepted + processed the action.
-      required:
-      - changed
-      - message
-      - ok
-      additionalProperties: false
-    ScoreBucketFunnelRow:
-      type: object
-      properties:
-        bucket:
-          type: string
-          enum:
-          - lt_3
-          - 3_to_4
-          - 4_to_4_5
-          - gte_4_5
-          description: Match-score band for funnel breakdowns. Stored as a stable slug so the FE label can change without breaking the API contract.
-          example: gte_4_5
-        conversionRate:
-          type: number
-        progressed:
-          type: integer
-        total:
-          type: integer
-      required:
-      - bucket
-      - conversionRate
-      - progressed
-      - total
       additionalProperties: false
     RecommendationTemplate:
       oneOf:
@@ -1484,54 +1303,265 @@ components:
         - params
         additionalProperties: false
       description: Stable catalog template and exact interpolation values for localized clients.
-    Recommendation:
+    PatternAnalysisResult:
+      oneOf:
+      - $ref: '#/components/schemas/PatternAnalysisReady'
+      - $ref: '#/components/schemas/PatternAnalysisInsufficient'
+      discriminator:
+        propertyName: status
+        mapping:
+          ready: '#/components/schemas/PatternAnalysisReady'
+          insufficient_data: '#/components/schemas/PatternAnalysisInsufficient'
+    ResponseMetadata:
       type: object
       properties:
-        action:
-          type: string
-          description: One concrete action the user can take next. Phrased as an imperative.
-          example: Filter out roles with match score below 4.0 - none have progressed.
-        actionPayload:
+        duration:
+          type: number
+          description: Request duration in milliseconds
+          example: 150
+          exclusiveMinimum: 0
+        performance:
           type: object
-          additionalProperties: {}
-          description: Per-action JSON payload. Empty / omitted for noop actions or legacy text-only recs.
-          example:
-            threshold: 4
-        actionType:
+          properties:
+            dbQueries:
+              type: integer
+              minimum: 0
+            totalDbTime:
+              type: number
+              minimum: 0
+          description: Performance metrics (preview/local only)
+        requestId:
           type: string
-          enum:
-          - raise_score_floor
-          - filter_remote_policy
-          - deprioritize_archetype
-          - noop
-          description: Structured action enum. Absent / `noop` means the recommendation is informational only (no Apply button).
-          example: raise_score_floor
-        appliedAt:
-          type:
-          - string
-          - 'null'
+          description: Unique request identifier
+          example: req_abc123
+        timestamp:
+          type: string
           format: date-time
-          description: When this recommendation's target state was already in effect at analysis time. Null / absent = still actionable.
-          example: '2026-05-10T12:34:56.000Z'
-        impact:
+          description: ISO 8601 timestamp
+          example: '2026-09-25T17:29:47.224Z'
+        version:
           type: string
-          enum:
-          - high
-          - medium
-          - low
-          description: Coarse expected-impact bucket for a recommendation. Computed from sample size + outcome shift, not author-supplied.
-          example: high
-        reasoning:
+          description: API version
+          example: v1
+    ApplyRecommendationRequest:
+      oneOf:
+      - type: object
+        properties:
+          actionPayload:
+            type: object
+            properties:
+              threshold:
+                type: number
+                minimum: 0
+                maximum: 100
+            required:
+            - threshold
+            additionalProperties: false
+          actionType:
+            type: string
+            enum:
+            - raise_score_floor
+        required:
+        - actionPayload
+        - actionType
+        additionalProperties: false
+      - type: object
+        properties:
+          actionPayload:
+            type: object
+            properties:
+              policy:
+                type: string
+                enum:
+                - onsite
+                - hybrid
+                - remote
+                description: User's preferred work style, physical mode only, no geo scoping
+                example: remote
+            required:
+            - policy
+            additionalProperties: false
+          actionType:
+            type: string
+            enum:
+            - filter_remote_policy
+        required:
+        - actionPayload
+        - actionType
+        additionalProperties: false
+      - type: object
+        properties:
+          actionPayload:
+            type: object
+            properties:
+              archetype:
+                type: string
+                enum:
+                - software_engineer_frontend
+                - software_engineer_backend
+                - software_engineer_fullstack
+                - software_engineer_mobile
+                - software_engineer_embedded
+                - software_engineer_games
+                - software_engineer_generic
+                - devops_sre
+                - platform_infra
+                - security_engineer
+                - qa_test
+                - data_engineer
+                - data_scientist
+                - data_analyst
+                - ml_engineer
+                - ai_research
+                - product_manager
+                - project_program_manager
+                - designer_product
+                - designer_ux_research
+                - designer_visual
+                - engineering_manager
+                - technical_writer
+                - developer_advocate
+                - solutions_engineer
+                - support_engineer
+                - sales
+                - marketing
+                - operations
+                - executive
+                - finance
+                - legal
+                - hr_recruiting
+                - customer_success
+                - healthcare
+                - creative-design
+                - trades-manual
+                - education
+                - hospitality
+                - logistics-supply
+                - manufacturing
+                - gov-nonprofit
+                - marketing-sales
+                - consulting
+                - retail
+                - insurance
+                - admin_office
+                - other
+                - robotics_engineer
+                - control_systems_engineer
+                - mechatronics_engineer
+                - firmware_engineer
+                - fpga_engineer
+                - hardware_engineer
+                - electrical_engineer
+                - rf_engineer
+                - analog_engineer
+                - biomedical_engineer
+                - aerospace_engineer
+                - avionics_engineer
+                - simulation_engineer
+                - computer_vision_engineer
+                - autonomous_vehicles_engineer
+                - graphics_engineer
+                - blockchain_engineer
+                - smart_contract_engineer
+                - game_designer
+                - ios_engineer
+                - android_engineer
+                - mlops_engineer
+                - ai_infrastructure_engineer
+                - llm_engineer
+                - prompt_engineer
+                - research_engineer
+                - applied_scientist
+                - cloud_architect
+                - solutions_architect
+                - enterprise_architect
+                - release_engineer
+                - network_engineer
+                - systems_engineer
+                - database_administrator
+                - appsec_engineer
+                - pentest_engineer
+                - soc_analyst
+                - incident_responder
+                - analytics_engineer
+                - data_architect
+                - bioinformatics_engineer
+                - computational_biologist
+                - quant_analyst
+                - quant_developer
+                - trading_systems_engineer
+                - risk_analyst
+                - sdet
+                - automation_engineer
+                - product_manager_growth
+                - ux_writer
+                - content_designer
+                - design_engineer
+                - documentation_engineer
+                - customer_engineer
+                - implementation_engineer
+                - civil_engineer
+                - mechanical_engineer
+                description: Canonical role family for matching
+                example: software_engineer_frontend
+            required:
+            - archetype
+            additionalProperties: false
+          actionType:
+            type: string
+            enum:
+            - deprioritize_archetype
+        required:
+        - actionPayload
+        - actionType
+        additionalProperties: false
+      - type: object
+        properties:
+          actionPayload:
+            type: object
+            properties: {}
+            additionalProperties: false
+          actionType:
+            type: string
+            enum:
+            - noop
+        required:
+        - actionType
+        additionalProperties: false
+      description: Recommendation action with discriminated payload by actionType.
+    ApplyRecommendationResult:
+      type: object
+      properties:
+        changed:
+          type: boolean
+          description: True when the executor mutated state. False = idempotent no-op (already applied).
+        message:
           type: string
-          description: 'Why this recommendation: which signal in the data triggered it (counts, share, conversion deltas).'
-          example: 12 of 12 applications below 4.0 ended in no_response or rejection.
-        template:
-          $ref: '#/components/schemas/RecommendationTemplate'
+          description: Human-readable summary of what happened.
+        ok:
+          type: boolean
+          description: True when the executor accepted + processed the action.
       required:
-      - action
-      - impact
-      - reasoning
-      - template
+      - changed
+      - message
+      - ok
+      additionalProperties: false
+    SkillGapRow:
+      type: object
+      properties:
+        negativeRate:
+          type: number
+        occurrences:
+          type: integer
+          description: Total applications that mention this skill (numerator + denominator union).
+        skill:
+          type: string
+          description: Canonical skill slug (lowercased, kebab-cased) as stored on `job_match.canonical_skills`.
+          example: rust
+      required:
+      - negativeRate
+      - occurrences
+      - skill
       additionalProperties: false
     ApiErrorResponse:
       type: object
@@ -1876,36 +1906,6 @@ components:
       required:
       - error
       - success
-      additionalProperties: false
-    SkillGapRow:
-      type: object
-      properties:
-        negativeRate:
-          type: number
-        occurrences:
-          type: integer
-          description: Total applications that mention this skill (numerator + denominator union).
-        skill:
-          type: string
-          description: Canonical skill slug (lowercased, kebab-cased) as stored on `job_match.canonical_skills`.
-          example: rust
-      required:
-      - negativeRate
-      - occurrences
-      - skill
-      additionalProperties: false
-    DailyApplication:
-      type: object
-      properties:
-        count:
-          type: integer
-        date:
-          type: string
-          description: Date in YYYY-MM-DD format
-          example: '2026-03-24'
-      required:
-      - count
-      - date
       additionalProperties: false
   securitySchemes:
     BearerAuth:

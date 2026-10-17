@@ -251,6 +251,22 @@ paths:
       operationId: postAiPersonaDeriveCustomTone
 components:
   schemas:
+    AIPersonaResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/AIPersonaData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
     DeriveCustomToneResponse:
       type: object
       properties:
@@ -267,157 +283,6 @@ components:
       - success
       additionalProperties: false
       description: Successful API response
-    ResponseMetadata:
-      type: object
-      properties:
-        duration:
-          type: number
-          description: Request duration in milliseconds
-          example: 150
-          exclusiveMinimum: 0
-        performance:
-          type: object
-          properties:
-            dbQueries:
-              type: integer
-              minimum: 0
-            totalDbTime:
-              type: number
-              minimum: 0
-          description: Performance metrics (preview/local only)
-        requestId:
-          type: string
-          description: Unique request identifier
-          example: req_abc123
-        timestamp:
-          type: string
-          format: date-time
-          description: ISO 8601 timestamp
-          example: '2026-09-25T17:29:47.224Z'
-        version:
-          type: string
-          description: API version
-          example: v1
-    SuggestNarrativeData:
-      type: object
-      properties:
-        kind:
-          type: string
-          enum:
-          - narrative
-          description: Discriminator for the suggestion envelope.
-          example: narrative
-        draft:
-          type: string
-          minLength: 1
-          maxLength: 480
-          description: Starter narrative drafted from the user's latest resume.
-          example: Senior backend engineer with eight years across fintech and payments. Took a year for caregiving in 2024 and returned with fresh cloud certs. Looking for staff roles.
-      required:
-      - kind
-      - draft
-      additionalProperties: false
-    ScoringWeightsResponse:
-      type: object
-      properties:
-        data:
-          type: object
-          properties:
-            weights:
-              type: object
-              properties:
-                location:
-                  type: number
-                  minimum: 0
-                  maximum: 2
-                remote:
-                  type: number
-                  minimum: 0
-                  maximum: 2
-                salary:
-                  type: number
-                  minimum: 0
-                  maximum: 2
-                seniority:
-                  type: number
-                  minimum: 0
-                  maximum: 2
-                skills:
-                  type: number
-                  minimum: 0
-                  maximum: 2
-                visa:
-                  type: number
-                  minimum: 0
-                  maximum: 2
-              required:
-              - location
-              - remote
-              - salary
-              - seniority
-              - skills
-              - visa
-          required:
-          - weights
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    UpdateScoringWeights:
-      type: object
-      properties:
-        weights:
-          type: object
-          properties:
-            location:
-              type: number
-              minimum: 0
-              maximum: 2
-            remote:
-              type: number
-              minimum: 0
-              maximum: 2
-            salary:
-              type: number
-              minimum: 0
-              maximum: 2
-            seniority:
-              type: number
-              minimum: 0
-              maximum: 2
-            skills:
-              type: number
-              minimum: 0
-              maximum: 2
-            visa:
-              type: number
-              minimum: 0
-              maximum: 2
-          required:
-          - location
-          - remote
-          - salary
-          - seniority
-          - skills
-          - visa
-          description: Per-dimension multipliers in [0, 2]. Uniform 1 = baseline.
-          example:
-            skills: 1.5
-            location: 1
-            remote: 1.2
-            seniority: 1
-            salary: 0.8
-            visa: 1
-      required:
-      - weights
-      additionalProperties: false
     UpsertAIPersona:
       type: object
       properties:
@@ -528,11 +393,79 @@ components:
       - success
       additionalProperties: false
       description: Successful API response
-    AIPersonaResponse:
+    ResponseMetadata:
+      type: object
+      properties:
+        duration:
+          type: number
+          description: Request duration in milliseconds
+          example: 150
+          exclusiveMinimum: 0
+        performance:
+          type: object
+          properties:
+            dbQueries:
+              type: integer
+              minimum: 0
+            totalDbTime:
+              type: number
+              minimum: 0
+          description: Performance metrics (preview/local only)
+        requestId:
+          type: string
+          description: Unique request identifier
+          example: req_abc123
+        timestamp:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp
+          example: '2026-09-25T17:29:47.224Z'
+        version:
+          type: string
+          description: API version
+          example: v1
+    ScoringWeightsResponse:
       type: object
       properties:
         data:
-          $ref: '#/components/schemas/AIPersonaData'
+          type: object
+          properties:
+            weights:
+              type: object
+              properties:
+                location:
+                  type: number
+                  minimum: 0
+                  maximum: 2
+                remote:
+                  type: number
+                  minimum: 0
+                  maximum: 2
+                salary:
+                  type: number
+                  minimum: 0
+                  maximum: 2
+                seniority:
+                  type: number
+                  minimum: 0
+                  maximum: 2
+                skills:
+                  type: number
+                  minimum: 0
+                  maximum: 2
+                visa:
+                  type: number
+                  minimum: 0
+                  maximum: 2
+              required:
+              - location
+              - remote
+              - salary
+              - seniority
+              - skills
+              - visa
+          required:
+          - weights
         meta:
           $ref: '#/components/schemas/ResponseMetadata'
         success:
@@ -596,6 +529,259 @@ components:
       - personalDescription
       - toneInstructions
       - samplePhrases
+      additionalProperties: false
+    UpdateScoringWeights:
+      type: object
+      properties:
+        weights:
+          type: object
+          properties:
+            location:
+              type: number
+              minimum: 0
+              maximum: 2
+            remote:
+              type: number
+              minimum: 0
+              maximum: 2
+            salary:
+              type: number
+              minimum: 0
+              maximum: 2
+            seniority:
+              type: number
+              minimum: 0
+              maximum: 2
+            skills:
+              type: number
+              minimum: 0
+              maximum: 2
+            visa:
+              type: number
+              minimum: 0
+              maximum: 2
+          required:
+          - location
+          - remote
+          - salary
+          - seniority
+          - skills
+          - visa
+          description: Per-dimension multipliers in [0, 2]. Uniform 1 = baseline.
+          example:
+            skills: 1.5
+            location: 1
+            remote: 1.2
+            seniority: 1
+            salary: 0.8
+            visa: 1
+      required:
+      - weights
+      additionalProperties: false
+    AIPersonaData:
+      type: object
+      properties:
+        id:
+          type: string
+          description: AI persona identifier
+          example: abc-123
+        userId:
+          type: string
+          description: User identifier
+          example: user_abc123
+        presetId:
+          type: string
+          enum:
+          - balanced
+          - the_professional
+          - the_conversationalist
+          - the_storyteller
+          - the_closer
+          - the_enthusiast
+          - custom
+          description: Selected persona preset
+          example: balanced
+        personalDescription:
+          type:
+          - string
+          - 'null'
+          description: Free text about the user for AI personalization
+          example: Senior engineer with 10 years in fintech
+        toneInstructions:
+          type:
+          - string
+          - 'null'
+          description: Custom rules for AI tone and style
+          example: Always mention my passion for open-source
+        samplePhrases:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: Example phrases the user would naturally use
+          example:
+          - Let me walk you through my approach
+          - I thrive in fast-paced environments
+        generateCoverLetterPerJob:
+          type: boolean
+          description: Whether AI generates a cover letter for each job application
+          example: true
+        tailorResumePerJob:
+          type: boolean
+          description: Whether AI tailors resume for each job application
+          example: true
+        resumeStrategy:
+          type: string
+          enum:
+          - base
+          - tailor
+          description: Resume handling strategy
+          example: tailor
+        coverLetterStrategy:
+          type: string
+          enum:
+          - 'off'
+          - use_base
+          - tailor_base
+          - generate_new
+          description: Cover letter handling strategy
+          example: generate_new
+        translationStrategy:
+          type: string
+          enum:
+          - 'off'
+          - translate
+          - translate_and_tailor
+          description: Translation strategy
+          example: 'off'
+        mode:
+          type: string
+          enum:
+          - copilot
+          - auto_approve
+          description: 'Application mode: copilot (review before submitting) or auto_approve (submits automatically)'
+          example: copilot
+        allowFabrication:
+          type: boolean
+          description: Fill-gaps for the apply agent, enabled by default. When true, a required field the agent cannot take directly from profile facts is sourced real-data-first (the resume, tailored resume, and cover letter for this application, then job preferences, then profile) and only fabricated as a last resort, marked as assumed. When false (explicit opt-out), it never fabricates such an answer. Contact/identity completion (phone, city, postal, profile links) always completes required fields and is not governed by this flag.
+          example: true
+        scoringWeights:
+          type:
+          - object
+          - 'null'
+          properties:
+            location:
+              type: number
+              minimum: 0
+              maximum: 2
+            remote:
+              type: number
+              minimum: 0
+              maximum: 2
+            salary:
+              type: number
+              minimum: 0
+              maximum: 2
+            seniority:
+              type: number
+              minimum: 0
+              maximum: 2
+            skills:
+              type: number
+              minimum: 0
+              maximum: 2
+            visa:
+              type: number
+              minimum: 0
+              maximum: 2
+          required:
+          - location
+          - remote
+          - salary
+          - seniority
+          - skills
+          - visa
+          description: Per-dimension match scoring weights. NULL when the user has never customised them (scorer falls back to uniform defaults).
+          example:
+            skills: 1
+            location: 1
+            remote: 1
+            seniority: 1
+            salary: 1
+            visa: 1
+        createdAt:
+          type: string
+          description: Persona creation timestamp
+          example: '2026-01-15T12:00:00Z'
+        updatedAt:
+          type: string
+          description: Persona last update timestamp
+          example: '2026-03-10T08:30:00Z'
+      required:
+      - id
+      - userId
+      - presetId
+      - personalDescription
+      - toneInstructions
+      - samplePhrases
+      - generateCoverLetterPerJob
+      - tailorResumePerJob
+      - resumeStrategy
+      - coverLetterStrategy
+      - translationStrategy
+      - mode
+      - allowFabrication
+      - scoringWeights
+      - createdAt
+      - updatedAt
+    SuggestNarrativeResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/SuggestNarrativeData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    SuggestVoiceToneData:
+      type: object
+      properties:
+        kind:
+          type: string
+          enum:
+          - voice-tone
+          description: Discriminator for the suggestion envelope.
+          example: voice-tone
+        presetId:
+          type: string
+          enum:
+          - balanced
+          - the_professional
+          - the_conversationalist
+          - the_storyteller
+          - the_closer
+          - the_enthusiast
+          - custom
+          description: Recommended persona preset.
+          example: balanced
+        rationale:
+          type: string
+          minLength: 1
+          maxLength: 400
+          description: One-line, plain-language reason for the recommendation.
+          example: Resume reads professional with concrete metrics. Try Balanced.
+      required:
+      - kind
+      - presetId
+      - rationale
       additionalProperties: false
     ApiErrorResponse:
       type: object
@@ -941,211 +1127,25 @@ components:
       - error
       - success
       additionalProperties: false
-    AIPersonaData:
-      type: object
-      properties:
-        id:
-          type: string
-          description: AI persona identifier
-          example: abc-123
-        userId:
-          type: string
-          description: User identifier
-          example: user_abc123
-        presetId:
-          type: string
-          enum:
-          - balanced
-          - the_professional
-          - the_conversationalist
-          - the_storyteller
-          - the_closer
-          - the_enthusiast
-          - custom
-          description: Selected persona preset
-          example: balanced
-        personalDescription:
-          type:
-          - string
-          - 'null'
-          description: Free text about the user for AI personalization
-          example: Senior engineer with 10 years in fintech
-        toneInstructions:
-          type:
-          - string
-          - 'null'
-          description: Custom rules for AI tone and style
-          example: Always mention my passion for open-source
-        samplePhrases:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-          description: Example phrases the user would naturally use
-          example:
-          - Let me walk you through my approach
-          - I thrive in fast-paced environments
-        generateCoverLetterPerJob:
-          type: boolean
-          description: Whether AI generates a cover letter for each job application
-          example: true
-        tailorResumePerJob:
-          type: boolean
-          description: Whether AI tailors resume for each job application
-          example: true
-        resumeStrategy:
-          type: string
-          enum:
-          - base
-          - tailor
-          description: Resume handling strategy
-          example: tailor
-        coverLetterStrategy:
-          type: string
-          enum:
-          - 'off'
-          - use_base
-          - tailor_base
-          - generate_new
-          description: Cover letter handling strategy
-          example: generate_new
-        translationStrategy:
-          type: string
-          enum:
-          - 'off'
-          - translate
-          - translate_and_tailor
-          description: Translation strategy
-          example: 'off'
-        mode:
-          type: string
-          enum:
-          - copilot
-          - auto_approve
-          description: 'Application mode: copilot (review before submitting) or auto_approve (submits automatically)'
-          example: copilot
-        allowFabrication:
-          type: boolean
-          description: Fill-gaps for the apply agent, enabled by default. When true, a required field the agent cannot take directly from profile facts is sourced real-data-first (the resume, tailored resume, and cover letter for this application, then job preferences, then profile) and only fabricated as a last resort, marked as assumed. When false (explicit opt-out), it never fabricates such an answer. Contact/identity completion (phone, city, postal, profile links) always completes required fields and is not governed by this flag.
-          example: true
-        scoringWeights:
-          type:
-          - object
-          - 'null'
-          properties:
-            location:
-              type: number
-              minimum: 0
-              maximum: 2
-            remote:
-              type: number
-              minimum: 0
-              maximum: 2
-            salary:
-              type: number
-              minimum: 0
-              maximum: 2
-            seniority:
-              type: number
-              minimum: 0
-              maximum: 2
-            skills:
-              type: number
-              minimum: 0
-              maximum: 2
-            visa:
-              type: number
-              minimum: 0
-              maximum: 2
-          required:
-          - location
-          - remote
-          - salary
-          - seniority
-          - skills
-          - visa
-          description: Per-dimension match scoring weights. NULL when the user has never customised them (scorer falls back to uniform defaults).
-          example:
-            skills: 1
-            location: 1
-            remote: 1
-            seniority: 1
-            salary: 1
-            visa: 1
-        createdAt:
-          type: string
-          description: Persona creation timestamp
-          example: '2026-01-15T12:00:00Z'
-        updatedAt:
-          type: string
-          description: Persona last update timestamp
-          example: '2026-03-10T08:30:00Z'
-      required:
-      - id
-      - userId
-      - presetId
-      - personalDescription
-      - toneInstructions
-      - samplePhrases
-      - generateCoverLetterPerJob
-      - tailorResumePerJob
-      - resumeStrategy
-      - coverLetterStrategy
-      - translationStrategy
-      - mode
-      - allowFabrication
-      - scoringWeights
-      - createdAt
-      - updatedAt
-    SuggestVoiceToneData:
+    SuggestNarrativeData:
       type: object
       properties:
         kind:
           type: string
           enum:
-          - voice-tone
+          - narrative
           description: Discriminator for the suggestion envelope.
-          example: voice-tone
-        presetId:
-          type: string
-          enum:
-          - balanced
-          - the_professional
-          - the_conversationalist
-          - the_storyteller
-          - the_closer
-          - the_enthusiast
-          - custom
-          description: Recommended persona preset.
-          example: balanced
-        rationale:
+          example: narrative
+        draft:
           type: string
           minLength: 1
-          maxLength: 400
-          description: One-line, plain-language reason for the recommendation.
-          example: Resume reads professional with concrete metrics. Try Balanced.
+          maxLength: 480
+          description: Starter narrative drafted from the user's latest resume.
+          example: Senior backend engineer with eight years across fintech and payments. Took a year for caregiving in 2024 and returned with fresh cloud certs. Looking for staff roles.
       required:
       - kind
-      - presetId
-      - rationale
+      - draft
       additionalProperties: false
-    SuggestNarrativeResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/SuggestNarrativeData'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
   securitySchemes:
     BearerAuth:
       description: 'Session token from signing in to AI Applyd, sent as `Authorization: Bearer <token>`.'

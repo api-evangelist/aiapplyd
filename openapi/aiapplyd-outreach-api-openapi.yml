@@ -210,6 +210,298 @@ paths:
       operationId: postOutreachByApplicationResultIdDraft
 components:
   schemas:
+    OutreachContact:
+      type: object
+      properties:
+        checkedAt:
+          type:
+          - string
+          - 'null'
+          description: ISO timestamp of when the public source for this person was last checked. Drives `stillThere`.
+          example: '2026-09-05T10:00:00.000Z'
+        confidence:
+          type:
+          - string
+          - 'null'
+          enum:
+          - low
+          - medium
+          - high
+          - null
+          description: Confidence in this contact and its details
+          example: low
+        drafts:
+          $ref: '#/components/schemas/OutreachContactDrafts'
+        email:
+          type:
+          - string
+          - 'null'
+          description: 'Email address, or null when we hold none. An address may still ship with `emailStatus: unknown` - that means we hold it but cannot cite the page it came from.'
+          example: jane.doe@acme.com
+        emailEvidenceUrl:
+          type:
+          - string
+          - 'null'
+          description: 'verified: the public page the address appears on. pattern: the page the sample address was observed on. unknown: null.'
+          example: https://acme.com/team
+        emailPatternNote:
+          type:
+          - string
+          - 'null'
+          description: 'For `pattern` emails only: the pattern used and the real address it was observed on, so the user can judge the guess.'
+          example: first.last, seen on john.smith@acme.com
+        emailSource:
+          type:
+          - string
+          - 'null'
+          enum:
+          - scraped
+          - derived
+          - verified
+          - null
+          description: 'Provenance of the email: scraped (read off a page) or derived (built from an observed pattern). ALWAYS null when `email` is null, so a provenance chip is never rendered beside an absent address.'
+          example: derived
+        emailStatus:
+          type: string
+          enum:
+          - verified
+          - pattern
+          - unknown
+          description: 'verified: appears on a public page we fetched AND `emailEvidenceUrl` names that page. pattern: inferred from a pattern observed on a real address at this domain. unknown: either no address at all, or an address we hold but cannot cite a page for - verified is never claimed without the page.'
+          example: verified
+        evidence:
+          type: string
+          description: 'One-sentence statement of what was actually matched for this person (name-to-profile, company-in-search-result, title-in-result). Never empty: a contact with no evidence is never surfaced.'
+          example: Their name matches this LinkedIn profile, and the public search result lists them as Technical Recruiter at Acme.
+        fullName:
+          type: string
+          description: Full name of the contact
+          example: Jane Doe
+        id:
+          type: integer
+          description: company_contact row id
+          example: 9001
+          exclusiveMinimum: 0
+        evidenceUrl:
+          type:
+          - string
+          - 'null'
+          description: The public page the evidence sentence was derived from (the company team page, or the search-results page). Null for rows sourced before this field existed.
+          example: https://acme.com/team
+        linkedinUrl:
+          type:
+          - string
+          - 'null'
+          description: Public LinkedIn profile URL (deep-link only)
+          example: https://www.linkedin.com/in/jane-doe
+        rank:
+          type: integer
+          description: Position in the relevance ranking for the applied role (1 = best). Recruiters, hiring managers and team leads rank first.
+          example: 1
+          exclusiveMinimum: 0
+        seniority:
+          type:
+          - string
+          - 'null'
+          enum:
+          - recruiter
+          - hiring_manager
+          - lead
+          - exec
+          - null
+          description: Coarse seniority bucket
+          example: recruiter
+        sourcedAt:
+          type:
+          - string
+          - 'null'
+          description: ISO timestamp of when this contact was last sourced/refreshed from public pages. Outreach data ages - people change roles - so the UI surfaces this instead of asserting the row is current.
+          example: '2026-07-30T10:00:00.000Z'
+        source:
+          type:
+          - string
+          - 'null'
+          enum:
+          - team_page
+          - google_serp
+          - null
+          description: Where the contact was sourced (team_page | google_serp)
+          example: team_page
+        stillThere:
+          type: string
+          enum:
+          - likely
+          - possible
+          - stale
+          description: 'From the evidence date alone: likely (checked within 90 days), possible (91-180 days), stale (older than 180 days, verify before sending).'
+          example: likely
+        title:
+          type:
+          - string
+          - 'null'
+          description: Job title / role
+          example: Senior Technical Recruiter
+      required:
+      - checkedAt
+      - confidence
+      - drafts
+      - email
+      - emailEvidenceUrl
+      - emailPatternNote
+      - emailSource
+      - emailStatus
+      - evidence
+      - fullName
+      - id
+      - evidenceUrl
+      - linkedinUrl
+      - rank
+      - seniority
+      - sourcedAt
+      - source
+      - stillThere
+      - title
+      additionalProperties: false
+    OutreachContactsResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/OutreachContactsData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    OutreachDraftBody:
+      type: object
+      properties:
+        contactId:
+          type: integer
+          description: company_contact row id to draft a message for
+          example: 9001
+          exclusiveMinimum: 0
+      required:
+      - contactId
+      additionalProperties: false
+    OutreachDraftResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/OutreachDraftData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    ResponseMetadata:
+      type: object
+      properties:
+        duration:
+          type: number
+          description: Request duration in milliseconds
+          example: 150
+          exclusiveMinimum: 0
+        performance:
+          type: object
+          properties:
+            dbQueries:
+              type: integer
+              minimum: 0
+            totalDbTime:
+              type: number
+              minimum: 0
+          description: Performance metrics (preview/local only)
+        requestId:
+          type: string
+          description: Unique request identifier
+          example: req_abc123
+        timestamp:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp
+          example: '2026-09-25T17:29:47.224Z'
+        version:
+          type: string
+          description: API version
+          example: v1
+    OutreachDraftData:
+      type: object
+      properties:
+        alternates:
+          type: array
+          items:
+            $ref: '#/components/schemas/OutreachDraftAlternate'
+          description: The SAME message written for every other channel, generated in the same request and grounded in the same evidence. A cold outreach is not one route - the user can paste into LinkedIn or into an email client without regenerating.
+        body:
+          type: string
+          description: Drafted outreach message. For LinkedIn channel, capped at 300 chars.
+          example: Hi Jane, I just applied for the Senior Backend Engineer role...
+        channel:
+          type: string
+          enum:
+          - email
+          - linkedin
+          - other
+          description: Auto-detected channel (email when an address is known, else linkedin)
+          example: email
+        linkedinUrl:
+          type:
+          - string
+          - 'null'
+          description: LinkedIn URL of the contact, for the "Open on LinkedIn" deep-link
+          example: https://www.linkedin.com/in/jane-doe
+        mailto:
+          type:
+          - string
+          - 'null'
+          description: 'Pre-filled mailto: link when the contact has an email, else null'
+          example: mailto:jane.doe@acme.com?subject=...&body=...
+        subject:
+          type: string
+          description: Email subject line. Empty when channel=linkedin.
+          example: Following up on my application
+      required:
+      - alternates
+      - body
+      - channel
+      - linkedinUrl
+      - mailto
+      - subject
+      additionalProperties: false
+    OutreachLinkedinNote:
+      type: object
+      properties:
+        body:
+          type: string
+          maxLength: 300
+          description: LinkedIn connection note, 300 characters or fewer (LinkedIn's limit).
+      required:
+      - body
+      additionalProperties: false
+    OutreachContactDrafts:
+      type: object
+      properties:
+        email:
+          $ref: '#/components/schemas/OutreachEmailDraft'
+        linkedin:
+          $ref: '#/components/schemas/OutreachLinkedinNote'
+      required:
+      - email
+      - linkedin
+      additionalProperties: false
+      description: 'Deterministic drafts for this person: an email (subject + body) and a LinkedIn connection note. Nothing here is sent by us.'
     OutreachCompany:
       type:
       - object
@@ -273,49 +565,32 @@ components:
       - website
       additionalProperties: false
       description: Company research block from the company's own site. Null when the job carries no company name.
-    OutreachDraftData:
+    OutreachSocialHandle:
       type: object
       properties:
-        alternates:
-          type: array
-          items:
-            $ref: '#/components/schemas/OutreachDraftAlternate'
-          description: The SAME message written for every other channel, generated in the same request and grounded in the same evidence. A cold outreach is not one route - the user can paste into LinkedIn or into an email client without regenerating.
-        body:
+        evidenceUrl:
           type: string
-          description: Drafted outreach message. For LinkedIn channel, capped at 300 chars.
-          example: Hi Jane, I just applied for the Senior Backend Engineer role...
-        channel:
+          description: The company page the handle was linked from (homepage or footer).
+          example: https://acme.com/
+        platform:
           type: string
           enum:
-          - email
           - linkedin
-          - other
-          description: Auto-detected channel (email when an address is known, else linkedin)
-          example: email
-        linkedinUrl:
-          type:
-          - string
-          - 'null'
-          description: LinkedIn URL of the contact, for the "Open on LinkedIn" deep-link
-          example: https://www.linkedin.com/in/jane-doe
-        mailto:
-          type:
-          - string
-          - 'null'
-          description: 'Pre-filled mailto: link when the contact has an email, else null'
-          example: mailto:jane.doe@acme.com?subject=...&body=...
-        subject:
+          - x
+          - instagram
+          - youtube
+          - discord
+          - github
+          description: Social platform of a handle found on the company's own website
+          example: linkedin
+        url:
           type: string
-          description: Email subject line. Empty when channel=linkedin.
-          example: Following up on my application
+          description: The handle URL exactly as linked on the company's own site.
+          example: https://www.linkedin.com/company/acme
       required:
-      - alternates
-      - body
-      - channel
-      - linkedinUrl
-      - mailto
-      - subject
+      - evidenceUrl
+      - platform
+      - url
       additionalProperties: false
     OutreachDraftAlternate:
       type: object
@@ -344,95 +619,6 @@ components:
       - channel
       - mailto
       - subject
-      additionalProperties: false
-    OutreachContactDrafts:
-      type: object
-      properties:
-        email:
-          $ref: '#/components/schemas/OutreachEmailDraft'
-        linkedin:
-          $ref: '#/components/schemas/OutreachLinkedinNote'
-      required:
-      - email
-      - linkedin
-      additionalProperties: false
-      description: 'Deterministic drafts for this person: an email (subject + body) and a LinkedIn connection note. Nothing here is sent by us.'
-    OutreachEmailDraft:
-      type: object
-      properties:
-        body:
-          type: string
-          description: Ready-to-paste email body, first person, no clichés (anti-cliché filter applied).
-        mailto:
-          type:
-          - string
-          - 'null'
-          description: 'Pre-filled mailto: link when the contact has an address, else null.'
-        subject:
-          type: string
-          description: Email subject line.
-          example: Applying for Senior Backend Engineer at Acme
-      required:
-      - body
-      - mailto
-      - subject
-      additionalProperties: false
-    ResponseMetadata:
-      type: object
-      properties:
-        duration:
-          type: number
-          description: Request duration in milliseconds
-          example: 150
-          exclusiveMinimum: 0
-        performance:
-          type: object
-          properties:
-            dbQueries:
-              type: integer
-              minimum: 0
-            totalDbTime:
-              type: number
-              minimum: 0
-          description: Performance metrics (preview/local only)
-        requestId:
-          type: string
-          description: Unique request identifier
-          example: req_abc123
-        timestamp:
-          type: string
-          format: date-time
-          description: ISO 8601 timestamp
-          example: '2026-09-25T17:29:47.224Z'
-        version:
-          type: string
-          description: API version
-          example: v1
-    OutreachDraftResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/OutreachDraftData'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    OutreachLinkedinNote:
-      type: object
-      properties:
-        body:
-          type: string
-          maxLength: 300
-          description: LinkedIn connection note, 300 characters or fewer (LinkedIn's limit).
-      required:
-      - body
       additionalProperties: false
     OutreachContactsData:
       type: object
@@ -477,22 +663,26 @@ components:
       - sourced
       - totalContacts
       additionalProperties: false
-    OutreachContactsResponse:
+    OutreachEmailDraft:
       type: object
       properties:
-        data:
-          $ref: '#/components/schemas/OutreachContactsData'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
+        body:
+          type: string
+          description: Ready-to-paste email body, first person, no clichés (anti-cliché filter applied).
+        mailto:
+          type:
+          - string
+          - 'null'
+          description: 'Pre-filled mailto: link when the contact has an address, else null.'
+        subject:
+          type: string
+          description: Email subject line.
+          example: Applying for Senior Backend Engineer at Acme
       required:
-      - data
-      - success
+      - body
+      - mailto
+      - subject
       additionalProperties: false
-      description: Successful API response
     ApiErrorResponse:
       type: object
       properties:
@@ -836,196 +1026,6 @@ components:
       required:
       - error
       - success
-      additionalProperties: false
-    OutreachContact:
-      type: object
-      properties:
-        checkedAt:
-          type:
-          - string
-          - 'null'
-          description: ISO timestamp of when the public source for this person was last checked. Drives `stillThere`.
-          example: '2026-09-05T10:00:00.000Z'
-        confidence:
-          type:
-          - string
-          - 'null'
-          enum:
-          - low
-          - medium
-          - high
-          - null
-          description: Confidence in this contact and its details
-          example: low
-        drafts:
-          $ref: '#/components/schemas/OutreachContactDrafts'
-        email:
-          type:
-          - string
-          - 'null'
-          description: 'Email address, or null when we hold none. An address may still ship with `emailStatus: unknown` - that means we hold it but cannot cite the page it came from.'
-          example: jane.doe@acme.com
-        emailEvidenceUrl:
-          type:
-          - string
-          - 'null'
-          description: 'verified: the public page the address appears on. pattern: the page the sample address was observed on. unknown: null.'
-          example: https://acme.com/team
-        emailPatternNote:
-          type:
-          - string
-          - 'null'
-          description: 'For `pattern` emails only: the pattern used and the real address it was observed on, so the user can judge the guess.'
-          example: first.last, seen on john.smith@acme.com
-        emailSource:
-          type:
-          - string
-          - 'null'
-          enum:
-          - scraped
-          - derived
-          - verified
-          - null
-          description: 'Provenance of the email: scraped (read off a page) or derived (built from an observed pattern). ALWAYS null when `email` is null, so a provenance chip is never rendered beside an absent address.'
-          example: derived
-        emailStatus:
-          type: string
-          enum:
-          - verified
-          - pattern
-          - unknown
-          description: 'verified: appears on a public page we fetched AND `emailEvidenceUrl` names that page. pattern: inferred from a pattern observed on a real address at this domain. unknown: either no address at all, or an address we hold but cannot cite a page for - verified is never claimed without the page.'
-          example: verified
-        evidence:
-          type: string
-          description: 'One-sentence statement of what was actually matched for this person (name-to-profile, company-in-search-result, title-in-result). Never empty: a contact with no evidence is never surfaced.'
-          example: Their name matches this LinkedIn profile, and the public search result lists them as Technical Recruiter at Acme.
-        fullName:
-          type: string
-          description: Full name of the contact
-          example: Jane Doe
-        id:
-          type: integer
-          description: company_contact row id
-          example: 9001
-          exclusiveMinimum: 0
-        evidenceUrl:
-          type:
-          - string
-          - 'null'
-          description: The public page the evidence sentence was derived from (the company team page, or the search-results page). Null for rows sourced before this field existed.
-          example: https://acme.com/team
-        linkedinUrl:
-          type:
-          - string
-          - 'null'
-          description: Public LinkedIn profile URL (deep-link only)
-          example: https://www.linkedin.com/in/jane-doe
-        rank:
-          type: integer
-          description: Position in the relevance ranking for the applied role (1 = best). Recruiters, hiring managers and team leads rank first.
-          example: 1
-          exclusiveMinimum: 0
-        seniority:
-          type:
-          - string
-          - 'null'
-          enum:
-          - recruiter
-          - hiring_manager
-          - lead
-          - exec
-          - null
-          description: Coarse seniority bucket
-          example: recruiter
-        sourcedAt:
-          type:
-          - string
-          - 'null'
-          description: ISO timestamp of when this contact was last sourced/refreshed from public pages. Outreach data ages - people change roles - so the UI surfaces this instead of asserting the row is current.
-          example: '2026-07-30T10:00:00.000Z'
-        source:
-          type:
-          - string
-          - 'null'
-          enum:
-          - team_page
-          - google_serp
-          - null
-          description: Where the contact was sourced (team_page | google_serp)
-          example: team_page
-        stillThere:
-          type: string
-          enum:
-          - likely
-          - possible
-          - stale
-          description: 'From the evidence date alone: likely (checked within 90 days), possible (91-180 days), stale (older than 180 days, verify before sending).'
-          example: likely
-        title:
-          type:
-          - string
-          - 'null'
-          description: Job title / role
-          example: Senior Technical Recruiter
-      required:
-      - checkedAt
-      - confidence
-      - drafts
-      - email
-      - emailEvidenceUrl
-      - emailPatternNote
-      - emailSource
-      - emailStatus
-      - evidence
-      - fullName
-      - id
-      - evidenceUrl
-      - linkedinUrl
-      - rank
-      - seniority
-      - sourcedAt
-      - source
-      - stillThere
-      - title
-      additionalProperties: false
-    OutreachSocialHandle:
-      type: object
-      properties:
-        evidenceUrl:
-          type: string
-          description: The company page the handle was linked from (homepage or footer).
-          example: https://acme.com/
-        platform:
-          type: string
-          enum:
-          - linkedin
-          - x
-          - instagram
-          - youtube
-          - discord
-          - github
-          description: Social platform of a handle found on the company's own website
-          example: linkedin
-        url:
-          type: string
-          description: The handle URL exactly as linked on the company's own site.
-          example: https://www.linkedin.com/company/acme
-      required:
-      - evidenceUrl
-      - platform
-      - url
-      additionalProperties: false
-    OutreachDraftBody:
-      type: object
-      properties:
-        contactId:
-          type: integer
-          description: company_contact row id to draft a message for
-          example: 9001
-          exclusiveMinimum: 0
-      required:
-      - contactId
       additionalProperties: false
   securitySchemes:
     BearerAuth:
