@@ -1154,6 +1154,8 @@ apis:
   humanURL: https://aiapplyd.com/mcps
   baseURL: https://mcp.aiapplyd.com/mcp
   tags:
+  - LinkedIn
+  tags_raw:
   - Linked In
   properties:
   - type: OpenAPI
