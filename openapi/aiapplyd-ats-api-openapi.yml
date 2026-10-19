@@ -4,26 +4,27 @@ info:
     email: support@aiapplyd.com
     name: AI Applyd
     url: https://aiapplyd.com
-  description: 'The AI Applyd API runs the whole job hunt for you: it matches you to roles that fit your profile, rewrites your resume for each posting, writes the cover letter the form asks for, and auto-applies across the major applicant tracking systems.'
+  description: 'The AI Applyd API runs the whole job hunt for you: it matches you to roles that fit your profile, rewrites your resume for each posting, writes the cover letter the form asks for, and auto-applies across the major applicant tracking systems. Every send is tracked from the swipe to the employer''s own confirmation, so you always know what landed. Authenticate with a Bearer session token. The same surface powers the web app, the mobile app and the AI Applyd MCP server for ChatGPT, Claude and other agents.'
   license:
     name: Proprietary
     url: https://aiapplyd.com/legal/terms
   title: AI Applyd Ats API
-  version: 115c47ce
+  version: fa810d82
 servers:
 - description: Current environment
   url: https://api.aiapplyd.com/api/v1
 security:
 - BearerAuth: []
 tags:
-- name: ATS
+- description: Score and optimize resume text for applicant tracking systems.
+  name: ATS
 paths:
   /ats/score:
     post:
       tags:
       - ATS
       summary: Score raw resume text for ATS compatibility
-      description: Synchronous ATS scoring on raw resume text. Session-authed. Gated by plan-action limits + AI prerequisites.
+      description: Synchronous ATS scoring on raw resume text, or on the user's base resume on file when resumeText is omitted (404 when there is none). Session-authed. Gated by plan-action limits + AI prerequisites.
       requestBody:
         required: true
         content:
@@ -67,7 +68,7 @@ paths:
       tags:
       - ATS
       summary: Optimize raw resume text for ATS compatibility
-      description: Synchronous ATS optimization on raw resume text. Session-authed. Gated by plan-action limits + AI prerequisites.
+      description: Synchronous ATS optimization on raw resume text, or on the user's base resume on file when resumeText is omitted (404 when there is none). Session-authed. Gated by plan-action limits + AI prerequisites.
       requestBody:
         required: true
         content:
@@ -108,79 +109,25 @@ paths:
       operationId: postAtsOptimize
 components:
   schemas:
-    AtsOptimizeTextData:
+    AtsTextRequest:
       type: object
       properties:
-        optimizedContent:
+        resumeText:
           type: string
-          description: ATS-optimized resume content.
-        changesSummary:
-          type: array
-          items:
-            type: string
-          description: Summary of changes applied during optimization.
-          example:
-          - Surfaced "TypeScript" in the skills section.
-        atsScore:
-          type:
-          - number
-          - 'null'
-          minimum: 0
-          maximum: 100
-          description: Re-scored ATS compatibility of the optimized content, or null when not computed.
-          example: null
-      required:
-      - optimizedContent
-      - changesSummary
-      - atsScore
+          minLength: 50
+          maxLength: 50000
+          description: Raw resume text to analyze (50-50000 chars). Omit it to analyze the user's base resume on file; a user with no resume gets 404.
+          example: 'Jane Doe
+
+            Senior Software Engineer
+
+            5+ years building React + TypeScript...'
+        jobDescription:
+          type: string
+          maxLength: 50000
+          description: Job description to score against. Omit for general ATS compatibility.
+          example: We are looking for a Senior Software Engineer with React and TypeScript experience...
       additionalProperties: false
-    AtsScoreTextResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/AtsScoreTextData'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    ResponseMetadata:
-      type: object
-      properties:
-        duration:
-          type: number
-          description: Request duration in milliseconds
-          example: 150
-          exclusiveMinimum: 0
-        performance:
-          type: object
-          properties:
-            dbQueries:
-              type: integer
-              minimum: 0
-            totalDbTime:
-              type: number
-              minimum: 0
-          description: Performance metrics (preview/local only)
-        requestId:
-          type: string
-          description: Unique request identifier
-          example: req_abc123
-        timestamp:
-          type: string
-          format: date-time
-          description: ISO 8601 timestamp
-          example: '2026-09-25T17:29:47.224Z'
-        version:
-          type: string
-          description: API version
-          example: v1
     AtsScoreTextData:
       type: object
       properties:
@@ -228,74 +175,32 @@ components:
       - suggestions
       - modelName
       additionalProperties: false
-    AtsTextRequest:
+    AtsOptimizeTextData:
       type: object
       properties:
-        resumeText:
+        optimizedContent:
           type: string
-          minLength: 50
-          maxLength: 50000
-          description: Raw resume text to analyze (50-50000 chars).
-          example: 'Jane Doe
-
-            Senior Software Engineer
-
-            5+ years building React + TypeScript...'
-        jobDescription:
-          type: string
-          maxLength: 50000
-          description: Job description to score against. Omit for general ATS compatibility.
-          example: We are looking for a Senior Software Engineer with React and TypeScript experience...
+          description: ATS-optimized resume content.
+        changesSummary:
+          type: array
+          items:
+            type: string
+          description: Summary of changes applied during optimization.
+          example:
+          - Surfaced "TypeScript" in the skills section.
+        atsScore:
+          type:
+          - number
+          - 'null'
+          minimum: 0
+          maximum: 100
+          description: Re-scored ATS compatibility of the optimized content, or null when not computed.
+          example: null
       required:
-      - resumeText
+      - optimizedContent
+      - changesSummary
+      - atsScore
       additionalProperties: false
-    AtsSectionScores:
-      type: object
-      properties:
-        skills:
-          type: number
-          minimum: 0
-          maximum: 100
-        experience:
-          type: number
-          minimum: 0
-          maximum: 100
-        education:
-          type: number
-          minimum: 0
-          maximum: 100
-        formatting:
-          type: number
-          minimum: 0
-          maximum: 100
-        keywords:
-          type: number
-          minimum: 0
-          maximum: 100
-      required:
-      - skills
-      - experience
-      - education
-      - formatting
-      - keywords
-      additionalProperties: false
-      description: Per-section ATS sub-scores derived from the analysis.
-    AtsOptimizeTextResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/AtsOptimizeTextData'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
     ApiErrorResponse:
       type: object
       properties:
@@ -640,6 +545,100 @@ components:
       - error
       - success
       additionalProperties: false
+    AtsSectionScores:
+      type: object
+      properties:
+        skills:
+          type: number
+          minimum: 0
+          maximum: 100
+        experience:
+          type: number
+          minimum: 0
+          maximum: 100
+        education:
+          type: number
+          minimum: 0
+          maximum: 100
+        formatting:
+          type: number
+          minimum: 0
+          maximum: 100
+        keywords:
+          type: number
+          minimum: 0
+          maximum: 100
+      required:
+      - skills
+      - experience
+      - education
+      - formatting
+      - keywords
+      additionalProperties: false
+      description: Per-section ATS sub-scores derived from the analysis.
+    AtsScoreTextResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/AtsScoreTextData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    AtsOptimizeTextResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/AtsOptimizeTextData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    ResponseMetadata:
+      type: object
+      properties:
+        duration:
+          type: number
+          minimum: 0
+          description: Request duration in milliseconds
+          example: 150
+        performance:
+          type: object
+          properties:
+            dbQueries:
+              type: integer
+              minimum: 0
+            totalDbTime:
+              type: number
+              minimum: 0
+          description: Performance metrics (preview/local only)
+        requestId:
+          type: string
+          description: Unique request identifier
+          example: req_abc123
+        timestamp:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp
+          example: '2026-10-19T20:12:14.033Z'
+        version:
+          type: string
+          description: API version
+          example: v1
   securitySchemes:
     BearerAuth:
       description: 'Session token from signing in to AI Applyd, sent as `Authorization: Bearer <token>`.'

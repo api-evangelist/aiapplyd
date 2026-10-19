@@ -4,19 +4,20 @@ info:
     email: support@aiapplyd.com
     name: AI Applyd
     url: https://aiapplyd.com
-  description: 'The AI Applyd API runs the whole job hunt for you: it matches you to roles that fit your profile, rewrites your resume for each posting, writes the cover letter the form asks for, and auto-applies across the major applicant tracking systems.'
+  description: 'The AI Applyd API runs the whole job hunt for you: it matches you to roles that fit your profile, rewrites your resume for each posting, writes the cover letter the form asks for, and auto-applies across the major applicant tracking systems. Every send is tracked from the swipe to the employer''s own confirmation, so you always know what landed. Authenticate with a Bearer session token. The same surface powers the web app, the mobile app and the AI Applyd MCP server for ChatGPT, Claude and other agents.'
   license:
     name: Proprietary
     url: https://aiapplyd.com/legal/terms
   title: AI Applyd Blog API
-  version: 115c47ce
+  version: fa810d82
 servers:
 - description: Current environment
   url: https://api.aiapplyd.com/api/v1
 security:
 - BearerAuth: []
 tags:
-- name: blog
+- description: Published blog posts, categories and authors.
+  name: blog
 paths:
   /blog/all-content:
     get:
@@ -328,44 +329,6 @@ paths:
       operationId: getBlogPostsBySlugRelated
 components:
   schemas:
-    LexicalContent:
-      type: object
-      additionalProperties: true
-      description: Lexical document tree. Opaque in the OpenAPI surface; see Payload CMS Lexical docs for the recursive node shape.
-    PaginatedBlogPostsListResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/PaginatedBlogPostsPayload'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    BlogPostsListResponse:
-      type: object
-      properties:
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/BlogPostSummary'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
     BlogPostSummary:
       type: object
       properties:
@@ -551,334 +514,124 @@ components:
       - title
       - updatedAt
       additionalProperties: false
-    BlogAuthor:
-      type: object
-      properties:
-        avatarUrl:
-          type:
-          - string
-          - 'null'
-          format: uri
-        bio:
-          type:
-          - string
-          - 'null'
-        id:
-          type: string
-        name:
-          type: string
-        slug:
-          type:
-          - string
-          - 'null'
-        socialLinks:
-          type:
-          - object
-          - 'null'
-          additionalProperties:
-            type: string
-        title:
-          type: string
-      required:
-      - id
-      - name
-      - title
-      additionalProperties: false
-    BlogPostResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/BlogPost'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    BlogAuthorWithPostsResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/BlogAuthorWithPostsPayload'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    ResponseMetadata:
-      type: object
-      properties:
-        duration:
-          type: number
-          description: Request duration in milliseconds
-          example: 150
-          exclusiveMinimum: 0
-        performance:
-          type: object
-          properties:
-            dbQueries:
-              type: integer
-              minimum: 0
-            totalDbTime:
-              type: number
-              minimum: 0
-          description: Performance metrics (preview/local only)
-        requestId:
-          type: string
-          description: Unique request identifier
-          example: req_abc123
-        timestamp:
-          type: string
-          format: date-time
-          description: ISO 8601 timestamp
-          example: '2026-09-25T17:29:47.224Z'
-        version:
-          type: string
-          description: API version
-          example: v1
-    RelatedPostsResponse:
-      type: object
-      properties:
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/BlogPostWithRelevance'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    CategoryCount:
-      type: object
-      properties:
-        count:
-          type: integer
-          minimum: 0
-        id:
-          type: integer
-          exclusiveMinimum: 0
-        name:
-          type: string
-        slug:
-          type: string
-      required:
-      - count
-      - id
-      - name
-      - slug
-      additionalProperties: false
-    BlogPost:
-      type: object
-      properties:
-        _status:
-          type: string
-          enum:
-          - draft
-          - published
-          - archived
-          description: Publication status of a blog post
-          example: draft
-        author:
-          $ref: '#/components/schemas/BlogAuthor'
-        categories:
-          type: array
-          items:
-            type: object
+    PublicBlogPostWithRelevance:
+      allOf:
+      - $ref: '#/components/schemas/BlogPostWithRelevance'
+      - type: object
+        properties:
+          createdAt:
+            anyOf:
+            - type: string
+              format: date-time
+            - type: string
+              pattern: ^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$
+          featuredImage:
+            type:
+            - object
+            - 'null'
             properties:
-              description:
+              alt:
+                type: string
+              caption:
                 type:
                 - string
                 - 'null'
-              id:
+              height:
                 type: integer
                 exclusiveMinimum: 0
-              name:
+              id:
                 type: string
-              slug:
-                type: string
+              sizes:
+                type:
+                - object
+                - 'null'
+                properties:
+                  card:
+                    type: object
+                    properties:
+                      filesize:
+                        type: integer
+                      height:
+                        type: integer
+                        exclusiveMinimum: 0
+                      url:
+                        type: string
+                        format: uri
+                      width:
+                        type: integer
+                        exclusiveMinimum: 0
+                    required:
+                    - height
+                    - url
+                    - width
+                    additionalProperties: false
+                  hero:
+                    type: object
+                    properties:
+                      filesize:
+                        type: integer
+                      height:
+                        type: integer
+                        exclusiveMinimum: 0
+                      url:
+                        type: string
+                        format: uri
+                      width:
+                        type: integer
+                        exclusiveMinimum: 0
+                    required:
+                    - height
+                    - url
+                    - width
+                    additionalProperties: false
+                  thumbnail:
+                    type: object
+                    properties:
+                      filesize:
+                        type: integer
+                      height:
+                        type: integer
+                        exclusiveMinimum: 0
+                      url:
+                        type: string
+                        format: uri
+                      width:
+                        type: integer
+                        exclusiveMinimum: 0
+                    required:
+                    - height
+                    - url
+                    - width
+                    additionalProperties: false
+                additionalProperties: false
+              url:
+                anyOf:
+                - type: string
+                  format: uri
+                - type: string
+                  pattern: ^\/(?!\/)[^\s\\\u0000-\u001F\u007F]+$/u
+              width:
+                type: integer
+                exclusiveMinimum: 0
             required:
+            - alt
             - id
-            - name
-            - slug
+            - url
             additionalProperties: false
-        content:
-          $ref: '#/components/schemas/LexicalContent'
-        createdAt:
-          type: string
-          format: date-time
-        description:
-          type: string
-        excerpt:
-          type: string
-        featured:
-          type: boolean
-        featuredImage:
-          type:
-          - object
-          - 'null'
-          properties:
-            alt:
-              type: string
-            caption:
-              type:
-              - string
-              - 'null'
-            height:
-              type: integer
-              exclusiveMinimum: 0
-            id:
-              type: string
-            sizes:
-              type:
-              - object
-              - 'null'
-              properties:
-                card:
-                  type: object
-                  properties:
-                    filesize:
-                      type: integer
-                    height:
-                      type: integer
-                      exclusiveMinimum: 0
-                    url:
-                      type: string
-                      format: uri
-                    width:
-                      type: integer
-                      exclusiveMinimum: 0
-                  required:
-                  - height
-                  - url
-                  - width
-                  additionalProperties: false
-                hero:
-                  type: object
-                  properties:
-                    filesize:
-                      type: integer
-                    height:
-                      type: integer
-                      exclusiveMinimum: 0
-                    url:
-                      type: string
-                      format: uri
-                    width:
-                      type: integer
-                      exclusiveMinimum: 0
-                  required:
-                  - height
-                  - url
-                  - width
-                  additionalProperties: false
-                thumbnail:
-                  type: object
-                  properties:
-                    filesize:
-                      type: integer
-                    height:
-                      type: integer
-                      exclusiveMinimum: 0
-                    url:
-                      type: string
-                      format: uri
-                    width:
-                      type: integer
-                      exclusiveMinimum: 0
-                  required:
-                  - height
-                  - url
-                  - width
-                  additionalProperties: false
-              additionalProperties: false
-            url:
-              type: string
-              format: uri
-            width:
-              type: integer
-              exclusiveMinimum: 0
-          required:
-          - alt
-          - id
-          - url
-          additionalProperties: false
-        id:
-          type: string
-        meta:
-          type:
-          - object
-          - 'null'
-          properties:
-            canonicalUrl:
-              type: string
-              format: uri
-            metaDescription:
-              type: string
-            metaImage:
-              type: string
-            metaTitle:
-              type: string
-            noIndex:
-              type: boolean
-          additionalProperties: false
-        publishedAt:
-          type:
-          - string
-          - 'null'
-          format: date-time
-        readingTime:
-          type: integer
-          minimum: 0
-        scheduledPublishAt:
-          type:
-          - string
-          - 'null'
-          format: date-time
-        slug:
-          type: string
-        title:
-          type: string
-        updatedAt:
-          type: string
-          format: date-time
-      required:
-      - _status
-      - author
-      - content
-      - createdAt
-      - description
-      - excerpt
-      - featured
-      - id
-      - readingTime
-      - slug
-      - title
-      - updatedAt
-      additionalProperties: false
+          updatedAt:
+            anyOf:
+            - type: string
+              format: date-time
+            - type: string
+              pattern: ^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$
+        additionalProperties: false
     AllPostsWithContentResponse:
       type: object
       properties:
         data:
           type: array
           items:
-            $ref: '#/components/schemas/BlogPost'
+            $ref: '#/components/schemas/PublicBlogPost'
         meta:
           $ref: '#/components/schemas/ResponseMetadata'
         success:
@@ -890,6 +643,167 @@ components:
       - success
       additionalProperties: false
       description: Successful API response
+    BlogPostResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/PublicBlogPost'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    BlogPostsListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/PublicBlogPostSummary'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    PaginatedBlogPostsListResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/PaginatedBlogPostsPayload'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    PublicBlogPostSummary:
+      allOf:
+      - $ref: '#/components/schemas/BlogPostSummary'
+      - type: object
+        properties:
+          createdAt:
+            anyOf:
+            - type: string
+              format: date-time
+            - type: string
+              pattern: ^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$
+          featuredImage:
+            type:
+            - object
+            - 'null'
+            properties:
+              alt:
+                type: string
+              caption:
+                type:
+                - string
+                - 'null'
+              height:
+                type: integer
+                exclusiveMinimum: 0
+              id:
+                type: string
+              sizes:
+                type:
+                - object
+                - 'null'
+                properties:
+                  card:
+                    type: object
+                    properties:
+                      filesize:
+                        type: integer
+                      height:
+                        type: integer
+                        exclusiveMinimum: 0
+                      url:
+                        type: string
+                        format: uri
+                      width:
+                        type: integer
+                        exclusiveMinimum: 0
+                    required:
+                    - height
+                    - url
+                    - width
+                    additionalProperties: false
+                  hero:
+                    type: object
+                    properties:
+                      filesize:
+                        type: integer
+                      height:
+                        type: integer
+                        exclusiveMinimum: 0
+                      url:
+                        type: string
+                        format: uri
+                      width:
+                        type: integer
+                        exclusiveMinimum: 0
+                    required:
+                    - height
+                    - url
+                    - width
+                    additionalProperties: false
+                  thumbnail:
+                    type: object
+                    properties:
+                      filesize:
+                        type: integer
+                      height:
+                        type: integer
+                        exclusiveMinimum: 0
+                      url:
+                        type: string
+                        format: uri
+                      width:
+                        type: integer
+                        exclusiveMinimum: 0
+                    required:
+                    - height
+                    - url
+                    - width
+                    additionalProperties: false
+                additionalProperties: false
+              url:
+                anyOf:
+                - type: string
+                  format: uri
+                - type: string
+                  pattern: ^\/(?!\/)[^\s\\\u0000-\u001F\u007F]+$/u
+              width:
+                type: integer
+                exclusiveMinimum: 0
+            required:
+            - alt
+            - id
+            - url
+            additionalProperties: false
+          updatedAt:
+            anyOf:
+            - type: string
+              format: date-time
+            - type: string
+              pattern: ^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$
+        additionalProperties: false
     PaginatedBlogPostsPayload:
       type: object
       properties:
@@ -936,19 +850,19 @@ components:
         posts:
           type: array
           items:
-            $ref: '#/components/schemas/BlogPostSummary'
+            $ref: '#/components/schemas/PublicBlogPostSummary'
       required:
       - category
       - pagination
       - posts
       additionalProperties: false
-    CategoriesListResponse:
+    RelatedPostsResponse:
       type: object
       properties:
         data:
           type: array
           items:
-            $ref: '#/components/schemas/CategoryCount'
+            $ref: '#/components/schemas/PublicBlogPostWithRelevance'
         meta:
           $ref: '#/components/schemas/ResponseMetadata'
         success:
@@ -960,6 +874,105 @@ components:
       - success
       additionalProperties: false
       description: Successful API response
+    BlogAuthorWithPostsResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/BlogAuthorWithPostsPayload'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    BlogAuthor:
+      type: object
+      properties:
+        avatarUrl:
+          type:
+          - string
+          - 'null'
+          format: uri
+        bio:
+          type:
+          - string
+          - 'null'
+        id:
+          type: string
+        name:
+          type: string
+        slug:
+          type:
+          - string
+          - 'null'
+        socialLinks:
+          type:
+          - object
+          - 'null'
+          additionalProperties:
+            type: string
+        title:
+          type: string
+      required:
+      - id
+      - name
+      - title
+      additionalProperties: false
+    ResponseMetadata:
+      type: object
+      properties:
+        duration:
+          type: number
+          minimum: 0
+          description: Request duration in milliseconds
+          example: 150
+        performance:
+          type: object
+          properties:
+            dbQueries:
+              type: integer
+              minimum: 0
+            totalDbTime:
+              type: number
+              minimum: 0
+          description: Performance metrics (preview/local only)
+        requestId:
+          type: string
+          description: Unique request identifier
+          example: req_abc123
+        timestamp:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp
+          example: '2026-10-19T20:12:14.033Z'
+        version:
+          type: string
+          description: API version
+          example: v1
+    CategoryCount:
+      type: object
+      properties:
+        count:
+          type: integer
+          minimum: 0
+        id:
+          type: integer
+          exclusiveMinimum: 0
+        name:
+          type: string
+        slug:
+          type: string
+      required:
+      - count
+      - id
+      - name
+      - slug
+      additionalProperties: false
     BlogPostWithRelevance:
       allOf:
       - $ref: '#/components/schemas/BlogPostSummary'
@@ -970,19 +983,6 @@ components:
         required:
         - relevance
         additionalProperties: false
-    BlogAuthorWithPostsPayload:
-      type: object
-      properties:
-        author:
-          $ref: '#/components/schemas/BlogAuthor'
-        posts:
-          type: array
-          items:
-            $ref: '#/components/schemas/BlogPostSummary'
-      required:
-      - author
-      - posts
-      additionalProperties: false
     ApiErrorResponse:
       type: object
       properties:
@@ -1327,6 +1327,340 @@ components:
       - error
       - success
       additionalProperties: false
+    CategoriesListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/CategoryCount'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    BlogPost:
+      type: object
+      properties:
+        _status:
+          type: string
+          enum:
+          - draft
+          - published
+          - archived
+          description: Publication status of a blog post
+          example: draft
+        author:
+          $ref: '#/components/schemas/BlogAuthor'
+        categories:
+          type: array
+          items:
+            type: object
+            properties:
+              description:
+                type:
+                - string
+                - 'null'
+              id:
+                type: integer
+                exclusiveMinimum: 0
+              name:
+                type: string
+              slug:
+                type: string
+            required:
+            - id
+            - name
+            - slug
+            additionalProperties: false
+        content:
+          $ref: '#/components/schemas/LexicalContent'
+        createdAt:
+          type: string
+          format: date-time
+        description:
+          type: string
+        excerpt:
+          type: string
+        featured:
+          type: boolean
+        featuredImage:
+          type:
+          - object
+          - 'null'
+          properties:
+            alt:
+              type: string
+            caption:
+              type:
+              - string
+              - 'null'
+            height:
+              type: integer
+              exclusiveMinimum: 0
+            id:
+              type: string
+            sizes:
+              type:
+              - object
+              - 'null'
+              properties:
+                card:
+                  type: object
+                  properties:
+                    filesize:
+                      type: integer
+                    height:
+                      type: integer
+                      exclusiveMinimum: 0
+                    url:
+                      type: string
+                      format: uri
+                    width:
+                      type: integer
+                      exclusiveMinimum: 0
+                  required:
+                  - height
+                  - url
+                  - width
+                  additionalProperties: false
+                hero:
+                  type: object
+                  properties:
+                    filesize:
+                      type: integer
+                    height:
+                      type: integer
+                      exclusiveMinimum: 0
+                    url:
+                      type: string
+                      format: uri
+                    width:
+                      type: integer
+                      exclusiveMinimum: 0
+                  required:
+                  - height
+                  - url
+                  - width
+                  additionalProperties: false
+                thumbnail:
+                  type: object
+                  properties:
+                    filesize:
+                      type: integer
+                    height:
+                      type: integer
+                      exclusiveMinimum: 0
+                    url:
+                      type: string
+                      format: uri
+                    width:
+                      type: integer
+                      exclusiveMinimum: 0
+                  required:
+                  - height
+                  - url
+                  - width
+                  additionalProperties: false
+              additionalProperties: false
+            url:
+              type: string
+              format: uri
+            width:
+              type: integer
+              exclusiveMinimum: 0
+          required:
+          - alt
+          - id
+          - url
+          additionalProperties: false
+        id:
+          type: string
+        meta:
+          type:
+          - object
+          - 'null'
+          properties:
+            canonicalUrl:
+              type: string
+              format: uri
+            metaDescription:
+              type: string
+            metaImage:
+              type: string
+            metaTitle:
+              type: string
+            noIndex:
+              type: boolean
+          additionalProperties: false
+        publishedAt:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        readingTime:
+          type: integer
+          minimum: 0
+        scheduledPublishAt:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        slug:
+          type: string
+        title:
+          type: string
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+      - _status
+      - author
+      - content
+      - createdAt
+      - description
+      - excerpt
+      - featured
+      - id
+      - readingTime
+      - slug
+      - title
+      - updatedAt
+      additionalProperties: false
+    BlogAuthorWithPostsPayload:
+      type: object
+      properties:
+        author:
+          $ref: '#/components/schemas/BlogAuthor'
+        posts:
+          type: array
+          items:
+            $ref: '#/components/schemas/PublicBlogPostSummary'
+      required:
+      - author
+      - posts
+      additionalProperties: false
+    PublicBlogPost:
+      allOf:
+      - $ref: '#/components/schemas/BlogPost'
+      - type: object
+        properties:
+          createdAt:
+            anyOf:
+            - type: string
+              format: date-time
+            - type: string
+              pattern: ^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$
+          featuredImage:
+            type:
+            - object
+            - 'null'
+            properties:
+              alt:
+                type: string
+              caption:
+                type:
+                - string
+                - 'null'
+              height:
+                type: integer
+                exclusiveMinimum: 0
+              id:
+                type: string
+              sizes:
+                type:
+                - object
+                - 'null'
+                properties:
+                  card:
+                    type: object
+                    properties:
+                      filesize:
+                        type: integer
+                      height:
+                        type: integer
+                        exclusiveMinimum: 0
+                      url:
+                        type: string
+                        format: uri
+                      width:
+                        type: integer
+                        exclusiveMinimum: 0
+                    required:
+                    - height
+                    - url
+                    - width
+                    additionalProperties: false
+                  hero:
+                    type: object
+                    properties:
+                      filesize:
+                        type: integer
+                      height:
+                        type: integer
+                        exclusiveMinimum: 0
+                      url:
+                        type: string
+                        format: uri
+                      width:
+                        type: integer
+                        exclusiveMinimum: 0
+                    required:
+                    - height
+                    - url
+                    - width
+                    additionalProperties: false
+                  thumbnail:
+                    type: object
+                    properties:
+                      filesize:
+                        type: integer
+                      height:
+                        type: integer
+                        exclusiveMinimum: 0
+                      url:
+                        type: string
+                        format: uri
+                      width:
+                        type: integer
+                        exclusiveMinimum: 0
+                    required:
+                    - height
+                    - url
+                    - width
+                    additionalProperties: false
+                additionalProperties: false
+              url:
+                anyOf:
+                - type: string
+                  format: uri
+                - type: string
+                  pattern: ^\/(?!\/)[^\s\\\u0000-\u001F\u007F]+$/u
+              width:
+                type: integer
+                exclusiveMinimum: 0
+            required:
+            - alt
+            - id
+            - url
+            additionalProperties: false
+          updatedAt:
+            anyOf:
+            - type: string
+              format: date-time
+            - type: string
+              pattern: ^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$
+        additionalProperties: false
+    LexicalContent:
+      type: object
+      additionalProperties: true
+      description: Lexical document tree. Opaque in the OpenAPI surface; see Payload CMS Lexical docs for the recursive node shape.
   securitySchemes:
     BearerAuth:
       description: 'Session token from signing in to AI Applyd, sent as `Authorization: Bearer <token>`.'

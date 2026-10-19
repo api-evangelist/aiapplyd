@@ -1,0 +1,542 @@
+openapi: 3.2.0
+info:
+  contact:
+    email: support@aiapplyd.com
+    name: AI Applyd
+    url: https://aiapplyd.com
+  description: 'The AI Applyd API runs the whole job hunt for you: it matches you to roles that fit your profile, rewrites your resume for each posting, writes the cover letter the form asks for, and auto-applies across the major applicant tracking systems. Every send is tracked from the swipe to the employer''s own confirmation, so you always know what landed. Authenticate with a Bearer session token. The same surface powers the web app, the mobile app and the AI Applyd MCP server for ChatGPT, Claude and other agents.'
+  license:
+    name: Proprietary
+    url: https://aiapplyd.com/legal/terms
+  title: AI Applyd Public Blog Votes API
+  version: fa810d82
+servers:
+- description: Current environment
+  url: https://api.aiapplyd.com/api/v1
+security:
+- BearerAuth: []
+tags:
+- description: Anonymous "Was this article helpful?" votes on blog posts.
+  name: public-blog-votes
+paths:
+  /public/blog/{slug}/helpful:
+    get:
+      description: Helpful and not-helpful vote counts for one blog post. Zeros when nobody has voted.
+      summary: Get article helpful votes
+      tags:
+      - public-blog-votes
+      parameters:
+      - schema:
+          type: string
+          minLength: 1
+          maxLength: 200
+          pattern: ^[a-z0-9-]+$
+          description: Blog post slug.
+          example: how-to-beat-applicant-tracking-systems
+        required: true
+        description: Blog post slug.
+        in: path
+        name: slug
+      responses:
+        '200':
+          description: Vote counts for the post.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArticleVoteCountsResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: getPublicBlogBySlugHelpful
+    post:
+      description: 'Record an anonymous "Was this article helpful?" vote. One vote per voterKey per post: voting again changes the vote instead of adding one. Returns the updated counts. Rate-limited per IP.'
+      summary: Vote on article helpfulness
+      tags:
+      - public-blog-votes
+      parameters:
+      - schema:
+          type: string
+          minLength: 1
+          maxLength: 200
+          pattern: ^[a-z0-9-]+$
+          description: Blog post slug.
+          example: how-to-beat-applicant-tracking-systems
+        required: true
+        description: Blog post slug.
+        in: path
+        name: slug
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RecordArticleVote'
+      responses:
+        '200':
+          description: Updated vote counts for the post.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArticleVoteCountsResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: postPublicBlogBySlugHelpful
+components:
+  schemas:
+    ArticleVoteCounts:
+      type: object
+      properties:
+        helpful:
+          type: integer
+          minimum: 0
+          description: Readers who found the article helpful.
+          example: 42
+        notHelpful:
+          type: integer
+          minimum: 0
+          description: Readers who did not.
+          example: 3
+      required:
+      - helpful
+      - notHelpful
+      additionalProperties: false
+    ArticleVoteCountsResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ArticleVoteCountsPayload'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    ApiErrorResponse:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+            context:
+              oneOf:
+              - type: object
+                properties:
+                  errorType:
+                    type: string
+                    enum:
+                    - validation
+                  field:
+                    type: string
+                  fieldErrors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        code:
+                          type: string
+                        expected:
+                          type: string
+                        field:
+                          type: string
+                        message:
+                          type: string
+                        received:
+                          type: string
+                      required:
+                      - field
+                      - message
+                  schemaName:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  attemptedEmail:
+                    type: string
+                    format: email
+                  errorType:
+                    type: string
+                    enum:
+                    - authentication
+                  failureReason:
+                    type: string
+                    enum:
+                    - invalid_credentials
+                    - account_locked
+                    - expired_token
+                    - token_expired
+                    - missing_token
+                    - invalid_token
+                    - session_expired
+                    description: Reason for authentication failure
+                    example: token_expired
+                  ipAddress:
+                    type: string
+                  operation:
+                    type: string
+                  service:
+                    type: string
+                  userAgent:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  actualPermission:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - authorization
+                  requiredPermission:
+                    type: string
+                  resource:
+                    type: string
+                  resourceId:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  constraint:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - database
+                  operation:
+                    type: string
+                    enum:
+                    - insert
+                    - update
+                    - delete
+                    - select
+                    - batch
+                    - transaction
+                    - migration
+                    description: Type of database operation
+                    example: select
+                  resourceId:
+                    type: string
+                  sqlState:
+                    type: string
+                  table:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  endpoint:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - external_service
+                  httpStatus:
+                    type: number
+                  operation:
+                    type: string
+                  resourceId:
+                    type: string
+                  responseTime:
+                    type: number
+                  retryAttempt:
+                    type: integer
+                  service:
+                    type: string
+                  serviceName:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  errorType:
+                    type: string
+                    enum:
+                    - resource
+                  resource:
+                    type: string
+                  resourceId:
+                    type: string
+                  service:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                - errorType
+              - type: object
+                properties:
+                  errorType:
+                    type: string
+                    enum:
+                    - rate_limit
+                  limit:
+                    type: number
+                  resetTime:
+                    type: string
+                  windowMs:
+                    type: number
+                required:
+                - errorType
+              - type: object
+                properties:
+                  configKey:
+                    type: string
+                  errorType:
+                    type: string
+                    enum:
+                    - configuration
+                  operation:
+                    type: string
+                  service:
+                    type: string
+                required:
+                - errorType
+              description: Type-safe error context information
+              example:
+                errorType: validation
+                fieldErrors:
+                - field: email
+                  message: Invalid email format
+            details:
+              oneOf:
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - validation
+                  validationErrors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        code:
+                          type: string
+                        field:
+                          type: string
+                        message:
+                          type: string
+                      required:
+                      - field
+                      - message
+                required:
+                - detailType
+                - validationErrors
+                additionalProperties: false
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - service_error
+                  originalError:
+                    type: string
+                  serviceName:
+                    type: string
+                required:
+                - detailType
+                - serviceName
+                additionalProperties: false
+              - type: object
+                properties:
+                  currentSize:
+                    type: number
+                  detailType:
+                    type: string
+                    enum:
+                    - batch
+                  originalError:
+                    type: string
+                  statementCount:
+                    type: number
+                required:
+                - detailType
+                additionalProperties: false
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - rate_limit
+                  limit:
+                    type: number
+                  resetTime:
+                    type: string
+                  windowMs:
+                    type: number
+                required:
+                - detailType
+                - limit
+                - resetTime
+                - windowMs
+                additionalProperties: false
+              - type: object
+                properties:
+                  conflictingField:
+                    type: string
+                  detailType:
+                    type: string
+                    enum:
+                    - resource
+                  resourceId:
+                    anyOf:
+                    - type: string
+                    - type: number
+                  resourceType:
+                    type: string
+                required:
+                - detailType
+                additionalProperties: false
+              - type: object
+                properties:
+                  detailType:
+                    type: string
+                    enum:
+                    - generic
+                  info:
+                    type: string
+                required:
+                - detailType
+                additionalProperties: false
+              - type: object
+                properties:
+                  currentTokens:
+                    type: integer
+                    minimum: 0
+                  detailType:
+                    type: string
+                    enum:
+                    - insufficient_tokens
+                  requiredTokens:
+                    type: integer
+                    minimum: 0
+                required:
+                - currentTokens
+                - detailType
+                - requiredTokens
+                additionalProperties: false
+            message:
+              type: string
+            validation:
+              type: array
+              items:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  field:
+                    type: string
+                  message:
+                    type: string
+                required:
+                - field
+                - message
+                additionalProperties: false
+          required:
+          - code
+          - message
+          additionalProperties: false
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - false
+      required:
+      - error
+      - success
+      additionalProperties: false
+    RecordArticleVote:
+      type: object
+      properties:
+        helpful:
+          type: boolean
+          description: true = the article was helpful, false = it was not.
+          example: true
+        voterKey:
+          type: string
+          minLength: 8
+          maxLength: 64
+          pattern: ^[\w-]+$
+          description: Opaque anonymous id generated and kept by the reader's browser. One vote per key per post; voting again changes the vote.
+          example: k3v9Q2xL_7aB
+      required:
+      - helpful
+      - voterKey
+      additionalProperties: false
+    ArticleVoteCountsPayload:
+      type: object
+      properties:
+        counts:
+          $ref: '#/components/schemas/ArticleVoteCounts'
+      required:
+      - counts
+      additionalProperties: false
+    ResponseMetadata:
+      type: object
+      properties:
+        duration:
+          type: number
+          minimum: 0
+          description: Request duration in milliseconds
+          example: 150
+        performance:
+          type: object
+          properties:
+            dbQueries:
+              type: integer
+              minimum: 0
+            totalDbTime:
+              type: number
+              minimum: 0
+          description: Performance metrics (preview/local only)
+        requestId:
+          type: string
+          description: Unique request identifier
+          example: req_abc123
+        timestamp:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp
+          example: '2026-10-19T20:12:14.033Z'
+        version:
+          type: string
+          description: API version
+          example: v1
+  securitySchemes:
+    BearerAuth:
+      description: 'Session token from signing in to AI Applyd, sent as `Authorization: Bearer <token>`.'
+      scheme: bearer
+      type: http

@@ -4,19 +4,20 @@ info:
     email: support@aiapplyd.com
     name: AI Applyd
     url: https://aiapplyd.com
-  description: 'The AI Applyd API runs the whole job hunt for you: it matches you to roles that fit your profile, rewrites your resume for each posting, writes the cover letter the form asks for, and auto-applies across the major applicant tracking systems.'
+  description: 'The AI Applyd API runs the whole job hunt for you: it matches you to roles that fit your profile, rewrites your resume for each posting, writes the cover letter the form asks for, and auto-applies across the major applicant tracking systems. Every send is tracked from the swipe to the employer''s own confirmation, so you always know what landed. Authenticate with a Bearer session token. The same surface powers the web app, the mobile app and the AI Applyd MCP server for ChatGPT, Claude and other agents.'
   license:
     name: Proprietary
     url: https://aiapplyd.com/legal/terms
   title: AI Applyd Support API
-  version: 115c47ce
+  version: fa810d82
 servers:
 - description: Current environment
   url: https://api.aiapplyd.com/api/v1
 security:
 - BearerAuth: []
 tags:
-- name: Support
+- description: Support requests and content reports.
+  name: Support
 paths:
   /support/public-content-report:
     post:
@@ -107,24 +108,89 @@ paths:
       operationId: postSupport
 components:
   schemas:
-    SubmitPublicContentReportData:
+    SubmitSupportRequest:
       type: object
       properties:
-        reportId:
+        category:
+          type: string
+          maxLength: 50
+        clientRequestId:
           type: string
           format: uuid
-        status:
+          description: Stable UUID for one canonical authored draft, reused across manual retries
+          example: 8a0e5486-7708-41ba-86de-ccfa104a8c52
+        description:
+          type: string
+          minLength: 10
+          maxLength: 2000
+        rating:
+          type: number
+          minimum: 1
+          maximum: 5
+        title:
+          type: string
+          minLength: 3
+          maxLength: 200
+        type:
           type: string
           enum:
-          - quarantined
+          - issue
+          - feature_request
+          - feedback
+          description: Type of support request submitted by the user
+          example: issue
+        websiteUrl:
+          anyOf:
+          - type: string
+            format: uri
+          - type: string
+            enum:
+            - ''
+        severity:
+          type: string
+          enum:
+          - low
+          - medium
+          - high
+          - critical
+          description: Self-reported severity of the submission
+          example: medium
+        attachmentUrls:
+          type: array
+          items:
+            type: string
+            format: uri
+          maxItems: 10
+          description: Public URLs of screenshots or attachments the user uploaded before submitting
+          example:
+          - https://cdn.example.com/screenshots/abc.png
+      required:
+      - clientRequestId
+      - description
+      - type
+      additionalProperties: false
+    SubmitSupportData:
+      type: object
+      properties:
+        submittedAt:
+          type: string
+          description: Persisted creation time of the support ticket
+          example: '2026-08-30 12:34:56'
         success:
           type: boolean
           enum:
           - true
+          description: Whether the support request was submitted successfully
+          example: true
+        ticketId:
+          type: string
+          format: uuid
+          description: Stable support ticket identifier for this authored request
+          example: 8a0e5486-7708-41ba-86de-ccfa104a8c52
       required:
-      - reportId
-      - status
+      - submittedAt
       - success
+      - ticketId
       additionalProperties: false
     ApiErrorResponse:
       type: object
@@ -470,114 +536,6 @@ components:
       - error
       - success
       additionalProperties: false
-    SubmitSupportRequest:
-      type: object
-      properties:
-        category:
-          type: string
-          maxLength: 50
-        clientRequestId:
-          type: string
-          format: uuid
-          description: Stable UUID for one canonical authored draft, reused across manual retries
-          example: 8a0e5486-7708-41ba-86de-ccfa104a8c52
-        description:
-          type: string
-          minLength: 10
-          maxLength: 2000
-        rating:
-          type: number
-          minimum: 1
-          maximum: 5
-        title:
-          type: string
-          minLength: 3
-          maxLength: 200
-        type:
-          type: string
-          enum:
-          - issue
-          - feature_request
-          - feedback
-          description: Type of support request submitted by the user
-          example: issue
-        websiteUrl:
-          anyOf:
-          - type: string
-            format: uri
-          - type: string
-            enum:
-            - ''
-        severity:
-          type: string
-          enum:
-          - low
-          - medium
-          - high
-          - critical
-          description: Self-reported severity of the submission
-          example: medium
-        attachmentUrls:
-          type: array
-          items:
-            type: string
-            format: uri
-          maxItems: 10
-          description: Public URLs of screenshots or attachments the user uploaded before submitting
-          example:
-          - https://cdn.example.com/screenshots/abc.png
-      required:
-      - clientRequestId
-      - description
-      - type
-      additionalProperties: false
-    ResponseMetadata:
-      type: object
-      properties:
-        duration:
-          type: number
-          description: Request duration in milliseconds
-          example: 150
-          exclusiveMinimum: 0
-        performance:
-          type: object
-          properties:
-            dbQueries:
-              type: integer
-              minimum: 0
-            totalDbTime:
-              type: number
-              minimum: 0
-          description: Performance metrics (preview/local only)
-        requestId:
-          type: string
-          description: Unique request identifier
-          example: req_abc123
-        timestamp:
-          type: string
-          format: date-time
-          description: ISO 8601 timestamp
-          example: '2026-09-25T17:29:47.224Z'
-        version:
-          type: string
-          description: API version
-          example: v1
-    SubmitPublicContentReportResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/SubmitPublicContentReportData'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
     SubmitPublicContentReport:
       type: object
       properties:
@@ -628,6 +586,41 @@ components:
       - shareToken
       - targetType
       additionalProperties: false
+    SubmitPublicContentReportResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/SubmitPublicContentReportData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    SubmitPublicContentReportData:
+      type: object
+      properties:
+        reportId:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum:
+          - quarantined
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - reportId
+      - status
+      - success
+      additionalProperties: false
     SubmitSupportResponse:
       type: object
       properties:
@@ -644,29 +637,37 @@ components:
       - success
       additionalProperties: false
       description: Successful API response
-    SubmitSupportData:
+    ResponseMetadata:
       type: object
       properties:
-        submittedAt:
+        duration:
+          type: number
+          minimum: 0
+          description: Request duration in milliseconds
+          example: 150
+        performance:
+          type: object
+          properties:
+            dbQueries:
+              type: integer
+              minimum: 0
+            totalDbTime:
+              type: number
+              minimum: 0
+          description: Performance metrics (preview/local only)
+        requestId:
           type: string
-          description: Persisted creation time of the support ticket
-          example: '2026-08-30 12:34:56'
-        success:
-          type: boolean
-          enum:
-          - true
-          description: Whether the support request was submitted successfully
-          example: true
-        ticketId:
+          description: Unique request identifier
+          example: req_abc123
+        timestamp:
           type: string
-          format: uuid
-          description: Stable support ticket identifier for this authored request
-          example: 8a0e5486-7708-41ba-86de-ccfa104a8c52
-      required:
-      - submittedAt
-      - success
-      - ticketId
-      additionalProperties: false
+          format: date-time
+          description: ISO 8601 timestamp
+          example: '2026-10-19T20:12:14.033Z'
+        version:
+          type: string
+          description: API version
+          example: v1
   securitySchemes:
     BearerAuth:
       description: 'Session token from signing in to AI Applyd, sent as `Authorization: Bearer <token>`.'

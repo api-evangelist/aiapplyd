@@ -4,19 +4,20 @@ info:
     email: support@aiapplyd.com
     name: AI Applyd
     url: https://aiapplyd.com
-  description: 'The AI Applyd API runs the whole job hunt for you: it matches you to roles that fit your profile, rewrites your resume for each posting, writes the cover letter the form asks for, and auto-applies across the major applicant tracking systems.'
+  description: 'The AI Applyd API runs the whole job hunt for you: it matches you to roles that fit your profile, rewrites your resume for each posting, writes the cover letter the form asks for, and auto-applies across the major applicant tracking systems. Every send is tracked from the swipe to the employer''s own confirmation, so you always know what landed. Authenticate with a Bearer session token. The same surface powers the web app, the mobile app and the AI Applyd MCP server for ChatGPT, Claude and other agents.'
   license:
     name: Proprietary
     url: https://aiapplyd.com/legal/terms
   title: AI Applyd Locations API
-  version: 115c47ce
+  version: fa810d82
 servers:
 - description: Current environment
   url: https://api.aiapplyd.com/api/v1
 security:
 - BearerAuth: []
 tags:
-- name: Locations
+- description: Location search and suggestions.
+  name: Locations
 paths:
   /locations/search:
     get:
@@ -222,11 +223,11 @@ paths:
       operationId: getLocationsInitialSuggestions
 components:
   schemas:
-    LocationInitialSuggestionsResponse:
+    PopularCountriesResponse:
       type: object
       properties:
         data:
-          $ref: '#/components/schemas/LocationInitialSuggestions'
+          $ref: '#/components/schemas/PopularCountriesPage'
         meta:
           $ref: '#/components/schemas/ResponseMetadata'
         success:
@@ -238,6 +239,26 @@ components:
       - success
       additionalProperties: false
       description: Successful API response
+    LocationInitialSuggestions:
+      type: object
+      properties:
+        ipCountry:
+          type:
+          - string
+          - 'null'
+          minLength: 2
+          maxLength: 2
+          description: ISO-3166-1 alpha-2 country code inferred from request IP. Null when CF does not expose cf.country (local dev).
+          example: US
+        popularByCountry:
+          type: array
+          items:
+            $ref: '#/components/schemas/LocationCountryGroup'
+          description: Top popular cities grouped by country, ordered by country population weight. Pre-populated dropdown fallback.
+      required:
+      - ipCountry
+      - popularByCountry
+      additionalProperties: false
     ApiErrorResponse:
       type: object
       properties:
@@ -582,6 +603,24 @@ components:
       - error
       - success
       additionalProperties: false
+    PopularLocationsPage:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Location'
+          description: Cities for this page, ranked by population DESC.
+        nextCursor:
+          type:
+          - integer
+          - 'null'
+          description: Next offset to pass as `cursor`, or `null` when there are no more pages (either long-tail exhausted or 500-row cap hit).
+          example: 50
+      required:
+      - items
+      - nextCursor
+      additionalProperties: false
     LocationCountryGroup:
       type: object
       properties:
@@ -603,24 +642,87 @@ components:
       - countryName
       - cities
       additionalProperties: false
-    PopularLocationsPage:
+    CountrySummary:
       type: object
       properties:
-        items:
+        countryCode:
+          type: string
+          description: ISO-3166-1 alpha-2 country code.
+          example: US
+        countryName:
+          type: string
+          description: Human-readable country name.
+          example: United States
+        flagEmoji:
+          type:
+          - string
+          - 'null'
+          description: Regional-indicator flag emoji. May be null for legacy rows.
+          example: 🇺🇸
+        cityCount:
+          type: integer
+          description: Number of distinct cities we have catalogued for this country. Surfaces as a hint in the drill-in header.
+          example: 84
+        population:
+          type: integer
+          description: Sum of city populations in this country (ranking signal).
+          example: 175000000
+      required:
+      - countryCode
+      - countryName
+      - cityCount
+      - population
+      additionalProperties: false
+    LocationSearchResponse:
+      type: object
+      properties:
+        data:
           type: array
           items:
             $ref: '#/components/schemas/Location'
-          description: Cities for this page, ranked by population DESC.
-        nextCursor:
-          type:
-          - integer
-          - 'null'
-          description: Next offset to pass as `cursor`, or `null` when there are no more pages (either long-tail exhausted or 500-row cap hit).
-          example: 50
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
       required:
-      - items
-      - nextCursor
+      - data
+      - success
       additionalProperties: false
+      description: Successful API response
+    LocationInitialSuggestionsResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/LocationInitialSuggestions'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    PopularLocationsResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/PopularLocationsPage'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
     Location:
       type: object
       properties:
@@ -670,7 +772,7 @@ components:
           - country
           - state
           - city
-          description: 'Row kind: "country" (ISO country row seeded in 0045), "state" (synthesized admin1 row, adminName1 populated, name empty), or "city" (cities15000).'
+          description: 'Row kind: "country" (ISO country row seeded in 0045), "state" (synthesized admin1 row: a state, province or region, name = the region name), or "city" (cities15000).'
           example: city
       required:
       - adminName1
@@ -687,9 +789,9 @@ components:
       properties:
         duration:
           type: number
+          minimum: 0
           description: Request duration in milliseconds
           example: 150
-          exclusiveMinimum: 0
         performance:
           type: object
           properties:
@@ -708,7 +810,7 @@ components:
           type: string
           format: date-time
           description: ISO 8601 timestamp
-          example: '2026-09-25T17:29:47.224Z'
+          example: '2026-10-19T20:12:14.033Z'
         version:
           type: string
           description: API version
@@ -731,107 +833,6 @@ components:
       - items
       - nextCursor
       additionalProperties: false
-    CountrySummary:
-      type: object
-      properties:
-        countryCode:
-          type: string
-          description: ISO-3166-1 alpha-2 country code.
-          example: US
-        countryName:
-          type: string
-          description: Human-readable country name.
-          example: United States
-        flagEmoji:
-          type:
-          - string
-          - 'null'
-          description: Regional-indicator flag emoji. May be null for legacy rows.
-          example: 🇺🇸
-        cityCount:
-          type: integer
-          description: Number of distinct cities we have catalogued for this country. Surfaces as a hint in the drill-in header.
-          example: 84
-        population:
-          type: integer
-          description: Sum of city populations in this country (ranking signal).
-          example: 175000000
-      required:
-      - countryCode
-      - countryName
-      - cityCount
-      - population
-      additionalProperties: false
-    PopularLocationsResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/PopularLocationsPage'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    PopularCountriesResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/PopularCountriesPage'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    LocationInitialSuggestions:
-      type: object
-      properties:
-        ipCountry:
-          type:
-          - string
-          - 'null'
-          minLength: 2
-          maxLength: 2
-          description: ISO-3166-1 alpha-2 country code inferred from request IP. Null when CF does not expose cf.country (local dev).
-          example: US
-        popularByCountry:
-          type: array
-          items:
-            $ref: '#/components/schemas/LocationCountryGroup'
-          description: Top popular cities grouped by country, ordered by country population weight. Pre-populated dropdown fallback.
-      required:
-      - ipCountry
-      - popularByCountry
-      additionalProperties: false
-    LocationSearchResponse:
-      type: object
-      properties:
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/Location'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
   securitySchemes:
     BearerAuth:
       description: 'Session token from signing in to AI Applyd, sent as `Authorization: Bearer <token>`.'

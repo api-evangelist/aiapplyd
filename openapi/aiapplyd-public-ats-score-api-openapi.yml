@@ -4,19 +4,20 @@ info:
     email: support@aiapplyd.com
     name: AI Applyd
     url: https://aiapplyd.com
-  description: 'The AI Applyd API runs the whole job hunt for you: it matches you to roles that fit your profile, rewrites your resume for each posting, writes the cover letter the form asks for, and auto-applies across the major applicant tracking systems.'
+  description: 'The AI Applyd API runs the whole job hunt for you: it matches you to roles that fit your profile, rewrites your resume for each posting, writes the cover letter the form asks for, and auto-applies across the major applicant tracking systems. Every send is tracked from the swipe to the employer''s own confirmation, so you always know what landed. Authenticate with a Bearer session token. The same surface powers the web app, the mobile app and the AI Applyd MCP server for ChatGPT, Claude and other agents.'
   license:
     name: Proprietary
     url: https://aiapplyd.com/legal/terms
   title: AI Applyd Public Ats Score API
-  version: 115c47ce
+  version: fa810d82
 servers:
 - description: Current environment
   url: https://api.aiapplyd.com/api/v1
 security:
 - BearerAuth: []
 tags:
-- name: public-ats-score
+- description: Anonymous resume scoring, no account needed.
+  name: public-ats-score
 paths:
   /public/ats-score:
     post:
@@ -118,7 +119,7 @@ components:
         modelName:
           type: string
           description: Free-tier OpenRouter model that produced this score. Surfaced for transparency, not used by the client.
-          example: nvidia/nemotron-3-nano-30b-a3b:free
+          example: openrouter/free
         overallScore:
           type: integer
           minimum: 0
@@ -135,76 +136,6 @@ components:
       - modelName
       - overallScore
       - resumeHash
-      additionalProperties: false
-    ResponseMetadata:
-      type: object
-      properties:
-        duration:
-          type: number
-          description: Request duration in milliseconds
-          example: 150
-          exclusiveMinimum: 0
-        performance:
-          type: object
-          properties:
-            dbQueries:
-              type: integer
-              minimum: 0
-            totalDbTime:
-              type: number
-              minimum: 0
-          description: Performance metrics (preview/local only)
-        requestId:
-          type: string
-          description: Unique request identifier
-          example: req_abc123
-        timestamp:
-          type: string
-          format: date-time
-          description: ISO 8601 timestamp
-          example: '2026-09-25T17:29:47.224Z'
-        version:
-          type: string
-          description: API version
-          example: v1
-    AnonymousAtsScoreResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/AnonymousAtsScorePayload'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    AnonymousAtsScoreRequest:
-      type: object
-      properties:
-        jobDescription:
-          type: string
-          minLength: 50
-          maxLength: 30000
-          description: Optional job description text. When omitted the score is generic ATS compatibility only.
-          example: We are looking for a senior backend engineer with 5+ years of TypeScript and PostgreSQL experience...
-        resumeText:
-          type: string
-          minLength: 100
-          maxLength: 50000
-          description: Plain-text resume content. The web client extracts this from PDF/DOCX uploads via the bundled unpdf/docx parsers before calling this endpoint, OR sends pasted text directly.
-          example: 'Jane Doe - Senior Software Engineer
-
-
-            Experience
-
-            - Built distributed systems at Acme Corp...'
-      required:
-      - resumeText
       additionalProperties: false
     ApiErrorResponse:
       type: object
@@ -549,6 +480,76 @@ components:
       required:
       - error
       - success
+      additionalProperties: false
+    AnonymousAtsScoreResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/AnonymousAtsScorePayload'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    ResponseMetadata:
+      type: object
+      properties:
+        duration:
+          type: number
+          minimum: 0
+          description: Request duration in milliseconds
+          example: 150
+        performance:
+          type: object
+          properties:
+            dbQueries:
+              type: integer
+              minimum: 0
+            totalDbTime:
+              type: number
+              minimum: 0
+          description: Performance metrics (preview/local only)
+        requestId:
+          type: string
+          description: Unique request identifier
+          example: req_abc123
+        timestamp:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp
+          example: '2026-10-19T20:12:14.033Z'
+        version:
+          type: string
+          description: API version
+          example: v1
+    AnonymousAtsScoreRequest:
+      type: object
+      properties:
+        jobDescription:
+          type: string
+          minLength: 50
+          maxLength: 30000
+          description: Optional job description text. When omitted the score is generic ATS compatibility only.
+          example: We are looking for a senior backend engineer with 5+ years of TypeScript and PostgreSQL experience...
+        resumeText:
+          type: string
+          minLength: 100
+          maxLength: 50000
+          description: Plain-text resume content. The web client extracts this from PDF/DOCX uploads via the bundled unpdf/docx parsers before calling this endpoint, OR sends pasted text directly.
+          example: 'Jane Doe - Senior Software Engineer
+
+
+            Experience
+
+            - Built distributed systems at Acme Corp...'
+      required:
+      - resumeText
       additionalProperties: false
   securitySchemes:
     BearerAuth:

@@ -4,19 +4,20 @@ info:
     email: support@aiapplyd.com
     name: AI Applyd
     url: https://aiapplyd.com
-  description: 'The AI Applyd API runs the whole job hunt for you: it matches you to roles that fit your profile, rewrites your resume for each posting, writes the cover letter the form asks for, and auto-applies across the major applicant tracking systems.'
+  description: 'The AI Applyd API runs the whole job hunt for you: it matches you to roles that fit your profile, rewrites your resume for each posting, writes the cover letter the form asks for, and auto-applies across the major applicant tracking systems. Every send is tracked from the swipe to the employer''s own confirmation, so you always know what landed. Authenticate with a Bearer session token. The same surface powers the web app, the mobile app and the AI Applyd MCP server for ChatGPT, Claude and other agents.'
   license:
     name: Proprietary
     url: https://aiapplyd.com/legal/terms
   title: AI Applyd Overview API
-  version: 115c47ce
+  version: fa810d82
 servers:
 - description: Current environment
   url: https://api.aiapplyd.com/api/v1
 security:
 - BearerAuth: []
 tags:
-- name: Overview
+- description: Dashboard overview and suggestions.
+  name: Overview
 paths:
   /overview:
     get:
@@ -84,230 +85,6 @@ paths:
       operationId: getOverviewSuggestions
 components:
   schemas:
-    Suggestion:
-      type: object
-      properties:
-        type:
-          type: string
-          enum:
-          - upload_resume
-          - score_resume
-          - add_job
-          description: Suggestion type identifier
-          example: upload_resume
-        title:
-          type: string
-          description: Short action title
-          example: Upload your resume
-        description:
-          type: string
-          description: Helpful description
-          example: Upload your resume to unlock ATS scoring
-        icon:
-          type: string
-          description: Icon name for UI
-          example: file-up
-        priority:
-          type: number
-          description: Priority (1=highest)
-          example: 1
-        meta:
-          type: object
-          additionalProperties:
-            anyOf:
-            - type: string
-            - type: number
-          description: Additional metadata
-      required:
-      - type
-      - title
-      - description
-      - icon
-      - priority
-      additionalProperties: false
-    OverviewData:
-      type: object
-      properties:
-        aiHistoryCount:
-          type: integer
-          description: Total number of AI operations
-          example: 200
-        formsLeftData:
-          $ref: '#/components/schemas/FormsLeftData'
-        fillsOverTime:
-          type: array
-          items:
-            $ref: '#/components/schemas/TimeSeriesData'
-          description: AI operation counts over time
-        averageTokensPerFill:
-          type: number
-          description: Average tokens used per operation
-          example: 1500
-        totalTokensUsed:
-          type: number
-          description: Total tokens used
-          example: 300000
-        successRate:
-          $ref: '#/components/schemas/SuccessRateData'
-        periodChange:
-          type: number
-          description: Period-over-period change percentage
-          example: 15.5
-        jobListingsCount:
-          type: integer
-          description: Total number of active job listings
-          example: 12
-        averageAtsScore:
-          type: number
-          description: Average ATS score across all scored jobs
-          example: 72
-        outcomes:
-          $ref: '#/components/schemas/OutcomeMetrics'
-      required:
-      - aiHistoryCount
-      - formsLeftData
-      - fillsOverTime
-      - averageTokensPerFill
-      - totalTokensUsed
-      - successRate
-      - periodChange
-      - jobListingsCount
-      - averageAtsScore
-      - outcomes
-    FormsLeftData:
-      type: object
-      properties:
-        count:
-          type: integer
-          description: Estimated AI operations remaining
-          example: 100
-        percent:
-          type: number
-          description: Percentage of tokens remaining
-          example: 75
-      required:
-      - count
-      - percent
-      additionalProperties: false
-    TimeSeriesData:
-      type: object
-      properties:
-        date:
-          type: string
-          description: Date in YYYY-MM-DD format
-          example: '2024-01-01'
-        count:
-          type: integer
-          description: Count for this date
-          example: 5
-      required:
-      - date
-      - count
-      additionalProperties: false
-    ResponseMetadata:
-      type: object
-      properties:
-        duration:
-          type: number
-          description: Request duration in milliseconds
-          example: 150
-          exclusiveMinimum: 0
-        performance:
-          type: object
-          properties:
-            dbQueries:
-              type: integer
-              minimum: 0
-            totalDbTime:
-              type: number
-              minimum: 0
-          description: Performance metrics (preview/local only)
-        requestId:
-          type: string
-          description: Unique request identifier
-          example: req_abc123
-        timestamp:
-          type: string
-          format: date-time
-          description: ISO 8601 timestamp
-          example: '2026-09-25T17:29:47.224Z'
-        version:
-          type: string
-          description: API version
-          example: v1
-    SuggestionsData:
-      type: object
-      properties:
-        suggestions:
-          type: array
-          items:
-            $ref: '#/components/schemas/Suggestion'
-          description: Personalized next-step suggestions
-      required:
-      - suggestions
-      additionalProperties: false
-    OverviewResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/OverviewData'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    SuggestionsResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/SuggestionsData'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    SuccessRateData:
-      type: object
-      properties:
-        successRate:
-          type: number
-          description: Overall success rate percentage
-          example: 92.5
-        successCount:
-          type: integer
-          description: Number of successful operations
-          example: 185
-        failureCount:
-          type: integer
-          description: Number of failed operations
-          example: 10
-        pendingCount:
-          type: integer
-          description: Number of pending/aborted operations
-          example: 5
-        totalCount:
-          type: integer
-          description: Total number of operation attempts
-          example: 200
-      required:
-      - successRate
-      - successCount
-      - failureCount
-      - pendingCount
-      - totalCount
-      additionalProperties: false
     ApiErrorResponse:
       type: object
       properties:
@@ -652,6 +429,150 @@ components:
       - error
       - success
       additionalProperties: false
+    FormsLeftData:
+      type: object
+      properties:
+        count:
+          type: integer
+          description: Estimated AI operations remaining
+          example: 100
+        percent:
+          type: number
+          description: Percentage of tokens remaining
+          example: 75
+      required:
+      - count
+      - percent
+      additionalProperties: false
+    SuccessRateData:
+      type: object
+      properties:
+        successRate:
+          type: number
+          description: Overall success rate percentage
+          example: 92.5
+        successCount:
+          type: integer
+          description: Number of successful operations
+          example: 185
+        failureCount:
+          type: integer
+          description: Number of failed operations
+          example: 10
+        pendingCount:
+          type: integer
+          description: Number of pending/aborted operations
+          example: 5
+        totalCount:
+          type: integer
+          description: Total number of operation attempts
+          example: 200
+      required:
+      - successRate
+      - successCount
+      - failureCount
+      - pendingCount
+      - totalCount
+      additionalProperties: false
+    SuggestionsResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/SuggestionsData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    SuggestionsData:
+      type: object
+      properties:
+        suggestions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Suggestion'
+          description: Personalized next-step suggestions
+      required:
+      - suggestions
+      additionalProperties: false
+    TimeSeriesData:
+      type: object
+      properties:
+        date:
+          type: string
+          description: Date in YYYY-MM-DD format
+          example: '2024-01-01'
+        count:
+          type: integer
+          description: Count for this date
+          example: 5
+      required:
+      - date
+      - count
+      additionalProperties: false
+    Suggestion:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+          - upload_resume
+          - score_resume
+          - add_job
+          description: Suggestion type identifier
+          example: upload_resume
+        title:
+          type: string
+          description: Short action title
+          example: Upload your resume
+        description:
+          type: string
+          description: Helpful description
+          example: Upload your resume to unlock ATS scoring
+        icon:
+          type: string
+          description: Icon name for UI
+          example: file-up
+        priority:
+          type: number
+          description: Priority (1=highest)
+          example: 1
+        meta:
+          type: object
+          additionalProperties:
+            anyOf:
+            - type: string
+            - type: number
+          description: Additional metadata
+      required:
+      - type
+      - title
+      - description
+      - icon
+      - priority
+      additionalProperties: false
+    OverviewResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/OverviewData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
     OutcomeMetrics:
       type: object
       properties:
@@ -689,6 +610,86 @@ components:
       - upcomingInterviews
       additionalProperties: false
       description: Real-outcome success metrics from the email + calendar pipeline (interviews booked, offers, upcoming interviews, email response rate).
+    ResponseMetadata:
+      type: object
+      properties:
+        duration:
+          type: number
+          minimum: 0
+          description: Request duration in milliseconds
+          example: 150
+        performance:
+          type: object
+          properties:
+            dbQueries:
+              type: integer
+              minimum: 0
+            totalDbTime:
+              type: number
+              minimum: 0
+          description: Performance metrics (preview/local only)
+        requestId:
+          type: string
+          description: Unique request identifier
+          example: req_abc123
+        timestamp:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp
+          example: '2026-10-19T20:12:14.033Z'
+        version:
+          type: string
+          description: API version
+          example: v1
+    OverviewData:
+      type: object
+      properties:
+        aiHistoryCount:
+          type: integer
+          description: Total number of AI operations
+          example: 200
+        formsLeftData:
+          $ref: '#/components/schemas/FormsLeftData'
+        fillsOverTime:
+          type: array
+          items:
+            $ref: '#/components/schemas/TimeSeriesData'
+          description: AI operation counts over time
+        averageTokensPerFill:
+          type: number
+          description: Average tokens used per operation
+          example: 1500
+        totalTokensUsed:
+          type: number
+          description: Total tokens used
+          example: 300000
+        successRate:
+          $ref: '#/components/schemas/SuccessRateData'
+        periodChange:
+          type: number
+          description: Period-over-period change percentage
+          example: 15.5
+        jobListingsCount:
+          type: integer
+          description: Total number of active job listings
+          example: 12
+        averageAtsScore:
+          type: number
+          description: Average ATS score across all scored jobs
+          example: 72
+        outcomes:
+          $ref: '#/components/schemas/OutcomeMetrics'
+      required:
+      - aiHistoryCount
+      - formsLeftData
+      - fillsOverTime
+      - averageTokensPerFill
+      - totalTokensUsed
+      - successRate
+      - periodChange
+      - jobListingsCount
+      - averageAtsScore
+      - outcomes
   securitySchemes:
     BearerAuth:
       description: 'Session token from signing in to AI Applyd, sent as `Authorization: Bearer <token>`.'

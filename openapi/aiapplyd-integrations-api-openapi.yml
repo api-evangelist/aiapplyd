@@ -4,43 +4,34 @@ info:
     email: support@aiapplyd.com
     name: AI Applyd
     url: https://aiapplyd.com
-  description: 'The AI Applyd API runs the whole job hunt for you: it matches you to roles that fit your profile, rewrites your resume for each posting, writes the cover letter the form asks for, and auto-applies across the major applicant tracking systems.'
+  description: 'The AI Applyd API runs the whole job hunt for you: it matches you to roles that fit your profile, rewrites your resume for each posting, writes the cover letter the form asks for, and auto-applies across the major applicant tracking systems. Every send is tracked from the swipe to the employer''s own confirmation, so you always know what landed. Authenticate with a Bearer session token. The same surface powers the web app, the mobile app and the AI Applyd MCP server for ChatGPT, Claude and other agents.'
   license:
     name: Proprietary
     url: https://aiapplyd.com/legal/terms
   title: AI Applyd Integrations API
-  version: 115c47ce
+  version: fa810d82
 servers:
 - description: Current environment
   url: https://api.aiapplyd.com/api/v1
 security:
 - BearerAuth: []
 tags:
-- name: Integrations
+- description: Connected Gmail and Outlook mailboxes.
+  name: Integrations
 paths:
-  /integrations/google/connect:
+  /integrations/mail:
     get:
       tags:
       - Integrations
-      summary: Build Google OAuth connect URL
-      description: Builds the Google authorization URL for the requested services (gmail,calendar) and mints a one-time CSRF state. The FE opens the returned `authUrl`.
-      parameters:
-      - schema:
-          type: string
-          minLength: 1
-          description: Comma-separated services to connect (gmail,calendar)
-          example: gmail,calendar
-        required: true
-        description: Comma-separated services to connect (gmail,calendar)
-        name: services
-        in: query
+      summary: Mail connections
+      description: The user's connected Gmail and Outlook mailboxes, the relay address, the address applications go out under, and whether integrations are open to this account.
       responses:
         '200':
-          description: Google authorization URL built
+          description: Mail connections retrieved
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GoogleConnectResponse'
+                $ref: '#/components/schemas/MailConnectionsResponse'
         '401':
           description: Unauthorized
           content:
@@ -59,110 +50,25 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
-      operationId: getIntegrationsGoogleConnect
-  /integrations/google/callback:
-    get:
+      operationId: getIntegrationsMail
+  /integrations/mail/applicant-address:
+    put:
       tags:
       - Integrations
-      summary: Google OAuth callback
-      description: Exchanges the authorization code for tokens, persists the connection(s), then 302-redirects to the web app integrations page.
-      parameters:
-      - schema:
-          type: string
-          minLength: 1
-          description: Authorization code returned by Google
-        required: false
-        description: Authorization code returned by Google
-        name: code
-        in: query
-      - schema:
-          type: string
-          minLength: 1
-          description: Error code returned by Google when the user cancels consent
-        required: false
-        description: Error code returned by Google when the user cancels consent
-        name: error
-        in: query
-      - schema:
-          type: string
-          minLength: 1
-          description: One-time CSRF state minted by the connect endpoint
-        required: true
-        description: One-time CSRF state minted by the connect endpoint
-        name: state
-        in: query
-      responses:
-        '302':
-          description: Redirect (302, Location header) back to the web app integrations page after the OAuth round-trip
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiErrorResponse'
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiErrorResponse'
-        '500':
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiErrorResponse'
-      operationId: getIntegrationsGoogleCallback
-  /integrations/google/status:
-    get:
-      tags:
-      - Integrations
-      summary: Google integration status
-      description: 'Returns per-service (gmail, calendar) connection status: connected flag, account email, granted scopes.'
-      responses:
-        '200':
-          description: Google integration status retrieved
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/GoogleStatusResponse'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiErrorResponse'
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiErrorResponse'
-        '500':
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiErrorResponse'
-      operationId: getIntegrationsGoogleStatus
-  /integrations/google/disconnect:
-    post:
-      tags:
-      - Integrations
-      summary: Disconnect a Google service
-      description: Revokes the OAuth token at Google, removes the stored connection row, and marks it revoked. Body selects the service (gmail | calendar).
+      summary: Pick the applicant address
+      description: Applications go out under the relay address or a connected mailbox.
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/GoogleDisconnectBody'
+              $ref: '#/components/schemas/ApplicantAddressChoice'
       responses:
         '200':
-          description: Google service disconnected
+          description: Applicant address updated
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GoogleDisconnectResponse'
+                $ref: '#/components/schemas/MailConnectionsResponse'
         '400':
           description: Bad Request
           content:
@@ -187,166 +93,543 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
-      operationId: postIntegrationsGoogleDisconnect
+      operationId: putIntegrationsMailApplicantAddress
+  /integrations/mail/{provider}/connect:
+    post:
+      tags:
+      - Integrations
+      summary: Start a mailbox connection
+      description: Returns the provider consent URL. Needs Hired Yesterday (below it the refusal is the limit_reached envelope, 403) and an approved integrations beta request (else 403).
+      parameters:
+      - schema:
+          type: string
+          enum:
+          - gmail
+          - outlook
+          description: Connected user mailbox provider
+          example: gmail
+        required: true
+        description: Connected user mailbox provider
+        in: path
+        name: provider
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MailConnectRequest'
+      responses:
+        '200':
+          description: Consent URL built
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MailConnectResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: postIntegrationsMailByProviderConnect
+  /integrations/mail/{provider}/callback:
+    get:
+      tags:
+      - Integrations
+      summary: Mailbox OAuth callback
+      description: The provider redirects here after consent. Exchanges the code, stores the mailbox and redirects to the web Integrations page or the app.
+      parameters:
+      - schema:
+          type: string
+          enum:
+          - gmail
+          - outlook
+          description: Connected user mailbox provider
+          example: gmail
+        required: true
+        description: Connected user mailbox provider
+        in: path
+        name: provider
+      - schema:
+          type: string
+          minLength: 1
+        required: false
+        name: code
+        in: query
+      - schema:
+          type: string
+        required: false
+        name: error
+        in: query
+      - schema:
+          type: string
+          minLength: 1
+        required: false
+        name: state
+        in: query
+      responses:
+        '302':
+          description: Redirect back to the web Integrations page or the app with ?connected= or ?error=
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: getIntegrationsMailByProviderCallback
+  /integrations/mail/{provider}/sync:
+    post:
+      tags:
+      - Integrations
+      summary: Pull mail now
+      description: Pulls new job mail from the connected mailbox into the inbox, then returns the connections.
+      parameters:
+      - schema:
+          type: string
+          enum:
+          - gmail
+          - outlook
+          description: Connected user mailbox provider
+          example: gmail
+        required: true
+        description: Connected user mailbox provider
+        in: path
+        name: provider
+      responses:
+        '200':
+          description: Mailbox synced
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MailConnectionsResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: postIntegrationsMailByProviderSync
+  /integrations/mail/{provider}:
+    delete:
+      tags:
+      - Integrations
+      summary: Disconnect a mailbox
+      description: Revokes the grant, deletes the mail pulled from this mailbox and removes the connection.
+      parameters:
+      - schema:
+          type: string
+          enum:
+          - gmail
+          - outlook
+          description: Connected user mailbox provider
+          example: gmail
+        required: true
+        description: Connected user mailbox provider
+        in: path
+        name: provider
+      responses:
+        '200':
+          description: Mailbox disconnected
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MailConnectionsResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: deleteIntegrationsMailByProvider
+  /integrations/indeed:
+    get:
+      tags:
+      - Integrations
+      summary: Indeed connection
+      description: Where the Indeed sign-in stands, the mailbox it signs in with, and whether integrations are open to this account.
+      responses:
+        '200':
+          description: Indeed connection retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IndeedConnectionResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: getIntegrationsIndeed
+    delete:
+      tags:
+      - Integrations
+      summary: Disconnect Indeed
+      description: Deletes the stored Indeed session. Apply runs stop using it at once.
+      responses:
+        '200':
+          description: Indeed disconnected
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IndeedConnectionResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: deleteIntegrationsIndeed
+  /integrations/indeed/connect:
+    post:
+      tags:
+      - Integrations
+      summary: Start the Indeed sign-in
+      description: Starts a browser run that signs in to Indeed with the applicant mailbox and reads Indeed's email code from it. Needs Hired Yesterday (else the limit_reached envelope, 403) and an approved integrations beta request (else 403) and a connected applicant mailbox (else 400). Pressing it while a run is in flight returns the current state.
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IndeedConnectBody'
+      responses:
+        '200':
+          description: Sign-in started, or already running
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IndeedConnectionResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: postIntegrationsIndeedConnect
+  /integrations/indeed/phone-code:
+    post:
+      tags:
+      - Integrations
+      summary: Send Indeed's SMS code
+      description: The code Indeed texted to the user. Accepted only while the sign-in waits for it (else 400).
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IndeedPhoneCodeRequest'
+      responses:
+        '200':
+          description: Code handed to the sign-in run
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IndeedConnectionResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: postIntegrationsIndeedPhoneCode
+  /integrations/beta-request:
+    post:
+      tags:
+      - Integrations
+      summary: Request the integrations beta
+      description: 'Asks for Gmail, Outlook and Indeed connections. Needs Hired Yesterday (else the limit_reached envelope, 403). Idempotent: a repeat request keeps the first one, and a denied account may ask again. Answers with the account''s integrations access.'
+      responses:
+        '200':
+          description: Request recorded, or already recorded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IntegrationsAccess'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: postIntegrationsBetaRequest
 components:
   schemas:
-    GoogleConnectData:
+    ApplicantAddress:
+      oneOf:
+      - type: object
+        properties:
+          email:
+            type:
+            - string
+            - 'null'
+          kind:
+            type: string
+            enum:
+            - relay
+        required:
+        - email
+        - kind
+      - type: object
+        properties:
+          email:
+            type: string
+          kind:
+            type: string
+            enum:
+            - mailbox
+          provider:
+            type: string
+            enum:
+            - gmail
+            - outlook
+            description: Connected user mailbox provider
+            example: gmail
+        required:
+        - email
+        - kind
+        - provider
+    GmailForwardingView:
       type: object
       properties:
-        authUrl:
-          type: string
-          format: uri
-          description: Google authorization URL to redirect / open the user to
-          example: https://accounts.google.com/o/oauth2/v2/auth?...
-      required:
-      - authUrl
-      additionalProperties: false
-    GoogleDisconnectData:
-      type: object
-      properties:
-        disconnected:
-          type: boolean
-          description: True when the connection row was removed (or already absent)
-          example: true
-        service:
-          type: string
-          enum:
-          - gmail
-          - calendar
-          description: Service within an integration provider the user opted into
-          example: gmail
-      required:
-      - disconnected
-      - service
-      additionalProperties: false
-    GoogleConnectResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/GoogleConnectData'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    ResponseMetadata:
-      type: object
-      properties:
-        duration:
-          type: number
-          description: Request duration in milliseconds
-          example: 150
-          exclusiveMinimum: 0
-        performance:
-          type: object
-          properties:
-            dbQueries:
-              type: integer
-              minimum: 0
-            totalDbTime:
-              type: number
-              minimum: 0
-          description: Performance metrics (preview/local only)
-        requestId:
-          type: string
-          description: Unique request identifier
-          example: req_abc123
-        timestamp:
-          type: string
-          format: date-time
-          description: ISO 8601 timestamp
-          example: '2026-09-25T17:29:47.224Z'
-        version:
-          type: string
-          description: API version
-          example: v1
-    GoogleStatusData:
-      type: object
-      properties:
-        calendar:
-          $ref: '#/components/schemas/GoogleServiceStatus'
-        gmail:
-          $ref: '#/components/schemas/GoogleServiceStatus'
-      required:
-      - calendar
-      - gmail
-      additionalProperties: false
-    GoogleDisconnectBody:
-      type: object
-      properties:
-        service:
-          type: string
-          enum:
-          - gmail
-          - calendar
-          description: Service within an integration provider the user opted into
-          example: gmail
-      required:
-      - service
-      additionalProperties: false
-    GoogleDisconnectResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/GoogleDisconnectData'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    GoogleServiceStatus:
-      type: object
-      properties:
-        connected:
-          type: boolean
-          description: Whether a live (non-revoked) connection exists for this service
-          example: true
-        email:
+        confirmation:
+          $ref: '#/components/schemas/GmailForwardingConfirmation'
+        relayAddress:
           type:
           - string
           - 'null'
-          description: Connected Google account email, when known
-          example: user@gmail.com
-        scopes:
-          type: array
-          items:
-            type: string
-          description: OAuth scopes Google granted for this service
-          example:
-          - https://www.googleapis.com/auth/gmail.modify
       required:
-      - connected
-      - email
-      - scopes
-      additionalProperties: false
-    GoogleStatusResponse:
+      - confirmation
+      - relayAddress
+    IndeedConnectionResponse:
       type: object
       properties:
-        data:
-          $ref: '#/components/schemas/GoogleStatusData'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
+        access:
+          $ref: '#/components/schemas/IntegrationsAccess'
+        connection:
+          $ref: '#/components/schemas/IndeedConnectionView'
+        deckLine:
+          $ref: '#/components/schemas/IndeedDeckLine'
+        signInMailbox:
+          type:
+          - object
+          - 'null'
+          properties:
+            email:
+              type: string
+            provider:
+              type: string
+              enum:
+              - gmail
+              - outlook
+              description: Connected user mailbox provider
+              example: gmail
+          required:
+          - email
+          - provider
+        signInMailboxOptions:
+          type: array
+          items:
+            type: object
+            properties:
+              email:
+                type: string
+              provider:
+                type: string
+                enum:
+                - gmail
+                - outlook
+                description: Connected user mailbox provider
+                example: gmail
+            required:
+            - email
+            - provider
+        stats:
+          type: object
+          properties:
+            applications:
+              type: integer
+              minimum: 0
+            deckJobs:
+              type: integer
+              minimum: 0
+          required:
+          - applications
+          - deckJobs
+        suggestedSite:
+          type: string
           enum:
-          - true
+          - US
+          - IN
+          - GB
+          - CA
+          - AU
+          - IE
+          - DE
+          - FR
+          - NL
+          - ES
+          - IT
+          - SG
+          - AE
+          - NZ
+          - ZA
+          - PH
+          - MY
+          - PK
+          - BR
+          - MX
+          - JP
+          description: The Indeed site the user has an account on, as an ISO 3166-1 alpha-2 country code
+          example: DE
       required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
+      - access
+      - connection
+      - signInMailbox
+      - signInMailboxOptions
+      - stats
+      - suggestedSite
     ApiErrorResponse:
       type: object
       properties:
@@ -691,6 +974,419 @@ components:
       - error
       - success
       additionalProperties: false
+    IndeedConnectionView:
+      type:
+      - object
+      - 'null'
+      properties:
+        connectedAt:
+          type:
+          - integer
+          - 'null'
+        email:
+          type: string
+        lastError:
+          type:
+          - string
+          - 'null'
+          enum:
+          - blocked_by_indeed
+          - browser_unavailable
+          - code_rejected
+          - email_code_missing
+          - mailbox_unreadable
+          - no_account
+          - phone_code_missing
+          - phone_number_required
+          - sign_in_refused
+          - sign_in_stopped
+          - session_not_saved
+          - timed_out
+          - unexpected_page
+          - null
+          description: Why the last Indeed sign-in attempt failed
+          example: email_code_missing
+        phoneHint:
+          type:
+          - string
+          - 'null'
+        site:
+          type: string
+          enum:
+          - US
+          - IN
+          - GB
+          - CA
+          - AU
+          - IE
+          - DE
+          - FR
+          - NL
+          - ES
+          - IT
+          - SG
+          - AE
+          - NZ
+          - ZA
+          - PH
+          - MY
+          - PK
+          - BR
+          - MX
+          - JP
+          description: The Indeed site the user has an account on, as an ISO 3166-1 alpha-2 country code
+          example: DE
+        stage:
+          type:
+          - string
+          - 'null'
+          enum:
+          - opening_indeed
+          - checking_account
+          - waiting_for_email_code
+          - entering_code
+          - saving_session
+          - null
+          description: 'The step a running Indeed sign-in reached: opening Indeed, checking the address has an account, waiting for Indeed''s email code, typing it, saving the session'
+          example: checking_account
+        startedAt:
+          type:
+          - integer
+          - 'null'
+        status:
+          type: string
+          enum:
+          - signing_in
+          - waiting_for_phone_code
+          - connected
+          - needs_reconnect
+          - failed
+          description: 'Where the Indeed sign-in stands: a run is signing in, it waits for the SMS code the user types, the session is stored, the stored session stopped working, or the last attempt failed'
+          example: connected
+        updatedAt:
+          type: integer
+      required:
+      - connectedAt
+      - email
+      - lastError
+      - phoneHint
+      - site
+      - stage
+      - startedAt
+      - status
+      - updatedAt
+    IntegrationsAccess:
+      type: object
+      properties:
+        allowed:
+          type: boolean
+        requiredTier:
+          type: string
+          enum:
+          - job_seeker
+          - hired_in_30
+          - hired_yesterday
+          description: Subscription plan tier level
+          example: job_seeker
+        state:
+          type: string
+          enum:
+          - included
+          - plan_required
+          - beta_request
+          - beta_pending
+          - beta_denied
+          description: 'Whether integrations are open: included, the plan is missing, or the beta request is not made, pending or denied'
+          example: included
+      required:
+      - allowed
+      - requiredTier
+      - state
+    MailConnectionsResponse:
+      type: object
+      properties:
+        access:
+          $ref: '#/components/schemas/IntegrationsAccess'
+        applicantAddress:
+          $ref: '#/components/schemas/ApplicantAddress'
+        gmailForwarding:
+          $ref: '#/components/schemas/GmailForwardingView'
+        mailboxes:
+          type: array
+          items:
+            $ref: '#/components/schemas/MailboxConnectionView'
+        relayAddress:
+          type:
+          - string
+          - 'null'
+      required:
+      - access
+      - applicantAddress
+      - gmailForwarding
+      - mailboxes
+      - relayAddress
+    MailboxConnectionView:
+      type: object
+      properties:
+        connectedAt:
+          type: integer
+        email:
+          type: string
+        isApplicantAddress:
+          type: boolean
+        lastSyncedAt:
+          type:
+          - integer
+          - 'null'
+        provider:
+          type: string
+          enum:
+          - gmail
+          - outlook
+          description: Connected user mailbox provider
+          example: gmail
+        stats:
+          type: object
+          properties:
+            codesRead:
+              type: integer
+              minimum: 0
+            jobEmails:
+              type: integer
+              minimum: 0
+            linkedToApplications:
+              type: integer
+              minimum: 0
+          required:
+          - codesRead
+          - jobEmails
+          - linkedToApplications
+        status:
+          type: string
+          enum:
+          - connected
+          - needs_reconnect
+          description: Whether a connected mailbox can be read and sent from
+          example: connected
+      required:
+      - connectedAt
+      - email
+      - isApplicantAddress
+      - lastSyncedAt
+      - provider
+      - stats
+      - status
+    GmailForwardingConfirmation:
+      type:
+      - object
+      - 'null'
+      properties:
+        code:
+          type: string
+        gmailAddress:
+          type: string
+        receivedAt:
+          type: integer
+      required:
+      - code
+      - gmailAddress
+      - receivedAt
+    IndeedDeckLine:
+      oneOf:
+      - type: object
+        properties:
+          jobs:
+            type: integer
+            exclusiveMinimum: 0
+          kind:
+            type: string
+            enum:
+            - jobs
+        required:
+        - jobs
+        - kind
+      - type: object
+        properties:
+          kind:
+            type: string
+            enum:
+            - none_new
+        required:
+        - kind
+      - type: object
+        properties:
+          kind:
+            type: string
+            enum:
+            - none_this_week
+          role:
+            type: string
+          site:
+            type: string
+            enum:
+            - US
+            - IN
+            - GB
+            - CA
+            - AU
+            - IE
+            - DE
+            - FR
+            - NL
+            - ES
+            - IT
+            - SG
+            - AE
+            - NZ
+            - ZA
+            - PH
+            - MY
+            - PK
+            - BR
+            - MX
+            - JP
+            description: The Indeed site the user has an account on, as an ISO 3166-1 alpha-2 country code
+            example: DE
+        required:
+        - kind
+        - role
+        - site
+      - type: object
+        properties:
+          kind:
+            type: string
+            enum:
+            - no_role
+        required:
+        - kind
+      - type: object
+        properties:
+          kind:
+            type: string
+            enum:
+            - checking
+        required:
+        - kind
+      - {}
+      default: null
+    ApplicantAddressChoice:
+      oneOf:
+      - type: object
+        properties:
+          kind:
+            type: string
+            enum:
+            - relay
+        required:
+        - kind
+      - type: object
+        properties:
+          kind:
+            type: string
+            enum:
+            - mailbox
+          provider:
+            type: string
+            enum:
+            - gmail
+            - outlook
+            description: Connected user mailbox provider
+            example: gmail
+        required:
+        - kind
+        - provider
+    IndeedConnectBody:
+      type: object
+      properties:
+        provider:
+          type: string
+          enum:
+          - gmail
+          - outlook
+          description: Connected user mailbox provider
+          example: gmail
+        site:
+          type: string
+          enum:
+          - US
+          - IN
+          - GB
+          - CA
+          - AU
+          - IE
+          - DE
+          - FR
+          - NL
+          - ES
+          - IT
+          - SG
+          - AE
+          - NZ
+          - ZA
+          - PH
+          - MY
+          - PK
+          - BR
+          - MX
+          - JP
+          description: The Indeed site the user has an account on, as an ISO 3166-1 alpha-2 country code
+          example: DE
+    IndeedPhoneCodeRequest:
+      type: object
+      properties:
+        code:
+          type: string
+          pattern: ^\d{4,8}$
+      required:
+      - code
+    MailConnectResponse:
+      type: object
+      properties:
+        authorizeUrl:
+          type: string
+          format: uri
+      required:
+      - authorizeUrl
+    ResponseMetadata:
+      type: object
+      properties:
+        duration:
+          type: number
+          minimum: 0
+          description: Request duration in milliseconds
+          example: 150
+        performance:
+          type: object
+          properties:
+            dbQueries:
+              type: integer
+              minimum: 0
+            totalDbTime:
+              type: number
+              minimum: 0
+          description: Performance metrics (preview/local only)
+        requestId:
+          type: string
+          description: Unique request identifier
+          example: req_abc123
+        timestamp:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp
+          example: '2026-10-19T20:12:14.033Z'
+        version:
+          type: string
+          description: API version
+          example: v1
+    MailConnectRequest:
+      type: object
+      properties:
+        returnTo:
+          type: string
+          enum:
+          - web
+          - mobile
+          default: web
   securitySchemes:
     BearerAuth:
       description: 'Session token from signing in to AI Applyd, sent as `Authorization: Bearer <token>`.'

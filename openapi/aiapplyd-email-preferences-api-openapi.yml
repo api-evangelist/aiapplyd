@@ -4,19 +4,20 @@ info:
     email: support@aiapplyd.com
     name: AI Applyd
     url: https://aiapplyd.com
-  description: 'The AI Applyd API runs the whole job hunt for you: it matches you to roles that fit your profile, rewrites your resume for each posting, writes the cover letter the form asks for, and auto-applies across the major applicant tracking systems.'
+  description: 'The AI Applyd API runs the whole job hunt for you: it matches you to roles that fit your profile, rewrites your resume for each posting, writes the cover letter the form asks for, and auto-applies across the major applicant tracking systems. Every send is tracked from the swipe to the employer''s own confirmation, so you always know what landed. Authenticate with a Bearer session token. The same surface powers the web app, the mobile app and the AI Applyd MCP server for ChatGPT, Claude and other agents.'
   license:
     name: Proprietary
     url: https://aiapplyd.com/legal/terms
   title: AI Applyd Email Preferences API
-  version: 115c47ce
+  version: fa810d82
 servers:
 - description: Current environment
   url: https://api.aiapplyd.com/api/v1
 security:
 - BearerAuth: []
 tags:
-- name: email-preferences
+- description: Email subscription preferences, including one-click unsubscribe.
+  name: email-preferences
 paths:
   /email-preferences:
     get:
@@ -92,6 +93,49 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: putEmailPreferences
+  /email-preferences/contact-email:
+    put:
+      tags:
+      - email-preferences
+      summary: Update Contact Email
+      description: Set or clear the optional personal email that receives update mail when the account email is an Apple private relay address. Never required.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateContactEmail'
+      responses:
+        '200':
+          description: Contact email updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmailPreferencesUpdatedResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: putEmailPreferencesContactEmail
   /email-preferences/by-token:
     get:
       tags:
@@ -206,147 +250,6 @@ paths:
       operationId: postEmailPreferencesOneClick
 components:
   schemas:
-    UpdateEmailPreferences:
-      type: object
-      properties:
-        notifyLocationFulfilled:
-          type: boolean
-          description: Receive alerts when a requested location starts showing jobs
-          example: true
-        notifyRoleFulfilled:
-          type: boolean
-          description: Receive alerts when a suggested role is added to the platform
-          example: true
-        onboarding:
-          type: boolean
-          description: Receive onboarding and tips emails
-          example: true
-        productUpdates:
-          type: boolean
-          description: Receive product update emails
-          example: true
-        reEngagement:
-          type: boolean
-          description: Receive re-engagement emails
-          example: true
-        unsubscribeAll:
-          type: boolean
-          description: Unsubscribe from all marketing emails
-          example: false
-        weeklyRecap:
-          type: boolean
-          description: Receive the weekly recap of your matches and applications
-          example: true
-      additionalProperties: false
-    EmailPreferencesResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/EmailPreferencesData'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    EmailPreferencesData:
-      type: object
-      properties:
-        notifyLocationFulfilled:
-          type: boolean
-          description: Receive alerts when a requested location starts showing jobs
-          example: true
-        notifyRoleFulfilled:
-          type: boolean
-          description: Receive alerts when a suggested role is added to the platform
-          example: true
-        onboarding:
-          type: boolean
-          description: Receive onboarding and tips emails
-          example: true
-        productUpdates:
-          type: boolean
-          description: Receive product update emails
-          example: true
-        reEngagement:
-          type: boolean
-          description: Receive re-engagement emails
-          example: true
-        unsubscribeAll:
-          type: boolean
-          description: Unsubscribe from all marketing emails
-          example: false
-        weeklyRecap:
-          type: boolean
-          description: Receive the weekly recap of your matches and applications
-          example: true
-        email:
-          type: string
-          format: email
-          description: User email address
-          example: user@example.com
-      required:
-      - notifyLocationFulfilled
-      - notifyRoleFulfilled
-      - onboarding
-      - productUpdates
-      - reEngagement
-      - unsubscribeAll
-      - weeklyRecap
-      - email
-      additionalProperties: false
-    ResponseMetadata:
-      type: object
-      properties:
-        duration:
-          type: number
-          description: Request duration in milliseconds
-          example: 150
-          exclusiveMinimum: 0
-        performance:
-          type: object
-          properties:
-            dbQueries:
-              type: integer
-              minimum: 0
-            totalDbTime:
-              type: number
-              minimum: 0
-          description: Performance metrics (preview/local only)
-        requestId:
-          type: string
-          description: Unique request identifier
-          example: req_abc123
-        timestamp:
-          type: string
-          format: date-time
-          description: ISO 8601 timestamp
-          example: '2026-09-25T17:29:47.224Z'
-        version:
-          type: string
-          description: API version
-          example: v1
-    EmailPreferencesUpdatedResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/EmailPreferencesData'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
     ApiErrorResponse:
       type: object
       properties:
@@ -704,6 +607,174 @@ components:
           required:
           - message
           additionalProperties: false
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    EmailPreferencesResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/EmailPreferencesData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    EmailPreferencesData:
+      type: object
+      properties:
+        notifyLocationFulfilled:
+          type: boolean
+          description: Receive alerts when a requested location starts showing jobs
+          example: true
+        notifyRoleFulfilled:
+          type: boolean
+          description: Receive alerts when a suggested role is added to the platform
+          example: true
+        onboarding:
+          type: boolean
+          description: Receive onboarding and tips emails
+          example: true
+        productUpdates:
+          type: boolean
+          description: Receive product update emails
+          example: true
+        reEngagement:
+          type: boolean
+          description: Receive re-engagement emails
+          example: true
+        unsubscribeAll:
+          type: boolean
+          description: Unsubscribe from all marketing emails
+          example: false
+        weeklyRecap:
+          type: boolean
+          description: Receive the weekly recap of your matches and applications
+          example: true
+        contactEmail:
+          type:
+          - string
+          - 'null'
+          format: email
+          description: Optional personal address the user added. Update mail goes here instead of an Apple private relay address.
+          example: null
+        email:
+          type: string
+          format: email
+          description: User email address
+          example: user@example.com
+        isPrivateRelay:
+          type: boolean
+          description: True when the account email is an Apple "Hide My Email" relay address
+          example: false
+      required:
+      - notifyLocationFulfilled
+      - notifyRoleFulfilled
+      - onboarding
+      - productUpdates
+      - reEngagement
+      - unsubscribeAll
+      - weeklyRecap
+      - contactEmail
+      - email
+      - isPrivateRelay
+      additionalProperties: false
+    UpdateEmailPreferences:
+      type: object
+      properties:
+        notifyLocationFulfilled:
+          type: boolean
+          description: Receive alerts when a requested location starts showing jobs
+          example: true
+        notifyRoleFulfilled:
+          type: boolean
+          description: Receive alerts when a suggested role is added to the platform
+          example: true
+        onboarding:
+          type: boolean
+          description: Receive onboarding and tips emails
+          example: true
+        productUpdates:
+          type: boolean
+          description: Receive product update emails
+          example: true
+        reEngagement:
+          type: boolean
+          description: Receive re-engagement emails
+          example: true
+        unsubscribeAll:
+          type: boolean
+          description: Unsubscribe from all marketing emails
+          example: false
+        weeklyRecap:
+          type: boolean
+          description: Receive the weekly recap of your matches and applications
+          example: true
+      additionalProperties: false
+    UpdateContactEmail:
+      type: object
+      properties:
+        contactEmail:
+          type:
+          - string
+          - 'null'
+          maxLength: 254
+          format: email
+          description: Personal email to receive updates at instead of the Apple private relay address. null clears it.
+          example: jane@gmail.com
+      required:
+      - contactEmail
+      additionalProperties: false
+    ResponseMetadata:
+      type: object
+      properties:
+        duration:
+          type: number
+          minimum: 0
+          description: Request duration in milliseconds
+          example: 150
+        performance:
+          type: object
+          properties:
+            dbQueries:
+              type: integer
+              minimum: 0
+            totalDbTime:
+              type: number
+              minimum: 0
+          description: Performance metrics (preview/local only)
+        requestId:
+          type: string
+          description: Unique request identifier
+          example: req_abc123
+        timestamp:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp
+          example: '2026-10-19T20:12:14.033Z'
+        version:
+          type: string
+          description: API version
+          example: v1
+    EmailPreferencesUpdatedResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/EmailPreferencesData'
         meta:
           $ref: '#/components/schemas/ResponseMetadata'
         success:

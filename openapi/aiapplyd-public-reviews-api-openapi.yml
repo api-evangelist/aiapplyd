@@ -4,23 +4,24 @@ info:
     email: support@aiapplyd.com
     name: AI Applyd
     url: https://aiapplyd.com
-  description: 'The AI Applyd API runs the whole job hunt for you: it matches you to roles that fit your profile, rewrites your resume for each posting, writes the cover letter the form asks for, and auto-applies across the major applicant tracking systems.'
+  description: 'The AI Applyd API runs the whole job hunt for you: it matches you to roles that fit your profile, rewrites your resume for each posting, writes the cover letter the form asks for, and auto-applies across the major applicant tracking systems. Every send is tracked from the swipe to the employer''s own confirmation, so you always know what landed. Authenticate with a Bearer session token. The same surface powers the web app, the mobile app and the AI Applyd MCP server for ChatGPT, Claude and other agents.'
   license:
     name: Proprietary
     url: https://aiapplyd.com/legal/terms
   title: AI Applyd Public Reviews API
-  version: 115c47ce
+  version: fa810d82
 servers:
 - description: Current environment
   url: https://api.aiapplyd.com/api/v1
 security:
 - BearerAuth: []
 tags:
-- name: public-reviews
+- description: Published customer reviews.
+  name: public-reviews
 paths:
   /public/reviews:
     get:
-      description: 'List published reviews for the marketing site: approved by an admin AND explicitly consented to publication by their author. Returns display name, rating, body and creation date - nothing that identifies the account.'
+      description: 'List published reviews for the marketing site: consented to publication by their author (consented reviews are approved automatically; an admin can reject one). Returns display name, rating, body (empty for a stars-only rating) and creation date - nothing that identifies the account - plus a `summary` with the count and mean rating over every published review.'
       summary: List public reviews
       tags:
       - public-reviews
@@ -37,7 +38,7 @@ paths:
         in: query
       responses:
         '200':
-          description: Approved and consented reviews, newest first.
+          description: Approved and consented reviews, newest first, plus the aggregate rating.
           content:
             application/json:
               schema:
@@ -54,36 +55,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
+        '503':
+          description: Service Unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
       operationId: getPublicReviews
 components:
   schemas:
-    PublicReview:
-      type: object
-      properties:
-        body:
-          type: string
-          description: The review text, as written by the reviewer.
-          example: I stopped writing cover letters by hand and started getting replies within a fortnight.
-        createdAt:
-          type: string
-          description: When the review was written (ISO-8601). Feeds `datePublished` in the Review markup.
-          example: '2026-08-31T09:15:00.000Z'
-        displayName:
-          type: string
-          description: The credit the reviewer chose for themselves. Feeds `author.name` in the Review markup.
-          example: Ava K.
-        rating:
-          type: integer
-          minimum: 1
-          maximum: 5
-          description: Star rating, 1-5. Feeds `reviewRating.ratingValue`.
-          example: 5
-      required:
-      - body
-      - createdAt
-      - displayName
-      - rating
-      additionalProperties: false
     PublicReviewsResponse:
       type: object
       properties:
@@ -100,47 +80,6 @@ components:
       - success
       additionalProperties: false
       description: Successful API response
-    ResponseMetadata:
-      type: object
-      properties:
-        duration:
-          type: number
-          description: Request duration in milliseconds
-          example: 150
-          exclusiveMinimum: 0
-        performance:
-          type: object
-          properties:
-            dbQueries:
-              type: integer
-              minimum: 0
-            totalDbTime:
-              type: number
-              minimum: 0
-          description: Performance metrics (preview/local only)
-        requestId:
-          type: string
-          description: Unique request identifier
-          example: req_abc123
-        timestamp:
-          type: string
-          format: date-time
-          description: ISO 8601 timestamp
-          example: '2026-09-25T17:29:47.224Z'
-        version:
-          type: string
-          description: API version
-          example: v1
-    PublicReviewsPayload:
-      type: object
-      properties:
-        reviews:
-          type: array
-          items:
-            $ref: '#/components/schemas/PublicReview'
-      required:
-      - reviews
-      additionalProperties: false
     ApiErrorResponse:
       type: object
       properties:
@@ -485,6 +424,97 @@ components:
       - error
       - success
       additionalProperties: false
+    PublicReviewsSummary:
+      type: object
+      properties:
+        ratingCount:
+          type: integer
+          minimum: 0
+          description: Number of published reviews (approved AND consented), including stars-only ratings.
+          example: 12
+        ratingValue:
+          type:
+          - number
+          - 'null'
+          minimum: 1
+          maximum: 5
+          description: Mean star rating rounded to one decimal. Null when no review is published.
+          example: 4.8
+      required:
+      - ratingCount
+      - ratingValue
+      additionalProperties: false
+    PublicReview:
+      type: object
+      properties:
+        body:
+          type: string
+          description: The review text, as written by the reviewer. Empty for a stars-only rating.
+          example: I stopped writing cover letters by hand and started getting replies within a fortnight.
+        createdAt:
+          type: string
+          description: When the review was written (ISO-8601). Feeds `datePublished` in the Review markup.
+          example: '2026-08-31T09:15:00.000Z'
+        displayName:
+          type: string
+          description: The credit the reviewer chose for themselves. Feeds `author.name` in the Review markup.
+          example: Ava K.
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+          description: Star rating, 1-5. Feeds `reviewRating.ratingValue`.
+          example: 5
+      required:
+      - body
+      - createdAt
+      - displayName
+      - rating
+      additionalProperties: false
+    PublicReviewsPayload:
+      type: object
+      properties:
+        reviews:
+          type: array
+          items:
+            $ref: '#/components/schemas/PublicReview'
+        summary:
+          $ref: '#/components/schemas/PublicReviewsSummary'
+      required:
+      - reviews
+      - summary
+      additionalProperties: false
+    ResponseMetadata:
+      type: object
+      properties:
+        duration:
+          type: number
+          minimum: 0
+          description: Request duration in milliseconds
+          example: 150
+        performance:
+          type: object
+          properties:
+            dbQueries:
+              type: integer
+              minimum: 0
+            totalDbTime:
+              type: number
+              minimum: 0
+          description: Performance metrics (preview/local only)
+        requestId:
+          type: string
+          description: Unique request identifier
+          example: req_abc123
+        timestamp:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp
+          example: '2026-10-19T20:12:14.033Z'
+        version:
+          type: string
+          description: API version
+          example: v1
   securitySchemes:
     BearerAuth:
       description: 'Session token from signing in to AI Applyd, sent as `Authorization: Bearer <token>`.'

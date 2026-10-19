@@ -4,19 +4,20 @@ info:
     email: support@aiapplyd.com
     name: AI Applyd
     url: https://aiapplyd.com
-  description: 'The AI Applyd API runs the whole job hunt for you: it matches you to roles that fit your profile, rewrites your resume for each posting, writes the cover letter the form asks for, and auto-applies across the major applicant tracking systems.'
+  description: 'The AI Applyd API runs the whole job hunt for you: it matches you to roles that fit your profile, rewrites your resume for each posting, writes the cover letter the form asks for, and auto-applies across the major applicant tracking systems. Every send is tracked from the swipe to the employer''s own confirmation, so you always know what landed. Authenticate with a Bearer session token. The same surface powers the web app, the mobile app and the AI Applyd MCP server for ChatGPT, Claude and other agents.'
   license:
     name: Proprietary
     url: https://aiapplyd.com/legal/terms
   title: AI Applyd Notifications API
-  version: 115c47ce
+  version: fa810d82
 servers:
 - description: Current environment
   url: https://api.aiapplyd.com/api/v1
 security:
 - BearerAuth: []
 tags:
-- name: Notifications
+- description: In-app notifications and push tokens.
+  name: Notifications
 paths:
   /notifications/push-token:
     post:
@@ -104,6 +105,124 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: postNotificationsPushTokenUnregister
+  /notifications/web-push/config:
+    get:
+      tags:
+      - Notifications
+      summary: Get Web Push Config
+      description: The VAPID public key a browser passes to PushManager.subscribe(). `publicKey` is null when this environment has no VAPID keys, and the client then hides its opt-in.
+      responses:
+        '200':
+          description: Web push config retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebPushConfigResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: getNotificationsWebPushConfig
+  /notifications/web-push/subscribe:
+    post:
+      tags:
+      - Notifications
+      summary: Register Web Push Subscription
+      description: Store (or move) this browser's PushSubscription on the authenticated user's account. Idempotent on the endpoint. Only known push-service hosts are accepted.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterWebPushSubscriptionRequest'
+      responses:
+        '200':
+          description: Web push subscription registered
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PushTokenResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: postNotificationsWebPushSubscribe
+  /notifications/web-push/unsubscribe:
+    post:
+      tags:
+      - Notifications
+      summary: Unregister Web Push Subscription
+      description: Drop this browser's subscription from the authenticated user's account. Called when the user turns browser notifications off.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteWebPushSubscriptionRequest'
+      responses:
+        '200':
+          description: Web push subscription unregistered
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PushTokenResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: postNotificationsWebPushUnsubscribe
   /notifications:
     get:
       tags:
@@ -238,69 +357,267 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: patchNotificationsDismiss
+  /notifications/read-all:
+    patch:
+      tags:
+      - Notifications
+      summary: Mark All Notifications Read
+      description: Mark every active unread notification of the authenticated user read, including rows outside the loaded page. Pass `priority` to limit it to one notification center view.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NotificationBulkRequest'
+      responses:
+        '200':
+          description: Notifications marked read
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationMutationResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: patchNotificationsReadAll
+  /notifications/dismiss-all:
+    patch:
+      tags:
+      - Notifications
+      summary: Clear All Notifications
+      description: Dismiss every active notification of the authenticated user, including rows outside the loaded page. Pass `priority` to limit it to one notification center view.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NotificationBulkRequest'
+      responses:
+        '200':
+          description: Notifications dismissed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationMutationResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: patchNotificationsDismissAll
 components:
   schemas:
-    ApplicationSubmittedNotificationContent:
+    PushTokenResponse:
       type: object
       properties:
-        kind:
-          type: string
+        data:
+          type: object
+          properties:
+            success:
+              type: boolean
+              enum:
+              - true
+          required:
+          - success
+          additionalProperties: false
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
           enum:
-          - application_submitted
-        payload:
-          $ref: '#/components/schemas/ApplicationSubmittedNotificationPayload'
+          - true
       required:
-      - kind
-      - payload
+      - data
+      - success
       additionalProperties: false
-    NotificationMutationData:
+      description: Successful API response
+    RegisterWebPushSubscriptionRequest:
       type: object
       properties:
-        updated:
+        endpoint:
+          type: string
+          minLength: 1
+          maxLength: 2048
+          description: PushSubscription.endpoint from the browser. Must be an https URL of a known push service.
+          example: https://fcm.googleapis.com/fcm/send/abc123
+        expirationTime:
+          type:
+          - number
+          - 'null'
+        keys:
+          type: object
+          properties:
+            auth:
+              type: string
+              maxLength: 64
+              description: Base64url auth secret (PushSubscription.keys.auth)
+            p256dh:
+              type: string
+              maxLength: 128
+              description: Base64url P-256 public key (PushSubscription.keys.p256dh)
+          required:
+          - auth
+          - p256dh
+          additionalProperties: false
+      required:
+      - endpoint
+      - keys
+      additionalProperties: false
+    WebPushConfigResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/WebPushConfigData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    NotificationFeedResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/NotificationFeedData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    NotificationFeedData:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/NotificationFeedItem'
+          maxItems: 30
+        nextCursor:
+          type:
+          - integer
+          - 'null'
+          exclusiveMinimum: 0
+        unreadByPriority:
+          type: object
+          properties:
+            action:
+              type: integer
+              minimum: 0
+            low:
+              type: integer
+              minimum: 0
+            update:
+              type: integer
+              minimum: 0
+          required:
+          - action
+          - low
+          - update
+          additionalProperties: false
+          description: Unread active rows per priority (action, update, low), covering rows outside the current page
+        unreadCount:
           type: integer
           minimum: 0
       required:
-      - updated
+      - items
+      - unreadCount
       additionalProperties: false
-    NotificationIdsRequest:
-      type: object
-      properties:
-        ids:
-          type: array
-          items:
-            type: integer
-            exclusiveMinimum: 0
-          minItems: 1
-          maxItems: 50
-          description: Owned notification row ids to update. Foreign IDs are ignored.
-          example:
-          - 41
-          - 42
-      required:
-      - ids
-      additionalProperties: false
-    EmployerReceiptConfirmedNotificationContent:
+    ApplicationReadyToSendNotificationContent:
       type: object
       properties:
         kind:
           type: string
           enum:
-          - employer_receipt_confirmed
+          - application_ready_to_send
         payload:
-          $ref: '#/components/schemas/EmployerReceiptConfirmedNotificationPayload'
+          $ref: '#/components/schemas/ApplicationReadyToSendNotificationPayload'
       required:
       - kind
       - payload
       additionalProperties: false
-    DocumentTranslationReadyNotificationContent:
+    NotificationBulkRequest:
+      type: object
+      properties:
+        priority:
+          type: string
+          enum:
+          - action
+          - update
+          - low
+          description: 'How loudly a notification may speak: action (needs the user), update (status), low (never interrupts)'
+          example: action
+      additionalProperties: false
+    DeletePushTokenRequest:
+      type: object
+      properties:
+        token:
+          type: string
+          minLength: 1
+          maxLength: 200
+          pattern: ^Expo(?:nent)?PushToken\[[^\][\s]+\]$
+          description: Expo push token issued by getExpoPushTokenAsync()
+          example: ExponentPushToken[xxxxxxxxxxxxxxxxxxxxxx]
+      required:
+      - token
+      additionalProperties: false
+    ApplicationFailedNotificationContent:
       type: object
       properties:
         kind:
           type: string
           enum:
-          - document_translation_ready
+          - application_failed
         payload:
-          $ref: '#/components/schemas/DocumentTranslationReadyNotificationPayload'
+          $ref: '#/components/schemas/ApplicationFailedNotificationPayload'
       required:
       - kind
       - payload
@@ -323,42 +640,190 @@ components:
       - documentId
       - overallScore
       additionalProperties: false
-    NotificationFeedData:
+    DocumentUploadedNotificationPayload:
       type: object
       properties:
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/NotificationFeedItem'
-          maxItems: 30
-        nextCursor:
-          type:
-          - integer
-          - 'null'
+        documentId:
+          type: integer
+          description: Owned user_document row id
+          example: 42
           exclusiveMinimum: 0
-        unreadCount:
+        documentType:
+          type: string
+          enum:
+          - cover_letter
+          - resume
+          - custom
+          - tailored_resume
+          - translation
+          - match_report
+          description: Type of document (cover letter, resume, custom, tailored resume, translation, or match report)
+          example: cover_letter
+      required:
+      - documentId
+      - documentType
+      additionalProperties: false
+    ApplicationFailedNotificationPayload:
+      type: object
+      properties:
+        applicationResultId:
+          type: integer
+          description: Owned application_result row id
+          example: 1540
+          exclusiveMinimum: 0
+        company:
+          type: string
+          minLength: 1
+          maxLength: 200
+          description: Employer name as it was at the moment of the event
+          example: Trading 212
+        jobTitle:
+          type: string
+          minLength: 1
+          maxLength: 200
+          description: Job title as it was at the moment of the event
+          example: Staff Frontend Engineer
+      required:
+      - applicationResultId
+      - company
+      - jobTitle
+      additionalProperties: false
+    NotificationMutationData:
+      type: object
+      properties:
+        updated:
           type: integer
           minimum: 0
       required:
-      - items
-      - unreadCount
+      - updated
       additionalProperties: false
-    NotificationMutationResponse:
+    RegisterPushTokenRequest:
       type: object
       properties:
-        data:
-          $ref: '#/components/schemas/NotificationMutationData'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
+        channelsVersion:
+          type: integer
+          minimum: 1
+          maximum: 1000
+          description: Notification channel set the app build creates
+          example: 1
+        platform:
+          type: string
           enum:
-          - true
+          - ios
+          - android
+          - web
+          - unknown
+          description: Operating system of the device holding the push token
+          example: ios
+        token:
+          type: string
+          minLength: 1
+          maxLength: 200
+          pattern: ^Expo(?:nent)?PushToken\[[^\][\s]+\]$
+          description: Expo push token issued by getExpoPushTokenAsync()
+          example: ExponentPushToken[xxxxxxxxxxxxxxxxxxxxxx]
       required:
-      - data
-      - success
+      - token
       additionalProperties: false
-      description: Successful API response
+    WebPushConfigData:
+      type: object
+      properties:
+        publicKey:
+          type:
+          - string
+          - 'null'
+          description: Base64url VAPID public key for PushManager.subscribe(), or null when web push is off
+          example: BEl62iUYgUivxIkv69yViEuiBIa-Ib9-SkvMeAtA3LFgDzkrxZJjSgSnfckjBJuBkr3qBUYIHBQFLXYp5Nksh8U
+      required:
+      - publicKey
+      additionalProperties: false
+    MatchesReadyNotificationPayload:
+      type: object
+      properties:
+        count:
+          type: integer
+          description: How many newly scored matches arrived in this batch
+          example: 24
+          exclusiveMinimum: 0
+      required:
+      - count
+      additionalProperties: false
+    AchievementUnlockedNotificationContent:
+      type: object
+      properties:
+        kind:
+          type: string
+          enum:
+          - achievement_unlocked
+        payload:
+          $ref: '#/components/schemas/AchievementUnlockedNotificationPayload'
+      required:
+      - kind
+      - payload
+      additionalProperties: false
+    DocumentUploadedNotificationContent:
+      type: object
+      properties:
+        kind:
+          type: string
+          enum:
+          - document_uploaded
+        payload:
+          $ref: '#/components/schemas/DocumentUploadedNotificationPayload'
+      required:
+      - kind
+      - payload
+      additionalProperties: false
+    ApplicationReadyToSendNotificationPayload:
+      type: object
+      properties:
+        applicationResultId:
+          type: integer
+          description: Owned application_result row id
+          example: 1540
+          exclusiveMinimum: 0
+        company:
+          type: string
+          minLength: 1
+          maxLength: 200
+          description: Employer name as it was at the moment of the event
+          example: Trading 212
+        jobTitle:
+          type: string
+          minLength: 1
+          maxLength: 200
+          description: Job title as it was at the moment of the event
+          example: Staff Frontend Engineer
+      required:
+      - applicationResultId
+      - company
+      - jobTitle
+      additionalProperties: false
+    ApplicationSubmittedNotificationPayload:
+      type: object
+      properties:
+        applicationResultId:
+          type: integer
+          description: Owned application_result row id
+          example: 1540
+          exclusiveMinimum: 0
+        company:
+          type: string
+          minLength: 1
+          maxLength: 200
+          description: Employer name as it was at the moment of the event
+          example: Trading 212
+        jobTitle:
+          type: string
+          minLength: 1
+          maxLength: 200
+          description: Job title as it was at the moment of the event
+          example: Staff Frontend Engineer
+      required:
+      - applicationResultId
+      - company
+      - jobTitle
+      additionalProperties: false
     NotificationFeedItem:
       oneOf:
       - allOf:
@@ -559,132 +1024,49 @@ components:
           - id
           - readAt
           additionalProperties: false
-    ApplicationReadyToSendNotificationPayload:
+    ResponseMetadata:
       type: object
       properties:
-        applicationResultId:
-          type: integer
-          description: Owned application_result row id
-          example: 1540
-          exclusiveMinimum: 0
-        company:
+        duration:
+          type: number
+          minimum: 0
+          description: Request duration in milliseconds
+          example: 150
+        performance:
+          type: object
+          properties:
+            dbQueries:
+              type: integer
+              minimum: 0
+            totalDbTime:
+              type: number
+              minimum: 0
+          description: Performance metrics (preview/local only)
+        requestId:
           type: string
-          minLength: 1
-          maxLength: 200
-          description: Employer name as it was at the moment of the event
-          example: Trading 212
-        jobTitle:
+          description: Unique request identifier
+          example: req_abc123
+        timestamp:
           type: string
-          minLength: 1
-          maxLength: 200
-          description: Job title as it was at the moment of the event
-          example: Staff Frontend Engineer
-      required:
-      - applicationResultId
-      - company
-      - jobTitle
-      additionalProperties: false
-    DocumentTranslationReadyNotificationPayload:
-      type: object
-      properties:
-        documentId:
-          type: integer
-          description: Owned user_document row id
-          example: 42
-          exclusiveMinimum: 0
-        targetLanguage:
+          format: date-time
+          description: ISO 8601 timestamp
+          example: '2026-10-19T20:12:14.033Z'
+        version:
           type: string
-          minLength: 1
-          maxLength: 50
-          description: Stable translation target value used by the document request
-          example: German
-      required:
-      - documentId
-      - targetLanguage
-      additionalProperties: false
-    EmployerReceiptConfirmedNotificationPayload:
-      type: object
-      properties:
-        applicationResultId:
-          type: integer
-          description: Owned application_result row id
-          example: 1540
-          exclusiveMinimum: 0
-        company:
-          type: string
-          minLength: 1
-          maxLength: 200
-          description: Employer name as it was at the moment of the event
-          example: Trading 212
-        jobTitle:
-          type: string
-          minLength: 1
-          maxLength: 200
-          description: Job title as it was at the moment of the event
-          example: Staff Frontend Engineer
-      required:
-      - applicationResultId
-      - company
-      - jobTitle
-      additionalProperties: false
-    MatchesReadyNotificationPayload:
-      type: object
-      properties:
-        count:
-          type: integer
-          description: How many newly scored matches arrived in this batch
-          example: 24
-          exclusiveMinimum: 0
-      required:
-      - count
-      additionalProperties: false
-    RegisterPushTokenRequest:
-      type: object
-      properties:
-        platform:
-          type: string
-          enum:
-          - ios
-          - android
-          - web
-          - unknown
-          description: Operating system of the device holding the push token
-          example: ios
-        token:
-          type: string
-          minLength: 1
-          maxLength: 200
-          pattern: ^Expo(?:nent)?PushToken\[[^\][\s]+\]$
-          description: Expo push token issued by getExpoPushTokenAsync()
-          example: ExponentPushToken[xxxxxxxxxxxxxxxxxxxxxx]
-      required:
-      - token
-      additionalProperties: false
-    MatchesReadyNotificationContent:
+          description: API version
+          example: v1
+    DocumentAtsScoredNotificationContent:
       type: object
       properties:
         kind:
           type: string
           enum:
-          - matches_ready
+          - document_ats_scored
         payload:
-          $ref: '#/components/schemas/MatchesReadyNotificationPayload'
+          $ref: '#/components/schemas/DocumentAtsScoredNotificationPayload'
       required:
       - kind
       - payload
-      additionalProperties: false
-    DeletePushTokenRequest:
-      type: object
-      properties:
-        token:
-          type: string
-          minLength: 1
-          maxLength: 200
-          pattern: ^Expo(?:nent)?PushToken\[[^\][\s]+\]$
-          description: Expo push token issued by getExpoPushTokenAsync()
-          example: ExponentPushToken[xxxxxxxxxxxxxxxxxxxxxx]
-      required:
-      - token
       additionalProperties: false
     AchievementUnlockedNotificationPayload:
       type: object
@@ -705,35 +1087,6 @@ components:
       required:
       - achievementKey
       additionalProperties: false
-    ApplicationReadyToSendNotificationContent:
-      type: object
-      properties:
-        kind:
-          type: string
-          enum:
-          - application_ready_to_send
-        payload:
-          $ref: '#/components/schemas/ApplicationReadyToSendNotificationPayload'
-      required:
-      - kind
-      - payload
-      additionalProperties: false
-    NotificationFeedResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/NotificationFeedData'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
     ApiErrorResponse:
       type: object
       properties:
@@ -1078,77 +1431,32 @@ components:
       - error
       - success
       additionalProperties: false
-    ApplicationFailedNotificationContent:
+    DeleteWebPushSubscriptionRequest:
+      type: object
+      properties:
+        endpoint:
+          type: string
+          minLength: 1
+          maxLength: 2048
+          description: PushSubscription.endpoint from the browser. Must be an https URL of a known push service.
+          example: https://fcm.googleapis.com/fcm/send/abc123
+      required:
+      - endpoint
+      additionalProperties: false
+    ApplicationSubmittedNotificationContent:
       type: object
       properties:
         kind:
           type: string
           enum:
-          - application_failed
+          - application_submitted
         payload:
-          $ref: '#/components/schemas/ApplicationFailedNotificationPayload'
+          $ref: '#/components/schemas/ApplicationSubmittedNotificationPayload'
       required:
       - kind
       - payload
       additionalProperties: false
-    DocumentUploadedNotificationContent:
-      type: object
-      properties:
-        kind:
-          type: string
-          enum:
-          - document_uploaded
-        payload:
-          $ref: '#/components/schemas/DocumentUploadedNotificationPayload'
-      required:
-      - kind
-      - payload
-      additionalProperties: false
-    ResponseMetadata:
-      type: object
-      properties:
-        duration:
-          type: number
-          description: Request duration in milliseconds
-          example: 150
-          exclusiveMinimum: 0
-        performance:
-          type: object
-          properties:
-            dbQueries:
-              type: integer
-              minimum: 0
-            totalDbTime:
-              type: number
-              minimum: 0
-          description: Performance metrics (preview/local only)
-        requestId:
-          type: string
-          description: Unique request identifier
-          example: req_abc123
-        timestamp:
-          type: string
-          format: date-time
-          description: ISO 8601 timestamp
-          example: '2026-09-25T17:29:47.224Z'
-        version:
-          type: string
-          description: API version
-          example: v1
-    AchievementUnlockedNotificationContent:
-      type: object
-      properties:
-        kind:
-          type: string
-          enum:
-          - achievement_unlocked
-        payload:
-          $ref: '#/components/schemas/AchievementUnlockedNotificationPayload'
-      required:
-      - kind
-      - payload
-      additionalProperties: false
-    ApplicationSubmittedNotificationPayload:
+    EmployerReceiptConfirmedNotificationPayload:
       type: object
       properties:
         applicationResultId:
@@ -1173,57 +1481,24 @@ components:
       - company
       - jobTitle
       additionalProperties: false
-    ApplicationFailedNotificationPayload:
-      type: object
-      properties:
-        applicationResultId:
-          type: integer
-          description: Owned application_result row id
-          example: 1540
-          exclusiveMinimum: 0
-        company:
-          type: string
-          minLength: 1
-          maxLength: 200
-          description: Employer name as it was at the moment of the event
-          example: Trading 212
-        jobTitle:
-          type: string
-          minLength: 1
-          maxLength: 200
-          description: Job title as it was at the moment of the event
-          example: Staff Frontend Engineer
-      required:
-      - applicationResultId
-      - company
-      - jobTitle
-      additionalProperties: false
-    DocumentAtsScoredNotificationContent:
+    MatchesReadyNotificationContent:
       type: object
       properties:
         kind:
           type: string
           enum:
-          - document_ats_scored
+          - matches_ready
         payload:
-          $ref: '#/components/schemas/DocumentAtsScoredNotificationPayload'
+          $ref: '#/components/schemas/MatchesReadyNotificationPayload'
       required:
       - kind
       - payload
       additionalProperties: false
-    PushTokenResponse:
+    NotificationMutationResponse:
       type: object
       properties:
         data:
-          type: object
-          properties:
-            success:
-              type: boolean
-              enum:
-              - true
-          required:
-          - success
-          additionalProperties: false
+          $ref: '#/components/schemas/NotificationMutationData'
         meta:
           $ref: '#/components/schemas/ResponseMetadata'
         success:
@@ -1235,7 +1510,37 @@ components:
       - success
       additionalProperties: false
       description: Successful API response
-    DocumentUploadedNotificationPayload:
+    NotificationIdsRequest:
+      type: object
+      properties:
+        ids:
+          type: array
+          items:
+            type: integer
+            exclusiveMinimum: 0
+          minItems: 1
+          maxItems: 50
+          description: Owned notification row ids to update. Foreign IDs are ignored.
+          example:
+          - 41
+          - 42
+      required:
+      - ids
+      additionalProperties: false
+    DocumentTranslationReadyNotificationContent:
+      type: object
+      properties:
+        kind:
+          type: string
+          enum:
+          - document_translation_ready
+        payload:
+          $ref: '#/components/schemas/DocumentTranslationReadyNotificationPayload'
+      required:
+      - kind
+      - payload
+      additionalProperties: false
+    DocumentTranslationReadyNotificationPayload:
       type: object
       properties:
         documentId:
@@ -1243,20 +1548,28 @@ components:
           description: Owned user_document row id
           example: 42
           exclusiveMinimum: 0
-        documentType:
+        targetLanguage:
           type: string
-          enum:
-          - cover_letter
-          - resume
-          - custom
-          - tailored_resume
-          - translation
-          - match_report
-          description: Type of document (cover letter, resume, custom, tailored resume, translation, or match report)
-          example: cover_letter
+          minLength: 1
+          maxLength: 50
+          description: Stable translation target value used by the document request
+          example: German
       required:
       - documentId
-      - documentType
+      - targetLanguage
+      additionalProperties: false
+    EmployerReceiptConfirmedNotificationContent:
+      type: object
+      properties:
+        kind:
+          type: string
+          enum:
+          - employer_receipt_confirmed
+        payload:
+          $ref: '#/components/schemas/EmployerReceiptConfirmedNotificationPayload'
+      required:
+      - kind
+      - payload
       additionalProperties: false
   securitySchemes:
     BearerAuth:

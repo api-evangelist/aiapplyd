@@ -1,0 +1,12 @@
+{
+ "url": "https://api.aiapplyd.com/api/v1/doc",
+ "requested_url": "https://api.aiapplyd.com/api/v1/doc",
+ "status": 200,
+ "content_type": "application/json; charset=UTF-8",
+ "bytes": 949926,
+ "sha256": "b3fe7fa0becce3a898945efee597d3a982e04fc5ee98e5aeae2a7882181a6c49",
+ "fetched_at": "2026-10-04",
+ "fetched_by": "APIEvangelist-Harvest/1.0 (+https://apievangelist.com)",
+ "match": "equivalent",
+ "note": "Re-fetched from the provider by verify-openapi-sources.py; the provider's current document describes the same operations (Jaccard 0.949), but the bytes differ, so the archive is an earlier or reformatted copy."
+}

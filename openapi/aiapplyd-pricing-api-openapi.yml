@@ -4,19 +4,20 @@ info:
     email: support@aiapplyd.com
     name: AI Applyd
     url: https://aiapplyd.com
-  description: 'The AI Applyd API runs the whole job hunt for you: it matches you to roles that fit your profile, rewrites your resume for each posting, writes the cover letter the form asks for, and auto-applies across the major applicant tracking systems.'
+  description: 'The AI Applyd API runs the whole job hunt for you: it matches you to roles that fit your profile, rewrites your resume for each posting, writes the cover letter the form asks for, and auto-applies across the major applicant tracking systems. Every send is tracked from the swipe to the employer''s own confirmation, so you always know what landed. Authenticate with a Bearer session token. The same surface powers the web app, the mobile app and the AI Applyd MCP server for ChatGPT, Claude and other agents.'
   license:
     name: Proprietary
     url: https://aiapplyd.com/legal/terms
   title: AI Applyd Pricing API
-  version: 115c47ce
+  version: fa810d82
 servers:
 - description: Current environment
   url: https://api.aiapplyd.com/api/v1
 security:
 - BearerAuth: []
 tags:
-- name: Pricing
+- description: Public plans and prices.
+  name: Pricing
 paths:
   /pricing:
     get:
@@ -72,142 +73,6 @@ paths:
       operationId: getPricingSubscriptions
 components:
   schemas:
-    SubscriptionPlan:
-      type: object
-      properties:
-        afterSalePrice:
-          type:
-          - string
-          - 'null'
-          description: Price after sale ends
-          example: '29.99'
-        createdAt:
-          type: string
-          description: Creation timestamp
-          example: '2024-01-01T00:00:00Z'
-        currentPrice:
-          type: string
-          description: Current price
-          example: '19.99'
-        id:
-          type: integer
-          description: Plan identifier
-          example: 1
-        initialTokensCount:
-          type: integer
-          description: Initial tokens included with subscription
-          example: 100000
-        isOnSale:
-          type: boolean
-          description: Whether the plan is currently on sale
-          example: false
-        planName:
-          type: string
-          description: Plan display name
-          example: Pro Plan
-        stripePlanId:
-          type: string
-          description: Stripe plan ID
-          example: plan_1234567890
-        stripePriceId:
-          type: string
-          description: 'Stripe price ID. ⚠️ AMBIGUOUS BY SEED: `seed-prod.sql` sets this to the WEEKLY id for both paid plans, on every interval. Never bill from it directly — resolve the interval first via the two fields below.'
-          example: price_1234567890
-        stripePriceIdMonthly:
-          type:
-          - string
-          - 'null'
-          description: Stripe price ID for the MONTHLY interval. Null on rows seeded before the per-interval columns existed.
-          example: price_monthly_1234567890
-        stripePriceIdWeekly:
-          type:
-          - string
-          - 'null'
-          description: Stripe price ID for the WEEKLY interval. Null on rows seeded before the per-interval columns existed.
-          example: price_weekly_1234567890
-        updatedAt:
-          type: string
-          description: Last update timestamp
-          example: '2024-01-01T00:00:00Z'
-      required:
-      - afterSalePrice
-      - createdAt
-      - currentPrice
-      - id
-      - initialTokensCount
-      - isOnSale
-      - planName
-      - stripePlanId
-      - stripePriceId
-      - stripePriceIdMonthly
-      - stripePriceIdWeekly
-      - updatedAt
-      additionalProperties: false
-    ResponseMetadata:
-      type: object
-      properties:
-        duration:
-          type: number
-          description: Request duration in milliseconds
-          example: 150
-          exclusiveMinimum: 0
-        performance:
-          type: object
-          properties:
-            dbQueries:
-              type: integer
-              minimum: 0
-            totalDbTime:
-              type: number
-              minimum: 0
-          description: Performance metrics (preview/local only)
-        requestId:
-          type: string
-          description: Unique request identifier
-          example: req_abc123
-        timestamp:
-          type: string
-          format: date-time
-          description: ISO 8601 timestamp
-          example: '2026-09-25T17:29:47.224Z'
-        version:
-          type: string
-          description: API version
-          example: v1
-    PricingResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/PricingWithLimitsPayload'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    SubscriptionPlansResponse:
-      type: object
-      properties:
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/SubscriptionPlan'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
     PricingWithLimitsPayload:
       type: object
       properties:
@@ -567,6 +432,22 @@ components:
       - error
       - success
       additionalProperties: false
+    PricingResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/PricingWithLimitsPayload'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
     PlanActionLimit:
       type: object
       properties:
@@ -626,6 +507,126 @@ components:
       - limitPeriod
       - limitValue
       - planTier
+      additionalProperties: false
+    SubscriptionPlansResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/SubscriptionPlan'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    ResponseMetadata:
+      type: object
+      properties:
+        duration:
+          type: number
+          minimum: 0
+          description: Request duration in milliseconds
+          example: 150
+        performance:
+          type: object
+          properties:
+            dbQueries:
+              type: integer
+              minimum: 0
+            totalDbTime:
+              type: number
+              minimum: 0
+          description: Performance metrics (preview/local only)
+        requestId:
+          type: string
+          description: Unique request identifier
+          example: req_abc123
+        timestamp:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp
+          example: '2026-10-19T20:12:14.033Z'
+        version:
+          type: string
+          description: API version
+          example: v1
+    SubscriptionPlan:
+      type: object
+      properties:
+        afterSalePrice:
+          type:
+          - string
+          - 'null'
+          description: Price after sale ends
+          example: '29.99'
+        createdAt:
+          type: string
+          description: Creation timestamp
+          example: '2024-01-01T00:00:00Z'
+        currentPrice:
+          type: string
+          description: Current price
+          example: '19.99'
+        id:
+          type: integer
+          description: Plan identifier
+          example: 1
+        initialTokensCount:
+          type: integer
+          description: Initial tokens included with subscription
+          example: 100000
+        isOnSale:
+          type: boolean
+          description: Whether the plan is currently on sale
+          example: false
+        planName:
+          type: string
+          description: Plan display name
+          example: Pro Plan
+        stripePlanId:
+          type: string
+          description: Stripe plan ID
+          example: plan_1234567890
+        stripePriceId:
+          type: string
+          description: 'Stripe price ID. ⚠️ AMBIGUOUS BY SEED: `seed-prod.sql` sets this to the WEEKLY id for both paid plans, on every interval. Never bill from it directly — resolve the interval first via the two fields below.'
+          example: price_1234567890
+        stripePriceIdMonthly:
+          type:
+          - string
+          - 'null'
+          description: Stripe price ID for the MONTHLY interval. Null on rows seeded before the per-interval columns existed.
+          example: price_monthly_1234567890
+        stripePriceIdWeekly:
+          type:
+          - string
+          - 'null'
+          description: Stripe price ID for the WEEKLY interval. Null on rows seeded before the per-interval columns existed.
+          example: price_weekly_1234567890
+        updatedAt:
+          type: string
+          description: Last update timestamp
+          example: '2024-01-01T00:00:00Z'
+      required:
+      - afterSalePrice
+      - createdAt
+      - currentPrice
+      - id
+      - initialTokensCount
+      - isOnSale
+      - planName
+      - stripePlanId
+      - stripePriceId
+      - stripePriceIdMonthly
+      - stripePriceIdWeekly
+      - updatedAt
       additionalProperties: false
   securitySchemes:
     BearerAuth:

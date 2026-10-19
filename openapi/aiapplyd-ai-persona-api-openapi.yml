@@ -4,19 +4,20 @@ info:
     email: support@aiapplyd.com
     name: AI Applyd
     url: https://aiapplyd.com
-  description: 'The AI Applyd API runs the whole job hunt for you: it matches you to roles that fit your profile, rewrites your resume for each posting, writes the cover letter the form asks for, and auto-applies across the major applicant tracking systems.'
+  description: 'The AI Applyd API runs the whole job hunt for you: it matches you to roles that fit your profile, rewrites your resume for each posting, writes the cover letter the form asks for, and auto-applies across the major applicant tracking systems. Every send is tracked from the swipe to the employer''s own confirmation, so you always know what landed. Authenticate with a Bearer session token. The same surface powers the web app, the mobile app and the AI Applyd MCP server for ChatGPT, Claude and other agents.'
   license:
     name: Proprietary
     url: https://aiapplyd.com/legal/terms
   title: AI Applyd AI Persona API
-  version: 115c47ce
+  version: fa810d82
 servers:
 - description: Current environment
   url: https://api.aiapplyd.com/api/v1
 security:
 - BearerAuth: []
 tags:
-- name: ai-persona
+- description: 'How the agent writes and applies for you: tone, narrative, scoring weights and apply mode.'
+  name: ai-persona
 paths:
   /ai-persona:
     get:
@@ -249,223 +250,499 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: postAiPersonaDeriveCustomTone
-components:
-  schemas:
-    AIPersonaResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/AIPersonaData'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    DeriveCustomToneResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/DeriveCustomToneData'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    UpsertAIPersona:
-      type: object
-      properties:
-        allowFabrication:
-          type: boolean
-          description: 'Allow the apply agent to fill gaps: complete a required field it cannot take from profile facts, sourcing real-data-first (the resume, tailored resume, and cover letter for this application, then job preferences, then profile) and fabricating only as a last resort. Enabled by default; set false to opt out. Contact/identity completion is always-on and not gated by this flag.'
-          example: true
-        coverLetterStrategy:
-          type: string
-          enum:
-          - 'off'
-          - use_base
-          - tailor_base
-          - generate_new
-          description: Cover letter handling strategy
-          example: generate_new
-        dailyLimit:
-          type: integer
-          minimum: 1
-          maximum: 50
-        generateCoverLetterPerJob:
-          type: boolean
-          description: Whether to generate cover letter per job
-          example: true
-        minMatchScore:
-          type: integer
-          minimum: 0
-          maximum: 100
-        mode:
-          type: string
-          enum:
-          - copilot
-          - auto_approve
-          description: Application mode
-          example: copilot
-        personalDescription:
-          type:
-          - string
-          - 'null'
-          maxLength: 500
-          description: Free text about yourself (max 500 chars)
-          example: Senior engineer with 10 years in fintech
-        presetId:
-          type: string
-          enum:
-          - balanced
-          - the_professional
-          - the_conversationalist
-          - the_storyteller
-          - the_closer
-          - the_enthusiast
-          - custom
-          description: Selected persona preset
-          example: balanced
-        resumeStrategy:
-          type: string
-          enum:
-          - base
-          - tailor
-          description: Resume handling strategy
-          example: tailor
-        samplePhrases:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-            maxLength: 200
-          maxItems: 10
-          description: Example phrases you naturally use (max 10)
-          example:
-          - Let me walk you through my approach
-        tailorResumePerJob:
-          type: boolean
-          description: Whether to tailor resume per job
-          example: true
-        toneInstructions:
-          type:
-          - string
-          - 'null'
-          maxLength: 1000
-          description: Custom tone rules (max 1000 chars)
-          example: Always mention my passion for open-source
-        translationStrategy:
-          type: string
-          enum:
-          - 'off'
-          - translate
-          - translate_and_tailor
-          description: Translation strategy
-          example: 'off'
-      required:
-      - presetId
-      additionalProperties: false
-    SuggestVoiceToneResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/SuggestVoiceToneData'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    ResponseMetadata:
-      type: object
-      properties:
-        duration:
-          type: number
-          description: Request duration in milliseconds
-          example: 150
-          exclusiveMinimum: 0
-        performance:
-          type: object
-          properties:
-            dbQueries:
-              type: integer
-              minimum: 0
-            totalDbTime:
-              type: number
-              minimum: 0
-          description: Performance metrics (preview/local only)
-        requestId:
-          type: string
-          description: Unique request identifier
-          example: req_abc123
-        timestamp:
-          type: string
-          format: date-time
-          description: ISO 8601 timestamp
-          example: '2026-09-25T17:29:47.224Z'
-        version:
-          type: string
-          description: API version
-          example: v1
-    ScoringWeightsResponse:
-      type: object
-      properties:
-        data:
-          type: object
-          properties:
-            weights:
+  /ai-persona/auto-pilot:
+    get:
+      tags:
+      - ai-persona
+      summary: Get Auto Apply
+      description: The Auto Apply switch, its daily number, match level and review mode, plus what it has sent for the user.
+      responses:
+        '200':
+          description: Auto Apply settings and report
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      access:
+                        type: string
+                        enum:
+                        - included
+                        - grace
+                        - upgrade_required
+                        - plan_required
+                        description: 'Whether this account may run Auto Apply: included in the plan, a time-limited grace, or which wall stands in the way'
+                        example: included
+                      dailyLimit:
+                        type: integer
+                        description: Most applications Auto Apply starts in a day
+                        example: 10
+                      enabled:
+                        type: boolean
+                        description: Auto Apply is on
+                        example: true
+                      enabledAt:
+                        type:
+                        - string
+                        - 'null'
+                      graceUntil:
+                        type:
+                        - string
+                        - 'null'
+                        description: 'When access is grace: the moment Auto Apply stops on this plan (ISO)'
+                      isPaidPlan:
+                        type: boolean
+                        deprecated: true
+                        description: Same as access being included or grace. Read access instead.
+                      lastRun:
+                        type:
+                        - object
+                        - 'null'
+                        properties:
+                          halted:
+                            type:
+                            - string
+                            - 'null'
+                          ranAt:
+                            type: string
+                          sent:
+                            type: integer
+                          skipped:
+                            type: object
+                            additionalProperties:
+                              type: integer
+                        required:
+                        - halted
+                        - ranAt
+                        - sent
+                        - skipped
+                      matchLevel:
+                        type: string
+                        enum:
+                        - excellent
+                        - strong
+                        - good
+                        - stretch
+                        description: 'Lowest match quality Auto Apply applies to: excellent (90+), strong (80+), good (70+) or stretch (60+)'
+                        example: strong
+                      matchesByLevel:
+                        type: object
+                        properties:
+                          excellent:
+                            type: integer
+                          strong:
+                            type: integer
+                          good:
+                            type: integer
+                          stretch:
+                            type: integer
+                        description: Matches waiting right now at or above each level (not yet applied, not hidden)
+                      mode:
+                        type: string
+                        enum:
+                        - copilot
+                        - auto_approve
+                        description: auto_approve submits on its own; copilot holds each one for review
+                        example: copilot
+                      planDailyMax:
+                        type: integer
+                        description: The plan's own daily cap; dailyLimit never exceeds it
+                        example: 15
+                      recent:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            applyMode:
+                              type:
+                              - string
+                              - 'null'
+                              enum:
+                              - copilot
+                              - auto_approve
+                              - null
+                              description: 'AI agent mode: copilot (AI prepares, you review before submitting) or auto_approve (AI prepares and submits automatically)'
+                              example: copilot
+                            company:
+                              type:
+                              - string
+                              - 'null'
+                            companyLogoUrl:
+                              type:
+                              - string
+                              - 'null'
+                            createdAt:
+                              type:
+                              - string
+                              - 'null'
+                              description: When Auto Apply started it (UTC, SQLite timestamp)
+                            id:
+                              type: integer
+                            jobTitle:
+                              type:
+                              - string
+                              - 'null'
+                            preparationStatus:
+                              type:
+                              - string
+                              - 'null'
+                            status:
+                              type: string
+                          required:
+                          - applyMode
+                          - company
+                          - companyLogoUrl
+                          - createdAt
+                          - id
+                          - jobTitle
+                          - preparationStatus
+                          - status
+                      report:
+                        type: object
+                        properties:
+                          confirmed:
+                            type: integer
+                            description: Auto Apply applications the employer confirmed receiving
+                          inProgress:
+                            type: integer
+                            description: Applications Auto Apply is still preparing or submitting
+                          notSent:
+                            type: integer
+                            description: Applications that failed, were skipped or were cancelled
+                          started:
+                            type: integer
+                            description: Every application Auto Apply started for the user
+                          submitted:
+                            type: integer
+                            description: Applications Auto Apply submitted, confirmed or still awaiting a receipt
+                          waitingReview:
+                            type: integer
+                            description: Applications filled and waiting for the user to send them
+                        required:
+                        - confirmed
+                        - inProgress
+                        - notSent
+                        - started
+                        - submitted
+                        - waitingReview
+                      sentLastDay:
+                        type: integer
+                        description: Applications Auto Apply started in the last 24 hours
+                    required:
+                    - access
+                    - dailyLimit
+                    - enabled
+                    - enabledAt
+                    - graceUntil
+                    - isPaidPlan
+                    - lastRun
+                    - matchLevel
+                    - matchesByLevel
+                    - mode
+                    - planDailyMax
+                    - recent
+                    - report
+                    - sentLastDay
+                  meta:
+                    $ref: '#/components/schemas/ResponseMetadata'
+                  success:
+                    type: boolean
+                    enum:
+                    - true
+                required:
+                - data
+                - success
+                additionalProperties: false
+                description: Successful API response
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: getAiPersonaAutoPilot
+    put:
+      tags:
+      - ai-persona
+      summary: Update Auto Apply
+      description: Switch Auto Apply on or off and set its daily number, match level and review mode. Turning it on needs a paid plan and starts the first applications right away.
+      requestBody:
+        content:
+          application/json:
+            schema:
               type: object
               properties:
-                location:
-                  type: number
-                  minimum: 0
-                  maximum: 2
-                remote:
-                  type: number
-                  minimum: 0
-                  maximum: 2
-                salary:
-                  type: number
-                  minimum: 0
-                  maximum: 2
-                seniority:
-                  type: number
-                  minimum: 0
-                  maximum: 2
-                skills:
-                  type: number
-                  minimum: 0
-                  maximum: 2
-                visa:
-                  type: number
-                  minimum: 0
-                  maximum: 2
-              required:
-              - location
-              - remote
-              - salary
-              - seniority
-              - skills
-              - visa
-          required:
-          - weights
+                dailyLimit:
+                  type: integer
+                  minimum: 1
+                  maximum: 500
+                enabled:
+                  type: boolean
+                matchLevel:
+                  type: string
+                  enum:
+                  - excellent
+                  - strong
+                  - good
+                  - stretch
+                  description: 'Lowest match quality Auto Apply applies to: excellent (90+), strong (80+), good (70+) or stretch (60+)'
+                  example: strong
+                mode:
+                  type: string
+                  enum:
+                  - copilot
+                  - auto_approve
+                  description: 'AI agent mode: copilot (AI prepares, you review before submitting) or auto_approve (AI prepares and submits automatically)'
+                  example: copilot
+              additionalProperties: false
+      responses:
+        '200':
+          description: Auto Apply updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      access:
+                        type: string
+                        enum:
+                        - included
+                        - grace
+                        - upgrade_required
+                        - plan_required
+                        description: 'Whether this account may run Auto Apply: included in the plan, a time-limited grace, or which wall stands in the way'
+                        example: included
+                      dailyLimit:
+                        type: integer
+                        description: Most applications Auto Apply starts in a day
+                        example: 10
+                      enabled:
+                        type: boolean
+                        description: Auto Apply is on
+                        example: true
+                      enabledAt:
+                        type:
+                        - string
+                        - 'null'
+                      graceUntil:
+                        type:
+                        - string
+                        - 'null'
+                        description: 'When access is grace: the moment Auto Apply stops on this plan (ISO)'
+                      isPaidPlan:
+                        type: boolean
+                        deprecated: true
+                        description: Same as access being included or grace. Read access instead.
+                      lastRun:
+                        type:
+                        - object
+                        - 'null'
+                        properties:
+                          halted:
+                            type:
+                            - string
+                            - 'null'
+                          ranAt:
+                            type: string
+                          sent:
+                            type: integer
+                          skipped:
+                            type: object
+                            additionalProperties:
+                              type: integer
+                        required:
+                        - halted
+                        - ranAt
+                        - sent
+                        - skipped
+                      matchLevel:
+                        type: string
+                        enum:
+                        - excellent
+                        - strong
+                        - good
+                        - stretch
+                        description: 'Lowest match quality Auto Apply applies to: excellent (90+), strong (80+), good (70+) or stretch (60+)'
+                        example: strong
+                      matchesByLevel:
+                        type: object
+                        properties:
+                          excellent:
+                            type: integer
+                          strong:
+                            type: integer
+                          good:
+                            type: integer
+                          stretch:
+                            type: integer
+                        description: Matches waiting right now at or above each level (not yet applied, not hidden)
+                      mode:
+                        type: string
+                        enum:
+                        - copilot
+                        - auto_approve
+                        description: auto_approve submits on its own; copilot holds each one for review
+                        example: copilot
+                      planDailyMax:
+                        type: integer
+                        description: The plan's own daily cap; dailyLimit never exceeds it
+                        example: 15
+                      recent:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            applyMode:
+                              type:
+                              - string
+                              - 'null'
+                              enum:
+                              - copilot
+                              - auto_approve
+                              - null
+                              description: 'AI agent mode: copilot (AI prepares, you review before submitting) or auto_approve (AI prepares and submits automatically)'
+                              example: copilot
+                            company:
+                              type:
+                              - string
+                              - 'null'
+                            companyLogoUrl:
+                              type:
+                              - string
+                              - 'null'
+                            createdAt:
+                              type:
+                              - string
+                              - 'null'
+                              description: When Auto Apply started it (UTC, SQLite timestamp)
+                            id:
+                              type: integer
+                            jobTitle:
+                              type:
+                              - string
+                              - 'null'
+                            preparationStatus:
+                              type:
+                              - string
+                              - 'null'
+                            status:
+                              type: string
+                          required:
+                          - applyMode
+                          - company
+                          - companyLogoUrl
+                          - createdAt
+                          - id
+                          - jobTitle
+                          - preparationStatus
+                          - status
+                      report:
+                        type: object
+                        properties:
+                          confirmed:
+                            type: integer
+                            description: Auto Apply applications the employer confirmed receiving
+                          inProgress:
+                            type: integer
+                            description: Applications Auto Apply is still preparing or submitting
+                          notSent:
+                            type: integer
+                            description: Applications that failed, were skipped or were cancelled
+                          started:
+                            type: integer
+                            description: Every application Auto Apply started for the user
+                          submitted:
+                            type: integer
+                            description: Applications Auto Apply submitted, confirmed or still awaiting a receipt
+                          waitingReview:
+                            type: integer
+                            description: Applications filled and waiting for the user to send them
+                        required:
+                        - confirmed
+                        - inProgress
+                        - notSent
+                        - started
+                        - submitted
+                        - waitingReview
+                      sentLastDay:
+                        type: integer
+                        description: Applications Auto Apply started in the last 24 hours
+                    required:
+                    - access
+                    - dailyLimit
+                    - enabled
+                    - enabledAt
+                    - graceUntil
+                    - isPaidPlan
+                    - lastRun
+                    - matchLevel
+                    - matchesByLevel
+                    - mode
+                    - planDailyMax
+                    - recent
+                    - report
+                    - sentLastDay
+                  meta:
+                    $ref: '#/components/schemas/ResponseMetadata'
+                  success:
+                    type: boolean
+                    enum:
+                    - true
+                required:
+                - data
+                - success
+                additionalProperties: false
+                description: Successful API response
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: putAiPersonaAutoPilot
+components:
+  schemas:
+    SuggestNarrativeResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/SuggestNarrativeData'
         meta:
           $ref: '#/components/schemas/ResponseMetadata'
         success:
@@ -530,216 +807,27 @@ components:
       - toneInstructions
       - samplePhrases
       additionalProperties: false
-    UpdateScoringWeights:
-      type: object
-      properties:
-        weights:
-          type: object
-          properties:
-            location:
-              type: number
-              minimum: 0
-              maximum: 2
-            remote:
-              type: number
-              minimum: 0
-              maximum: 2
-            salary:
-              type: number
-              minimum: 0
-              maximum: 2
-            seniority:
-              type: number
-              minimum: 0
-              maximum: 2
-            skills:
-              type: number
-              minimum: 0
-              maximum: 2
-            visa:
-              type: number
-              minimum: 0
-              maximum: 2
-          required:
-          - location
-          - remote
-          - salary
-          - seniority
-          - skills
-          - visa
-          description: Per-dimension multipliers in [0, 2]. Uniform 1 = baseline.
-          example:
-            skills: 1.5
-            location: 1
-            remote: 1.2
-            seniority: 1
-            salary: 0.8
-            visa: 1
-      required:
-      - weights
-      additionalProperties: false
-    AIPersonaData:
-      type: object
-      properties:
-        id:
-          type: string
-          description: AI persona identifier
-          example: abc-123
-        userId:
-          type: string
-          description: User identifier
-          example: user_abc123
-        presetId:
-          type: string
-          enum:
-          - balanced
-          - the_professional
-          - the_conversationalist
-          - the_storyteller
-          - the_closer
-          - the_enthusiast
-          - custom
-          description: Selected persona preset
-          example: balanced
-        personalDescription:
-          type:
-          - string
-          - 'null'
-          description: Free text about the user for AI personalization
-          example: Senior engineer with 10 years in fintech
-        toneInstructions:
-          type:
-          - string
-          - 'null'
-          description: Custom rules for AI tone and style
-          example: Always mention my passion for open-source
-        samplePhrases:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-          description: Example phrases the user would naturally use
-          example:
-          - Let me walk you through my approach
-          - I thrive in fast-paced environments
-        generateCoverLetterPerJob:
-          type: boolean
-          description: Whether AI generates a cover letter for each job application
-          example: true
-        tailorResumePerJob:
-          type: boolean
-          description: Whether AI tailors resume for each job application
-          example: true
-        resumeStrategy:
-          type: string
-          enum:
-          - base
-          - tailor
-          description: Resume handling strategy
-          example: tailor
-        coverLetterStrategy:
-          type: string
-          enum:
-          - 'off'
-          - use_base
-          - tailor_base
-          - generate_new
-          description: Cover letter handling strategy
-          example: generate_new
-        translationStrategy:
-          type: string
-          enum:
-          - 'off'
-          - translate
-          - translate_and_tailor
-          description: Translation strategy
-          example: 'off'
-        mode:
-          type: string
-          enum:
-          - copilot
-          - auto_approve
-          description: 'Application mode: copilot (review before submitting) or auto_approve (submits automatically)'
-          example: copilot
-        allowFabrication:
-          type: boolean
-          description: Fill-gaps for the apply agent, enabled by default. When true, a required field the agent cannot take directly from profile facts is sourced real-data-first (the resume, tailored resume, and cover letter for this application, then job preferences, then profile) and only fabricated as a last resort, marked as assumed. When false (explicit opt-out), it never fabricates such an answer. Contact/identity completion (phone, city, postal, profile links) always completes required fields and is not governed by this flag.
-          example: true
-        scoringWeights:
-          type:
-          - object
-          - 'null'
-          properties:
-            location:
-              type: number
-              minimum: 0
-              maximum: 2
-            remote:
-              type: number
-              minimum: 0
-              maximum: 2
-            salary:
-              type: number
-              minimum: 0
-              maximum: 2
-            seniority:
-              type: number
-              minimum: 0
-              maximum: 2
-            skills:
-              type: number
-              minimum: 0
-              maximum: 2
-            visa:
-              type: number
-              minimum: 0
-              maximum: 2
-          required:
-          - location
-          - remote
-          - salary
-          - seniority
-          - skills
-          - visa
-          description: Per-dimension match scoring weights. NULL when the user has never customised them (scorer falls back to uniform defaults).
-          example:
-            skills: 1
-            location: 1
-            remote: 1
-            seniority: 1
-            salary: 1
-            visa: 1
-        createdAt:
-          type: string
-          description: Persona creation timestamp
-          example: '2026-01-15T12:00:00Z'
-        updatedAt:
-          type: string
-          description: Persona last update timestamp
-          example: '2026-03-10T08:30:00Z'
-      required:
-      - id
-      - userId
-      - presetId
-      - personalDescription
-      - toneInstructions
-      - samplePhrases
-      - generateCoverLetterPerJob
-      - tailorResumePerJob
-      - resumeStrategy
-      - coverLetterStrategy
-      - translationStrategy
-      - mode
-      - allowFabrication
-      - scoringWeights
-      - createdAt
-      - updatedAt
-    SuggestNarrativeResponse:
+    DeriveCustomToneResponse:
       type: object
       properties:
         data:
-          $ref: '#/components/schemas/SuggestNarrativeData'
+          $ref: '#/components/schemas/DeriveCustomToneData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    AIPersonaResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/AIPersonaData'
         meta:
           $ref: '#/components/schemas/ResponseMetadata'
         success:
@@ -1127,6 +1215,59 @@ components:
       - error
       - success
       additionalProperties: false
+    ScoringWeightsResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            weights:
+              type: object
+              properties:
+                location:
+                  type: number
+                  minimum: 0
+                  maximum: 2
+                remote:
+                  type: number
+                  minimum: 0
+                  maximum: 2
+                salary:
+                  type: number
+                  minimum: 0
+                  maximum: 2
+                seniority:
+                  type: number
+                  minimum: 0
+                  maximum: 2
+                skills:
+                  type: number
+                  minimum: 0
+                  maximum: 2
+                visa:
+                  type: number
+                  minimum: 0
+                  maximum: 2
+              required:
+              - location
+              - remote
+              - salary
+              - seniority
+              - skills
+              - visa
+          required:
+          - weights
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
     SuggestNarrativeData:
       type: object
       properties:
@@ -1145,6 +1286,352 @@ components:
       required:
       - kind
       - draft
+      additionalProperties: false
+    AIPersonaData:
+      type: object
+      properties:
+        id:
+          type: string
+          description: AI persona identifier
+          example: abc-123
+        userId:
+          type: string
+          description: User identifier
+          example: user_abc123
+        presetId:
+          type: string
+          enum:
+          - balanced
+          - the_professional
+          - the_conversationalist
+          - the_storyteller
+          - the_closer
+          - the_enthusiast
+          - custom
+          description: Selected persona preset
+          example: balanced
+        personalDescription:
+          type:
+          - string
+          - 'null'
+          description: Free text about the user for AI personalization
+          example: Senior engineer with 10 years in fintech
+        toneInstructions:
+          type:
+          - string
+          - 'null'
+          description: Custom rules for AI tone and style
+          example: Always mention my passion for open-source
+        samplePhrases:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: Example phrases the user would naturally use
+          example:
+          - Let me walk you through my approach
+          - I thrive in fast-paced environments
+        generateCoverLetterPerJob:
+          type: boolean
+          description: Whether AI generates a cover letter for each job application
+          example: true
+        tailorResumePerJob:
+          type: boolean
+          description: Whether AI tailors resume for each job application
+          example: true
+        resumeStrategy:
+          type: string
+          enum:
+          - base
+          - tailor
+          description: Resume handling strategy
+          example: tailor
+        coverLetterStrategy:
+          type: string
+          enum:
+          - 'off'
+          - use_base
+          - tailor_base
+          - generate_new
+          description: Cover letter handling strategy
+          example: generate_new
+        translationStrategy:
+          type: string
+          enum:
+          - 'off'
+          - translate
+          - translate_and_tailor
+          description: Translation strategy
+          example: 'off'
+        mode:
+          type: string
+          enum:
+          - copilot
+          - auto_approve
+          description: 'Application mode: copilot (review before submitting) or auto_approve (submits automatically)'
+          example: copilot
+        allowFabrication:
+          type: boolean
+          description: Fill-gaps for the apply agent, enabled by default. When true, a required field the agent cannot take directly from profile facts is sourced real-data-first (the resume, tailored resume, and cover letter for this application, then job preferences, then profile) and only fabricated as a last resort, marked as assumed. When false (explicit opt-out), it never fabricates such an answer. Contact/identity completion (phone, city, postal, profile links) always completes required fields and is not governed by this flag.
+          example: true
+        scoringWeights:
+          type:
+          - object
+          - 'null'
+          properties:
+            location:
+              type: number
+              minimum: 0
+              maximum: 2
+            remote:
+              type: number
+              minimum: 0
+              maximum: 2
+            salary:
+              type: number
+              minimum: 0
+              maximum: 2
+            seniority:
+              type: number
+              minimum: 0
+              maximum: 2
+            skills:
+              type: number
+              minimum: 0
+              maximum: 2
+            visa:
+              type: number
+              minimum: 0
+              maximum: 2
+          required:
+          - location
+          - remote
+          - salary
+          - seniority
+          - skills
+          - visa
+          description: Per-dimension match scoring weights. NULL when the user has never customised them (scorer falls back to uniform defaults).
+          example:
+            skills: 1
+            location: 1
+            remote: 1
+            seniority: 1
+            salary: 1
+            visa: 1
+        createdAt:
+          type: string
+          description: Persona creation timestamp
+          example: '2026-01-15T12:00:00Z'
+        updatedAt:
+          type: string
+          description: Persona last update timestamp
+          example: '2026-03-10T08:30:00Z'
+      required:
+      - id
+      - userId
+      - presetId
+      - personalDescription
+      - toneInstructions
+      - samplePhrases
+      - generateCoverLetterPerJob
+      - tailorResumePerJob
+      - resumeStrategy
+      - coverLetterStrategy
+      - translationStrategy
+      - mode
+      - allowFabrication
+      - scoringWeights
+      - createdAt
+      - updatedAt
+    UpdateScoringWeights:
+      type: object
+      properties:
+        weights:
+          type: object
+          properties:
+            location:
+              type: number
+              minimum: 0
+              maximum: 2
+            remote:
+              type: number
+              minimum: 0
+              maximum: 2
+            salary:
+              type: number
+              minimum: 0
+              maximum: 2
+            seniority:
+              type: number
+              minimum: 0
+              maximum: 2
+            skills:
+              type: number
+              minimum: 0
+              maximum: 2
+            visa:
+              type: number
+              minimum: 0
+              maximum: 2
+          required:
+          - location
+          - remote
+          - salary
+          - seniority
+          - skills
+          - visa
+          description: Per-dimension multipliers in [0, 2]. Uniform 1 = baseline.
+          example:
+            skills: 1.5
+            location: 1
+            remote: 1.2
+            seniority: 1
+            salary: 0.8
+            visa: 1
+      required:
+      - weights
+      additionalProperties: false
+    SuggestVoiceToneResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/SuggestVoiceToneData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    ResponseMetadata:
+      type: object
+      properties:
+        duration:
+          type: number
+          minimum: 0
+          description: Request duration in milliseconds
+          example: 150
+        performance:
+          type: object
+          properties:
+            dbQueries:
+              type: integer
+              minimum: 0
+            totalDbTime:
+              type: number
+              minimum: 0
+          description: Performance metrics (preview/local only)
+        requestId:
+          type: string
+          description: Unique request identifier
+          example: req_abc123
+        timestamp:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp
+          example: '2026-10-19T20:12:14.033Z'
+        version:
+          type: string
+          description: API version
+          example: v1
+    UpsertAIPersona:
+      type: object
+      properties:
+        allowFabrication:
+          type: boolean
+          description: 'Allow the apply agent to fill gaps: complete a required field it cannot take from profile facts, sourcing real-data-first (the resume, tailored resume, and cover letter for this application, then job preferences, then profile) and fabricating only as a last resort. Enabled by default; set false to opt out. Contact/identity completion is always-on and not gated by this flag.'
+          example: true
+        coverLetterStrategy:
+          type: string
+          enum:
+          - 'off'
+          - use_base
+          - tailor_base
+          - generate_new
+          description: Cover letter handling strategy
+          example: generate_new
+        dailyLimit:
+          type: integer
+          minimum: 1
+          maximum: 50
+        generateCoverLetterPerJob:
+          type: boolean
+          description: Whether to generate cover letter per job
+          example: true
+        minMatchScore:
+          type: integer
+          minimum: 0
+          maximum: 100
+        mode:
+          type: string
+          enum:
+          - copilot
+          - auto_approve
+          description: Application mode
+          example: copilot
+        personalDescription:
+          type:
+          - string
+          - 'null'
+          maxLength: 500
+          description: Free text about yourself (max 500 chars)
+          example: Senior engineer with 10 years in fintech
+        presetId:
+          type: string
+          enum:
+          - balanced
+          - the_professional
+          - the_conversationalist
+          - the_storyteller
+          - the_closer
+          - the_enthusiast
+          - custom
+          description: Selected persona preset
+          example: balanced
+        resumeStrategy:
+          type: string
+          enum:
+          - base
+          - tailor
+          description: Resume handling strategy
+          example: tailor
+        samplePhrases:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            maxLength: 200
+          maxItems: 10
+          description: Example phrases you naturally use (max 10)
+          example:
+          - Let me walk you through my approach
+        tailorResumePerJob:
+          type: boolean
+          description: Whether to tailor resume per job
+          example: true
+        toneInstructions:
+          type:
+          - string
+          - 'null'
+          maxLength: 1000
+          description: Custom tone rules (max 1000 chars)
+          example: Always mention my passion for open-source
+        translationStrategy:
+          type: string
+          enum:
+          - 'off'
+          - translate
+          - translate_and_tailor
+          description: Translation strategy
+          example: 'off'
+      required:
+      - presetId
       additionalProperties: false
   securitySchemes:
     BearerAuth:

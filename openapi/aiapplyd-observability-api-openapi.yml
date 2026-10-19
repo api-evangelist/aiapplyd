@@ -4,19 +4,20 @@ info:
     email: support@aiapplyd.com
     name: AI Applyd
     url: https://aiapplyd.com
-  description: 'The AI Applyd API runs the whole job hunt for you: it matches you to roles that fit your profile, rewrites your resume for each posting, writes the cover letter the form asks for, and auto-applies across the major applicant tracking systems.'
+  description: 'The AI Applyd API runs the whole job hunt for you: it matches you to roles that fit your profile, rewrites your resume for each posting, writes the cover letter the form asks for, and auto-applies across the major applicant tracking systems. Every send is tracked from the swipe to the employer''s own confirmation, so you always know what landed. Authenticate with a Bearer session token. The same surface powers the web app, the mobile app and the AI Applyd MCP server for ChatGPT, Claude and other agents.'
   license:
     name: Proprietary
     url: https://aiapplyd.com/legal/terms
   title: AI Applyd Observability API
-  version: 115c47ce
+  version: fa810d82
 servers:
 - description: Current environment
   url: https://api.aiapplyd.com/api/v1
 security:
 - BearerAuth: []
 tags:
-- name: observability
+- description: Browser security reports.
+  name: observability
 paths:
   /csp-report:
     post:
@@ -47,9 +48,9 @@ components:
       properties:
         duration:
           type: number
+          minimum: 0
           description: Request duration in milliseconds
           example: 150
-          exclusiveMinimum: 0
         performance:
           type: object
           properties:
@@ -68,7 +69,7 @@ components:
           type: string
           format: date-time
           description: ISO 8601 timestamp
-          example: '2026-09-25T17:29:47.224Z'
+          example: '2026-10-19T20:12:14.033Z'
         version:
           type: string
           description: API version

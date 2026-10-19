@@ -4,19 +4,20 @@ info:
     email: support@aiapplyd.com
     name: AI Applyd
     url: https://aiapplyd.com
-  description: 'The AI Applyd API runs the whole job hunt for you: it matches you to roles that fit your profile, rewrites your resume for each posting, writes the cover letter the form asks for, and auto-applies across the major applicant tracking systems.'
+  description: 'The AI Applyd API runs the whole job hunt for you: it matches you to roles that fit your profile, rewrites your resume for each posting, writes the cover letter the form asks for, and auto-applies across the major applicant tracking systems. Every send is tracked from the swipe to the employer''s own confirmation, so you always know what landed. Authenticate with a Bearer session token. The same surface powers the web app, the mobile app and the AI Applyd MCP server for ChatGPT, Claude and other agents.'
   license:
     name: Proprietary
     url: https://aiapplyd.com/legal/terms
   title: AI Applyd Reviews API
-  version: 115c47ce
+  version: fa810d82
 servers:
 - description: Current environment
   url: https://api.aiapplyd.com/api/v1
 security:
 - BearerAuth: []
 tags:
-- name: Reviews
+- description: Your own product review.
+  name: Reviews
 paths:
   /reviews/me:
     get:
@@ -93,140 +94,83 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
       operationId: postReviewsMe
+  /reviews/prompt:
+    get:
+      description: Whether the store-rating ask is due for the authenticated user. It becomes due once, after their first application with employer confirmation or their first interview / positive employer reply, whichever comes first. One re-ask is allowed 30 days after a "not now". Same answer on web, iOS and Android.
+      summary: Get my rating-ask status
+      tags:
+      - Reviews
+      responses:
+        '200':
+          description: The caller's rating-ask status.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReviewPromptStatusResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: getReviewsPrompt
+    post:
+      description: 'Record what happened with the rating ask. `shown` / `requested` claim it (first device wins, `applied: false` means do not show). `rated` / `dismissed` answer an open web card.'
+      summary: Record a rating-ask action
+      tags:
+      - Reviews
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RecordReviewPromptAction'
+      responses:
+        '200':
+          description: Whether the action was applied, and the resulting status.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecordReviewPromptActionResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: postReviewsPrompt
 components:
   schemas:
-    ResponseMetadata:
-      type: object
-      properties:
-        duration:
-          type: number
-          description: Request duration in milliseconds
-          example: 150
-          exclusiveMinimum: 0
-        performance:
-          type: object
-          properties:
-            dbQueries:
-              type: integer
-              minimum: 0
-            totalDbTime:
-              type: number
-              minimum: 0
-          description: Performance metrics (preview/local only)
-        requestId:
-          type: string
-          description: Unique request identifier
-          example: req_abc123
-        timestamp:
-          type: string
-          format: date-time
-          description: ISO 8601 timestamp
-          example: '2026-09-25T17:29:47.224Z'
-        version:
-          type: string
-          description: API version
-          example: v1
-    OwnReviewData:
-      type:
-      - object
-      - 'null'
-      properties:
-        body:
-          type: string
-        consentRecordedAt:
-          type:
-          - string
-          - 'null'
-          description: When consent was given. Null whenever consent is currently withheld.
-          example: '2026-08-31T09:15:00.000Z'
-        consentToPublish:
-          type: boolean
-        createdAt:
-          type: string
-        displayName:
-          type: string
-        id:
-          type: integer
-        rating:
-          type: integer
-          minimum: 1
-          maximum: 5
-          description: Star rating, 1-5 inclusive.
-          example: 5
-        status:
-          type: string
-          enum:
-          - pending
-          - approved
-          - rejected
-          description: Moderation state of a user review. Only `approved` rows that also carry publish consent are ever public.
-          example: pending
-        updatedAt:
-          type: string
-      required:
-      - body
-      - consentRecordedAt
-      - consentToPublish
-      - createdAt
-      - displayName
-      - id
-      - rating
-      - status
-      - updatedAt
-      additionalProperties: false
-    UpsertOwnReview:
-      type: object
-      properties:
-        body:
-          type: string
-          minLength: 40
-          maxLength: 2000
-          description: The review itself, in the reviewer's own words.
-          example: I stopped writing cover letters by hand and started getting replies within a fortnight.
-        consentToPublish:
-          type: boolean
-          description: Explicit permission to publish these words, this name and this rating on the public site. Required on every submit - it is never inherited from a previous version of the review.
-          example: true
-        displayName:
-          type: string
-          minLength: 2
-          maxLength: 80
-          description: What the reviewer wants to be credited as. Their choice, never their account name.
-          example: Ava K.
-        rating:
-          type: integer
-          minimum: 1
-          maximum: 5
-          description: Star rating, 1-5 inclusive.
-          example: 5
-      required:
-      - body
-      - consentToPublish
-      - displayName
-      - rating
-      additionalProperties: false
-    OwnReviewResponse:
-      type: object
-      properties:
-        data:
-          type: object
-          properties:
-            review:
-              $ref: '#/components/schemas/OwnReviewData'
-          required:
-          - review
-          additionalProperties: false
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
     ApiErrorResponse:
       type: object
       properties:
@@ -571,6 +515,251 @@ components:
       - error
       - success
       additionalProperties: false
+    RecordReviewPromptAction:
+      type: object
+      properties:
+        action:
+          type: string
+          enum:
+          - shown
+          - requested
+          - rated
+          - dismissed
+          description: '`shown` (web card rendered) and `requested` (native OS ask) claim the ask. `rated` and `dismissed` answer a shown web card.'
+          example: shown
+        platform:
+          type: string
+          enum:
+          - web
+          - ios
+          - android
+          description: 'Surface that showed the rating ask: the web app, the iOS app or the Android app.'
+          example: ios
+      required:
+      - action
+      - platform
+      additionalProperties: false
+    ReviewPromptStatusResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            prompt:
+              $ref: '#/components/schemas/ReviewPromptStatus'
+          required:
+          - prompt
+          additionalProperties: false
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    OwnReviewData:
+      type:
+      - object
+      - 'null'
+      properties:
+        body:
+          type: string
+        consentRecordedAt:
+          type:
+          - string
+          - 'null'
+          description: When consent was given. Null whenever consent is currently withheld.
+          example: '2026-08-31T09:15:00.000Z'
+        consentToPublish:
+          type: boolean
+        createdAt:
+          type: string
+        displayName:
+          type: string
+        id:
+          type: integer
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+          description: Star rating, 1-5 inclusive.
+          example: 5
+        status:
+          type: string
+          enum:
+          - pending
+          - approved
+          - rejected
+          description: Moderation state of a user review. Only `approved` rows that also carry publish consent are ever public.
+          example: pending
+        updatedAt:
+          type: string
+      required:
+      - body
+      - consentRecordedAt
+      - consentToPublish
+      - createdAt
+      - displayName
+      - id
+      - rating
+      - status
+      - updatedAt
+      additionalProperties: false
+    ReviewPromptStatus:
+      type: object
+      properties:
+        outcome:
+          type:
+          - string
+          - 'null'
+          enum:
+          - shown
+          - requested
+          - rated
+          - dismissed
+          - null
+          description: What happened the last time we asked. Null when never asked.
+          example: null
+        promptCount:
+          type: integer
+          minimum: 0
+          description: How many times the ask has been shown, on any device.
+          example: 0
+        shouldPrompt:
+          type: boolean
+          description: True when the ask is due now. Clients show it only after a successful claim.
+          example: true
+        trigger:
+          type:
+          - string
+          - 'null'
+          enum:
+          - landed
+          - interview
+          - null
+          description: The good moment that made the person eligible. Null while not eligible.
+          example: landed
+      required:
+      - outcome
+      - promptCount
+      - shouldPrompt
+      - trigger
+      additionalProperties: false
+    RecordReviewPromptActionResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            applied:
+              type: boolean
+              description: 'False when nothing changed: the claim was lost to another device, the ask was not due, or there was no open card to answer. On a claim, show the ask only when this is true.'
+              example: true
+            prompt:
+              $ref: '#/components/schemas/ReviewPromptStatus'
+          required:
+          - applied
+          - prompt
+          additionalProperties: false
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    UpsertOwnReview:
+      type: object
+      properties:
+        body:
+          type: string
+          minLength: 0
+          maxLength: 2000
+          default: ''
+          description: 'The review itself, in the reviewer''s own words. Optional: an empty string records a stars-only rating.'
+          example: I stopped writing cover letters by hand and started getting replies within a fortnight.
+        consentToPublish:
+          type: boolean
+          description: Explicit permission to publish these words, this name and this rating on the public site. Required on every submit - it is never inherited from a previous version of the review.
+          example: true
+        displayName:
+          type: string
+          minLength: 2
+          maxLength: 80
+          description: What the reviewer wants to be credited as. Their choice, never their account name.
+          example: Ava K.
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+          description: Star rating, 1-5 inclusive.
+          example: 5
+      required:
+      - consentToPublish
+      - displayName
+      - rating
+      additionalProperties: false
+    ResponseMetadata:
+      type: object
+      properties:
+        duration:
+          type: number
+          minimum: 0
+          description: Request duration in milliseconds
+          example: 150
+        performance:
+          type: object
+          properties:
+            dbQueries:
+              type: integer
+              minimum: 0
+            totalDbTime:
+              type: number
+              minimum: 0
+          description: Performance metrics (preview/local only)
+        requestId:
+          type: string
+          description: Unique request identifier
+          example: req_abc123
+        timestamp:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp
+          example: '2026-10-19T20:12:14.033Z'
+        version:
+          type: string
+          description: API version
+          example: v1
+    OwnReviewResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            review:
+              $ref: '#/components/schemas/OwnReviewData'
+          required:
+          - review
+          additionalProperties: false
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
   securitySchemes:
     BearerAuth:
       description: 'Session token from signing in to AI Applyd, sent as `Authorization: Bearer <token>`.'

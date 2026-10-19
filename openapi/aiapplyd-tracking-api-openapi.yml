@@ -4,20 +4,59 @@ info:
     email: support@aiapplyd.com
     name: AI Applyd
     url: https://aiapplyd.com
-  description: 'The AI Applyd API runs the whole job hunt for you: it matches you to roles that fit your profile, rewrites your resume for each posting, writes the cover letter the form asks for, and auto-applies across the major applicant tracking systems.'
+  description: 'The AI Applyd API runs the whole job hunt for you: it matches you to roles that fit your profile, rewrites your resume for each posting, writes the cover letter the form asks for, and auto-applies across the major applicant tracking systems. Every send is tracked from the swipe to the employer''s own confirmation, so you always know what landed. Authenticate with a Bearer session token. The same surface powers the web app, the mobile app and the AI Applyd MCP server for ChatGPT, Claude and other agents.'
   license:
     name: Proprietary
     url: https://aiapplyd.com/legal/terms
   title: AI Applyd Tracking API
-  version: 115c47ce
+  version: fa810d82
 servers:
 - description: Current environment
   url: https://api.aiapplyd.com/api/v1
 security:
 - BearerAuth: []
 tags:
-- name: Tracking
+- description: Activity timelines for your applications.
+  name: Tracking
 paths:
+  /tracking/apply-intent:
+    post:
+      tags:
+      - Tracking
+      summary: Record Apply Attempt
+      description: Record that the signed-in user tried to apply, including an attempt the paywall refused. Sends Meta AddToCart once per user.
+      responses:
+        '202':
+          description: Attempt received
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplyIntentResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      operationId: postTrackingApplyIntent
   /tracking/activity/feed:
     get:
       tags:
@@ -173,108 +212,11 @@ paths:
       operationId: getTrackingActivityByJobListingId
 components:
   schemas:
-    ActivityTimelineResponse:
+    ActivityFeedResponse:
       type: object
       properties:
         data:
-          $ref: '#/components/schemas/ActivityTimelineData'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    ActivityEntryData:
-      type: object
-      properties:
-        createdAt:
-          type:
-          - string
-          - 'null'
-          description: Record creation timestamp
-        description:
-          type:
-          - string
-          - 'null'
-          description: Activity description
-        eventType:
-          type: string
-          enum:
-          - application_submitted
-          - document_sent
-          - draft_created
-          - email_received
-          - email_sent
-          - follow_up_needed
-          - ghosting_detected
-          - interview_cancelled
-          - interview_coaching_sent
-          - interview_rescheduled
-          - interview_scheduled
-          - stage_changed
-          - withdrawal_sent
-          description: Type of activity event
-          example: email_received
-        id:
-          type: integer
-          description: Activity log entry ID
-        jobListingId:
-          type: integer
-          description: Associated job listing ID
-        metadata:
-          type:
-          - string
-          - 'null'
-          description: JSON-encoded metadata
-        occurredAt:
-          type: string
-          description: When the activity occurred
-        sourceId:
-          type:
-          - string
-          - 'null'
-          description: Source record ID (email, event, etc.)
-        sourceType:
-          type:
-          - string
-          - 'null'
-          enum:
-          - email
-          - calendar
-          - manual
-          - system
-          - null
-          description: Source type
-          example: manual
-        title:
-          type: string
-          description: Activity title
-        userId:
-          type: string
-          description: Owner user ID
-      required:
-      - createdAt
-      - description
-      - eventType
-      - id
-      - jobListingId
-      - metadata
-      - occurredAt
-      - sourceId
-      - sourceType
-      - title
-      - userId
-      additionalProperties: false
-    ActivitySummaryResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/ActivitySummaryData'
+          $ref: '#/components/schemas/ActivityFeedData'
         meta:
           $ref: '#/components/schemas/ResponseMetadata'
         success:
@@ -293,224 +235,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ActivityFeedEntryData'
-        total:
-          type: integer
-          description: Total number of entries
-      required:
-      - entries
-      - total
-      additionalProperties: false
-    ResponseMetadata:
-      type: object
-      properties:
-        duration:
-          type: number
-          description: Request duration in milliseconds
-          example: 150
-          exclusiveMinimum: 0
-        performance:
-          type: object
-          properties:
-            dbQueries:
-              type: integer
-              minimum: 0
-            totalDbTime:
-              type: number
-              minimum: 0
-          description: Performance metrics (preview/local only)
-        requestId:
-          type: string
-          description: Unique request identifier
-          example: req_abc123
-        timestamp:
-          type: string
-          format: date-time
-          description: ISO 8601 timestamp
-          example: '2026-09-25T17:29:47.224Z'
-        version:
-          type: string
-          description: API version
-          example: v1
-    ActivityFeedResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/ActivityFeedData'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    ActivityByKind:
-      type: object
-      properties:
-        application_submitted:
-          type: integer
-          minimum: 0
-        document_sent:
-          type: integer
-          minimum: 0
-        draft_created:
-          type: integer
-          minimum: 0
-        email_received:
-          type: integer
-          minimum: 0
-        email_sent:
-          type: integer
-          minimum: 0
-        follow_up_needed:
-          type: integer
-          minimum: 0
-        ghosting_detected:
-          type: integer
-          minimum: 0
-        interview_cancelled:
-          type: integer
-          minimum: 0
-        interview_coaching_sent:
-          type: integer
-          minimum: 0
-        interview_rescheduled:
-          type: integer
-          minimum: 0
-        interview_scheduled:
-          type: integer
-          minimum: 0
-        stage_changed:
-          type: integer
-          minimum: 0
-        withdrawal_sent:
-          type: integer
-          minimum: 0
-      additionalProperties: false
-      description: Count of activity entries per event type (keys mirror ActivityEventType)
-    ActivitySummaryData:
-      type: object
-      properties:
-        byKind:
-          $ref: '#/components/schemas/ActivityByKind'
-        last7d:
-          type: integer
-          minimum: 0
-          description: Total activity entries in the last 7 days
-          example: 12
-        totalEvents:
-          type: integer
-          minimum: 0
-          description: Total activity entries across all time
-          example: 87
-      required:
-      - byKind
-      - last7d
-      - totalEvents
-      additionalProperties: false
-    ActivityFeedEntryData:
-      type: object
-      properties:
-        createdAt:
-          type:
-          - string
-          - 'null'
-          description: Record creation timestamp
-        description:
-          type:
-          - string
-          - 'null'
-          description: Activity description
-        eventType:
-          type: string
-          enum:
-          - application_submitted
-          - document_sent
-          - draft_created
-          - email_received
-          - email_sent
-          - follow_up_needed
-          - ghosting_detected
-          - interview_cancelled
-          - interview_coaching_sent
-          - interview_rescheduled
-          - interview_scheduled
-          - stage_changed
-          - withdrawal_sent
-          description: Type of activity event
-          example: email_received
-        id:
-          type: integer
-          description: Activity log entry ID
-        jobListingId:
-          type: integer
-          description: Associated job listing ID
-        metadata:
-          type:
-          - string
-          - 'null'
-          description: JSON-encoded metadata
-        occurredAt:
-          type: string
-          description: When the activity occurred
-        sourceId:
-          type:
-          - string
-          - 'null'
-          description: Source record ID (email, event, etc.)
-        sourceType:
-          type:
-          - string
-          - 'null'
-          enum:
-          - email
-          - calendar
-          - manual
-          - system
-          - null
-          description: Source type
-          example: manual
-        title:
-          type: string
-          description: Activity title
-        userId:
-          type: string
-          description: Owner user ID
-        company:
-          type:
-          - string
-          - 'null'
-          description: Company name from linked job listing
-        jobTitle:
-          type:
-          - string
-          - 'null'
-          description: Job title from linked job listing
-      required:
-      - createdAt
-      - description
-      - eventType
-      - id
-      - jobListingId
-      - metadata
-      - occurredAt
-      - sourceId
-      - sourceType
-      - title
-      - userId
-      - company
-      - jobTitle
-      additionalProperties: false
-    ActivityTimelineData:
-      type: object
-      properties:
-        entries:
-          type: array
-          items:
-            $ref: '#/components/schemas/ActivityEntryData'
         total:
           type: integer
           description: Total number of entries
@@ -862,6 +586,348 @@ components:
       - error
       - success
       additionalProperties: false
+    ActivityFeedEntryData:
+      type: object
+      properties:
+        createdAt:
+          type:
+          - string
+          - 'null'
+          description: Record creation timestamp
+        description:
+          type:
+          - string
+          - 'null'
+          description: Activity description
+        eventType:
+          type: string
+          enum:
+          - application_submitted
+          - document_sent
+          - draft_created
+          - email_received
+          - email_sent
+          - follow_up_needed
+          - ghosting_detected
+          - interview_cancelled
+          - interview_coaching_sent
+          - interview_rescheduled
+          - interview_scheduled
+          - stage_changed
+          - withdrawal_sent
+          description: Type of activity event
+          example: email_received
+        id:
+          type: integer
+          description: Activity log entry ID
+        jobListingId:
+          type: integer
+          description: Associated job listing ID
+        metadata:
+          type:
+          - string
+          - 'null'
+          description: JSON-encoded metadata
+        occurredAt:
+          type: string
+          description: When the activity occurred
+        sourceId:
+          type:
+          - string
+          - 'null'
+          description: Source record ID (email, event, etc.)
+        sourceType:
+          type:
+          - string
+          - 'null'
+          enum:
+          - email
+          - calendar
+          - manual
+          - system
+          - null
+          description: Source type
+          example: manual
+        title:
+          type: string
+          description: Activity title
+        userId:
+          type: string
+          description: Owner user ID
+        company:
+          type:
+          - string
+          - 'null'
+          description: Company name from linked job listing
+        jobTitle:
+          type:
+          - string
+          - 'null'
+          description: Job title from linked job listing
+      required:
+      - createdAt
+      - description
+      - eventType
+      - id
+      - jobListingId
+      - metadata
+      - occurredAt
+      - sourceId
+      - sourceType
+      - title
+      - userId
+      - company
+      - jobTitle
+      additionalProperties: false
+    ActivityByKind:
+      type: object
+      properties:
+        application_submitted:
+          type: integer
+          minimum: 0
+        document_sent:
+          type: integer
+          minimum: 0
+        draft_created:
+          type: integer
+          minimum: 0
+        email_received:
+          type: integer
+          minimum: 0
+        email_sent:
+          type: integer
+          minimum: 0
+        follow_up_needed:
+          type: integer
+          minimum: 0
+        ghosting_detected:
+          type: integer
+          minimum: 0
+        interview_cancelled:
+          type: integer
+          minimum: 0
+        interview_coaching_sent:
+          type: integer
+          minimum: 0
+        interview_rescheduled:
+          type: integer
+          minimum: 0
+        interview_scheduled:
+          type: integer
+          minimum: 0
+        stage_changed:
+          type: integer
+          minimum: 0
+        withdrawal_sent:
+          type: integer
+          minimum: 0
+      additionalProperties: false
+      description: Count of activity entries per event type (keys mirror ActivityEventType)
+    ActivityTimelineData:
+      type: object
+      properties:
+        entries:
+          type: array
+          items:
+            $ref: '#/components/schemas/ActivityEntryData'
+        total:
+          type: integer
+          description: Total number of entries
+      required:
+      - entries
+      - total
+      additionalProperties: false
+    ActivityEntryData:
+      type: object
+      properties:
+        createdAt:
+          type:
+          - string
+          - 'null'
+          description: Record creation timestamp
+        description:
+          type:
+          - string
+          - 'null'
+          description: Activity description
+        eventType:
+          type: string
+          enum:
+          - application_submitted
+          - document_sent
+          - draft_created
+          - email_received
+          - email_sent
+          - follow_up_needed
+          - ghosting_detected
+          - interview_cancelled
+          - interview_coaching_sent
+          - interview_rescheduled
+          - interview_scheduled
+          - stage_changed
+          - withdrawal_sent
+          description: Type of activity event
+          example: email_received
+        id:
+          type: integer
+          description: Activity log entry ID
+        jobListingId:
+          type: integer
+          description: Associated job listing ID
+        metadata:
+          type:
+          - string
+          - 'null'
+          description: JSON-encoded metadata
+        occurredAt:
+          type: string
+          description: When the activity occurred
+        sourceId:
+          type:
+          - string
+          - 'null'
+          description: Source record ID (email, event, etc.)
+        sourceType:
+          type:
+          - string
+          - 'null'
+          enum:
+          - email
+          - calendar
+          - manual
+          - system
+          - null
+          description: Source type
+          example: manual
+        title:
+          type: string
+          description: Activity title
+        userId:
+          type: string
+          description: Owner user ID
+      required:
+      - createdAt
+      - description
+      - eventType
+      - id
+      - jobListingId
+      - metadata
+      - occurredAt
+      - sourceId
+      - sourceType
+      - title
+      - userId
+      additionalProperties: false
+    ActivitySummaryData:
+      type: object
+      properties:
+        byKind:
+          $ref: '#/components/schemas/ActivityByKind'
+        last7d:
+          type: integer
+          minimum: 0
+          description: Total activity entries in the last 7 days
+          example: 12
+        totalEvents:
+          type: integer
+          minimum: 0
+          description: Total activity entries across all time
+          example: 87
+      required:
+      - byKind
+      - last7d
+      - totalEvents
+      additionalProperties: false
+    ApplyIntentResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ApplyIntentData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    ActivityTimelineResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ActivityTimelineData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    ApplyIntentData:
+      type: object
+      properties:
+        accepted:
+          type: boolean
+          enum:
+          - true
+          description: The attempt was received. Reporting runs after the response.
+      required:
+      - accepted
+      additionalProperties: false
+    ResponseMetadata:
+      type: object
+      properties:
+        duration:
+          type: number
+          minimum: 0
+          description: Request duration in milliseconds
+          example: 150
+        performance:
+          type: object
+          properties:
+            dbQueries:
+              type: integer
+              minimum: 0
+            totalDbTime:
+              type: number
+              minimum: 0
+          description: Performance metrics (preview/local only)
+        requestId:
+          type: string
+          description: Unique request identifier
+          example: req_abc123
+        timestamp:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp
+          example: '2026-10-19T20:12:14.033Z'
+        version:
+          type: string
+          description: API version
+          example: v1
+    ActivitySummaryResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ActivitySummaryData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
   securitySchemes:
     BearerAuth:
       description: 'Session token from signing in to AI Applyd, sent as `Authorization: Bearer <token>`.'

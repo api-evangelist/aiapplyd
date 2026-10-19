@@ -376,28 +376,6 @@ apis:
     url: json-schema/aiapplyd-auto-setup-request-schema.json
   - type: JSONSchema
     url: json-schema/aiapplyd-update-preferences-request-schema.json
-- aid: aiapplyd:aiapplyd-auth-api
-  name: AI Applyd Auth API
-  description: Authentication and authorization
-  humanURL: https://api.aiapplyd.com/api/v1/scalar
-  baseURL: https://api.aiapplyd.com/api/v1
-  tags:
-  - Authentication
-  tags_raw:
-  - auth
-  properties:
-  - type: OpenAPI
-    url: openapi/aiapplyd-auth-api-openapi.yml
-  - type: APIReference
-    url: https://api.aiapplyd.com/api/v1/scalar
-  - type: JSONSchema
-    url: json-schema/aiapplyd-patch-user-preferences-schema.json
-  - type: JSONSchema
-    url: json-schema/aiapplyd-upsert-application-profile-schema.json
-  - type: JSONSchema
-    url: json-schema/aiapplyd-auto-setup-request-schema.json
-  - type: JSONSchema
-    url: json-schema/aiapplyd-update-preferences-request-schema.json
 - aid: aiapplyd:aiapplyd-billing-api
   name: AI Applyd Billing API
   description: Subscription and billing management
@@ -606,28 +584,6 @@ apis:
   properties:
   - type: OpenAPI
     url: openapi/aiapplyd-locations-api-openapi.yml
-  - type: APIReference
-    url: https://api.aiapplyd.com/api/v1/scalar
-  - type: JSONSchema
-    url: json-schema/aiapplyd-patch-user-preferences-schema.json
-  - type: JSONSchema
-    url: json-schema/aiapplyd-upsert-application-profile-schema.json
-  - type: JSONSchema
-    url: json-schema/aiapplyd-auto-setup-request-schema.json
-  - type: JSONSchema
-    url: json-schema/aiapplyd-update-preferences-request-schema.json
-- aid: aiapplyd:aiapplyd-mcp-api
-  name: AI Applyd MCP API
-  description: The mcp API from AI Applyd — 1 operation(s) for mcp.
-  humanURL: https://api.aiapplyd.com/api/v1/scalar
-  baseURL: https://api.aiapplyd.com/api/v1
-  tags:
-  - MCP
-  tags_raw:
-  - mcp
-  properties:
-  - type: OpenAPI
-    url: openapi/aiapplyd-mcp-api-openapi.yml
   - type: APIReference
     url: https://api.aiapplyd.com/api/v1/scalar
   - type: JSONSchema
@@ -1148,14 +1104,32 @@ apis:
     url: json-schema/aiapplyd-auto-setup-request-schema.json
   - type: JSONSchema
     url: json-schema/aiapplyd-update-preferences-request-schema.json
-- aid: aiapplyd:aiapplyd-linked-in-api
-  name: AI Applyd Linked In API
-  description: The Linked In API from AI Applyd — 3 operation(s) for linked in.
+- aid: aiapplyd:aiapplyd-public-blog-votes-api
+  name: AI Applyd Public Blog Votes API
+  description: Anonymous "Was this article helpful?" votes on blog posts.
   humanURL: https://aiapplyd.com/mcps
   baseURL: https://mcp.aiapplyd.com/mcp
   tags:
-  - LinkedIn
-  tags_raw:
+  - public-blog-votes
+  properties:
+  - type: OpenAPI
+    url: openapi/aiapplyd-public-blog-votes-api-openapi.yml
+  - type: APIReference
+    url: https://api.aiapplyd.com/api/v1/scalar
+  - type: JSONSchema
+    url: json-schema/aiapplyd-patch-user-preferences-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-upsert-application-profile-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-auto-setup-request-schema.json
+  - type: JSONSchema
+    url: json-schema/aiapplyd-update-preferences-request-schema.json
+- aid: aiapplyd:aiapplyd-linked-in-api
+  name: AI Applyd Linked In API
+  description: Import your LinkedIn profile.
+  humanURL: https://aiapplyd.com/mcps
+  baseURL: https://mcp.aiapplyd.com/mcp
+  tags:
   - Linked In
   properties:
   - type: OpenAPI

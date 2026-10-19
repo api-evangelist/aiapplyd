@@ -4,19 +4,20 @@ info:
     email: support@aiapplyd.com
     name: AI Applyd
     url: https://aiapplyd.com
-  description: 'The AI Applyd API runs the whole job hunt for you: it matches you to roles that fit your profile, rewrites your resume for each posting, writes the cover letter the form asks for, and auto-applies across the major applicant tracking systems.'
+  description: 'The AI Applyd API runs the whole job hunt for you: it matches you to roles that fit your profile, rewrites your resume for each posting, writes the cover letter the form asks for, and auto-applies across the major applicant tracking systems. Every send is tracked from the swipe to the employer''s own confirmation, so you always know what landed. Authenticate with a Bearer session token. The same surface powers the web app, the mobile app and the AI Applyd MCP server for ChatGPT, Claude and other agents.'
   license:
     name: Proprietary
     url: https://aiapplyd.com/legal/terms
   title: AI Applyd Proof Points API
-  version: 115c47ce
+  version: fa810d82
 servers:
 - description: Current environment
   url: https://api.aiapplyd.com/api/v1
 security:
 - BearerAuth: []
 tags:
-- name: proof-points
+- description: Measurable achievements the agent cites in your documents.
+  name: proof-points
 paths:
   /proof-points:
     get:
@@ -270,322 +271,11 @@ paths:
       operationId: deleteProofPointsById
 components:
   schemas:
-    ProofPointData:
-      type: object
-      properties:
-        architectureSummary:
-          type:
-          - string
-          - 'null'
-          description: High-level architecture / approach summary
-          example: Migrated 12 monolith services to a Hono + D1 multi-tenant Workers stack...
-        category:
-          type: string
-          enum:
-          - revenue
-          - headcount
-          - efficiency
-          - delivery
-          - technical
-          - leadership
-          description: Category tag for a proof point in the user's evidence bank
-          example: delivery
-        createdAt:
-          type: string
-          description: Creation timestamp (ISO-8601)
-          example: '2026-01-15T12:00:00Z'
-        heroMetric:
-          type:
-          - string
-          - 'null'
-          description: One-line hero metric the cover letter / match report will lead with
-          example: $2M ARR / 10x latency reduction
-        id:
-          type: integer
-          description: Proof point identifier
-          example: 12
-        keyDecisions:
-          type: array
-          items:
-            type: string
-          description: Tradeoffs / non-obvious decisions the candidate made
-          example:
-          - Picked SQLite over Postgres because read amplification was the bottleneck
-          - Wrote the migrator as a one-shot script instead of a service
-        sortOrder:
-          type: integer
-          description: Manual sort order; smaller = higher in list
-          example: 0
-        sourceResumeDocId:
-          type:
-          - integer
-          - 'null'
-          description: Source resume document this proof point was extracted from
-          example: 42
-        title:
-          type: string
-          description: Short memorable label for the project
-          example: Project Phoenix migration
-        updatedAt:
-          type: string
-          description: Last update timestamp (ISO-8601)
-          example: '2026-03-10T08:30:00Z'
-        userId:
-          type: string
-          description: Owner user identifier
-          example: user_123
-      required:
-      - architectureSummary
-      - category
-      - createdAt
-      - heroMetric
-      - id
-      - keyDecisions
-      - sortOrder
-      - sourceResumeDocId
-      - title
-      - updatedAt
-      - userId
-      additionalProperties: false
-    ProofPointSuggestionsData:
-      type: object
-      properties:
-        created:
-          type: array
-          items:
-            $ref: '#/components/schemas/ProofPointData'
-          description: Newly inserted proof points (already persisted to the user bank).
-        reason:
-          type:
-          - string
-          - 'null'
-          enum:
-          - no_resume_on_file
-          - cap_reached
-          - ai_returned_no_items
-          - null
-          description: Set when no proof points were created. null on success.
-          example: no_resume_on_file
-        tokensSpent:
-          type: integer
-          description: Tokens deducted from the user balance for this request. 0 when skipped.
-          example: 5
-      required:
-      - created
-      - reason
-      - tokensSpent
-      additionalProperties: false
-    ProofPointSuggestionsResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/ProofPointSuggestionsData'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    ProofPointListResponse:
-      type: object
-      properties:
-        data:
-          type: object
-          properties:
-            items:
-              type: array
-              items:
-                $ref: '#/components/schemas/ProofPointData'
-          required:
-          - items
-          additionalProperties: false
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    ResponseMetadata:
-      type: object
-      properties:
-        duration:
-          type: number
-          description: Request duration in milliseconds
-          example: 150
-          exclusiveMinimum: 0
-        performance:
-          type: object
-          properties:
-            dbQueries:
-              type: integer
-              minimum: 0
-            totalDbTime:
-              type: number
-              minimum: 0
-          description: Performance metrics (preview/local only)
-        requestId:
-          type: string
-          description: Unique request identifier
-          example: req_abc123
-        timestamp:
-          type: string
-          format: date-time
-          description: ISO 8601 timestamp
-          example: '2026-09-25T17:29:47.224Z'
-        version:
-          type: string
-          description: API version
-          example: v1
     ProofPointResponse:
       type: object
       properties:
         data:
           $ref: '#/components/schemas/ProofPointData'
-        meta:
-          $ref: '#/components/schemas/ResponseMetadata'
-        success:
-          type: boolean
-          enum:
-          - true
-      required:
-      - data
-      - success
-      additionalProperties: false
-      description: Successful API response
-    UpdateProofPoint:
-      type: object
-      properties:
-        architectureSummary:
-          type:
-          - string
-          - 'null'
-          maxLength: 4000
-          description: High-level architecture / approach summary
-        category:
-          type: string
-          enum:
-          - revenue
-          - headcount
-          - efficiency
-          - delivery
-          - technical
-          - leadership
-          description: Category tag for a proof point in the user's evidence bank
-          example: delivery
-        heroMetric:
-          type:
-          - string
-          - 'null'
-          maxLength: 200
-          description: One-line hero metric
-          example: $2M ARR / 10x latency reduction
-        keyDecisions:
-          type: array
-          items:
-            type: string
-            minLength: 1
-            maxLength: 500
-          maxItems: 10
-          description: Tradeoffs / non-obvious decisions
-        sortOrder:
-          type: integer
-          minimum: 0
-          maximum: 1000
-          description: Manual sort order (smaller = higher)
-        sourceResumeDocId:
-          type:
-          - integer
-          - 'null'
-          description: Source resume document this proof point came from
-        title:
-          type: string
-          minLength: 1
-          maxLength: 200
-          description: Short memorable label
-          example: Project Phoenix migration
-      additionalProperties: false
-    CreateProofPoint:
-      type: object
-      properties:
-        architectureSummary:
-          type:
-          - string
-          - 'null'
-          maxLength: 4000
-          description: High-level architecture / approach summary
-        category:
-          type: string
-          enum:
-          - revenue
-          - headcount
-          - efficiency
-          - delivery
-          - technical
-          - leadership
-          description: Category tag for a proof point in the user's evidence bank
-          example: delivery
-        heroMetric:
-          type:
-          - string
-          - 'null'
-          maxLength: 200
-          description: One-line hero metric
-          example: $2M ARR / 10x latency reduction
-        keyDecisions:
-          type: array
-          items:
-            type: string
-            minLength: 1
-            maxLength: 500
-          maxItems: 10
-          description: Tradeoffs / non-obvious decisions
-        sortOrder:
-          type: integer
-          minimum: 0
-          maximum: 1000
-          description: Manual sort order (smaller = higher)
-        sourceResumeDocId:
-          type:
-          - integer
-          - 'null'
-          description: Source resume document this proof point came from
-        title:
-          type: string
-          minLength: 1
-          maxLength: 200
-          description: Short memorable label
-          example: Project Phoenix migration
-      required:
-      - category
-      - title
-      additionalProperties: false
-    SuggestProofPointsRequest:
-      type: object
-      properties: {}
-      additionalProperties: false
-    ProofPointDeletedResponse:
-      type: object
-      properties:
-        data:
-          type: object
-          properties:
-            success:
-              type: boolean
-              enum:
-              - true
-          required:
-          - success
-          additionalProperties: false
         meta:
           $ref: '#/components/schemas/ResponseMetadata'
         success:
@@ -940,6 +630,317 @@ components:
       required:
       - error
       - success
+      additionalProperties: false
+    CreateProofPoint:
+      type: object
+      properties:
+        architectureSummary:
+          type:
+          - string
+          - 'null'
+          maxLength: 4000
+          description: High-level architecture / approach summary
+        category:
+          type: string
+          enum:
+          - revenue
+          - headcount
+          - efficiency
+          - delivery
+          - technical
+          - leadership
+          description: Category tag for a proof point in the user's evidence bank
+          example: delivery
+        heroMetric:
+          type:
+          - string
+          - 'null'
+          maxLength: 200
+          description: One-line hero metric
+          example: $2M ARR / 10x latency reduction
+        keyDecisions:
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 500
+          maxItems: 10
+          description: Tradeoffs / non-obvious decisions
+        sortOrder:
+          type: integer
+          minimum: 0
+          maximum: 1000
+          description: Manual sort order (smaller = higher)
+        sourceResumeDocId:
+          type:
+          - integer
+          - 'null'
+          description: Source resume document this proof point came from
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+          description: Short memorable label
+          example: Project Phoenix migration
+      required:
+      - category
+      - title
+      additionalProperties: false
+    ProofPointListResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: '#/components/schemas/ProofPointData'
+          required:
+          - items
+          additionalProperties: false
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    ResponseMetadata:
+      type: object
+      properties:
+        duration:
+          type: number
+          minimum: 0
+          description: Request duration in milliseconds
+          example: 150
+        performance:
+          type: object
+          properties:
+            dbQueries:
+              type: integer
+              minimum: 0
+            totalDbTime:
+              type: number
+              minimum: 0
+          description: Performance metrics (preview/local only)
+        requestId:
+          type: string
+          description: Unique request identifier
+          example: req_abc123
+        timestamp:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp
+          example: '2026-10-19T20:12:14.033Z'
+        version:
+          type: string
+          description: API version
+          example: v1
+    ProofPointData:
+      type: object
+      properties:
+        architectureSummary:
+          type:
+          - string
+          - 'null'
+          description: High-level architecture / approach summary
+          example: Migrated 12 monolith services to a Hono + D1 multi-tenant Workers stack...
+        category:
+          type: string
+          enum:
+          - revenue
+          - headcount
+          - efficiency
+          - delivery
+          - technical
+          - leadership
+          description: Category tag for a proof point in the user's evidence bank
+          example: delivery
+        createdAt:
+          type: string
+          description: Creation timestamp (ISO-8601)
+          example: '2026-01-15T12:00:00Z'
+        heroMetric:
+          type:
+          - string
+          - 'null'
+          description: One-line hero metric the cover letter / match report will lead with
+          example: $2M ARR / 10x latency reduction
+        id:
+          type: integer
+          description: Proof point identifier
+          example: 12
+        keyDecisions:
+          type: array
+          items:
+            type: string
+          description: Tradeoffs / non-obvious decisions the candidate made
+          example:
+          - Picked SQLite over Postgres because read amplification was the bottleneck
+          - Wrote the migrator as a one-shot script instead of a service
+        sortOrder:
+          type: integer
+          description: Manual sort order; smaller = higher in list
+          example: 0
+        sourceResumeDocId:
+          type:
+          - integer
+          - 'null'
+          description: Source resume document this proof point was extracted from
+          example: 42
+        title:
+          type: string
+          description: Short memorable label for the project
+          example: Project Phoenix migration
+        updatedAt:
+          type: string
+          description: Last update timestamp (ISO-8601)
+          example: '2026-03-10T08:30:00Z'
+        userId:
+          type: string
+          description: Owner user identifier
+          example: user_123
+      required:
+      - architectureSummary
+      - category
+      - createdAt
+      - heroMetric
+      - id
+      - keyDecisions
+      - sortOrder
+      - sourceResumeDocId
+      - title
+      - updatedAt
+      - userId
+      additionalProperties: false
+    ProofPointSuggestionsData:
+      type: object
+      properties:
+        created:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProofPointData'
+          description: Newly inserted proof points (already persisted to the user bank).
+        reason:
+          type:
+          - string
+          - 'null'
+          enum:
+          - no_resume_on_file
+          - cap_reached
+          - ai_returned_no_items
+          - null
+          description: Set when no proof points were created. null on success.
+          example: no_resume_on_file
+        tokensSpent:
+          type: integer
+          description: Tokens deducted from the user balance for this request. 0 when skipped.
+          example: 5
+      required:
+      - created
+      - reason
+      - tokensSpent
+      additionalProperties: false
+    ProofPointSuggestionsResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ProofPointSuggestionsData'
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    UpdateProofPoint:
+      type: object
+      properties:
+        architectureSummary:
+          type:
+          - string
+          - 'null'
+          maxLength: 4000
+          description: High-level architecture / approach summary
+        category:
+          type: string
+          enum:
+          - revenue
+          - headcount
+          - efficiency
+          - delivery
+          - technical
+          - leadership
+          description: Category tag for a proof point in the user's evidence bank
+          example: delivery
+        heroMetric:
+          type:
+          - string
+          - 'null'
+          maxLength: 200
+          description: One-line hero metric
+          example: $2M ARR / 10x latency reduction
+        keyDecisions:
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 500
+          maxItems: 10
+          description: Tradeoffs / non-obvious decisions
+        sortOrder:
+          type: integer
+          minimum: 0
+          maximum: 1000
+          description: Manual sort order (smaller = higher)
+        sourceResumeDocId:
+          type:
+          - integer
+          - 'null'
+          description: Source resume document this proof point came from
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+          description: Short memorable label
+          example: Project Phoenix migration
+      additionalProperties: false
+    ProofPointDeletedResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            success:
+              type: boolean
+              enum:
+              - true
+          required:
+          - success
+          additionalProperties: false
+        meta:
+          $ref: '#/components/schemas/ResponseMetadata'
+        success:
+          type: boolean
+          enum:
+          - true
+      required:
+      - data
+      - success
+      additionalProperties: false
+      description: Successful API response
+    SuggestProofPointsRequest:
+      type: object
+      properties: {}
       additionalProperties: false
   securitySchemes:
     BearerAuth:
