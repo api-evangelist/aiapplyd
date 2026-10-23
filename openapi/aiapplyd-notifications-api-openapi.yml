@@ -1576,3 +1576,9 @@ components:
       description: 'Session token from signing in to AI Applyd, sent as `Authorization: Bearer <token>`.'
       scheme: bearer
       type: http
+x-provenance:
+  method: harvested
+  publisher: AI Applyd
+  source: https://api.aiapplyd.com/api/v1/doc
+  note: split by refine-openapis from the provider's own published document, verified by fetch (openapi/_original/*.fetch.json);
+    stamped by stamp-openapi-provenance.py (roadmap#793)
