@@ -72,7 +72,7 @@ AI Applyd is a job-application automation platform for candidates: it scores a r
 
 Everything profiled for AI Applyd is published on APIs.io rather than in this repository. Start at the provider page — **[apis.io/providers/aiapplyd/](https://apis.io/providers/aiapplyd/)** — or go straight to one of the APIs or properties below.
 
-### APIs (48)
+### APIs (46)
 
 - [AI Applyd MCP Server](https://apis.io/apis/aiapplyd/ai-applyd-mcp-server/) — Hosted remote MCP server (streamable HTTP, with a legacy SSE endpoint; OAuth 2.1 with PKCE, dynamic client registration and Client ID Metadata Documents),…
 - [AI Applyd Account API](https://apis.io/apis/aiapplyd/aiapplyd-account-api/) — The account API from AI Applyd — 3 operation(s) for account.
@@ -119,8 +119,6 @@ Everything profiled for AI Applyd is published on APIs.io rather than in this re
 - [AI Applyd Tracking API](https://apis.io/apis/aiapplyd/aiapplyd-tracking-api/) — The tracking API from AI Applyd — 3 operation(s) for tracking.
 - [AI Applyd User Documents API](https://apis.io/apis/aiapplyd/aiapplyd-user-documents-api/) — The user-documents API from AI Applyd — 16 operation(s) for user-documents.
 - [AI Applyd User Preferences API](https://apis.io/apis/aiapplyd/aiapplyd-user-preferences-api/) — The user-preferences API from AI Applyd — 1 operation(s) for user-preferences.
-- [AI Applyd Account API](https://apis.io/apis/aiapplyd/aiapplyd-account-api/) — The account API from AI Applyd — 5 operation(s) for account.
-- [AI Applyd Public Blog Votes API](https://apis.io/apis/aiapplyd/aiapplyd-public-blog-votes-api/) — Anonymous "Was this article helpful?" votes on blog posts.
 - [AI Applyd Linked In API](https://apis.io/apis/aiapplyd/aiapplyd-linked-in-api/) — The Linked In API from AI Applyd — 3 operation(s) for linked in.
 
 ### Published properties
@@ -139,12 +137,14 @@ Which operations an agent can call, which act, and which need a human in the loo
 
 - [Aiapplyd Agentic Access](https://apis.io/agentic-access/aiapplyd/aiapplyd-agentic-access/)
 
-#### JSON Schema (4)
+#### JSON Schema (6)
 
 The data models the API reads and writes.
 
+- [Moved to /providers/aiapplyd/](https://apis.io/schemas/aiapplyd/aiapplyd-apply-heartbeat-body/)
 - [AutoSetupRequest](https://apis.io/schemas/aiapplyd/aiapplyd-auto-setup-request/)
 - [PatchUserPreferences](https://apis.io/schemas/aiapplyd/aiapplyd-patch-user-preferences/)
+- [Moved to /providers/aiapplyd/](https://apis.io/schemas/aiapplyd/aiapplyd-post-ai-data-permission-data/)
 - [UpdatePreferencesRequest](https://apis.io/schemas/aiapplyd/aiapplyd-update-preferences-request/)
 - [UpsertApplicationProfile](https://apis.io/schemas/aiapplyd/aiapplyd-upsert-application-profile/)
 
@@ -205,24 +205,17 @@ The permissions the API asks for.
 
 - [Aiapplyd Scopes](https://apis.io/scopes/aiapplyd/aiapplyd-scopes/)
 
-#### Plans and pricing (2)
+#### Plans and pricing (1)
 
 Published plans, tiers and prices.
 
 - [Aiapplyd Plans Pricing](https://apis.io/plans/aiapplyd/aiapplyd-plans-pricing/)
-- [Aiapplyd Price Estimates](https://apis.io/plans/aiapplyd/aiapplyd-price-estimates/)
 
 #### Rate limits (1)
 
 Published request limits.
 
 - [Aiapplyd Rate Limits](https://apis.io/rate-limits/aiapplyd/aiapplyd-rate-limits/)
-
-#### FinOps (1)
-
-What the API costs to run, by operation.
-
-- [Aiapplyd Finops](https://apis.io/finops/aiapplyd/aiapplyd-finops/)
 
 ## Where to find this API
 
